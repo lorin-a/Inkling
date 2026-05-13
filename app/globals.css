@@ -1,40 +1,85 @@
+/* P22 Mackinac Pro — local files at public/fonts/. If a file is missing,
+   the next font in the stack (Fraunces via Google) takes over with no error. */
+@font-face {
+  font-family: "P22 Mackinac Pro";
+  src: url("/fonts/P22MackinacPro-Book.woff2") format("woff2"),
+       url("/fonts/P22MackinacPro-Book.woff") format("woff"),
+       url("/fonts/P22MackinacPro-Book.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "P22 Mackinac Pro";
+  src: url("/fonts/P22MackinacPro-BookItalic.woff2") format("woff2"),
+       url("/fonts/P22MackinacPro-BookItalic.woff") format("woff"),
+       url("/fonts/P22MackinacPro-BookItalic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "P22 Mackinac Pro";
+  src: url("/fonts/P22MackinacPro-Medium.woff2") format("woff2"),
+       url("/fonts/P22MackinacPro-Medium.woff") format("woff"),
+       url("/fonts/P22MackinacPro-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "P22 Mackinac Pro";
+  src: url("/fonts/P22MackinacPro-Bold.woff2") format("woff2"),
+       url("/fonts/P22MackinacPro-Bold.woff") format("woff"),
+       url("/fonts/P22MackinacPro-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* Type stack — Mackinac first, Fraunces fallback (so headings still look
+     considered until the Mackinac files are dropped in). */
+  --font-serif: "P22 Mackinac Pro", var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-noto), system-ui, -apple-system, "Segoe UI", sans-serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  /* Whelm core */
+  --whelm-dark: #1f0536;
+  --whelm-night: #110a34;
+  --whelm-white: #f3eff7;
+  --whelm-lavender: #f0e2ff;
+  --whelm-mauve: #bdb7e9;
+  --whelm-purple: #895fae;
+  --whelm-vivid: #b168ef;
+  --whelm-deep: #49325d;
 
-html {
-  height: 100%;
-}
+  /* Tool chrome */
+  --bg: #fafafa;
+  --bg-elevated: #ffffff;
+  --ink: #1a1a1a;
+  --ink-muted: #6b6b6b;
+  --hairline: rgba(0, 0, 0, 0.08);
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --motion-fast: 200ms;
+  --motion-medium: 400ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 * {
   box-sizing: border-box;
-  padding: 0;
   margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01" on;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -42,8 +87,10 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+button {
+  font: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
 }

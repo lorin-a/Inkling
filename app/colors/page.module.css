@@ -1,0 +1,119 @@
+.page {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.back {
+  font-size: 14px;
+  color: var(--ink-muted);
+  transition: color var(--motion-fast) var(--ease-out);
+}
+
+.back:hover {
+  color: var(--ink);
+}
+
+.barMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  margin-left: auto;
+}
+
+.dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--ink-muted);
+  opacity: 0.4;
+}
+
+.copyBtn {
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+
+.copyBtn:hover {
+  border-color: var(--ink);
+}
+
+.swatch {
+  position: absolute;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--ease-out),
+    box-shadow var(--motion-fast) var(--ease-out);
+}
+
+.swatch:hover,
+.swatch:focus-visible {
+  transform: scale(1.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  z-index: 2;
+  outline: none;
+}
+
+.readout {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  font-size: 14px;
+  z-index: 20;
+  min-width: 240px;
+  justify-content: center;
+}
+
+.chip {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.hex {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.group {
+  font-size: 12px;
+  color: var(--ink-muted);
+  letter-spacing: 0.04em;
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--ink-muted);
+}

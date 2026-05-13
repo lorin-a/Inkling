@@ -1,0 +1,387 @@
+.page {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-wrap: wrap;
+}
+
+.back {
+  font-size: 14px;
+  color: var(--ink-muted);
+  transition: color var(--motion-fast) var(--ease-out);
+}
+.back:hover { color: var(--ink); }
+
+.barTitle {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-variation-settings: "SOFT" 50, "WONK" 0;
+  letter-spacing: -0.01em;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.controlLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 11px;
+}
+
+.value {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  color: var(--ink);
+  font-size: 13px;
+  text-transform: none;
+  letter-spacing: 0.04em;
+  min-width: 18px;
+}
+
+.select {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 10px;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  color: var(--ink);
+}
+
+.range {
+  width: 120px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  color: var(--ink);
+  transition: all var(--motion-fast) var(--ease-out);
+}
+.btn:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+.btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.btnGhost {
+  padding: 8px 12px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  min-width: 36px;
+  justify-content: center;
+}
+
+.btnPrimary {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+  font-weight: 500;
+}
+.btnPrimary:hover:not(:disabled) {
+  background: #000;
+  border-color: #000;
+}
+
+.btnFav {
+  font-weight: 500;
+}
+
+.kbd {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+.main {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  padding: 24px;
+  flex: 1;
+}
+@media (max-width: 1100px) {
+  .main { grid-template-columns: 1fr; }
+}
+
+.rail {
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: sticky;
+  top: 92px;
+  align-self: flex-start;
+  max-height: calc(100vh - 116px);
+  overflow-y: auto;
+}
+
+.railHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.railTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-noto);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.railCount {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  color: var(--ink-muted);
+  background: var(--bg);
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  padding: 2px 8px;
+  text-transform: none;
+}
+
+.railHint {
+  font-size: 12px;
+  color: var(--ink-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.railEmpty {
+  font-size: 12px;
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+.slots {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slotChip {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  padding: 0;
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+.slotChip:hover { transform: scale(1.08); }
+.slotLocked {
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+.slotHex {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  flex: 1;
+}
+
+.lockBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  font-size: 14px;
+  line-height: 1;
+  color: var(--ink-muted);
+  transition: color var(--motion-fast) var(--ease-out),
+    background var(--motion-fast) var(--ease-out);
+}
+.lockBtn:hover { color: var(--ink); }
+.lockBtnOn {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+.picker {
+  background: var(--bg);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pickerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.pickerClose {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.pickerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 24px);
+  gap: 6px;
+}
+
+.pickerSwatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  padding: 0;
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+.pickerSwatch:hover {
+  transform: scale(1.2);
+  z-index: 2;
+}
+
+.favorites {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--hairline);
+}
+
+.favList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.favItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+.favPalette {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  padding: 4px;
+}
+
+.favSwatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.favRemove {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--ink-muted);
+  transition: color var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out);
+}
+.favRemove:hover {
+  color: var(--ink);
+  border-color: var(--hairline);
+}
+
+.canvas {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.variant {
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+.variantLabel {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.75);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(8px);
+  z-index: 5;
+  font-weight: 500;
+}

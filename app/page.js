@@ -1,66 +1,36 @@
-import Image from "next/image";
+import Link from "next/link";
 import styles from "./page.module.css";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className={styles.main}>
+      <header className={styles.header}>
+        <p className={styles.eyebrow}>Moodbuilder</p>
+        <h1 className={styles.title}>A studio for assembling brand moods. Color, type, marks, gradients, image.</h1>
+      </header>
+      <nav className={styles.nav}>
+        <Link href="/colors" className={styles.card}>
+          <span className={styles.cardEyebrow}>01 — Inspiration</span>
+          <span className={styles.cardTitle}>Colors</span>
+          <span className={styles.cardBody}>
+            The wall of swatches pulled from inspiration, plus curated row palettes.
+          </span>
+        </Link>
+        <Link href="/brand" className={styles.card}>
+          <span className={styles.cardEyebrow}>02 — Application</span>
+          <span className={styles.cardTitle}>Brand</span>
+          <span className={styles.cardBody}>
+            Whelm brand style page, light and dark variants. Live preview surface for palette shuffles.
+          </span>
+        </Link>
+        <Link href="/gradients" className={styles.card}>
+          <span className={styles.cardEyebrow}>03 — Composition</span>
+          <span className={styles.cardTitle}>Gradients</span>
+          <span className={styles.cardBody}>
+            Build gradients from any colors in the pool. Drag angle, drag stops, copy CSS.
+          </span>
+        </Link>
+      </nav>
+    </main>
   );
 }

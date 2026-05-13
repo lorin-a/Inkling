@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# regenerable Figma asset cache — URLs expire ~7 days, re-run `npm run extract`
+/public/figma-assets/
