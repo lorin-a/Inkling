@@ -30,6 +30,20 @@ export default function Home() {
             Build gradients from any colors in the pool. Drag angle, drag stops, copy CSS.
           </span>
         </Link>
+        <Link href="/import" className={styles.card}>
+          <span className={styles.cardEyebrow}>04 — Inspiration</span>
+          <span className={styles.cardTitle}>Pinterest import</span>
+          <span className={styles.cardBody}>
+            Capture an entire Pinterest board with source credit preserved. Drag, click, drop.
+          </span>
+        </Link>
+        <Link href="/library" className={styles.card}>
+          <span className={styles.cardEyebrow}>05 — Library</span>
+          <span className={styles.cardTitle}>Pin library</span>
+          <span className={styles.cardBody}>
+            Every pin you've imported, in a masonry grid. Source credit always visible. Filter by domain, title, pinner.
+          </span>
+        </Link>
       </nav>
     </main>
   );

@@ -12,51 +12,92 @@ import styles from "./BrandPreview.module.css";
  * they're intentional multi-color brand assets and don't take part in the
  * shuffle.
  */
-export default function BrandPreview({ palette, variant = "dark" }) {
-  const roles = mapRoles(palette, variant);
+const DEFAULT_PROJECT = {
+  wordmark: "whelm",
+  period: ".",
+  initial: "w",
+  tagline: "Find your way to feeling",
+  body: "A ritual for cultivating a relationship with your intuition",
+};
+
+/**
+ * BrandPreview is now "dumb" about role derivation — the parent computes
+ * resolved roles (auto-derived + user overrides merged) and passes them in.
+ * Variant just swaps bg↔ink at render time so the light/dark pair stays
+ * coherent without needing duplicate overrides.
+ */
+export default function BrandPreview({ palette, variant = "dark", project, roles: rolesIn, onPickRole }) {
+  // Each variant carries its own resolved roles now — no more bg↔ink flip
+  // at render time. The parent passes variant-specific roles, and clicks
+  // on this variant only modify this variant's overrides.
+  const roles = rolesIn || mapRoles(palette, variant);
+  const p = { ...DEFAULT_PROJECT, ...(project || {}) };
+
+  const pick = (role) => (e) => {
+    if (!onPickRole) return;
+    e.stopPropagation();
+    onPickRole(variant, role, e);
+  };
+  const cls = (base) => `${base} ${onPickRole ? styles.clickable : ""}`;
+
   return (
-    <FigmaFrame width={1920} height={931} background={roles.bg}>
+    <FigmaFrame
+      width={1920}
+      height={931}
+      background={roles.bg}
+      onClick={onPickRole ? pick("bg") : undefined}
+    >
       {/* primary wordmark */}
       <p
-        className={styles.wordmark}
+        className={cls(styles.wordmark)}
         style={{ left: 142, top: 183, color: roles.ink }}
+        onClick={pick("ink")}
+        title={onPickRole ? "Click to recolor main text" : undefined}
       >
-        whelm<span style={{ color: roles.accent }}>.</span>
+        {p.wordmark}<span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }} title={onPickRole ? "Click to recolor accent" : undefined}>{p.period}</span>
       </p>
       {/* italic wordmark */}
       <p
-        className={styles.wordmarkItalic}
+        className={cls(styles.wordmarkItalic)}
         style={{ left: 135, top: 423, color: roles.muted }}
+        onClick={pick("muted")}
+        title={onPickRole ? "Click to recolor subtext" : undefined}
       >
-        whelm<span style={{ color: roles.accent }}>.</span>
+        {p.wordmark}<span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }}>{p.period}</span>
       </p>
-      {/* small w italic */}
+      {/* small initial italic */}
       <p
-        className={styles.smallW}
+        className={cls(styles.smallW)}
         style={{ left: 1228, top: 236, color: roles.ink }}
+        onClick={pick("ink")}
       >
-        w<span style={{ color: roles.accent }}>.</span>
+        {p.initial}<span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }}>{p.period}</span>
       </p>
-      {/* small w roman */}
+      {/* small initial roman */}
       <p
-        className={styles.smallWRoman}
+        className={cls(styles.smallWRoman)}
         style={{ left: 1484, top: 236, color: roles.muted }}
+        onClick={pick("muted")}
       >
-        w<span style={{ color: roles.accent }}>.</span>
+        {p.initial}<span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }}>{p.period}</span>
       </p>
       {/* tagline */}
       <p
-        className={styles.tagline}
+        className={cls(styles.tagline)}
         style={{ left: 142, top: 676, color: roles.ink }}
+        onClick={pick("ink")}
+        title={onPickRole ? "Click to recolor main text" : undefined}
       >
-        Find your way to feeling
+        {p.tagline}
       </p>
       {/* body */}
       <p
-        className={styles.body}
+        className={cls(styles.body)}
         style={{ left: 142, top: 770, color: roles.muted }}
+        onClick={pick("muted")}
+        title={onPickRole ? "Click to recolor subtext" : undefined}
       >
-        A ritual for cultivating a relationship with your intuition
+        {p.body}
       </p>
       {/* swatch row */}
       <div className={styles.swatchRow} style={{ left: 1228, top: 540 }}>

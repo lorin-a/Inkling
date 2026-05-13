@@ -27,10 +27,17 @@
   color: var(--ink);
 }
 
+.barTitle {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-variation-settings: "SOFT" 50, "WONK" 0;
+  letter-spacing: -0.01em;
+}
+
 .barMeta {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   font-size: 13px;
   color: var(--ink-muted);
   margin-left: auto;
@@ -75,6 +82,95 @@
   outline: none;
 }
 
+.swatchWrap {
+  position: relative;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--ease-out),
+    box-shadow var(--motion-fast) var(--ease-out);
+  outline: none;
+}
+
+.swatchWrap:hover,
+.swatchWrap:focus-visible {
+  transform: scale(1.14);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  z-index: 3;
+}
+
+.swatchWrap:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.swatchSm { width: 40px; height: 40px; border: 1px solid var(--hairline); }
+.swatchMd { width: 56px; height: 56px; }
+.swatchPositioned {
+  position: absolute;
+  border: none;
+}
+
+.starBtn {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: var(--ink-muted);
+  font-size: 11px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity var(--motion-fast) var(--ease-out),
+    transform var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out),
+    background var(--motion-fast) var(--ease-out);
+  z-index: 4;
+}
+
+.swatchWrap:hover .starBtn,
+.swatchWrap:focus-within .starBtn,
+.starBtnOn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.starBtnOn {
+  background: #fbbf24;
+  border-color: #d97706;
+  color: #78350f;
+}
+
+.starBtn:hover {
+  background: #fff;
+  color: var(--ink);
+}
+.starBtnOn:hover {
+  background: #facc15;
+  color: #78350f;
+}
+
+.sectionCount {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 14px;
+  color: var(--ink-muted);
+  font-weight: 400;
+  margin-left: 8px;
+}
+
+.empty {
+  padding: 24px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
 .readout {
   position: fixed;
   bottom: 24px;
@@ -116,4 +212,120 @@
 .hint {
   font-size: 13px;
   color: var(--ink-muted);
+}
+
+.section {
+  padding: 32px 32px 48px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.section:last-of-type {
+  border-bottom: none;
+  padding-bottom: 96px;
+}
+
+.sectionHeader {
+  max-width: 720px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sectionTitle {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 26px;
+  letter-spacing: -0.01em;
+  font-variation-settings: "SOFT" 50, "WONK" 0;
+  margin: 0;
+}
+
+.sectionHint {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.inlineLink {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.rowList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 980px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.rowLabel {
+  width: 96px;
+  flex-shrink: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.rowSwatches {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rowSwatch {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  padding: 0;
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--ease-out),
+    box-shadow var(--motion-fast) var(--ease-out);
+}
+
+.rowSwatch:hover,
+.rowSwatch:focus-visible {
+  transform: scale(1.18);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  z-index: 2;
+  outline: none;
+}
+
+.moodboardGrid .swatchMd { border: 1px solid var(--hairline); }
+
+.moodboardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 8px;
+  max-width: 1280px;
+}
+
+.moodboardSwatch {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  padding: 0;
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--ease-out),
+    box-shadow var(--motion-fast) var(--ease-out);
+}
+
+.moodboardSwatch:hover,
+.moodboardSwatch:focus-visible {
+  transform: scale(1.18);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  z-index: 2;
+  outline: none;
 }

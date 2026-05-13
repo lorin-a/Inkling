@@ -14,6 +14,7 @@ export default function FigmaFrame({
   background,
   children,
   className = "",
+  onClick,
 }) {
   const wrapRef = useRef(null);
   const [scale, setScale] = useState(1);
@@ -32,11 +33,12 @@ export default function FigmaFrame({
   return (
     <div
       ref={wrapRef}
-      className={`${styles.wrap} ${className}`}
+      className={`${styles.wrap} ${className} ${onClick ? styles.wrapClickable : ""}`}
       style={{
         height: height ? height * scale : undefined,
         background,
       }}
+      onClick={onClick}
     >
       <div
         className={styles.frame}

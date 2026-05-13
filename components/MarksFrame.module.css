@@ -104,6 +104,249 @@
   display: block;
 }
 
+.cellBtn {
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+.cellBtn:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.captionDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fbbf24;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  z-index: 100;
+}
+
+.modal {
+  position: relative;
+  background: var(--bg-elevated);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 900px;
+  max-height: 88vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 760px) {
+  .modal {
+    grid-template-columns: 1fr;
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+}
+
+.modalClose {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--hairline);
+  font-size: 18px;
+  line-height: 1;
+  z-index: 2;
+}
+
+.modalLeft {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  min-height: 360px;
+}
+
+.modalPreview {
+  width: 100%;
+  height: 100%;
+  max-width: 320px;
+  max-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modalPreview :global(svg) {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+.modalRight {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modalTitle {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 26px;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.modalSub {
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.modalEmpty {
+  font-size: 13px;
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+.colorList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.colorRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+}
+
+.colorRowHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.originalChip,
+.targetChip {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.originalHex {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+.arrow {
+  color: var(--ink-muted);
+  font-size: 13px;
+}
+
+.colorResetBtn {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--ink-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 0;
+}
+.colorResetBtn:hover { color: var(--ink); }
+
+.paletteRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.paletteSwatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 0;
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+.paletteSwatch:hover {
+  transform: scale(1.12);
+}
+.paletteSwatchActive {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+}
+
+.linkBtn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: var(--ink-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.linkBtn:hover:not(:disabled) { color: var(--ink); }
+.linkBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.primaryBtn {
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 20px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+.primaryBtn:hover { background: #000; }
+
 .caption {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 11px;
