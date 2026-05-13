@@ -5,12 +5,11 @@ import { join, extname } from "node:path";
 import { createHash } from "node:crypto";
 import { mergePins } from "../../../../lib/moodboardStore";
 import { extractPalette } from "../../../../lib/extractPalette";
+import { getActiveSlug, projectUploadsDir, projectUploadsUrlPrefix } from "../../../../lib/projectRegistry";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const UPLOAD_DIR = join(process.cwd(), "public", "moodboard", "uploads");
-const PUBLIC_PREFIX = "/moodboard/uploads";
 const MAX_BYTES = 25 * 1024 * 1024; // 25 MB per file
 const ALLOWED_EXT = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);
 
@@ -28,6 +27,12 @@ export async function POST(request) {
     return NextResponse.json({ error: "No files provided" }, { status: 400 });
   }
 
+  const slug = await getActiveSlug();
+  if (!slug) {
+    return NextResponse.json({ error: "No active project" }, { status: 400 });
+  }
+  const UPLOAD_DIR = projectUploadsDir(slug);
+  const PUBLIC_PREFIX = projectUploadsUrlPrefix(slug);
   await mkdir(UPLOAD_DIR, { recursive: true });
 
   const results = [];
