@@ -99,11 +99,9 @@ when ready.
 
 ## Recommended next-session order
 
-1. **Per-project marks** *(45 min)*
-   Move `public/marks/` into per-project. Add a marks upload UI (drag
-   SVGs onto a small section of `/library` or a new `/marks` page).
-   Update `MarksFrame` + `/print` to load from project-scoped path. New
-   projects start with empty marks; user adds their own.
+1. **Per-project marks** *(45 min)* ✅ shipped 2026-05-14
+   Marks moved under `public/projects/{slug}/marks/`. Drop zone +
+   per-mark delete inside `MarksFrame`. New projects start empty.
 
 2. **Project switcher chip on sub-pages** *(20 min)*
    Small `<project name> ▾` next to the page title in `/brand`,
@@ -120,10 +118,39 @@ when ready.
    (catalog API), local upload (`FontFace` API), custom URL. Saved Brand
    Presets capture fonts + palette together.
 
-5. **Figma plugin scaffold** *(separate small project, 1-2 days)*
+5. **Texture** *(unscoped, ~2-3 hrs)*
+   New identity dimension alongside palette + type + marks. Paper grain,
+   noise, halftone, gradients-as-surface. Per-variant texture override
+   like the role panel. Saved Brand Presets capture texture too.
+   Open: do textures live as files in `public/projects/{slug}/textures/`
+   (parallel to marks), or as CSS/SVG-generated effects with parameters?
+
+6. **Brand Presets as savable objects** *(precondition for voting)*
+   Today `★ Save` captures only the palette. A Brand Preset would
+   capture palette + role overrides + per-variant overrides + fonts +
+   textures + marks selection + project text. One favorite = one
+   whole identity snapshot. JSON shape already exists in
+   `lib/exportFormats.js`; the UI is what's missing.
+   Open: replace `★ Save`, or live alongside as `Save preset`?
+
+7. **Crowd voting on Brand Presets** *(major, days)*
+   Vision: share the tool with users + teams, let them explore, save
+   options, and vote — the audience designs the brand. Voting needs:
+   - Persistence beyond local filesystem (DB or hosted KV).
+   - Shareable URLs per voting session.
+   - Voter identity (lightweight session + optional name).
+   - Configurable per-share: private invite-only or public-with-link.
+   - Configurable per-share: vote on whole Brand Presets or on
+     individual elements (palette, fonts, marks).
+   - Results view: aggregate scores, comments, top picks.
+   Precondition: Brand Presets (#6) must land first. Architecture
+   shift from local-first to hosted — talk through deployment target
+   before starting.
+
+8. **Figma plugin scaffold** *(separate small project, 1-2 days)*
    `npx create-figma-plugin` boilerplate. Reads from the local
-   Moodbuilder server (or eventually a deployed instance) and writes
-   Figma Variables + text styles. Publish to Figma community.
+   Moodbuilder server (or a deployed instance) and writes Figma
+   Variables + text styles. Publish to Figma community.
 
 ---
 
