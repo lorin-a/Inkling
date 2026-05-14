@@ -40,12 +40,15 @@ export default function BrandPreview({ palette, variant = "dark", project, roles
   };
   const cls = (base) => `${base} ${onPickRole ? styles.clickable : ""}`;
 
+  const fontVars = buildFontVars(p.fonts);
+
   return (
     <FigmaFrame
       width={1920}
       height={931}
       background={roles.bg}
       onClick={onPickRole ? pick("bg") : undefined}
+      style={fontVars}
     >
       {/* primary wordmark */}
       <p
@@ -125,6 +128,22 @@ export default function BrandPreview({ palette, variant = "dark", project, roles
       />
     </FigmaFrame>
   );
+}
+
+function buildFontVars(fonts) {
+  if (!fonts) return {};
+  const vars = {};
+  const wrap = (slot) => {
+    if (!slot?.family) return null;
+    return slot.family.includes(" ") ? `"${slot.family}"` : slot.family;
+  };
+  const title = wrap(fonts.title);
+  const subhead = wrap(fonts.subhead);
+  const body = wrap(fonts.body);
+  if (title) vars["--font-title"] = title;
+  if (subhead) vars["--font-subhead"] = subhead;
+  if (body) vars["--font-body"] = body;
+  return vars;
 }
 
 function mapRoles(palette, variant) {

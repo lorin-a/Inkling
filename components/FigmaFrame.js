@@ -15,6 +15,7 @@ export default function FigmaFrame({
   children,
   className = "",
   onClick,
+  style,
 }) {
   const wrapRef = useRef(null);
   const [scale, setScale] = useState(1);
@@ -37,6 +38,7 @@ export default function FigmaFrame({
       style={{
         height: height ? height * scale : undefined,
         background,
+        ...(style || {}),
       }}
       onClick={onClick}
     >

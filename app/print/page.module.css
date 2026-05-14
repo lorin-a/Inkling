@@ -142,7 +142,7 @@
 }
 
 .coverWordmark {
-  font-family: var(--font-serif);
+  font-family: var(--font-title, var(--font-serif));
   font-weight: 400;
   font-size: 220px;
   line-height: 1;
@@ -152,7 +152,7 @@
 }
 
 .coverTagline {
-  font-family: var(--font-serif);
+  font-family: var(--font-subhead, var(--font-serif));
   font-style: italic;
   font-size: 36px;
   line-height: 1.2;
@@ -162,7 +162,7 @@
 }
 
 .coverBody {
-  font-family: var(--font-noto);
+  font-family: var(--font-body, var(--font-noto));
   font-weight: 300;
   font-size: 22px;
   line-height: 1.4;
@@ -254,7 +254,7 @@
 }
 
 .appWordmark {
-  font-family: var(--font-serif);
+  font-family: var(--font-title, var(--font-serif));
   font-weight: 400;
   font-size: 168px;
   line-height: 1;
@@ -263,7 +263,7 @@
   font-variation-settings: "SOFT" 50, "WONK" 0, "opsz" 144;
 }
 .appWordmarkItalic {
-  font-family: var(--font-serif);
+  font-family: var(--font-title, var(--font-serif));
   font-style: italic;
   font-weight: 400;
   font-size: 168px;
@@ -273,14 +273,14 @@
   font-variation-settings: "SOFT" 50, "WONK" 0, "opsz" 144;
 }
 .appTagline {
-  font-family: var(--font-serif);
+  font-family: var(--font-subhead, var(--font-serif));
   font-style: italic;
   font-size: 36px;
   line-height: 1.2;
   margin: 16px 0 0 0;
 }
 .appBody {
-  font-family: var(--font-noto);
+  font-family: var(--font-body, var(--font-noto));
   font-weight: 300;
   font-size: 22px;
   line-height: 1.4;

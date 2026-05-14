@@ -9,6 +9,8 @@ import { FORMATS, formatExport } from "../../lib/exportFormats";
 import BrandPreview from "../../components/BrandPreview";
 import MarksFrame from "../../components/MarksFrame";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
+import TypePanel from "../../components/TypePanel";
+import FontLoader from "../../components/FontLoader";
 import styles from "./page.module.css";
 
 export default function BrandPage() {
@@ -149,6 +151,7 @@ export default function BrandPage() {
 
   return (
     <div className={styles.page}>
+      <FontLoader fonts={project.fonts} />
       <header className={styles.bar}>
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
         <ProjectSwitcher />
@@ -256,6 +259,11 @@ export default function BrandPage() {
               clearRole={clearRole}
             />
           )}
+
+          <TypePanel
+            fonts={project.fonts}
+            onChange={(fonts) => saveProject({ fonts })}
+          />
 
           {moodboardEmpty && (
             <div className={styles.emptyHint}>

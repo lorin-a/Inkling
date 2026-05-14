@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { remapSvgColors } from "../../lib/svgRemap";
+import FontLoader from "../../components/FontLoader";
 import styles from "./page.module.css";
 
 export default function PrintPage() {
@@ -83,8 +84,11 @@ function PrintInner() {
   const body = project?.body || "";
   const today = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
 
+  const fontVars = buildFontVars(project?.fonts);
+
   return (
-    <div className={styles.printRoot}>
+    <div className={styles.printRoot} style={fontVars}>
+      <FontLoader fonts={project?.fonts} />
       {/* Toolbar — hidden on print */}
       <div className={styles.toolbar}>
         <button type="button" className={styles.printBtn} onClick={() => window.print()}>
@@ -225,6 +229,22 @@ function Footer({ name, today, pageLabel, inverted }) {
 }
 
 // ---------- helpers ----------
+function buildFontVars(fonts) {
+  if (!fonts) return {};
+  const vars = {};
+  const wrap = (slot) => {
+    if (!slot?.family) return null;
+    return slot.family.includes(" ") ? `"${slot.family}"` : slot.family;
+  };
+  const title = wrap(fonts.title);
+  const subhead = wrap(fonts.subhead);
+  const body = wrap(fonts.body);
+  if (title) vars["--font-title"] = title;
+  if (subhead) vars["--font-subhead"] = subhead;
+  if (body) vars["--font-body"] = body;
+  return vars;
+}
+
 function luminance(hex) {
   const h = hex.replace("#", "");
   const r = parseInt(h.slice(0, 2), 16) / 255;

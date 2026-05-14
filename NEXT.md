@@ -156,6 +156,13 @@ when ready.
 
 ## Open product questions
 
+- **Name collision: "Moodbuilder" already exists.**
+  Friends of Motion has a project page at
+  `https://www.friendsofmotion.com/projects` using the name. Worth a
+  rename before any public sharing. Candidates Lorin floated:
+  *Moody*, *Moodvote*, *Moodshuffle*. Not blocking local use; revisit
+  before #7 (crowd voting) or any public publish.
+
 - **Brand Presets as savable objects.** Right now ★ Save captures only
   the palette. A Brand Preset would capture palette + role overrides +
   variant role overrides + fonts (when built) + project text. One
