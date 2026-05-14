@@ -7,16 +7,21 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "extract": "node scripts/extract-palette.mjs"
+    "extract": "node scripts/extract-palette.mjs",
+    "db:migrate": "node --env-file=.env.local scripts/migrate.mjs"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "nanoid": "^5.1.11",
     "next": "16.2.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
+    "dotenv": "^17.4.2",
     "eslint": "^9",
-    "eslint-config-next": "16.2.6"
+    "eslint-config-next": "16.2.6",
+    "vercel": "^54.0.0"
   }
 }
