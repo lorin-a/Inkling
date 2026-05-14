@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { allUnique, sourcePool, brandSwatches } from "../../lib/palettePool";
+import ProjectSwitcher from "../../components/ProjectSwitcher";
 import styles from "./page.module.css";
 
 const TYPES = ["linear", "radial", "conic"];
@@ -44,6 +45,7 @@ export default function GradientsPage() {
     <div className={styles.page}>
       <header className={styles.bar}>
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
+        <ProjectSwitcher />
         <div className={styles.barTitle}>Gradients</div>
         <button type="button" className={styles.copyBtn} onClick={copyCss}>
           {copied ? "Copied" : "Copy CSS"}

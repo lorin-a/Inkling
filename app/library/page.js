@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import ProjectSwitcher from "../../components/ProjectSwitcher";
 import styles from "./page.module.css";
 
 const BATCH_CONCURRENCY = 4;
@@ -193,6 +194,7 @@ export default function LibraryPage() {
     <div className={styles.page}>
       <header className={styles.bar}>
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
+        <ProjectSwitcher />
         <div className={styles.barTitle}>Library</div>
         <div className={styles.barMeta}>
           <span>{allPins.length} pins</span>

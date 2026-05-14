@@ -8,6 +8,7 @@ import { POOLS, POOL_LABELS } from "../../lib/palettePool";
 import { FORMATS, formatExport } from "../../lib/exportFormats";
 import BrandPreview from "../../components/BrandPreview";
 import MarksFrame from "../../components/MarksFrame";
+import ProjectSwitcher from "../../components/ProjectSwitcher";
 import styles from "./page.module.css";
 
 export default function BrandPage() {
@@ -150,13 +151,14 @@ export default function BrandPage() {
     <div className={styles.page}>
       <header className={styles.bar}>
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
+        <ProjectSwitcher />
         <button
           type="button"
           className={styles.barTitleBtn}
           onClick={() => setEditingProject(true)}
           title="Edit project copy"
         >
-          {project.name} <span className={styles.barTitleEdit}>Edit</span>
+          Edit copy
         </button>
 
         <div className={styles.controls}>

@@ -34,32 +34,23 @@
 
 .barTitleBtn {
   display: inline-flex;
-  align-items: baseline;
-  gap: 8px;
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-variation-settings: "SOFT" 50, "WONK" 0;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-  padding: 4px 8px;
-  border-radius: 8px;
-  transition: background var(--motion-fast) var(--ease-out);
-}
-.barTitleBtn:hover {
-  background: var(--bg);
-}
-
-.barTitleEdit {
-  font-family: var(--font-noto);
-  font-size: 11px;
-  letter-spacing: 0.12em;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-muted);
-  opacity: 0;
-  transition: opacity var(--motion-fast) var(--ease-out);
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
 }
-.barTitleBtn:hover .barTitleEdit {
-  opacity: 1;
+.barTitleBtn:hover {
+  background: var(--hairline);
+  color: var(--ink);
 }
 
 .modalBackdrop {

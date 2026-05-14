@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { BOOKMARKLET_HREF } from "../../lib/pinterestBookmarklet";
+import ProjectSwitcher from "../../components/ProjectSwitcher";
 import styles from "./page.module.css";
 
 export default function ImportPage() {
@@ -81,6 +82,7 @@ export default function ImportPage() {
     <div className={styles.page}>
       <header className={styles.bar}>
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
+        <ProjectSwitcher />
         <div className={styles.barTitle}>Pinterest import</div>
       </header>
 

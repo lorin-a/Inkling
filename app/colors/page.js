@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import palette from "../../data/palette.json";
 import { useStarred } from "../../lib/useStarred";
+import ProjectSwitcher from "../../components/ProjectSwitcher";
 import styles from "./page.module.css";
 
 export default function ColorsPage() {
@@ -37,6 +38,7 @@ export default function ColorsPage() {
     <div className={styles.page}>
       <header className={styles.bar}>
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
+        <ProjectSwitcher />
         <div className={styles.barTitle}>Colors</div>
         <div className={styles.barMeta}>
           <span>★ {starred.size} starred</span>
