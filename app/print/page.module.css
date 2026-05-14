@@ -323,12 +323,13 @@
 /* ----- Marks page ----- */
 .marksGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
   gap: 16px;
   margin-top: 0.4in;
+  margin-bottom: 0.6in;
   flex: 1;
-  margin-bottom: 0.4in;
+  min-height: 0;
 }
 .markCell {
   margin: 0;
@@ -341,6 +342,8 @@
   border: 1px solid var(--hairline);
   border-radius: 12px;
   background: #fff;
+  min-height: 0;
+  overflow: hidden;
 }
 .markBox {
   width: 100%;

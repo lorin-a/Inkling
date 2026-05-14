@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import InlineMark from "./InlineMark";
 import { getSvgColors } from "../lib/svgRemap";
 import styles from "./MarksFrame.module.css";
@@ -23,6 +23,7 @@ export default function MarksFrame({ palette }) {
   const [dragOver, setDragOver] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [busy, setBusy] = useState(false);
+  const fileInputRef = useRef(null);
 
   const { light, dark } = surfaceColors(palette);
   const bg = variant === "light" ? light : dark;
@@ -145,16 +146,24 @@ export default function MarksFrame({ palette }) {
             : "Click any mark to recolor. Drop .svg files to add."}
         </p>
         <div className={styles.headerActions}>
-          <label className={styles.uploadBtn}>
-            <input
-              type="file"
-              accept=".svg,image/svg+xml"
-              multiple
-              hidden
-              onChange={(e) => e.target.files && handleFiles(e.target.files)}
-            />
+          <button
+            type="button"
+            className={styles.uploadBtn}
+            onClick={() => fileInputRef.current?.click()}
+          >
             Add SVG
-          </label>
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".svg,image/svg+xml"
+            multiple
+            style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+            onChange={(e) => {
+              if (e.target.files) handleFiles(e.target.files);
+              e.target.value = "";
+            }}
+          />
           <div className={styles.toggle} role="tablist" aria-label="Surface variant">
             <button
               type="button"
