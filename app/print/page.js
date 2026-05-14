@@ -5,12 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { remapSvgColors } from "../../lib/svgRemap";
 import styles from "./page.module.css";
 
-const MARK_NAMES = [
-  "cursive", "flood", "fog",
-  "frenzy", "signal", "spiral",
-  "squiggle", "tangle", "underline",
-];
-
 export default function PrintPage() {
   return (
     <Suspense fallback={null}>
@@ -22,6 +16,7 @@ export default function PrintPage() {
 function PrintInner() {
   const params = useSearchParams();
   const [project, setProject] = useState(null);
+  const [markList, setMarkList] = useState([]);
   const [marks, setMarks] = useState({});
 
   // Palette from URL — `?palette=hex1,hex2,...` (no leading #).
@@ -35,40 +30,43 @@ function PrintInner() {
     fetch("/api/project").then((r) => r.json()).then(setProject).catch(() => {});
   }, []);
 
-  // Pre-fetch the SVG markup for each mark so they print reliably (no
+  useEffect(() => {
+    fetch("/api/marks").then((r) => r.json()).then((d) => setMarkList(d.marks || [])).catch(() => {});
+  }, []);
+
+  // Pre-fetch SVG markup for each mark so they print reliably (no
   // late-loading during the print snapshot).
   useEffect(() => {
+    if (markList.length === 0) { setMarks({}); return; }
     let cancelled = false;
     Promise.all(
-      MARK_NAMES.map((name) =>
-        fetch(`/marks/${name}.svg`)
+      markList.map((m) =>
+        fetch(m.url)
           .then((r) => (r.ok ? r.text() : null))
-          .then((text) => ({ name, text }))
-          .catch(() => ({ name, text: null })),
+          .then((text) => ({ file: m.file, text }))
+          .catch(() => ({ file: m.file, text: null })),
       ),
     ).then((results) => {
       if (cancelled) return;
-      const m = {};
-      for (const { name, text } of results) {
+      const out = {};
+      for (const { file, text } of results) {
         if (text) {
-          m[name] = text
+          out[file] = text
             .replace(/<\?xml[^>]*\?>/g, "")
             .replace(/<!DOCTYPE[^>]*>/g, "")
             .replace(/<svg([^>]*)\swidth="[^"]*"/, "<svg$1")
             .replace(/<svg([^>]*)\sheight="[^"]*"/, "<svg$1");
         }
       }
-      setMarks(m);
+      setMarks(out);
     });
     return () => { cancelled = true; };
-  }, []);
+  }, [markList]);
 
-  // Apply palette remap to each fetched mark — same logic as the Brand
-  // page so the print version matches the live preview.
   const remappedMarks = useMemo(() => {
     const out = {};
-    for (const [name, svg] of Object.entries(marks)) {
-      out[name] = palette.length > 0 ? remapSvgColors(svg, palette) : svg;
+    for (const [file, svg] of Object.entries(marks)) {
+      out[file] = palette.length > 0 ? remapSvgColors(svg, palette) : svg;
     }
     return out;
   }, [marks, palette.join(",")]);
@@ -182,13 +180,13 @@ function PrintInner() {
       <section className={styles.page}>
         <PageHeader title="Marks" subtitle="Hand-drawn brand assets" />
         <div className={styles.marksGrid}>
-          {MARK_NAMES.map((name) => (
-            <figure key={name} className={styles.markCell}>
+          {markList.map((m) => (
+            <figure key={m.file} className={styles.markCell}>
               <div
                 className={styles.markBox}
-                dangerouslySetInnerHTML={{ __html: remappedMarks[name] || "" }}
+                dangerouslySetInnerHTML={{ __html: remappedMarks[m.file] || "" }}
               />
-              <figcaption className={styles.markCaption}>{name}</figcaption>
+              <figcaption className={styles.markCaption}>{m.name}</figcaption>
             </figure>
           ))}
         </div>

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { remapSvgColors } from "../lib/svgRemap";
 
 /**
- * Loads /marks/[name].svg and inlines it.
+ * Loads an SVG from `src` and inlines it.
  *
  * If `palette` is provided, the SVG's internal colors are *remapped* —
  * preserving the mark's internal hierarchy. We find every unique fill /
@@ -15,13 +15,14 @@ import { remapSvgColors } from "../lib/svgRemap";
  *
  * Colors named `none` or `currentColor` are left alone.
  */
-export default function InlineMark({ name, width, height, className, palette, overrides }) {
+export default function InlineMark({ src, width, height, className, palette, overrides }) {
   const [raw, setRaw] = useState(null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
+    if (!src) return;
     let cancelled = false;
-    fetch(`/marks/${name}.svg`)
+    fetch(src)
       .then((r) => (r.ok ? r.text() : Promise.reject(new Error(`status ${r.status}`))))
       .then((text) => {
         if (cancelled) return;
@@ -38,7 +39,7 @@ export default function InlineMark({ name, width, height, className, palette, ov
     return () => {
       cancelled = true;
     };
-  }, [name]);
+  }, [src]);
 
   const markup = useMemo(() => {
     if (!raw) return null;

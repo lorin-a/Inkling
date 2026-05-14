@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Moodbuilder
 
-## Getting Started
+Moodbuilder: Transform inspiration into brand identity.
 
-First, run the development server:
+## What it is
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This was created to solve the gap between screenshotting Pinterest
+boards to put in Figma for moodboarding by bringing them together in
+one place. With too many options for color inspiration and disparate
+tools, Moodbuilder puts what you need in one place to go from idea to
+inspiration to brandbook mockups.
+
+## What it does today
+
+Local-first brand studio. One active project at a time. Real exports
+out.
+
+- **`/`** — homepage, project picker, create or switch the active project.
+- **`/brand`** — live wordmark composition, role mapping, palette
+  shuffle, click-to-recolor, marks gallery, export menu.
+- **`/colors`** — starred set, curated palette rows, brand swatches,
+  moodboard-derived pool.
+- **`/gradients`** — linear, radial, and conic builder over the active
+  palette.
+- **`/import`** — Pinterest board capture via a bookmarklet, then drop
+  the JSON onto this page.
+- **`/library`** — pin grid with palette extract, manual upload, modal
+  editor.
+- **`/print`** — five-page brand book at letter landscape, browser-print
+  to PDF.
+
+## Data layout
+
+Everything is on disk. No database.
+
+```
+data/
+  active-project.json        # { slug }
+  projects/{slug}/
+    project.json             # name, wordmark, period, initial, tagline, body
+    library.json             # pins, starred hexes, boards
+public/
+  projects/{slug}/
+    uploads/{hash}.{ext}     # user-uploaded images
+    marks/*.svg              # per-project marks
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+API routes resolve the active slug via `lib/projectRegistry.js`.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Next.js, App Router. The in-repo `node_modules/next/dist/docs/` is
+  the source of truth for framework APIs in this version. See
+  `AGENTS.md`.
+- CSS Modules. No Tailwind, no UI library.
+- Node filesystem for persistence.
+- Client-side palette extraction via `lib/extractPalette.js`.
 
-## Learn More
+## Running
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm install
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Then open `http://localhost:3000`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Roadmap, open questions, current task
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See **`NEXT.md`**. That doc holds the working roadmap, the recommended
+next-session order, known gaps, and open product questions. This
+README is the door; `NEXT.md` is the workbench.
