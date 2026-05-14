@@ -101,6 +101,7 @@ function PrintInner() {
 
       {/* Page 1 — Cover */}
       <section className={styles.page} style={{ background: roles?.bg || "#ffffff" }}>
+        <TextureOverlay tx={project?.textures?.dark} />
         <div className={styles.cover}>
           <p className={styles.coverEyebrow} style={{ color: roles?.accent }}>Brand book</p>
           <h1 className={styles.coverWordmark} style={{ color: roles?.ink || "#000" }}>
@@ -142,6 +143,7 @@ function PrintInner() {
 
       {/* Page 3 — Application (the brand mock at print scale) */}
       <section className={styles.page} style={{ background: roles?.bg || "#ffffff" }}>
+        <TextureOverlay tx={project?.textures?.dark} />
         <PageHeader title="Application" subtitle="Wordmark composition" inverted />
         <div className={styles.application}>
           <p className={styles.appWordmark} style={{ color: roles?.ink }}>
@@ -216,6 +218,26 @@ function RoleChip({ label, hex }) {
       <span className={styles.roleLabel}>{label}</span>
       <span className={styles.roleHex}>{hex.toUpperCase()}</span>
     </div>
+  );
+}
+
+function TextureOverlay({ tx }) {
+  if (!tx?.url) return null;
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: "absolute",
+        inset: 0,
+        backgroundImage: `url(${tx.url})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        opacity: tx.opacity ?? 0.6,
+        mixBlendMode: tx.blend || "multiply",
+        pointerEvents: "none",
+        zIndex: 0,
+      }}
+    />
   );
 }
 

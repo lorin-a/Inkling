@@ -10,6 +10,7 @@ import BrandPreview from "../../components/BrandPreview";
 import MarksFrame from "../../components/MarksFrame";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import TypePanel from "../../components/TypePanel";
+import TexturePanel from "../../components/TexturePanel";
 import FontLoader from "../../components/FontLoader";
 import styles from "./page.module.css";
 
@@ -263,6 +264,11 @@ export default function BrandPage() {
           <TypePanel
             fonts={project.fonts}
             onChange={(fonts) => saveProject({ fonts })}
+          />
+
+          <TexturePanel
+            textures={project.textures}
+            onChange={(textures) => saveProject({ textures })}
           />
 
           {moodboardEmpty && (

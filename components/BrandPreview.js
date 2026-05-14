@@ -41,6 +41,7 @@ export default function BrandPreview({ palette, variant = "dark", project, roles
   const cls = (base) => `${base} ${onPickRole ? styles.clickable : ""}`;
 
   const fontVars = buildFontVars(p.fonts);
+  const texture = p.textures?.[variant] || null;
 
   return (
     <FigmaFrame
@@ -50,6 +51,21 @@ export default function BrandPreview({ palette, variant = "dark", project, roles
       onClick={onPickRole ? pick("bg") : undefined}
       style={fontVars}
     >
+      {texture && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${texture.url})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: texture.opacity ?? 0.6,
+            mixBlendMode: texture.blend || "multiply",
+            pointerEvents: "none",
+          }}
+        />
+      )}
       {/* primary wordmark */}
       <p
         className={cls(styles.wordmark)}
