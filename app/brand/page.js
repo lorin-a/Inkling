@@ -11,6 +11,7 @@ import MarksFrame from "../../components/MarksFrame";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import TypePanel from "../../components/TypePanel";
 import TexturePanel from "../../components/TexturePanel";
+import PresetsPanel from "../../components/PresetsPanel";
 import FontLoader from "../../components/FontLoader";
 import styles from "./page.module.css";
 
@@ -32,6 +33,7 @@ export default function BrandPage() {
     favorite,
     removeFavorite,
     loadFavorite,
+    applySnapshot,
     moodboardPool,
     starredPool,
   } = usePalette({ initialSize: 5, initialPoolKey: "starred" });
@@ -269,6 +271,22 @@ export default function BrandPage() {
           <TexturePanel
             textures={project.textures}
             onChange={(textures) => saveProject({ textures })}
+          />
+
+          <PresetsPanel
+            snapshot={() => ({
+              palette,
+              size,
+              poolKey,
+              roleOverrides,
+              fonts: project.fonts || {},
+              textures: project.textures || {},
+            })}
+            applyPreset={(p) => {
+              applySnapshot({ palette: p.palette, size: p.size, poolKey: p.poolKey });
+              setRoleOverrides(p.roleOverrides || { dark: {}, light: {} });
+              saveProject({ fonts: p.fonts || {}, textures: p.textures || {} });
+            }}
           />
 
           {moodboardEmpty && (
