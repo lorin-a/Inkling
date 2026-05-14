@@ -133,19 +133,62 @@ when ready.
    `lib/exportFormats.js`; the UI is what's missing.
    Open: replace `★ Save`, or live alongside as `Save preset`?
 
-7. **Crowd voting on Brand Presets** *(major, days)*
-   Vision: share the tool with users + teams, let them explore, save
-   options, and vote — the audience designs the brand. Voting needs:
-   - Persistence beyond local filesystem (DB or hosted KV).
-   - Shareable URLs per voting session.
-   - Voter identity (lightweight session + optional name).
-   - Configurable per-share: private invite-only or public-with-link.
-   - Configurable per-share: vote on whole Brand Presets or on
-     individual elements (palette, fonts, marks).
-   - Results view: aggregate scores, comments, top picks.
-   Precondition: Brand Presets (#6) must land first. Architecture
-   shift from local-first to hosted — talk through deployment target
-   before starting.
+7. **Collaborative Brand Studio + voting — "Moodvote"** *(major, ~20–30 hrs)*
+
+   Vision: collaborators don't just vote on your options, they *use the
+   tool* — compose their own Brand Presets from your library and material,
+   contribute them to the pool, and everyone votes together. The audience
+   genuinely co-designs.
+
+   **Locked decisions** *(resolved 2026-05-14):*
+   - Deploy: Vercel.
+   - Database: Neon Postgres via Vercel Marketplace.
+   - Auth: unguessable invite-token URLs (no email infra). Session is a
+     display name + browser cookie.
+   - Public brand: **Moodvote**. Repo stays `moodbuilder`. Domain temp on
+     `*.vercel.app` until first real share.
+   - Phase A scope: collaborators can build presets and vote, but library
+     / marks / pins are read-only for them. Owner sets the stage; the
+     crowd composes within it.
+   - Once a project is "Opened for collaboration," the hosted Neon copy
+     is the live source of truth. Owner edits in the browser like
+     collaborators (with owner privileges). Local Moodbuilder becomes the
+     pre-launch workshop.
+
+   **Schema (Neon, raw SQL via `@neondatabase/serverless`):**
+   - `instances` — id, slug, owner_key, audience (`public`|`private`),
+     vote_unit (`preset`|`element`), project_state (jsonb — library,
+     palettes, fonts, marks, copy), created_at
+   - `invites` — instance_id, token, label, claimed_session_id
+   - `sessions` — id, instance_id, display_name, created_at
+   - `presets` — id, instance_id, author_session_id, snapshot (jsonb),
+     created_at
+   - `votes` — instance_id, session_id, target_type
+     (`preset`|`palette`|`font`|`mark`), target_id, value, created_at
+   - `comments` — instance_id, session_id, target_type, target_id, body
+
+   **Build sequencing:**
+   1. Foundation — Vercel project, Neon Marketplace install, env wiring,
+      schema migration, deploy a hello page. *(~2 hrs)*
+   2. "Open for collaboration" — local editor calls hosted API; project
+      state seeds into an `instances` row; owner_key cookie set;
+      shareable URL returned. *(~2 hrs)*
+   3. Hosted Brand page — read instance state from Neon, render Brand
+      page in browser as it works today, no preset saving yet. *(~5 hrs)*
+   4. Preset contribution — display-name prompt, session cookie, save
+      preset attributed to author, preset pool visible to all. *(~3 hrs)*
+   5. Preset-unit voting — vote cards, optimistic UI, vote totals.
+      *(~2 hrs)*
+   6. Element-unit voting — palette / fonts / marks as independent
+      voteable targets. *(~3 hrs)*
+   7. Owner results view — aggregates, top picks, comments thread.
+      *(~3 hrs)*
+   8. Private mode + invites — invite generator in owner UI; invite-claim
+      flow on first visit. *(~2 hrs)*
+
+   **Phase B (later, separate project):** collaborators can add pins,
+   upload marks, edit palette. Real multiplayer library. Probably needs
+   real accounts and presence by then.
 
 8. **Figma plugin scaffold** *(separate small project, 1-2 days)*
    `npx create-figma-plugin` boilerplate. Reads from the local

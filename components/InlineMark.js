@@ -15,23 +15,27 @@ import { remapSvgColors } from "../lib/svgRemap";
  *
  * Colors named `none` or `currentColor` are left alone.
  */
-export default function InlineMark({ src, width, height, className, palette, overrides }) {
-  const [raw, setRaw] = useState(null);
+function cleanSvg(text) {
+  return text
+    .replace(/<\?xml[^>]*\?>/g, "")
+    .replace(/<!DOCTYPE[^>]*>/g, "")
+    .replace(/<svg([^>]*)\swidth="[^"]*"/, "<svg$1")
+    .replace(/<svg([^>]*)\sheight="[^"]*"/, "<svg$1");
+}
+
+export default function InlineMark({ src, svg, width, height, className, palette, overrides }) {
+  const [raw, setRaw] = useState(svg ? cleanSvg(svg) : null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
+    if (svg) { setRaw(cleanSvg(svg)); return; }
     if (!src) return;
     let cancelled = false;
     fetch(src)
       .then((r) => (r.ok ? r.text() : Promise.reject(new Error(`status ${r.status}`))))
       .then((text) => {
         if (cancelled) return;
-        const cleaned = text
-          .replace(/<\?xml[^>]*\?>/g, "")
-          .replace(/<!DOCTYPE[^>]*>/g, "")
-          .replace(/<svg([^>]*)\swidth="[^"]*"/, "<svg$1")
-          .replace(/<svg([^>]*)\sheight="[^"]*"/, "<svg$1");
-        setRaw(cleaned);
+        setRaw(cleanSvg(text));
       })
       .catch(() => {
         if (!cancelled) setFailed(true);
@@ -39,7 +43,7 @@ export default function InlineMark({ src, width, height, className, palette, ove
     return () => {
       cancelled = true;
     };
-  }, [src]);
+  }, [src, svg]);
 
   const markup = useMemo(() => {
     if (!raw) return null;
