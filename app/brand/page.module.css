@@ -761,3 +761,101 @@
   z-index: 5;
   font-weight: 500;
 }
+
+.shareToast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 60;
+  max-width: 480px;
+  padding: 14px 44px 14px 18px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.10);
+  animation: shareToastIn var(--motion-medium) var(--ease-out);
+}
+
+@keyframes shareToastIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.shareToastTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.shareToastBody {
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.shareToastRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shareToastUrl {
+  flex: 1;
+  min-width: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  padding: 6px 10px;
+  background: var(--bg);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shareToastCopy,
+.shareToastOpen {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  min-height: 44px;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background: var(--bg);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+
+.shareToastCopy:hover,
+.shareToastOpen:hover {
+  border-color: var(--ink);
+}
+
+.shareToastClose {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.shareToastClose:hover { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .shareToast { animation: none; }
+}

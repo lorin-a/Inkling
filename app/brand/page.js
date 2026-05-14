@@ -42,6 +42,24 @@ export default function BrandPage() {
   const [picker, setPicker] = useState(null);
   const [editingProject, setEditingProject] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
+  const [shareState, setShareState] = useState({ status: "idle", url: null, error: null });
+
+  const openForVoting = useCallback(async () => {
+    setShareState({ status: "sharing", url: null, error: null });
+    try {
+      const res = await fetch("/api/instances/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ audience: "public", vote_unit: "preset" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to share");
+      try { await navigator.clipboard.writeText(data.share_url); } catch {}
+      setShareState({ status: "ready", url: data.share_url, error: null });
+    } catch (e) {
+      setShareState({ status: "idle", url: null, error: e.message });
+    }
+  }, []);
   // Per-variant role overrides — dark and light are independent. Cleared
   // on shuffle so each new palette starts from the algorithm's best guess.
   const [roleOverrides, setRoleOverrides] = useState({ dark: {}, light: {} });
@@ -240,8 +258,30 @@ export default function BrandPage() {
           >
             ↓ Export
           </button>
+          <button
+            type="button"
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            onClick={openForVoting}
+            disabled={shareState.status === "sharing"}
+            title="Publish this project to a shareable voting URL"
+          >
+            {shareState.status === "sharing" ? "Sharing…" : "↗ Share for voting"}
+          </button>
         </div>
       </header>
+
+      {shareState.status === "ready" && (
+        <ShareToast
+          url={shareState.url}
+          onClose={() => setShareState({ status: "idle", url: null, error: null })}
+        />
+      )}
+      {shareState.error && (
+        <ShareToast
+          error={shareState.error}
+          onClose={() => setShareState({ status: "idle", url: null, error: null })}
+        />
+      )}
 
       <main className={styles.main}>
         <aside className={styles.rail}>
@@ -784,4 +824,46 @@ function derivePreviewRoles(palette, variant = "dark") {
     return { bg: lightest, ink: darkest, accent, muted };
   }
   return { bg: darkest, ink: lightest, accent, muted };
+}
+
+function ShareToast({ url, error, onClose }) {
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!url) return;
+    setCopied(true);
+    const t = setTimeout(() => setCopied(false), 2200);
+    return () => clearTimeout(t);
+  }, [url]);
+
+  async function copy() {
+    if (!url) return;
+    try { await navigator.clipboard.writeText(url); setCopied(true); } catch {}
+  }
+
+  return (
+    <div className={styles.shareToast} role="status" aria-live="polite">
+      {error ? (
+        <>
+          <div className={styles.shareToastTitle}>Couldn’t share.</div>
+          <div className={styles.shareToastBody}>{error}</div>
+          <button type="button" className={styles.shareToastClose} onClick={onClose} aria-label="Close">×</button>
+        </>
+      ) : (
+        <>
+          <div className={styles.shareToastTitle}>
+            {copied ? "Link copied. Share it with collaborators." : "Project published for voting"}
+          </div>
+          <div className={styles.shareToastRow}>
+            <code className={styles.shareToastUrl}>{url}</code>
+            <button type="button" className={styles.shareToastCopy} onClick={copy}>
+              {copied ? "Copied" : "Copy"}
+            </button>
+            <a className={styles.shareToastOpen} href={url} target="_blank" rel="noreferrer">Open</a>
+          </div>
+          <button type="button" className={styles.shareToastClose} onClick={onClose} aria-label="Close">×</button>
+        </>
+      )}
+    </div>
+  );
 }
