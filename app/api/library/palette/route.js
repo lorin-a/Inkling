@@ -1,30 +1,52 @@
 import { NextResponse } from "next/server";
 import { readLibrary, seedStarredIfEmpty } from "../../../../lib/moodboardStore";
 import { readProjectPalette } from "../../../../lib/paletteStore";
+import * as dbLibrary from "../../../../lib/db/library";
+import * as dbPalette from "../../../../lib/db/palette";
+import { getActiveProjectForUser, getRequestContext } from "../../../../lib/api/context";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const EMPTY_RESPONSE = {
+  count: 0,
+  palette: [],
+  sourceMap: {},
+  starred: [],
+  brand: [],
+  brandEntries: [],
+  curated: {},
+  sourcePool: [],
+  pinPalettes: [],
+  starredPalettes: [],
+};
+
 /**
- * Returns every per-project palette pool the UI shuffles or browses:
- *   - brand:        ordered hex array (from this project's palette.json)
- *   - curated:      object of row-id → hex array
- *   - sourcePool:   the original Figma-style inspiration array
- *   - pool:         deduped hexes extracted from this project's pinned images
- *   - sourceMap:    hex → array of pinIds (where each moodboard color came from)
- *   - starred:      array of hexes the user has starred for this project
- *
- * Everything is scoped to the active project. New projects start empty;
- * pools fill in as the user imports pins, extracts palettes, and stars.
+ * Returns every per-project palette pool the UI shuffles or browses.
+ * Dual-mode: DB-backed when authed, file-backed when not.
  */
 export async function GET() {
-  const projectPalette = await readProjectPalette();
-  const sourcePool = projectPalette.inspiration?.source || [];
-  if (sourcePool.length > 0) {
-    await seedStarredIfEmpty(sourcePool);
+  const { userId } = await getRequestContext();
+
+  let projectPalette;
+  let lib;
+
+  if (userId) {
+    const active = await getActiveProjectForUser(userId);
+    if (!active) return NextResponse.json(EMPTY_RESPONSE);
+    [projectPalette, lib] = await Promise.all([
+      dbPalette.readProjectPalette({ projectId: active.id }),
+      dbLibrary.readLibrary({ projectId: active.id }),
+    ]);
+  } else {
+    projectPalette = await readProjectPalette();
+    const sourcePool = projectPalette.inspiration?.source || [];
+    if (sourcePool.length > 0) {
+      await seedStarredIfEmpty(sourcePool);
+    }
+    lib = await readLibrary();
   }
 
-  const lib = await readLibrary();
   const seen = new Set();
   const pool = [];
   const sourceMap = {};
@@ -34,7 +56,7 @@ export async function GET() {
   // preserves the grouping of colors that originally came from one pin.
   const pinPalettes = [];
 
-  for (const pin of Object.values(lib.pins)) {
+  for (const pin of Object.values(lib.pins || {})) {
     if (!pin.palette || !Array.isArray(pin.palette) || pin.palette.length === 0) continue;
 
     pinPalettes.push({
@@ -62,7 +84,6 @@ export async function GET() {
     }
   }
 
-  // Stable order: starred first, then by recency.
   pinPalettes.sort((a, b) => {
     if (a.starred !== b.starred) return a.starred ? -1 : 1;
     return (b.addedAt || "").localeCompare(a.addedAt || "");
@@ -76,7 +97,7 @@ export async function GET() {
     brand: Object.values(projectPalette.brand || {}),
     brandEntries: Object.entries(projectPalette.brand || {}),
     curated: projectPalette.inspiration?.curated || {},
-    sourcePool,
+    sourcePool: projectPalette.inspiration?.source || [],
     pinPalettes,
     starredPalettes: lib.starredPalettes || [],
   });
