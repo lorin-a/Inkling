@@ -97,6 +97,32 @@ when ready.
 
 ---
 
+## Direction *(locked 2026-05-25)*
+
+**This is going to be a multi-tenant hosted service.** Local file-based mode
+retires. The editor becomes a browser client pointing at the same Neon DB
+the hosted `/v/[token]` viewer already uses. One codebase, one storage
+layer, one mental model.
+
+User-stage archetypes the tool must support:
+
+1. **"I have nothing"** — new account, no Pinterest board, no colors.
+   Needs: three-path empty hero (drop a board, paste a hex, browse
+   starter palettes), brand-name prompt at project creation, Sanzo Wada
+   + curated mood packs as starter pools.
+2. **"I have a vibe, no specifics"** — Pinterest board, no decided colors.
+   Already served by Phase 2a.5 (rate palettes on /colors, shuffle samples
+   from saved on /brand). Brand-name prompt missing.
+3. **"I have brand assets"** — locked hex codes from a client, maybe an
+   SVG logo. Needs: hex entry, "Build from a color" flow on /brand,
+   prominent mark upload empty state, "promote to project brand" affordance.
+4. **"Most of a brand, refining"** — choosing between candidates. Needs:
+   /decide surface (planned), font pairing (Phase 2b), Share for voting
+   (already wired) bolted onto Decide.
+5. **"Brand is final, deliverables"** — exporting, handing off. Needs:
+   brand book made discoverable, token export polished, "lock identity"
+   commit action.
+
 ## Current roadmap *(revised 2026-05-25, supersedes the earlier list)*
 
 The product is a brand identity sketchpad. The wedge is *synthesis from your
@@ -182,6 +208,31 @@ below)*
 - Bolt the Neon-backed share flow onto Decide instead of treating it as
   a separate product mode. Phase A scope holds — collaborators vote on
   what you compose, they don't add material.
+
+**Phase 6 — Multi-tenant migration** *(~2-3 weeks total, sequence below)*
+
+The shift from "Lorin's local studio" to "a service strangers can sign
+into." Five chunks, each independently shippable.
+
+- **6a. Auth foundation** *(~1-2 days)* — Magic-link auth via Neon.
+  `users` table, `/login` page, magic-link send + verify endpoints.
+  Feature-flagged off for local dev so the existing editor keeps
+  working. Nothing else changes yet.
+- **6b. Projects in DB** *(~3-4 days)* — `projects` table with
+  `owner_user_id`. Dual-write: every file write also writes to DB.
+  Active project moves to a session cookie. Project switcher reads
+  from DB. File mode kept as fallback.
+- **6c. Library, palettes, saves in DB** *(~3-4 days)* — `pins`,
+  `palettes_saved`, `colors_saved`, `presets`, `bookmarked_palettes`
+  tables. Pin import writes to DB. Auto-extract writes to DB. /colors
+  reads from DB. File mode retires once parity confirmed.
+- **6d. Onboarding + stage-aware empty states** *(~3 days)* — Sign-up
+  flow ends at "create your first project." Brand-name prompt at
+  creation. Three-path empty-state hero. Hex entry surface. Sanzo Wada
+  starter pool. "Build from a color" on /brand.
+- **6e. Stage 3-5 affordances** *(~3 days)* — "This color is the brand"
+  promote. Mark upload prominence. /decide surface. "Lock identity"
+  commit. Brand book discoverability.
 
 **Deferred to a polish pass** *(later, ~3 hrs together)*
 - New-project-from-Pinterest-board entry point.

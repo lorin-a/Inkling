@@ -1,5 +1,10 @@
-import 'dotenv/config';
+import { config as loadEnv } from 'dotenv';
+loadEnv({ path: '.env.local' });
+loadEnv(); // also pick up .env if present
 import { neon } from '@neondatabase/serverless';
+import { readdir, readFile } from 'node:fs/promises';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const url = process.env.DATABASE_URL;
 if (!url) {
@@ -8,81 +13,73 @@ if (!url) {
 }
 
 const sql = neon(url);
+const MIGRATIONS_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'migrations');
 
-const statements = [
-  `CREATE TABLE IF NOT EXISTS instances (
-    id            TEXT PRIMARY KEY,
-    slug          TEXT NOT NULL,
-    owner_key     TEXT NOT NULL,
-    audience      TEXT NOT NULL CHECK (audience IN ('public', 'private')),
-    vote_unit     TEXT NOT NULL CHECK (vote_unit IN ('preset', 'element')),
-    project_state JSONB NOT NULL,
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
-  )`,
+// Track which migration files have run so re-runs are no-ops. The
+// tracking table itself is bootstrapped here (idempotent).
+await sql.query(`
+  CREATE TABLE IF NOT EXISTS schema_migrations (
+    filename    TEXT PRIMARY KEY,
+    applied_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+  )
+`);
 
-  `CREATE TABLE IF NOT EXISTS invites (
-    id                  TEXT PRIMARY KEY,
-    instance_id         TEXT NOT NULL REFERENCES instances(id) ON DELETE CASCADE,
-    token               TEXT NOT NULL UNIQUE,
-    label               TEXT,
-    claimed_session_id  TEXT,
-    created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
-  )`,
+const applied = new Set(
+  (await sql.query('SELECT filename FROM schema_migrations')).map((r) => r.filename),
+);
 
-  `CREATE TABLE IF NOT EXISTS sessions (
-    id            TEXT PRIMARY KEY,
-    instance_id   TEXT NOT NULL REFERENCES instances(id) ON DELETE CASCADE,
-    display_name  TEXT,
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
-  )`,
+const files = (await readdir(MIGRATIONS_DIR))
+  .filter((f) => f.endsWith('.sql'))
+  .sort();
 
-  `CREATE TABLE IF NOT EXISTS presets (
-    id                 TEXT PRIMARY KEY,
-    instance_id        TEXT NOT NULL REFERENCES instances(id) ON DELETE CASCADE,
-    author_session_id  TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
-    snapshot           JSONB NOT NULL,
-    created_at         TIMESTAMPTZ NOT NULL DEFAULT now()
-  )`,
+if (files.length === 0) {
+  console.log('No migration files found in migrations/. Nothing to do.');
+  process.exit(0);
+}
 
-  `CREATE TABLE IF NOT EXISTS votes (
-    id            TEXT PRIMARY KEY,
-    instance_id   TEXT NOT NULL REFERENCES instances(id) ON DELETE CASCADE,
-    session_id    TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
-    target_type   TEXT NOT NULL CHECK (target_type IN ('preset', 'palette', 'font', 'mark')),
-    target_id     TEXT NOT NULL,
-    value         INTEGER NOT NULL,
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
-    UNIQUE (session_id, target_type, target_id)
-  )`,
+let ran = 0;
+for (const file of files) {
+  if (applied.has(file)) {
+    console.log(`✓ ${file} (already applied)`);
+    continue;
+  }
+  const path = join(MIGRATIONS_DIR, file);
+  const body = await readFile(path, 'utf8');
+  // Strip line comments and split on bare semicolons. SQL files in
+  // migrations/ avoid functions/triggers that need $$ blocks, so this
+  // simple split is enough.
+  const statements = body
+    .split('\n')
+    .filter((line) => !line.trim().startsWith('--'))
+    .join('\n')
+    .split(/;\s*\n/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
 
-  `CREATE TABLE IF NOT EXISTS comments (
-    id            TEXT PRIMARY KEY,
-    instance_id   TEXT NOT NULL REFERENCES instances(id) ON DELETE CASCADE,
-    session_id    TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
-    target_type   TEXT NOT NULL,
-    target_id     TEXT NOT NULL,
-    body          TEXT NOT NULL,
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
-  )`,
+  process.stdout.write(`→ ${file} (${statements.length} statements)…  `);
+  try {
+    for (const stmt of statements) {
+      await sql.query(stmt);
+    }
+    await sql.query('INSERT INTO schema_migrations (filename) VALUES ($1)', [file]);
+    process.stdout.write('ok\n');
+    ran++;
+  } catch (e) {
+    process.stdout.write('FAIL\n');
+    console.error(`\nMigration ${file} failed:\n  ${e.message}`);
+    process.exit(1);
+  }
+}
 
-  `CREATE INDEX IF NOT EXISTS idx_invites_instance ON invites(instance_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_sessions_instance ON sessions(instance_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_presets_instance ON presets(instance_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_votes_instance ON votes(instance_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_votes_target ON votes(instance_id, target_type, target_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_comments_target ON comments(instance_id, target_type, target_id)`,
-];
-
-for (const stmt of statements) {
-  const preview = stmt.replace(/\s+/g, ' ').slice(0, 70);
-  process.stdout.write(`→ ${preview}…  `);
-  await sql.query(stmt);
-  process.stdout.write('ok\n');
+if (ran === 0) {
+  console.log('\nAll migrations already applied. Nothing to do.');
+} else {
+  console.log(`\nApplied ${ran} migration${ran === 1 ? '' : 's'}.`);
 }
 
 const tables = await sql.query(
   `SELECT table_name FROM information_schema.tables
-   WHERE table_schema = 'public' ORDER BY table_name`
+   WHERE table_schema = 'public' ORDER BY table_name`,
 );
 console.log('\nTables in public schema:');
 for (const row of tables) console.log(`  • ${row.table_name}`);
