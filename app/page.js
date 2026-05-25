@@ -90,14 +90,16 @@ export default function Home() {
       )}
 
       {!signedIn && (
-        <div className={styles.authBar}>
-          <span className={styles.authBarLabel}>
-            You&rsquo;re in a sample studio. Edits save to this browser.
+        <div className={styles.playgroundBanner} role="status">
+          <span className={styles.bannerIcon} aria-hidden="true">✦</span>
+          <span className={styles.bannerText}>
+            <strong className={styles.bannerLead}>You&rsquo;re in a sample studio.</strong>{" "}
+            <span className={styles.bannerSub}>Everything you change saves to this browser only.</span>
           </span>
           <span className={styles.playgroundActions}>
             <button
               type="button"
-              className={styles.signOutBtn}
+              className={styles.bannerReset}
               onClick={() => {
                 if (confirm("Reset the sample studio? This clears every change you’ve made in this browser.")) {
                   resetToSample();
@@ -107,7 +109,7 @@ export default function Home() {
             >
               Reset sample
             </button>
-            <Link href="/login" className={styles.signOutBtn}>
+            <Link href="/login" className={styles.bannerPrimary}>
               Sign in to save across devices
             </Link>
           </span>
