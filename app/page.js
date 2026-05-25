@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 import styles from "./page.module.css";
 
 const TOOLS = [
@@ -18,15 +19,18 @@ export default function Home() {
   const [activeSlug, setActiveSlug] = useState(null);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState(null);
+  const [session, setSession] = useState(null); // { user: { email, name, image } } | null
 
   async function refresh() {
     try {
-      const [pres, ares] = await Promise.all([
+      const [pres, ares, ses] = await Promise.all([
         fetch("/api/projects", { cache: "no-store" }).then((r) => r.json()),
         fetch("/api/projects/active", { cache: "no-store" }).then((r) => r.json()),
+        fetch("/api/auth/session", { cache: "no-store" }).then((r) => r.json()),
       ]);
       setProjects(pres.projects || []);
       setActiveSlug(ares.slug || null);
+      setSession(ses && ses.user ? ses : null);
     } catch (e) {
       setError(e.message);
     }
@@ -63,8 +67,26 @@ export default function Home() {
 
   const activeProject = projects?.find((p) => p.slug === activeSlug);
 
+  const signedIn = !!session?.user;
+  const isEmptyAuthedAccount = signedIn && projects !== null && projects.length === 0;
+
   return (
     <main className={styles.main}>
+      {signedIn && (
+        <div className={styles.authBar}>
+          <span className={styles.authBarLabel}>
+            Signed in as <strong>{session.user.email || session.user.name}</strong>
+          </span>
+          <button
+            type="button"
+            className={styles.signOutBtn}
+            onClick={() => signOut({ callbackUrl: "/login" })}
+          >
+            Sign out
+          </button>
+        </div>
+      )}
+
       <header className={styles.header}>
         <p className={styles.eyebrow}>Moodbuilder</p>
         <h1 className={styles.title}>A studio for assembling brand moods.</h1>
@@ -74,10 +96,16 @@ export default function Home() {
         <header className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Projects</h2>
           <p className={styles.sectionHint}>
-            Each project keeps its own palette, pins, uploads, brand text, and starred set.
-            {activeProject && (
+            {isEmptyAuthedAccount ? (
+              <>Welcome. Start a new brand project below to begin — every project keeps its own palette, pins, uploads, brand text, and starred set.</>
+            ) : (
               <>
-                {" "}Active: <strong>{activeProject.name}</strong>.
+                Each project keeps its own palette, pins, uploads, brand text, and starred set.
+                {activeProject && (
+                  <>
+                    {" "}Active: <strong>{activeProject.name}</strong>.
+                  </>
+                )}
               </>
             )}
           </p>

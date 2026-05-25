@@ -319,3 +319,37 @@
 }
 .primaryBtn:hover:not(:disabled) { background: #000; }
 .primaryBtn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.authBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 18px;
+  margin-bottom: 24px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.authBarLabel {
+  color: var(--ink-muted);
+}
+.authBarLabel strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.signOutBtn {
+  background: none;
+  border: none;
+  color: var(--ink-muted);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--motion-fast) var(--ease-out);
+}
+.signOutBtn:hover { color: var(--ink); }
