@@ -209,30 +209,76 @@ below)*
   a separate product mode. Phase A scope holds — collaborators vote on
   what you compose, they don't add material.
 
-**Phase 6 — Multi-tenant migration** *(~2-3 weeks total, sequence below)*
+**Phase 6 — Multi-tenant migration** *(in progress; ~70% shipped 2026-05-25)*
 
 The shift from "Lorin's local studio" to "a service strangers can sign
-into." Five chunks, each independently shippable.
+into." File-based editor stays as a fallback during the transition,
+controlled by `AUTH_REQUIRED` env flag.
 
-- **6a. Auth foundation** *(~1-2 days)* — Magic-link auth via Neon.
-  `users` table, `/login` page, magic-link send + verify endpoints.
-  Feature-flagged off for local dev so the existing editor keeps
-  working. Nothing else changes yet.
-- **6b. Projects in DB** *(~3-4 days)* — `projects` table with
-  `owner_user_id`. Dual-write: every file write also writes to DB.
-  Active project moves to a session cookie. Project switcher reads
-  from DB. File mode kept as fallback.
-- **6c. Library, palettes, saves in DB** *(~3-4 days)* — `pins`,
-  `palettes_saved`, `colors_saved`, `presets`, `bookmarked_palettes`
-  tables. Pin import writes to DB. Auto-extract writes to DB. /colors
-  reads from DB. File mode retires once parity confirmed.
-- **6d. Onboarding + stage-aware empty states** *(~3 days)* — Sign-up
-  flow ends at "create your first project." Brand-name prompt at
-  creation. Three-path empty-state hero. Hex entry surface. Sanzo Wada
-  starter pool. "Build from a color" on /brand.
-- **6e. Stage 3-5 affordances** *(~3 days)* — "This color is the brand"
-  promote. Mark upload prominence. /decide surface. "Lock identity"
+- **6a.0. Multi-tenant DB schema** ✅ shipped *(commit `e75ff32`)*
+  Migrations folder with timestamped SQL files. `users`, `accounts`,
+  `verification_token`, `projects`, `pins`, `boards`, `palettes_saved`,
+  `colors_saved`, `project_palette`, `bookmarked_palettes`,
+  `brand_presets`, `schema_migrations`. JWT session strategy so no
+  collision with Moodvote's existing `sessions` table.
+- **6a. Auth foundation** ✅ shipped *(commit `5a87613`)*
+  Auth.js v5 + Resend (magic-link) + Google OAuth. Split config:
+  edge-safe `auth.config.js` for the proxy, full `auth.js` with the
+  Postgres adapter for server routes. `/login` page with Google
+  one-click and email magic-link. Feature-flagged via `AUTH_REQUIRED`.
+- **6b.1. DB layer + whelm migrated** ✅ shipped *(commit `8f61ebc`)*
+  `lib/db/{projects,library,palette}.js` mirrors the file-based API
+  but takes explicit `userId`. One-time `migrate-files-to-db.mjs`
+  script copies file-based projects into the DB under a placeholder
+  user. Ran locally: whelm + 252 pins + 29 starred colors + project
+  palette all in Neon.
+- **6b.2. Dual-mode API routes** ✅ shipped *(commits `cc1308c`,
+  `64c6a1e`, `f209c4b`)*
+  Every read + write API route now branches on session userId. When
+  authed, hits DB via `lib/db/*`. When not, hits files via the legacy
+  utilities. `paletteEnricher` accepts a `writePin` callback so
+  background extractors don't have to know which backend is in use.
+  Home page shows an auth bar + sign-out when signed in, plus a
+  welcoming empty state for users with zero projects.
+- **6b.3. Production prep** ✅ shipped *(commit `9e8e1a8`)*
+  `middleware.js` → `proxy.js` (Next 16 rename). `scripts/claim-projects.mjs`
+  transfers placeholder-owned projects to a real user by email — run
+  once after first prod sign-in.
+
+**Still to do in Phase 6:**
+
+- **6c. Onboarding + stage-aware empty states** *(next, ~3 days)* —
+  Sign-up flow ends at "create your first project." Brand-name prompt
+  at creation. Three-path empty-state hero on `/colors` (drop a board /
+  paste a hex / browse starter palettes). Hex entry surface.
+  Sanzo Wada starter palette pool. "Build from a color" on `/brand`.
+- **6d. Stage 3-5 affordances** *(~3 days)* — "This color is the brand"
+  promote. Mark upload prominence. `/decide` surface. "Lock identity"
   commit. Brand book discoverability.
+- **6e. Blob storage for uploads** *(~1 day)* — `/api/library/upload`
+  and `/api/marks` still file-only. Move to Vercel Blob for prod.
+  Without this, signed-in users can't upload mark SVGs or pin images.
+- **6f. Project switcher sign-out** *(~30 min)* — Add sign-out to the
+  switcher dropdown on sub-pages. Currently only the home page has it.
+
+**Production deploy checklist:**
+
+1. Push `origin/main` (18 commits ahead as of 2026-05-25).
+2. Set Vercel env vars (Project Settings → Environment Variables):
+   - `RESEND_API_KEY` — same value as `.env.local`
+   - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` — same as `.env.local`
+   - `AUTH_SECRET` — generate fresh for prod: `openssl rand -base64 32`
+   - `AUTH_URL` — `https://moodvote.vercel.app`
+   - `AUTH_REQUIRED=true`
+3. Add prod OAuth redirect URI in Google Cloud Console:
+   `https://moodvote.vercel.app/api/auth/callback/google`
+4. (Optional) Verify a sender domain in Resend so magic-link emails
+   come from `noreply@moodvote.app` instead of `onboarding@resend.dev`.
+5. Visit `moodvote.vercel.app` → redirect to `/login` → sign in.
+6. Run `node scripts/claim-projects.mjs <your-email>` against the
+   production Neon DB to take ownership of whelm. `.env.local` already
+   points at the prod Neon since Vercel and local share the same
+   database.
 
 **Deferred to a polish pass** *(later, ~3 hrs together)*
 - New-project-from-Pinterest-board entry point.
