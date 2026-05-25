@@ -97,12 +97,22 @@ when ready.
 
 ---
 
-## Direction *(locked 2026-05-25)*
+## Direction *(locked 2026-05-25, refined later same day)*
 
-**This is going to be a multi-tenant hosted service.** Local file-based mode
-retires. The editor becomes a browser client pointing at the same Neon DB
-the hosted `/v/[token]` viewer already uses. One codebase, one storage
-layer, one mental model.
+**Free + profile-less by default. Profile is opt-in for cloud sync.**
+The public default at moodvote.app is the full editor working from
+in-browser storage with a curated Sample Studio loaded. Signing in is
+how you save palettes and projects across devices — not how you get
+access to the tool.
+
+Multi-tenant DB exists (built today) and serves authed users. Anonymous
+users live in `localStorage` (and `IndexedDB` later for heavier payloads
+like marks/uploads). Server-side processing — palette extraction, source
+URL enrichment, Pinterest import — works for everyone; only persistence
+differs.
+
+The editor is a browser client that talks to the Neon DB when authed
+and to local storage when not. Same UI, two backends, runtime choice.
 
 User-stage archetypes the tool must support:
 
@@ -247,19 +257,35 @@ controlled by `AUTH_REQUIRED` env flag.
 
 **Still to do in Phase 6:**
 
-- **6c. Onboarding + stage-aware empty states** *(next, ~3 days)* —
-  Sign-up flow ends at "create your first project." Brand-name prompt
-  at creation. Three-path empty-state hero on `/colors` (drop a board /
-  paste a hex / browse starter palettes). Hex entry surface.
-  Sanzo Wada starter palette pool. "Build from a color" on `/brand`.
-- **6d. Stage 3-5 affordances** *(~3 days)* — "This color is the brand"
-  promote. Mark upload prominence. `/decide` surface. "Lock identity"
-  commit. Brand book discoverability.
-- **6e. Blob storage for uploads** *(~1 day)* — `/api/library/upload`
-  and `/api/marks` still file-only. Move to Vercel Blob for prod.
-  Without this, signed-in users can't upload mark SVGs or pin images.
-- **6f. Project switcher sign-out** *(~30 min)* — Add sign-out to the
-  switcher dropdown on sub-pages. Currently only the home page has it.
+- **6c. Account-free playground** *(next, ~2-3 days)* — The new
+  default landing experience. Replaces "land at /login if unauthed."
+  Visitors land in the editor with a Sample Studio loaded. All edits
+  go to localStorage. Pinterest import lands in localStorage too
+  (small JSONs are fine, ~250 pins worth of metadata is well under
+  the quota). Mark/font/texture upload deferred to authed-only for
+  now (need blob storage for those). "Sign in to save across
+  devices" is the upsell on save actions. Flips `AUTH_REQUIRED=true`
+  off in prod once the playground ships.
+  Sample Studio content: Lorin picks ~30 sample pins + a starter
+  brand template (wordmark, tagline, body, marks). Shipped as static
+  JSON in the build.
+- **6d. Sync-on-signin** *(~1 day)* — When a playground user signs
+  in for the first time, prompt: "Save your work as a new project?"
+  → migrates their localStorage state to a DB-backed project owned
+  by the new user. Skip = blank account, fresh start.
+- **6e. Onboarding visuals** *(~later)* — Screen recordings of each
+  feature populated with real brand work. Slot into the login page
+  and an "about" surface to answer "what does this do?" at the
+  hero level. Recorded by Lorin.
+- **6f. Stage 3-5 affordances** *(~3 days)* — "This color is the
+  brand" promote. Mark upload prominence. `/decide` surface.
+  "Lock identity" commit. Brand book discoverability.
+- **6g. Blob storage for uploads** *(~1 day)* — `/api/library/upload`
+  and `/api/marks` still file-only. Move to Vercel Blob for prod
+  authed users.
+- **6h. Project switcher sign-out** *(~30 min)* — Add sign-out to
+  the switcher dropdown on sub-pages. Currently only home page has
+  it.
 
 **Production deploy checklist:**
 

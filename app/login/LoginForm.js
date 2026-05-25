@@ -41,7 +41,9 @@ export default function LoginForm() {
     <main className={styles.page}>
       <div className={styles.card}>
         <h1 className={styles.title}>Moodbuilder</h1>
-        <p className={styles.subtitle}>A studio for assembling brand moods.</p>
+        <p className={styles.subtitle}>
+          A studio for designers turning Pinterest moods into brand identities. Sign in to save palettes and projects across devices.
+        </p>
 
         <button
           type="button"
@@ -88,6 +90,9 @@ export default function LoginForm() {
 
         <p className={styles.fineprint}>
           No password. We'll email you a one-time link, or you can use Google.
+        </p>
+        <p className={styles.playgroundHint}>
+          An account-free playground is on the way. Until then, sign in to explore.
         </p>
       </div>
     </main>

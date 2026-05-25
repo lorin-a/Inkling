@@ -153,3 +153,13 @@
   background: #fee2e2;
   border-radius: 8px;
 }
+
+.playgroundHint {
+  font-size: 11px;
+  color: var(--ink-muted);
+  margin: 8px 0 0;
+  letter-spacing: 0.02em;
+  font-style: italic;
+  border-top: 1px solid var(--hairline);
+  padding-top: 12px;
+}
