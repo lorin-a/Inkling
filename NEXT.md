@@ -323,6 +323,23 @@ controlled by `AUTH_REQUIRED` env flag.
     matching the existing `moodbuilder.favorites` convention). Still
     infra-only and Lorin's to do: rename the Vercel project / domain off
     `moodvote.vercel.app` and update `AUTH_URL`.
+  - **Review round 2 (2026-05-25, Lorin eyes-on).** (1) Library header
+    was overcrowded: split into a two-tier header (identity row: nav,
+    title, stats; tools row: pool, filter, actions). (2) Bumped small UI
+    text 13→14px (header meta, pool stat, search) and the sign-in hint
+    12→13px for legibility. (3) Naming coherence: unified the favorites
+    vocabulary — palettes you favorite are "Top picks" everywhere (Brand
+    SOURCE "Starred"→"Top picks" via POOL_LABELS; Colors palette button
+    "Save"→"Top pick"; section + empty-state copy aligned), individual
+    colors stay "Starred colors"; the Brand "Top picks" pool blends
+    top-pick palettes + starred colors (copy now says so). The two star
+    gestures are de-conflated by label, though both still use a star
+    glyph — could swap the Top-pick glyph (bookmark/check) to fully
+    separate them if desired.
+  - **Open (Lorin noted): home page is flat vs the tool pages.** The `/`
+    project picker is boring and not very intuitive next to the visually
+    strong Brand/Library/Colors pages. Deserves a deliberate redesign
+    pass (hero that shows the tool working, clearer first action).
   - **Subpage sign-in affordance — shipped (2026-05-25).** Added a quiet
     "Sign in to save" link (with a status dot) next to the project name
     in `ProjectSwitcher`, shown only when signed out. Covers all five

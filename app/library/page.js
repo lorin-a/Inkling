@@ -253,6 +253,7 @@ export default function LibraryPage() {
   return (
     <div className={styles.page}>
       <header className={styles.bar}>
+        <div className={styles.barTop}>
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
         <ProjectSwitcher />
         <div className={styles.barTitle}>Library</div>
@@ -272,6 +273,8 @@ export default function LibraryPage() {
             </>
           )}
         </div>
+        </div>
+        <div className={styles.barTools}>
         <Link href="/brand" className={styles.poolStat} title="The colors you've extracted feed the Brand page's “From moodboard” shuffle pool.">
           <span className={styles.poolStatDot} />
           Moodboard pool: <strong>{moodboardPoolSize}</strong> colors →
@@ -387,6 +390,7 @@ export default function LibraryPage() {
         >
           ↻
         </button>
+        </div>
       </header>
 
       {selecting && (

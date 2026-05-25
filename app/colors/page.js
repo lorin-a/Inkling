@@ -108,11 +108,11 @@ export default function ColorsPage() {
               ★ Top picks <span className={styles.sectionCount}>{topPicks.length}</span>
             </h2>
             <p className={styles.sectionHint}>
-              Palettes you've rated as a yes. The <Link href="/brand" className={styles.inlineLink}>Brand</Link> shuffle samples from these. Star any palette below to lift it here.
+              Palettes you've rated as a yes. The <Link href="/brand" className={styles.inlineLink}>Brand</Link> shuffle samples from these first. Add a palette to Top picks below to lift it here.
             </p>
           </header>
           {topPicks.length === 0 ? (
-            <p className={styles.empty}>Nothing here yet. Star a palette below to start training the shuffle.</p>
+            <p className={styles.empty}>Nothing here yet. Add a palette to Top picks below to start training the shuffle.</p>
           ) : (
             <div className={styles.paletteList}>
               {topPicks.map((p) => (
@@ -195,7 +195,7 @@ export default function ColorsPage() {
             ★ Starred colors <span className={styles.sectionCount}>{starred.size}</span>
           </h2>
           <p className={styles.sectionHint}>
-            Your curated, growing set. Star any color anywhere on this page to add it; unstar to remove. Feeds the <Link href="/brand" className={styles.inlineLink}>Brand</Link> page's <em>Starred</em> shuffle.
+            Your curated, growing set. Star any color anywhere on this page to add it; unstar to remove. Feeds the <Link href="/brand" className={styles.inlineLink}>Brand</Link> page's <em>Top picks</em> shuffle alongside your starred palettes.
           </p>
         </header>
         {starsHydrated && starredHexes.length === 0 ? (
@@ -393,10 +393,10 @@ function PaletteRow({
           type="button"
           className={`${styles.paletteStarBtn} ${isPaletteStarred ? styles.paletteStarBtnOn : ""}`}
           onClick={() => togglePaletteStar(entry.pinId)}
-          title={isPaletteStarred ? "Remove from your pool. Brand shuffle will stop favoring this." : "Save to your pool. Brand shuffle samples from saved palettes first."}
-          aria-label={isPaletteStarred ? "Unsave palette" : "Save palette"}
+          title={isPaletteStarred ? "In your Top picks. The Brand shuffle samples these first." : "Add to Top picks. The Brand shuffle samples these first."}
+          aria-label={isPaletteStarred ? "Remove from Top picks" : "Add to Top picks"}
         >
-          {isPaletteStarred ? "★ Saved" : "☆ Save"}
+          {isPaletteStarred ? "★ Top pick" : "☆ Top pick"}
         </button>
       </div>
     </div>

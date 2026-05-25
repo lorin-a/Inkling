@@ -403,11 +403,11 @@ export default function BrandPage() {
 
           {starredEmpty && (
             <div className={styles.emptyHint}>
-              Nothing starred yet.{" "}
+              No Top picks yet.{" "}
               <Link href="/colors" className={styles.emptyHintLink}>
                 Open the Colors page
               </Link>{" "}
-              and click the ☆ icon on any swatch to add it to your starred set — your highest-signal shuffle pool.
+              and add a palette to Top picks (or star individual colors). They become this shuffle&rsquo;s pool: your highest-signal source.
             </div>
           )}
 
