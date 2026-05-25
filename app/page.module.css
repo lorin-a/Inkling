@@ -38,6 +38,29 @@
   gap: 20px;
 }
 
+/* Side utilities, set apart from the five-step arc so the brand book
+   reads as the finale. A divider + quieter heading + a non-stretching
+   card signal "this is off to the side, not the next step." */
+.utilitySection {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-top: 24px;
+  border-top: 1px solid var(--hairline);
+}
+.utilityHeading {
+  font-family: var(--font-noto);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin: 0;
+}
+.utilityCard {
+  max-width: 420px;
+}
+
 .card {
   display: flex;
   flex-direction: column;
@@ -139,11 +162,28 @@
 }
 
 .projectName {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--font-serif);
   font-size: 22px;
   font-weight: 400;
   letter-spacing: -0.01em;
   font-variation-settings: "SOFT" 50, "WONK" 0;
+}
+
+/* Marks the seeded sample so it doesn't read as a real saved project. */
+.sampleTag {
+  font-family: var(--font-noto);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b5732f;
+  background: #f7efe2;
+  border: 1px solid #e7d8c1;
+  padding: 3px 8px;
+  border-radius: 999px;
 }
 
 .projectMeta {

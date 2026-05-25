@@ -494,6 +494,12 @@ export default function BrandPage() {
         </aside>
 
         <section className={styles.canvas}>
+          {authed === false && (
+            <div className={styles.sampleTag}>
+              <span aria-hidden="true">✦</span>
+              <span><strong>Sample brand.</strong> Placeholder name and colors. Rename, recolor, or import a board to make it yours.</span>
+            </div>
+          )}
           <div className={styles.variant}>
             <span className={styles.variantLabel}>Dark</span>
             <BrandPreview palette={palette} variant="dark" project={project} roles={rolesDark} onPickRole={openPicker} />

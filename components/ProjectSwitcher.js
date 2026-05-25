@@ -80,10 +80,13 @@ export default function ProjectSwitcher() {
         <span className={styles.chipCaret} aria-hidden="true">▾</span>
       </button>
       {authed === false && (
-        <Link href="/login" className={styles.saveHint}>
-          <span className={styles.saveDot} aria-hidden="true" />
-          Sign in to save
-        </Link>
+        <>
+          <span className={styles.sampleChip}>Sample</span>
+          <Link href="/login" className={styles.saveHint}>
+            <span className={styles.saveDot} aria-hidden="true" />
+            Sign in to save
+          </Link>
+        </>
       )}
       {open && (
         <div className={styles.menu} role="listbox">

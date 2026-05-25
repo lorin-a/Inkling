@@ -12,8 +12,12 @@ const TOOLS = [
   { href: "/library",   eyebrow: "02 — Browse",      title: "Pin library",      body: "Every pin and upload for this project, with extracted palettes. Click any pin to open the source." },
   { href: "/colors",    eyebrow: "03 — Curate",      title: "Colors",           body: "Starred set, brand swatches, curated pairings, and every color pulled from your pins. Star here, shuffle on Brand." },
   { href: "/brand",     eyebrow: "04 — Compose",     title: "Brand",            body: "The live brand. Shuffle palettes, pick fonts, override roles per variant, click any element to recolor. Marks repaint with the palette." },
-  { href: "/print",     eyebrow: "05 — Deliver",     title: "Brand book",       body: "Five-page printable: cover, palette, type, marks, gradients. Open from Brand, or here for a quick look." },
-  { href: "/gradients", eyebrow: "Utility",          title: "Gradients",        body: "Sketch linear / radial / conic gradients from any project color. Drag the angle, drag the stops, copy the CSS." },
+  { href: "/print",     eyebrow: "05 — Deliver",     title: "Brand book",       body: "Five-page printable: cover, palette, type, marks, gradients. The finished artifact. Open from Brand, or here for a quick look." },
+];
+
+// Side utilities — not part of the five-step arc that ends at the brand book.
+const UTILITIES = [
+  { href: "/gradients", title: "Gradients", body: "Sketch linear / radial / conic gradients from any project color. Drag the angle, drag the stops, copy the CSS." },
 ];
 
 export default function Home() {
@@ -154,7 +158,10 @@ export default function Home() {
                   className={`${styles.projectCard} ${p.slug === activeSlug ? styles.projectCardActive : ""}`}
                   onClick={() => selectProject(p.slug)}
                 >
-                  <span className={styles.projectName}>{p.name || p.slug}</span>
+                  <span className={styles.projectName}>
+                    {p.name || p.slug}
+                    {!signedIn && <span className={styles.sampleTag}>Sample</span>}
+                  </span>
                   <span className={styles.projectMeta}>
                     {p.pins != null ? `${p.pins} pins` : "—"}
                     {p.slug === activeSlug && <span className={styles.activeChip}>● active</span>}
@@ -191,6 +198,18 @@ export default function Home() {
           </Link>
         ))}
       </nav>
+
+      <section className={styles.utilitySection}>
+        <h2 className={styles.utilityHeading}>Utility</h2>
+        <nav className={styles.nav}>
+          {UTILITIES.map((tool) => (
+            <Link key={tool.href} href={tool.href} className={`${styles.card} ${styles.utilityCard}`}>
+              <span className={styles.cardTitle}>{tool.title}</span>
+              <span className={styles.cardBody}>{tool.body}</span>
+            </Link>
+          ))}
+        </nav>
+      </section>
 
       {creating && (
         <NewProjectModal

@@ -35,6 +35,20 @@
   flex: none;
 }
 
+/* Marks the active project as the seeded sample, not a saved project. */
+.sampleChip {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b5732f;
+  background: #f7efe2;
+  border: 1px solid #e7d8c1;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
 .chip {
   display: inline-flex;
   align-items: center;

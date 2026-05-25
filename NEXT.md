@@ -336,6 +336,16 @@ controlled by `AUTH_REQUIRED` env flag.
     gestures are de-conflated by label, though both still use a star
     glyph — could swap the Top-pick glyph (bookmark/check) to fully
     separate them if desired.
+  - **Review round 3 (2026-05-25).** (1) Signed-out notice reworked into
+    a real filled banner (warm fill, accent edge, icon, primary button).
+    (2) "Sample" labeling so the seeded studio doesn't read as a real
+    brand: SAMPLE pill on the home project card + ProjectSwitcher chip,
+    and a "Sample brand. Placeholder name and colors…" notice above the
+    Brand preview (all signed-out only). (3) Home flow IA: gradients
+    pulled out of the numbered arc into a separated "Utility" section
+    below a divider, so the five-step arc ends cleanly at the brand book
+    (the finished artifact). Warm "notice" colors are inline hexes for
+    now; could be promoted to `--notice-*` tokens.
   - **Open (Lorin noted): home page is flat vs the tool pages.** The `/`
     project picker is boring and not very intuitive next to the visually
     strong Brand/Library/Colors pages. Deserves a deliberate redesign
