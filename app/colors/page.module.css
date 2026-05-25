@@ -512,14 +512,19 @@
 .applyBtn:hover { background: #000; }
 
 .paletteStarBtn {
-  width: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   height: 30px;
-  border-radius: 50%;
+  padding: 0 14px;
+  border-radius: 999px;
   border: 1px solid var(--hairline);
   background: transparent;
-  font-size: 14px;
+  font-size: 12px;
+  letter-spacing: 0.02em;
   color: var(--ink-muted);
   cursor: pointer;
+  white-space: nowrap;
   transition: color var(--motion-fast) var(--ease-out),
     border-color var(--motion-fast) var(--ease-out);
 }
