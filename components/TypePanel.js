@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useAuthed } from "../lib/api/useAuthed";
 import styles from "./TypePanel.module.css";
 
 const SLOTS = [
@@ -188,10 +190,26 @@ function GoogleTab({ onPick }) {
 }
 
 function UploadTab({ onPick }) {
+  const authed = useAuthed();
   const [family, setFamily] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const fileRef = useRef(null);
+
+  if (authed === false) {
+    return (
+      <div className={styles.tabBody}>
+        <p className={styles.muted}>
+          Font upload needs an account. Uploaded files are stored with your
+          project, not in this browser.{" "}
+          <Link href="/login" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+            Sign in
+          </Link>{" "}
+          to upload, or use Google Fonts and custom URLs, which work signed out.
+        </p>
+      </div>
+    );
+  }
 
   async function handleFile(file) {
     setError(null);

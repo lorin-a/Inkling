@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { apiFetch } from "../lib/api/client";
 import styles from "./PresetsPanel.module.css";
 
 /**
@@ -29,7 +30,7 @@ export default function PresetsPanel({ snapshot, applyPreset }) {
 
   const refresh = useCallback(async () => {
     try {
-      const res = await fetch("/api/presets", { cache: "no-store" });
+      const res = await apiFetch("/api/presets", { cache: "no-store" });
       const data = await res.json();
       setPresets(data.presets || []);
     } catch {
@@ -48,7 +49,7 @@ export default function PresetsPanel({ snapshot, applyPreset }) {
     setBusy(true);
     try {
       const body = { ...snapshot(), name: trimmed };
-      const res = await fetch("/api/presets", {
+      const res = await apiFetch("/api/presets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -69,7 +70,7 @@ export default function PresetsPanel({ snapshot, applyPreset }) {
     if (!confirm("Delete this preset?")) return;
     setBusy(true);
     try {
-      await fetch(`/api/presets?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      await apiFetch(`/api/presets?id=${encodeURIComponent(id)}`, { method: "DELETE" });
       await refresh();
     } finally {
       setBusy(false);

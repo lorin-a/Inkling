@@ -1,46 +1,12 @@
-/* P22 Mackinac Pro — local files at public/fonts/. If a file is missing,
-   the next font in the stack (Fraunces via Google) takes over with no error. */
-@font-face {
-  font-family: "P22 Mackinac Pro";
-  src: url("/fonts/P22MackinacPro-Book.woff2") format("woff2"),
-       url("/fonts/P22MackinacPro-Book.woff") format("woff"),
-       url("/fonts/P22MackinacPro-Book.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "P22 Mackinac Pro";
-  src: url("/fonts/P22MackinacPro-BookItalic.woff2") format("woff2"),
-       url("/fonts/P22MackinacPro-BookItalic.woff") format("woff"),
-       url("/fonts/P22MackinacPro-BookItalic.otf") format("opentype");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: "P22 Mackinac Pro";
-  src: url("/fonts/P22MackinacPro-Medium.woff2") format("woff2"),
-       url("/fonts/P22MackinacPro-Medium.woff") format("woff"),
-       url("/fonts/P22MackinacPro-Medium.otf") format("opentype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "P22 Mackinac Pro";
-  src: url("/fonts/P22MackinacPro-Bold.woff2") format("woff2"),
-       url("/fonts/P22MackinacPro-Bold.woff") format("woff"),
-       url("/fonts/P22MackinacPro-Bold.otf") format("opentype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+/* Serif headings render in Fraunces (loaded via next/font as --font-fraunces);
+   its SOFT / WONK / opsz axes are what the headings animate. P22 Mackinac was
+   never shipped — its @font-face blocks pointed at missing /fonts/ files and
+   404'd on every page with no visual effect, so they're removed. To use
+   Mackinac later, drop the files into public/fonts/, re-add the @font-face
+   blocks, and prepend "P22 Mackinac Pro" to --font-serif. */
 
 :root {
-  /* Type stack — Mackinac first, Fraunces fallback (so headings still look
-     considered until the Mackinac files are dropped in). */
-  --font-serif: "P22 Mackinac Pro", var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
   --font-sans: var(--font-noto), system-ui, -apple-system, "Segoe UI", sans-serif;
 
   /* Whelm core */

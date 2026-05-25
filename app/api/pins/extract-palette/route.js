@@ -14,7 +14,21 @@ export async function POST(request) {
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
-  const { pinId } = body || {};
+  const { pinId, imageUrl: directUrl } = body || {};
+
+  // Compute-only mode: when the caller passes an imageUrl directly, we
+  // extract and return the palette without touching any store. This is
+  // how the signed-out playground extracts palettes — the client owns
+  // persistence (localStorage), the server only does the k-means.
+  if (directUrl) {
+    try {
+      const palette = await extractPalette(directUrl, { k: 7 });
+      return NextResponse.json({ pinId: pinId || null, palette });
+    } catch (e) {
+      return NextResponse.json({ error: e.message }, { status: 502 });
+    }
+  }
+
   if (!pinId) return NextResponse.json({ error: "Missing pinId" }, { status: 400 });
 
   const { userId } = await getRequestContext();

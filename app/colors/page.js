@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useStarred } from "../../lib/useStarred";
 import { useProject } from "../../lib/useProject";
+import { apiFetch } from "../../lib/api/client";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import MiniBrandPreview from "../../components/MiniBrandPreview";
 import styles from "./page.module.css";
@@ -20,7 +21,7 @@ export default function ColorsPage() {
   const { isStarred, toggleStar, starred, hydrated: starsHydrated } = useStarred();
 
   const refresh = useCallback(() => {
-    fetch("/api/library/palette", { cache: "no-store" })
+    apiFetch("/api/library/palette", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (!data) return;
@@ -45,7 +46,7 @@ export default function ColorsPage() {
       return next;
     });
     try {
-      await fetch("/api/library/star-palette", {
+      await apiFetch("/api/library/star-palette", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pinId, starred: !currentlyStarred }),

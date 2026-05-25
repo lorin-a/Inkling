@@ -6,6 +6,7 @@ import { remapSvgColors } from "../../lib/svgRemap";
 import { derivePreviewRoles } from "../../lib/derivePreviewRoles";
 import { relativeLuminance as luminance } from "../../lib/colorTheory";
 import FontLoader from "../../components/FontLoader";
+import { apiFetch } from "../../lib/api/client";
 import styles from "./page.module.css";
 
 export default function PrintPage() {
@@ -30,11 +31,11 @@ function PrintInner() {
     .map((h) => (h.startsWith("#") ? h : `#${h}`));
 
   useEffect(() => {
-    fetch("/api/project").then((r) => r.json()).then(setProject).catch(() => {});
+    apiFetch("/api/project").then((r) => r.json()).then(setProject).catch(() => {});
   }, []);
 
   useEffect(() => {
-    fetch("/api/marks").then((r) => r.json()).then((d) => setMarkList(d.marks || [])).catch(() => {});
+    apiFetch("/api/marks").then((r) => r.json()).then((d) => setMarkList(d.marks || [])).catch(() => {});
   }, []);
 
   // Pre-fetch SVG markup for each mark so they print reliably (no

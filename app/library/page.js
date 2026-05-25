@@ -3,11 +3,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
+import { apiFetch, isAuthed } from "../../lib/api/client";
+import { useAuthed } from "../../lib/api/useAuthed";
+import { extractMissingLocal } from "../../lib/storage/localImport";
+import { patchPin as localPatchPin } from "../../lib/storage/localStore";
 import styles from "./page.module.css";
 
 const BATCH_CONCURRENCY = 4;
 
 export default function LibraryPage() {
+  const authed = useAuthed();
   const [lib, setLib] = useState(null);
   const [filter, setFilter] = useState("");
   const [error, setError] = useState(null);
@@ -24,7 +29,7 @@ export default function LibraryPage() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/library", { cache: "no-store" })
+    apiFetch("/api/library", { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
         if (!cancelled) setLib(data);
@@ -41,16 +46,29 @@ export default function LibraryPage() {
   useEffect(() => {
     let cancelled = false;
     let pollId = null;
-    fetch("/api/library/extract-missing", { method: "POST" })
-      .then((r) => r.json())
-      .then((data) => {
+    const ac = new AbortController();
+    (async () => {
+      if (await isAuthed()) {
+        // DB mode: the server runs the batch; poll the library to watch
+        // palettes land.
+        const res = await fetch("/api/library/extract-missing", { method: "POST" }).catch(() => null);
+        const data = await res?.json().catch(() => null);
         if (cancelled || !data?.started) return;
         setAutoExtract({ initialMissing: data.missing, startedAt: data.startedAt });
         pollId = setInterval(() => setRefreshTick((t) => t + 1), 3000);
-      })
-      .catch(() => {});
+      } else {
+        // Signed-out: drive extraction client-side, persisting locally,
+        // and refresh from localStorage as palettes land.
+        extractMissingLocal({
+          concurrency: 2,
+          signal: ac.signal,
+          onTick: () => !cancelled && setRefreshTick((t) => t + 1),
+        }).catch(() => {});
+      }
+    })();
     return () => {
       cancelled = true;
+      ac.abort();
       if (pollId) clearInterval(pollId);
     };
   }, []);
@@ -67,14 +85,23 @@ export default function LibraryPage() {
   const extractOne = useCallback(async (pinId, { silent = false } = {}) => {
     setExtracting((s) => new Set(s).add(pinId));
     try {
+      const authed = await isAuthed();
+      // Signed-out: send the image URL so the server extracts without a
+      // store lookup, then persist the result to localStorage ourselves.
+      const pin = lib?.pins?.[pinId];
+      const imageUrl = pin && (pin.imageOriginal || pin.imageDisplay || pin.thumbnail236);
+      const body = authed ? { pinId } : { pinId, imageUrl };
       const res = await fetch("/api/pins/extract-palette", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pinId }),
+        body: JSON.stringify(body),
         signal: AbortSignal.timeout(25000),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      if (!authed) {
+        localPatchPin(pinId, { palette: data.palette, paletteExtractedAt: new Date().toISOString() });
+      }
       setLib((prev) => ({
         ...prev,
         pins: {
@@ -93,7 +120,7 @@ export default function LibraryPage() {
         return next;
       });
     }
-  }, []);
+  }, [lib]);
 
   const extractPalette = useCallback((pinId) => extractOne(pinId), [extractOne]);
 
@@ -153,6 +180,10 @@ export default function LibraryPage() {
   }, []);
 
   const uploadFiles = useCallback(async (fileList) => {
+    if (authed === false) {
+      alert("Sign in to upload images. They’re saved to your account, not this browser. Pinterest import works without an account.");
+      return;
+    }
     const files = Array.from(fileList || []).filter((f) => f && f.type?.startsWith("image/"));
     if (files.length === 0) return;
     setUploading(true);
@@ -327,20 +358,26 @@ export default function LibraryPage() {
             </>
           );
         })()}
-        <label className={styles.uploadBtn} title="Drop or pick images — they're saved locally and extracted just like pins.">
-          {uploading ? (uploadProgress ? `Uploading ${uploadProgress.total}…` : "Uploading…") : "↑ Upload images"}
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            hidden
-            disabled={uploading}
-            onChange={(e) => {
-              uploadFiles(e.target.files);
-              e.target.value = "";
-            }}
-          />
-        </label>
+        {authed === false ? (
+          <Link href="/login" className={styles.uploadBtn} title="Image upload needs an account. Pinterest import works signed out.">
+            ↑ Sign in to upload images
+          </Link>
+        ) : (
+          <label className={styles.uploadBtn} title="Drop or pick images — they're saved locally and extracted just like pins.">
+            {uploading ? (uploadProgress ? `Uploading ${uploadProgress.total}…` : "Uploading…") : "↑ Upload images"}
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              hidden
+              disabled={uploading}
+              onChange={(e) => {
+                uploadFiles(e.target.files);
+                e.target.value = "";
+              }}
+            />
+          </label>
+        )}
 
         <button
           type="button"

@@ -1,6 +1,38 @@
 .root {
   position: relative;
   display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Signed-out nudge sitting beside the project name: where "save this"
+   belongs. Quiet by default, underlines on hover. */
+.saveHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* Vertical padding enlarges the tap target; negative margin keeps it
+     from changing the header's height/baseline alignment. */
+  padding: 12px 4px;
+  margin: -12px 0;
+  font-size: 12px;
+  color: var(--ink-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--motion-fast) var(--ease-out);
+}
+.saveHint:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.saveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.55;
+  flex: none;
 }
 
 .chip {

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePalette } from "../../lib/usePalette";
 import { useProject } from "../../lib/useProject";
+import { useAuthed } from "../../lib/api/useAuthed";
 import { POOL_LABELS } from "../../lib/palettePool";
 import { derivePreviewRoles } from "../../lib/derivePreviewRoles";
 import { relativeLuminance as luminance } from "../../lib/colorTheory";
@@ -44,6 +45,7 @@ export default function BrandPage() {
   } = usePalette({ initialSize: 5, initialPoolKey: "starred" });
 
   const { project, save: saveProject } = useProject();
+  const authed = useAuthed();
   const [picker, setPicker] = useState(null);
   const [editingProject, setEditingProject] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
@@ -67,6 +69,14 @@ export default function BrandPage() {
   }, []);
 
   const openForVoting = useCallback(async () => {
+    if (authed === false) {
+      setShareState({
+        status: "idle",
+        url: null,
+        error: "Sign in to share a brand for voting. Sharing publishes your project to a hosted link, which needs an account.",
+      });
+      return;
+    }
     setShareState({ status: "sharing", url: null, error: null });
     try {
       const res = await fetch("/api/instances/create", {
@@ -81,7 +91,7 @@ export default function BrandPage() {
     } catch (e) {
       setShareState({ status: "idle", url: null, error: e.message });
     }
-  }, []);
+  }, [authed]);
   // Per-variant role overrides — dark and light are independent. Cleared
   // on shuffle so each new palette starts from the algorithm's best guess.
   const [roleOverrides, setRoleOverrides] = useState({ dark: {}, light: {} });

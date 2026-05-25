@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { BOOKMARKLET_HREF } from "../../lib/pinterestBookmarklet";
+import { isAuthed } from "../../lib/api/client";
+import { commitLocalImport, extractMissingLocal } from "../../lib/storage/localImport";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import styles from "./page.module.css";
 
@@ -53,19 +55,31 @@ export default function ImportPage() {
     if (importStatus?.kind !== "preview") return;
     setImportStatus({ ...importStatus, kind: "committing" });
     try {
-      const res = await fetch("/api/import/pinterest", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(importStatus.rawPayload),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      const authed = await isAuthed();
+      let result;
+      if (authed) {
+        const res = await fetch("/api/import/pinterest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(importStatus.rawPayload),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+        result = data;
+      } else {
+        // Signed out: merge into localStorage, then drive palette
+        // extraction client-side (server has no store to write to).
+        const merged = commitLocalImport(importStatus.rawPayload);
+        result = { added: merged.added, updated: merged.updated, librarySize: merged.total };
+        extractMissingLocal({ concurrency: 2 }).catch(() => {});
+      }
       setImportStatus({
         kind: "done",
-        added: data.added,
-        updated: data.updated,
-        librarySize: data.librarySize,
+        added: result.added,
+        updated: result.updated,
+        librarySize: result.librarySize,
         boardName: importStatus.boardName,
+        local: !authed,
       });
     } catch (e) {
       setImportStatus({ kind: "error", message: e.message });
@@ -215,7 +229,11 @@ export default function ImportPage() {
                 )}
                 Library now holds {importStatus.librarySize} pins.{" "}
                 <Link href="/library" className={styles.inlineLink}>Open library →</Link>
-                <p className={styles.stepHint}>Source URLs are populating in the background. Refresh /library in a minute to see them filled in.</p>
+                <p className={styles.stepHint}>
+                  {importStatus.local
+                    ? "Palettes are extracting in the background. Open the library to watch them land. Sign in to also pull each pin’s source link, and to keep your board across devices."
+                    : "Source URLs are populating in the background. Refresh /library in a minute to see them filled in."}
+                </p>
               </div>
             )}
           </div>

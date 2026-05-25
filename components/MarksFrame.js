@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import Link from "next/link";
 import InlineMark from "./InlineMark";
 import { getSvgColors } from "../lib/svgRemap";
+import { apiFetch } from "../lib/api/client";
+import { useAuthed } from "../lib/api/useAuthed";
 import styles from "./MarksFrame.module.css";
 
 /**
@@ -14,6 +17,7 @@ import styles from "./MarksFrame.module.css";
  * hexes so marks can be checked against both light and dark backgrounds.
  */
 export default function MarksFrame({ palette }) {
+  const authed = useAuthed();
   const [variant, setVariant] = useState("light");
   const [editing, setEditing] = useState(null);
   const [markOverrides, setMarkOverrides] = useState({});
@@ -31,7 +35,7 @@ export default function MarksFrame({ palette }) {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/marks", { cache: "no-store" });
+      const res = await apiFetch("/api/marks", { cache: "no-store" });
       const data = await res.json();
       setMarks(data.marks || []);
     } catch {
@@ -84,6 +88,10 @@ export default function MarksFrame({ palette }) {
   }
 
   async function handleFiles(fileList) {
+    if (authed === false) {
+      setUploadError("Sign in to upload marks. They’re saved to your account, not this browser.");
+      return;
+    }
     const svgFiles = Array.from(fileList).filter((f) => f.name.toLowerCase().endsWith(".svg"));
     if (svgFiles.length === 0) {
       setUploadError("Drop .svg files only.");
@@ -141,18 +149,26 @@ export default function MarksFrame({ palette }) {
       <header className={styles.header}>
         <h2 className={styles.title}>Marks</h2>
         <p className={styles.hint}>
-          {marks.length === 0
+          {authed === false
+            ? "Sign in to upload your own marks and keep them across devices."
+            : marks.length === 0
             ? "Drop .svg files anywhere on this frame to add marks."
             : "Click any mark to recolor. Drop .svg files to add."}
         </p>
         <div className={styles.headerActions}>
-          <button
-            type="button"
-            className={styles.uploadBtn}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            Add SVG
-          </button>
+          {authed === false ? (
+            <Link href="/login" className={styles.uploadBtn}>
+              Sign in to add marks
+            </Link>
+          ) : (
+            <button
+              type="button"
+              className={styles.uploadBtn}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Add SVG
+            </button>
+          )}
           <input
             ref={fileInputRef}
             type="file"
@@ -207,7 +223,9 @@ export default function MarksFrame({ palette }) {
             className={styles.emptyHint}
             style={{ color: variant === "light" ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.6)" }}
           >
-            Drop hand-drawn SVGs here, or click <em>Add SVG</em>.
+            {authed === false
+              ? <>Mark upload needs an account. <Link href="/login" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: "3px" }}>Sign in</Link> to add hand-drawn SVGs.</>
+              : <>Drop hand-drawn SVGs here, or click <em>Add SVG</em>.</>}
           </p>
         </div>
       ) : (

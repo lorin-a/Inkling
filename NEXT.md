@@ -100,8 +100,8 @@ when ready.
 ## Direction *(locked 2026-05-25, refined later same day)*
 
 **Free + profile-less by default. Profile is opt-in for cloud sync.**
-The public default at moodvote.app is the full editor working from
-in-browser storage with a curated Sample Studio loaded. Signing in is
+The public default at moodbuilder.studio (planned domain) is the full
+editor working from in-browser storage with a curated Sample Studio loaded. Signing in is
 how you save palettes and projects across devices — not how you get
 access to the tool.
 
@@ -257,18 +257,84 @@ controlled by `AUTH_REQUIRED` env flag.
 
 **Still to do in Phase 6:**
 
-- **6c. Account-free playground** *(next, ~2-3 days)* — The new
-  default landing experience. Replaces "land at /login if unauthed."
-  Visitors land in the editor with a Sample Studio loaded. All edits
-  go to localStorage. Pinterest import lands in localStorage too
-  (small JSONs are fine, ~250 pins worth of metadata is well under
-  the quota). Mark/font/texture upload deferred to authed-only for
-  now (need blob storage for those). "Sign in to save across
-  devices" is the upsell on save actions. Flips `AUTH_REQUIRED=true`
-  off in prod once the playground ships.
-  Sample Studio content: Lorin picks ~30 sample pins + a starter
-  brand template (wordmark, tagline, body, marks). Shipped as static
-  JSON in the build.
+- **6c. Account-free playground** *(machinery shipped 2026-05-25,
+  verified locally; not yet pushed)* — The new default landing
+  experience. Visitors land in the editor with a Sample Studio
+  loaded; all edits go to localStorage.
+  - `lib/api/client.js` — `apiFetch()` wrapper + cached `isAuthed()`.
+    Authed → real `/api/*` (DB). Signed out → persistence routes
+    answered from localStorage; compute routes (extraction, fonts,
+    enrichment) still hit the network.
+  - `lib/storage/localStore.js` — localStorage backend mirroring the
+    persistence routes (project, projects, active, library, palette
+    aggregation, star, star-palette, presets, mergePins, patchPin).
+    `ensureSeeded()` + `resetToSample()`.
+  - `lib/sampleStudio.js` — the seed. Wordmark reads **"Your Brand"**
+    (legibly a sample), placeholder tagline/body, a warm starter
+    palette so Shuffle works on first visit. **Swap in Lorin's real
+    content here later** — nothing else changes.
+  - `lib/storage/localImport.js` — signed-out Pinterest import:
+    merge to localStorage, then client-drive palette extraction via
+    the compute-only `/api/pins/extract-palette` (now accepts an
+    `imageUrl` and skips the store).
+  - All hooks/pages/components routed through `apiFetch`
+    (useProject, useStarred, usePalette, ProjectSwitcher,
+    PresetsPanel, TexturePanel, MarksFrame, every tool page).
+  - Mark / font / texture / image upload + "Share for voting" gated
+    behind sign-in with quiet contextual upsells (need Blob storage /
+    a server instance). Pinterest import, colors, palettes, presets,
+    gradients, brand text all work signed out.
+  - **Verified locally** (AUTH_REQUIRED=false): fresh visitor seeds
+    the sample; star/preset writes persist to localStorage and the
+    server file library stays untouched (isolation holds); compute
+    extraction returns palettes; reset restores the seed.
+  - **Sample Studio content shipped** *(2026-05-25)*: built from
+    Lorin's `pinterest.com/lorinanderberg1/moodbuilder` board (33 pins
+    captured, 31 mirrored — 2 i.pinimg originals 403'd). Pipeline:
+    `npm run sample <board.json>` (`scripts/build-sample-studio.mjs`)
+    mirrors + downscales images into `public/sample/` (~3.1 MB, max
+    1000px / q80 jpeg), extracts a palette per pin, derives a brand +
+    starred + source set from the board's colors, and bakes it into
+    `lib/sampleStudio.data.json`. Re-runnable with a new board JSON.
+    The "Your Brand" project template (wordmark / tagline / body) stays
+    hand-authored in `lib/sampleStudio.js`. Verified: all 31 render
+    from the local mirror, 0 broken; Brand page composes from the
+    board's palette.
+  - **Polish pass (2026-05-25, autonomous):** independent code review
+    of the whole changeset came back clean on data isolation, the
+    authed/DB path, and the imageUrl skip-write trap (only low-severity
+    hygiene notes: dead `resetAuthCache` export, two unused localStore
+    palette exports, harmless double-run of `extractMissingLocal`).
+    Removed the dead P22 Mackinac `@font-face` blocks from globals.css
+    (they 404'd on every page; Fraunces is the real serif). Design
+    review at 1280 + 390 fixed three responsive bugs: the home
+    playground bar now stacks at ≤560px, and the `/library` + `/colors`
+    header meta wraps to its own line instead of clipping.
+  - **Naming decided (2026-05-25):** product is **Moodbuilder**;
+    "Moodvote" is dropped entirely (the voting surface is just "Share
+    for voting"). Accepted that Moodbuilder is a generic/descriptive
+    name (weak trademark, fine for a free portfolio tool). No active
+    commercial "Moodbuilder" in design/tech and no federal registration
+    found; moodbuilder.com is a dormant 2009 portfolio (taken, so a
+    moodbuilder.* domain like .app/.studio/.design is the target).
+    Retired the two in-code "moodvote" references: the hosted viewer
+    wordmark (`app/v/[token]/HostedBrand.js`) and the playground
+    localStorage keys (`moodvote.local.*` → `moodbuilder.local.*`,
+    matching the existing `moodbuilder.favorites` convention). Still
+    infra-only and Lorin's to do: rename the Vercel project / domain off
+    `moodvote.vercel.app` and update `AUTH_URL`.
+  - **Subpage sign-in affordance — shipped (2026-05-25).** Added a quiet
+    "Sign in to save" link (with a status dot) next to the project name
+    in `ProjectSwitcher`, shown only when signed out. Covers all five
+    editing subpages (brand, colors, gradients, import, library) in one
+    place; print/probe intentionally skipped. Verified at 1280 + 390;
+    tap target padded for the 44px floor.
+  - **Still to do before prod:** (1) push to origin/main (commit
+    `public/sample/` + `lib/sampleStudio.data.json`); (2) flip
+    `AUTH_REQUIRED=false` on Vercel — **with Lorin's explicit OK**,
+    since it's the production-facing switch.
+  - Known minor: import preview hint still mentions source enrichment
+    (authed-only); signed-out source-URL enrichment is deferred.
 - **6d. Sync-on-signin** *(~1 day)* — When a playground user signs
   in for the first time, prompt: "Save your work as a new project?"
   → migrates their localStorage state to a DB-backed project owned
@@ -305,6 +371,48 @@ controlled by `AUTH_REQUIRED` env flag.
    production Neon DB to take ownership of whelm. `.env.local` already
    points at the prod Neon since Vercel and local share the same
    database.
+
+**Domain migration runbook — `moodvote.vercel.app` → `moodbuilder.studio`**
+*(not required to ship the playground; do this as a focused pass right
+before any public reveal. The app code is already brand-clean — title is
+"Moodbuilder", no "moodvote" in any rendered UI. Everything below is
+infra. Order matters: it keeps sign-in working through the cutover.)*
+
+1. **Register the domain.** Confirm `moodbuilder.studio` is available and
+   buy it (Porkbun / Namecheap). Grab `@moodbuilderstudio` handles while
+   you're at it (bare `@moodbuilder` is taken by a dormant squatter).
+2. **Add the domain in Vercel** → Project → Settings → Domains → add
+   `moodbuilder.studio`, set it as the Production domain. Vercel shows the
+   DNS records to set at the registrar; wait for it to verify.
+3. **Google Cloud Console (don't remove the old URI yet):**
+   - APIs & Services → Credentials → the OAuth client → Authorized
+     redirect URIs → **add** `https://moodbuilder.studio/api/auth/callback/google`
+     (leave the moodvote one in place for now).
+   - OAuth consent screen → set **App name** to "Moodbuilder" (this is
+     what users see during Google sign-in — easy to miss if it still says
+     Moodvote). Add `moodbuilder.studio` to Authorized domains.
+4. **Update Vercel env** → set `AUTH_URL=https://moodbuilder.studio`
+   (Production), then **redeploy** (env changes only take effect on a new
+   deploy). This is the var that otherwise bounces sign-in to moodvote.
+5. **Verify on the new domain:** load `moodbuilder.studio`, test Google
+   sign-in and a magic-link sign-in end to end. (Sessions don't carry
+   over from the old domain — cookies are domain-scoped — so you'll
+   re-login. Expected.)
+6. **Retire the old subdomain:** Vercel → Settings → General → rename the
+   project so the default becomes `moodbuilder.vercel.app`;
+   `moodvote.vercel.app` stops resolving. (Safe now that `AUTH_URL` points
+   at the custom domain, not the subdomain.)
+7. **Resend (optional but on-brand):** verify `moodbuilder.studio` as a
+   sender domain and set the from-name/address to Moodbuilder (e.g.
+   `noreply@moodbuilder.studio`) so magic-link emails aren't generic.
+8. **Cleanup:** once nothing hits the old URL, remove the
+   `moodvote.vercel.app` redirect URI from the Google OAuth client.
+
+Gotcha checklist: `AUTH_SECRET` stays the same; `AUTH_URL` must exactly
+match the domain users land on; a redeploy is required after any env
+change; renaming the Vercel project changes the `.vercel.app` subdomain,
+so only rename *after* `AUTH_URL` is on the custom domain (step 4 before
+step 6).
 
 **Deferred to a polish pass** *(later, ~3 hrs together)*
 - New-project-from-Pinterest-board entry point.

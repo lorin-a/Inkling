@@ -353,3 +353,24 @@
   transition: color var(--motion-fast) var(--ease-out);
 }
 .signOutBtn:hover { color: var(--ink); }
+
+.playgroundActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* Narrow screens: the pill can't hold the label + both actions on one
+   row, so stack the label above the actions instead of wrapping each
+   action to its own cramped column. */
+@media (max-width: 560px) {
+  .authBar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    border-radius: 16px;
+  }
+  .playgroundActions {
+    gap: 20px;
+  }
+}

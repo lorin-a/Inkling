@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "extract": "node scripts/extract-palette.mjs",
+    "sample": "node scripts/build-sample-studio.mjs",
     "db:migrate": "node --env-file=.env.local scripts/migrate.mjs"
   },
   "dependencies": {

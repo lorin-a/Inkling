@@ -43,6 +43,14 @@
   opacity: 0.4;
 }
 
+/* Narrow screens: the back-link + switcher + title already fill the row,
+   so let the bar wrap and drop the meta onto its own line instead of
+   clipping it off the right edge. */
+@media (max-width: 560px) {
+  .bar { flex-wrap: wrap; row-gap: 6px; padding: 12px 16px; }
+  .barMeta { margin-left: 0; flex-basis: 100%; }
+}
+
 .poolStat {
   display: inline-flex;
   align-items: center;

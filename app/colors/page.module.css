@@ -43,6 +43,13 @@
   margin-left: auto;
 }
 
+/* Narrow screens: wrap the bar so the meta drops to its own line rather
+   than clipping off the right edge. */
+@media (max-width: 560px) {
+  .bar { flex-wrap: wrap; row-gap: 6px; padding: 14px 16px; gap: 14px; }
+  .barMeta { margin-left: 0; flex-basis: 100%; }
+}
+
 .dot {
   width: 3px;
   height: 3px;

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
+import { apiFetch } from "../lib/api/client";
+import { resetToSample } from "../lib/storage/localStore";
 import styles from "./page.module.css";
 
 const TOOLS = [
@@ -24,8 +26,8 @@ export default function Home() {
   async function refresh() {
     try {
       const [pres, ares, ses] = await Promise.all([
-        fetch("/api/projects", { cache: "no-store" }).then((r) => r.json()),
-        fetch("/api/projects/active", { cache: "no-store" }).then((r) => r.json()),
+        apiFetch("/api/projects", { cache: "no-store" }).then((r) => r.json()),
+        apiFetch("/api/projects/active", { cache: "no-store" }).then((r) => r.json()),
         fetch("/api/auth/session", { cache: "no-store" }).then((r) => r.json()),
       ]);
       setProjects(pres.projects || []);
@@ -40,7 +42,7 @@ export default function Home() {
 
   async function selectProject(slug) {
     if (slug === activeSlug) return;
-    await fetch("/api/projects/active", {
+    await apiFetch("/api/projects/active", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ slug }),
@@ -51,7 +53,7 @@ export default function Home() {
   async function createProject(name) {
     setError(null);
     try {
-      const res = await fetch("/api/projects", {
+      const res = await apiFetch("/api/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
@@ -87,6 +89,31 @@ export default function Home() {
         </div>
       )}
 
+      {!signedIn && (
+        <div className={styles.authBar}>
+          <span className={styles.authBarLabel}>
+            You&rsquo;re in a sample studio. Edits save to this browser.
+          </span>
+          <span className={styles.playgroundActions}>
+            <button
+              type="button"
+              className={styles.signOutBtn}
+              onClick={() => {
+                if (confirm("Reset the sample studio? This clears every change you’ve made in this browser.")) {
+                  resetToSample();
+                  window.location.reload();
+                }
+              }}
+            >
+              Reset sample
+            </button>
+            <Link href="/login" className={styles.signOutBtn}>
+              Sign in to save across devices
+            </Link>
+          </span>
+        </div>
+      )}
+
       <header className={styles.header}>
         <p className={styles.eyebrow}>Moodbuilder</p>
         <h1 className={styles.title}>A studio for assembling brand moods.</h1>
@@ -96,7 +123,9 @@ export default function Home() {
         <header className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Projects</h2>
           <p className={styles.sectionHint}>
-            {isEmptyAuthedAccount ? (
+            {!signedIn ? (
+              <>This is a sample to play with. Rename it, paste your own colors, or import a Pinterest board. It all saves to this browser. Sign in when you want to keep your work and start more projects.</>
+            ) : isEmptyAuthedAccount ? (
               <>Welcome. Start a new brand project below to begin — every project keeps its own palette, pins, uploads, brand text, and starred set.</>
             ) : (
               <>
@@ -130,14 +159,21 @@ export default function Home() {
                   </span>
                 </button>
               ))}
-              <button
-                type="button"
-                className={styles.newProjectCard}
-                onClick={() => setCreating(true)}
-              >
-                <span className={styles.plus}>+</span>
-                <span>Start a new brand project</span>
-              </button>
+              {signedIn ? (
+                <button
+                  type="button"
+                  className={styles.newProjectCard}
+                  onClick={() => setCreating(true)}
+                >
+                  <span className={styles.plus}>+</span>
+                  <span>Start a new brand project</span>
+                </button>
+              ) : (
+                <Link href="/login" className={styles.newProjectCard}>
+                  <span className={styles.plus}>+</span>
+                  <span>Sign in to start more projects</span>
+                </Link>
+              )}
             </>
           )}
         </div>

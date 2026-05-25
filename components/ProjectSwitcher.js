@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { apiFetch } from "../lib/api/client";
+import { useAuthed } from "../lib/api/useAuthed";
 import styles from "./ProjectSwitcher.module.css";
 
 /**
@@ -10,6 +12,7 @@ import styles from "./ProjectSwitcher.module.css";
  * server-side and reloads the page so every fetcher re-resolves.
  */
 export default function ProjectSwitcher() {
+  const authed = useAuthed();
   const [projects, setProjects] = useState([]);
   const [activeSlug, setActiveSlugState] = useState(null);
   const [open, setOpen] = useState(false);
@@ -19,8 +22,8 @@ export default function ProjectSwitcher() {
   useEffect(() => {
     let cancelled = false;
     Promise.all([
-      fetch("/api/projects", { cache: "no-store" }).then((r) => r.json()),
-      fetch("/api/projects/active", { cache: "no-store" }).then((r) => r.json()),
+      apiFetch("/api/projects", { cache: "no-store" }).then((r) => r.json()),
+      apiFetch("/api/projects/active", { cache: "no-store" }).then((r) => r.json()),
     ]).then(([p, a]) => {
       if (cancelled) return;
       setProjects(p.projects || []);
@@ -52,7 +55,7 @@ export default function ProjectSwitcher() {
     if (slug === activeSlug) { setOpen(false); return; }
     setSwitching(true);
     try {
-      await fetch("/api/projects/active", {
+      await apiFetch("/api/projects/active", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug }),
@@ -76,6 +79,12 @@ export default function ProjectSwitcher() {
         <span className={styles.chipLabel}>{label}</span>
         <span className={styles.chipCaret} aria-hidden="true">▾</span>
       </button>
+      {authed === false && (
+        <Link href="/login" className={styles.saveHint}>
+          <span className={styles.saveDot} aria-hidden="true" />
+          Sign in to save
+        </Link>
+      )}
       {open && (
         <div className={styles.menu} role="listbox">
           {projects.length === 0 ? (

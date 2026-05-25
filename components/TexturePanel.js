@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { apiFetch } from "../lib/api/client";
+import { useAuthed } from "../lib/api/useAuthed";
 import styles from "./TexturePanel.module.css";
 
 const BLEND_MODES = [
@@ -21,6 +23,7 @@ const BLEND_MODES = [
  *   { dark: { url, opacity, blend } | null, light: { ... } | null }
  */
 export default function TexturePanel({ textures: tx, onChange }) {
+  const authed = useAuthed();
   const [variant, setVariant] = useState("dark");
   const [items, setItems] = useState([]);
   const [busy, setBusy] = useState(false);
@@ -30,7 +33,7 @@ export default function TexturePanel({ textures: tx, onChange }) {
 
   const refresh = useCallback(async () => {
     try {
-      const res = await fetch("/api/textures", { cache: "no-store" });
+      const res = await apiFetch("/api/textures", { cache: "no-store" });
       const data = await res.json();
       setItems(data.textures || []);
     } catch {
@@ -61,6 +64,10 @@ export default function TexturePanel({ textures: tx, onChange }) {
   }
 
   async function handleFiles(fileList) {
+    if (authed === false) {
+      setError("Sign in to upload textures. They’re saved to your account, not this browser.");
+      return;
+    }
     const list = Array.from(fileList);
     if (list.length === 0) return;
     setError(null);

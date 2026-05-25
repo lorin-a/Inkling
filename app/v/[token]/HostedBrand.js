@@ -46,7 +46,7 @@ export default function HostedBrand({ token, audience, voteUnit, project, librar
     <div className={styles.page}>
       <header className={styles.bar}>
         <div className={styles.barLeft}>
-          <span className={styles.brand}>moodvote</span>
+          <span className={styles.brand}>moodbuilder</span>
           <span className={styles.dot} aria-hidden="true">·</span>
           <h1 className={styles.barTitle}>{projectName}</h1>
         </div>

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { dedupe } from "../../lib/palettePool";
+import { apiFetch } from "../../lib/api/client";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import styles from "./page.module.css";
 
@@ -20,7 +21,7 @@ export default function GradientsPage() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/library/palette", { cache: "no-store" })
+    apiFetch("/api/library/palette", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (cancelled || !data) return;
