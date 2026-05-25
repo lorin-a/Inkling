@@ -8,7 +8,7 @@ import { resetToSample } from "../lib/storage/localStore";
 import styles from "./page.module.css";
 
 const TOOLS = [
-  { href: "/import",    eyebrow: "01 — Pull in",     title: "Pinterest import", body: "Bookmarklet captures a whole board with source credit. Drop the JSON; palettes extract automatically." },
+  { href: "/import",    eyebrow: "01 — Pull in",     title: "Pinterest import", body: "Save a one-click button to your bookmarks bar, click it on any board, and it captures every pin with source credit. Palettes extract automatically." },
   { href: "/library",   eyebrow: "02 — Browse",      title: "Pin library",      body: "Every pin and upload for this project, with extracted palettes. Click any pin to open the source." },
   { href: "/colors",    eyebrow: "03 — Curate",      title: "Colors",           body: "Starred set, brand swatches, curated pairings, and every color pulled from your pins. Star here, shuffle on Brand." },
   { href: "/brand",     eyebrow: "04 — Compose",     title: "Brand",            body: "The live brand. Shuffle palettes, pick fonts, override roles per variant, click any element to recolor. Marks repaint with the palette." },
