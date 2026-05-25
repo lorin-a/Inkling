@@ -615,11 +615,15 @@
   height: 28px;
   border-radius: 50%;
   border: 1px solid var(--hairline);
-  font-size: 14px;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--ink-muted);
+  background: transparent;
+  cursor: pointer;
   transition: color var(--motion-fast) var(--ease-out),
-    background var(--motion-fast) var(--ease-out);
+    background var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out);
 }
 .lockBtn:hover { color: var(--ink); }
 .lockBtnOn {
@@ -859,3 +863,47 @@
 @media (prefers-reduced-motion: reduce) {
   .shareToast { animation: none; }
 }
+
+/* Source attribution chip — shown when a shuffle came from a sampled pin palette */
+.sourceChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 32px 0;
+  padding: 8px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--ink-muted);
+  align-self: flex-start;
+  width: fit-content;
+}
+
+.sourceChipDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a3e635;
+}
+
+.sourceChipLabel { color: var(--ink); }
+
+.sourceChipLink {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.sourceChipLink:hover { color: #000; }
+
+.sourceChipClose {
+  background: none;
+  border: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 0 0 4px;
+}
+.sourceChipClose:hover { color: var(--ink); }

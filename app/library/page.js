@@ -20,6 +20,7 @@ export default function LibraryPage() {
   const [selected, setSelected] = useState(() => new Set());
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(null); // {done, total}
+  const [autoExtract, setAutoExtract] = useState(null); // { initialMissing, startedAt } | null
 
   useEffect(() => {
     let cancelled = false;
@@ -34,6 +35,33 @@ export default function LibraryPage() {
     };
   }, [refreshTick]);
 
+  // Auto-extract: on mount, ask the server to extract palettes for any
+  // pins still missing one. If it starts a run, poll /api/library every
+  // 3s so the progress bar ticks down as palettes land.
+  useEffect(() => {
+    let cancelled = false;
+    let pollId = null;
+    fetch("/api/library/extract-missing", { method: "POST" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled || !data?.started) return;
+        setAutoExtract({ initialMissing: data.missing, startedAt: data.startedAt });
+        pollId = setInterval(() => setRefreshTick((t) => t + 1), 3000);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+      if (pollId) clearInterval(pollId);
+    };
+  }, []);
+
+  // Stop polling once every pin has a palette.
+  useEffect(() => {
+    if (!autoExtract || !lib) return;
+    const remaining = Object.values(lib.pins || {}).filter((p) => !p.palette).length;
+    if (remaining === 0) setAutoExtract(null);
+  }, [lib, autoExtract]);
+
   // Internal: extract a single pin, return success/failure. Caller decides
   // how to surface errors (single-pin button alerts; batch logs silently).
   const extractOne = useCallback(async (pinId, { silent = false } = {}) => {
@@ -43,6 +71,7 @@ export default function LibraryPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pinId }),
+        signal: AbortSignal.timeout(25000),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
@@ -202,6 +231,15 @@ export default function LibraryPage() {
           <span>{withSource} sourced</span>
           <span className={styles.dot}>·</span>
           <span>{withPalette} extracted</span>
+          {autoExtract && (
+            <>
+              <span className={styles.dot}>·</span>
+              <span className={styles.autoExtract} title="Background extraction runs after every import. Stay or browse — colors keep landing.">
+                <span className={styles.autoExtractDot} />
+                Extracting palettes… {Math.max(0, autoExtract.initialMissing - (allPins.length - withPalette))} of {autoExtract.initialMissing}
+              </span>
+            </>
+          )}
         </div>
         <Link href="/brand" className={styles.poolStat} title="The colors you've extracted feed the Brand page's “From moodboard” shuffle pool.">
           <span className={styles.poolStatDot} />

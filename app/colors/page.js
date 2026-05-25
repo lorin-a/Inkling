@@ -1,34 +1,85 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import palette from "../../data/palette.json";
 import { useStarred } from "../../lib/useStarred";
+import { useProject } from "../../lib/useProject";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
+import MiniBrandPreview from "../../components/MiniBrandPreview";
 import styles from "./page.module.css";
 
 export default function ColorsPage() {
+  const { project } = useProject();
   const [hovered, setHovered] = useState(null);
   const [moodboardPool, setMoodboardPool] = useState({ palette: [], sourceMap: {}, loaded: false });
+  const [brandSwatches, setBrandSwatches] = useState([]);
+  const [curatedRows, setCuratedRows] = useState([]);
+  const [pinPalettes, setPinPalettes] = useState([]);
+  const [starredPaletteIds, setStarredPaletteIds] = useState(new Set());
+  const [sortMode, setSortMode] = useState("unrated"); // "unrated" | "recent" | "starred"
   const { isStarred, toggleStar, starred, hydrated: starsHydrated } = useStarred();
 
-  // The 20 curated rows you hand-grouped in the Figma file.
-  const curatedRows = Object.entries(palette.inspiration.curated || {});
-
-  // Brand row — the 7 Whelm brand swatches.
-  const brandSwatches = Object.entries(palette.brand);
-
-  useEffect(() => {
-    let cancelled = false;
+  const refresh = useCallback(() => {
     fetch("/api/library/palette", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (cancelled || !data) return;
+        if (!data) return;
         setMoodboardPool({ ...data, loaded: true });
+        setBrandSwatches(data.brandEntries || []);
+        setCuratedRows(Object.entries(data.curated || {}));
+        setPinPalettes(data.pinPalettes || []);
+        setStarredPaletteIds(new Set(data.starredPalettes || []));
       })
       .catch(() => setMoodboardPool((p) => ({ ...p, loaded: true })));
-    return () => { cancelled = true; };
   }, []);
+
+  useEffect(() => { refresh(); }, [refresh]);
+
+  const togglePaletteStar = useCallback(async (pinId) => {
+    const currentlyStarred = starredPaletteIds.has(pinId);
+    // Optimistic update.
+    setStarredPaletteIds((prev) => {
+      const next = new Set(prev);
+      if (currentlyStarred) next.delete(pinId);
+      else next.add(pinId);
+      return next;
+    });
+    try {
+      await fetch("/api/library/star-palette", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pinId, starred: !currentlyStarred }),
+      });
+    } catch {
+      refresh();
+    }
+  }, [starredPaletteIds, refresh]);
+
+  // Sort + partition: top picks (starred) always render first; everything
+  // else respects the user's sortMode.
+  const { topPicks, restPalettes } = useMemo(() => {
+    const starredList = [];
+    const restList = [];
+    for (const p of pinPalettes) {
+      if (starredPaletteIds.has(p.pinId)) starredList.push(p);
+      else restList.push(p);
+    }
+    if (sortMode === "recent") {
+      restList.sort((a, b) => (b.addedAt || "").localeCompare(a.addedAt || ""));
+    } else if (sortMode === "unrated") {
+      // unrated is just "not yet starred" — they're already in restList.
+      // Add a tiny shuffle so each visit isn't identical.
+      restList.sort((a, b) => (b.addedAt || "").localeCompare(a.addedAt || ""));
+    }
+    return { topPicks: starredList, restPalettes: restList };
+  }, [pinPalettes, starredPaletteIds, sortMode]);
+
+  const surpriseMe = useCallback(() => {
+    if (restPalettes.length === 0) return;
+    const pick = restPalettes[Math.floor(Math.random() * restPalettes.length)];
+    const el = document.getElementById(`palette-${pick.pinId}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [restPalettes]);
 
   const copyHex = (hex) => navigator.clipboard?.writeText(hex);
 
@@ -41,22 +92,109 @@ export default function ColorsPage() {
         <ProjectSwitcher />
         <div className={styles.barTitle}>Colors</div>
         <div className={styles.barMeta}>
-          <span>★ {starred.size} starred</span>
+          <span title="Palettes you've rated as a yes. Brand shuffle samples from these.">★ {starredPaletteIds.size} top picks</span>
           <span className={styles.dot}>·</span>
-          <span>{curatedRows.length} curated rows</span>
+          <span>{pinPalettes.length} palettes from pins</span>
           <span className={styles.dot}>·</span>
-          <span>{moodboardPool.palette.length} from pins</span>
+          <span>{starred.size} starred colors</span>
         </div>
       </header>
+
+      {pinPalettes.length > 0 && (
+        <section className={styles.section}>
+          <header className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>
+              ★ Top picks <span className={styles.sectionCount}>{topPicks.length}</span>
+            </h2>
+            <p className={styles.sectionHint}>
+              Palettes you've rated as a yes. The <Link href="/brand" className={styles.inlineLink}>Brand</Link> shuffle samples from these. Star any palette below to lift it here.
+            </p>
+          </header>
+          {topPicks.length === 0 ? (
+            <p className={styles.empty}>Nothing here yet. Star a palette below to start training the shuffle.</p>
+          ) : (
+            <div className={styles.paletteList}>
+              {topPicks.map((p) => (
+                <PaletteRow
+                  key={p.pinId}
+                  entry={p}
+                  project={project}
+                  isPaletteStarred={true}
+                  togglePaletteStar={togglePaletteStar}
+                  isHexStarred={isStarred}
+                  toggleHexStar={toggleStar}
+                  copyHex={copyHex}
+                  onHover={(hex) => setHovered({ hex, label: p.sourceDomain || "from pin" })}
+                  onLeave={() => setHovered(null)}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      {pinPalettes.length > 0 && (
+        <section className={styles.section}>
+          <header className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>
+              Palettes from your pins <span className={styles.sectionCount}>{restPalettes.length}</span>
+            </h2>
+            <p className={styles.sectionHint}>
+              Every pin's extracted palette as a unit. Each shows your wordmark rendered with that palette so you can rate it as a brand, not as abstract colors.
+            </p>
+            <div className={styles.paletteControls}>
+              <div className={styles.sortGroup} role="tablist" aria-label="Sort palettes">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={sortMode === "unrated"}
+                  className={`${styles.sortBtn} ${sortMode === "unrated" ? styles.sortBtnActive : ""}`}
+                  onClick={() => setSortMode("unrated")}
+                >Unrated</button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={sortMode === "recent"}
+                  className={`${styles.sortBtn} ${sortMode === "recent" ? styles.sortBtnActive : ""}`}
+                  onClick={() => setSortMode("recent")}
+                >Recent</button>
+              </div>
+              <button
+                type="button"
+                className={styles.surpriseBtn}
+                onClick={surpriseMe}
+                title="Jump to a random palette you haven't rated yet"
+              >
+                Surprise me
+              </button>
+            </div>
+          </header>
+          <div className={styles.paletteList}>
+            {restPalettes.map((p) => (
+              <PaletteRow
+                key={p.pinId}
+                entry={p}
+                project={project}
+                isPaletteStarred={false}
+                togglePaletteStar={togglePaletteStar}
+                isHexStarred={isStarred}
+                toggleHexStar={toggleStar}
+                copyHex={copyHex}
+                onHover={(hex) => setHovered({ hex, label: p.sourceDomain || "from pin" })}
+                onLeave={() => setHovered(null)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className={styles.section}>
         <header className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>
-            ★ Starred <span className={styles.sectionCount}>{starred.size}</span>
+            ★ Starred colors <span className={styles.sectionCount}>{starred.size}</span>
           </h2>
           <p className={styles.sectionHint}>
-            Your curated, growing set. Seeded with the 30 hand-pulled Figma swatches. Star any color anywhere on this page to add it; unstar to remove.{" "}
-            Powers the <Link href="/brand" className={styles.inlineLink}>Brand</Link> page's <em>Starred</em> shuffle pool — the highest-signal source for shipping palettes.
+            Your curated, growing set. Star any color anywhere on this page to add it; unstar to remove. Feeds the <Link href="/brand" className={styles.inlineLink}>Brand</Link> page's <em>Starred</em> shuffle.
           </p>
         </header>
         {starsHydrated && starredHexes.length === 0 ? (
@@ -82,8 +220,10 @@ export default function ColorsPage() {
 
       <section className={styles.section}>
         <header className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Whelm brand</h2>
-          <p className={styles.sectionHint}>The current Whelm palette — dark, mauve, vivid, lavender, etc.</p>
+          <h2 className={styles.sectionTitle}>Project brand</h2>
+          <p className={styles.sectionHint}>
+            Colors locked in as the identity for this project. Edit them on <Link href="/brand" className={styles.inlineLink}>Brand</Link>.
+          </p>
         </header>
         <div className={styles.rowList}>
           <SwatchRow
@@ -91,7 +231,7 @@ export default function ColorsPage() {
             hexes={brandSwatches.map(([, h]) => h)}
             isStarred={isStarred}
             toggleStar={toggleStar}
-            onHover={(h) => setHovered({ hex: h, label: "Whelm brand" })}
+            onHover={(h) => setHovered({ hex: h, label: "Project brand" })}
             onLeave={() => setHovered(null)}
             onClick={copyHex}
           />
@@ -102,7 +242,7 @@ export default function ColorsPage() {
         <header className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Curated pairings</h2>
           <p className={styles.sectionHint}>
-            Hand-grouped sets you pulled from the inspiration grid. Each row was a deliberate combination.
+            Hand-grouped color sets for this project. Each row is a combination worth shuffling against on its own.
           </p>
         </header>
         <div className={styles.rowList}>
@@ -125,12 +265,10 @@ export default function ColorsPage() {
         <header className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>From your pins</h2>
           <p className={styles.sectionHint}>
-            Colors extracted from your Pinterest moodboard.{" "}
+            Colors extracted from your Pinterest pins.{" "}
             {moodboardPool.palette.length === 0 ? (
               <>
-                Empty so far —{" "}
-                <Link href="/library" className={styles.inlineLink}>extract palettes in the library</Link>{" "}
-                to fill this section.
+                Empty so far. Pinned images extract automatically. Drop a board on <Link href="/import" className={styles.inlineLink}>Pinterest import</Link> to fill this.
               </>
             ) : (
               <>
@@ -172,6 +310,93 @@ export default function ColorsPage() {
         ) : (
           <span className={styles.hint}>Hover any swatch · click to copy hex</span>
         )}
+      </div>
+    </div>
+  );
+}
+
+function PaletteRow({
+  entry,
+  project,
+  isPaletteStarred,
+  togglePaletteStar,
+  isHexStarred,
+  toggleHexStar,
+  copyHex,
+  onHover,
+  onLeave,
+}) {
+  const [swapPrimary, setSwapPrimary] = useState(false);
+  return (
+    <div className={styles.paletteRow} id={`palette-${entry.pinId}`}>
+      <a
+        href={entry.pinUrl || entry.sourceUrl || "#"}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={styles.paletteThumb}
+        title={entry.title || "Open source"}
+      >
+        {entry.thumbnail ? (
+          <img src={entry.thumbnail} alt={entry.title || ""} loading="lazy" />
+        ) : (
+          <span className={styles.paletteThumbEmpty}>—</span>
+        )}
+      </a>
+
+      <div className={styles.paletteSwatches}>
+        {entry.palette.map((hex, i) => (
+          <button
+            key={`${hex}-${i}`}
+            type="button"
+            className={`${styles.paletteSwatch} ${isHexStarred?.(hex) ? styles.paletteSwatchStarred : ""}`}
+            style={{ backgroundColor: hex }}
+            onClick={(e) => {
+              if (e.shiftKey) toggleHexStar?.(hex);
+              else copyHex?.(hex);
+            }}
+            onMouseEnter={() => onHover?.(hex)}
+            onMouseLeave={() => onLeave?.()}
+            title={`${hex.toUpperCase()} · click to copy · shift-click to star`}
+            aria-label={hex}
+          />
+        ))}
+      </div>
+
+      <div className={styles.palettePreview}>
+        <MiniBrandPreview palette={entry.palette} project={project} variant="dark" sourceKind="pin" swapPrimary={swapPrimary} />
+        <MiniBrandPreview palette={entry.palette} project={project} variant="light" sourceKind="pin" swapPrimary={swapPrimary} />
+        <button
+          type="button"
+          className={styles.swapBtn}
+          onClick={() => setSwapPrimary((s) => !s)}
+          title={swapPrimary ? "Restore the engine's bg / ink pick" : "Flip bg and ink if the engine guessed wrong for this palette"}
+          aria-label="Swap background and ink"
+        >
+          ⇄
+        </button>
+      </div>
+
+      <div className={styles.paletteMeta}>
+        {entry.sourceDomain && (
+          <a
+            href={entry.sourceUrl || entry.pinUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.paletteSource}
+            title={entry.sourceUrl || entry.pinUrl}
+          >
+            via {entry.sourceDomain}
+          </a>
+        )}
+        <button
+          type="button"
+          className={`${styles.paletteStarBtn} ${isPaletteStarred ? styles.paletteStarBtnOn : ""}`}
+          onClick={() => togglePaletteStar(entry.pinId)}
+          title={isPaletteStarred ? "Remove from your pool. Brand shuffle will stop favoring this." : "Save to your pool. Brand shuffle samples from saved palettes first."}
+          aria-label={isPaletteStarred ? "Unsave palette" : "Save palette"}
+        >
+          {isPaletteStarred ? "★ Saved" : "☆ Save"}
+        </button>
       </div>
     </div>
   );

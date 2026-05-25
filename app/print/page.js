@@ -3,6 +3,8 @@
 import { useEffect, useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { remapSvgColors } from "../../lib/svgRemap";
+import { derivePreviewRoles } from "../../lib/derivePreviewRoles";
+import { relativeLuminance as luminance } from "../../lib/colorTheory";
 import FontLoader from "../../components/FontLoader";
 import styles from "./page.module.css";
 
@@ -267,39 +269,5 @@ function buildFontVars(fonts) {
   return vars;
 }
 
-function luminance(hex) {
-  const h = hex.replace("#", "");
-  const r = parseInt(h.slice(0, 2), 16) / 255;
-  const g = parseInt(h.slice(2, 4), 16) / 255;
-  const b = parseInt(h.slice(4, 6), 16) / 255;
-  const lin = (v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
-  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
-}
-
-function saturation(hex) {
-  const h = hex.replace("#", "");
-  const r = parseInt(h.slice(0, 2), 16) / 255;
-  const g = parseInt(h.slice(2, 4), 16) / 255;
-  const b = parseInt(h.slice(4, 6), 16) / 255;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  return max === 0 ? 0 : (max - min) / max;
-}
-
-function derivePreviewRoles(palette) {
-  if (!palette || palette.length === 0) return null;
-  const sorted = palette.slice().sort((a, b) => luminance(a) - luminance(b));
-  const darkest = sorted[0];
-  const lightest = sorted[sorted.length - 1];
-  const mids = sorted.slice(1, -1);
-  let accent = lightest;
-  if (mids.length) {
-    let bestSat = -1;
-    for (const h of mids) {
-      const s = saturation(h);
-      if (s > bestSat) { bestSat = s; accent = h; }
-    }
-  }
-  const muted = mids.length ? mids[Math.floor(mids.length / 2)] : darkest;
-  return { bg: darkest, ink: lightest, accent, muted };
-}
+// derivePreviewRoles imported from lib/ — shared with the brand page and
+// the smart composer.

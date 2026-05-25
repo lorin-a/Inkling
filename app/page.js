@@ -5,11 +5,12 @@ import Link from "next/link";
 import styles from "./page.module.css";
 
 const TOOLS = [
-  { href: "/colors",    eyebrow: "01 — Inspiration", title: "Colors",          body: "Starred set, curated rows, and every color pulled from your pins — one place to browse the project's full vocabulary." },
-  { href: "/brand",     eyebrow: "02 — Application", title: "Brand",           body: "Live brand mock. Shuffle palettes, override roles per variant, click-to-recolor any element. Marks repaint with the palette." },
-  { href: "/gradients", eyebrow: "03 — Composition", title: "Gradients",       body: "Build linear / radial / conic gradients from any colors. Drag angle, drag stops, copy CSS." },
-  { href: "/import",    eyebrow: "04 — Capture",     title: "Pinterest import", body: "Bookmarklet captures an entire board with source credit. Drop the JSON to commit." },
-  { href: "/library",   eyebrow: "05 — Library",     title: "Pin library",      body: "All your imported and uploaded images, with extracted palettes. Click any to recolor, star, or open the source." },
+  { href: "/import",    eyebrow: "01 — Pull in",     title: "Pinterest import", body: "Bookmarklet captures a whole board with source credit. Drop the JSON; palettes extract automatically." },
+  { href: "/library",   eyebrow: "02 — Browse",      title: "Pin library",      body: "Every pin and upload for this project, with extracted palettes. Click any pin to open the source." },
+  { href: "/colors",    eyebrow: "03 — Curate",      title: "Colors",           body: "Starred set, brand swatches, curated pairings, and every color pulled from your pins. Star here, shuffle on Brand." },
+  { href: "/brand",     eyebrow: "04 — Compose",     title: "Brand",            body: "The live brand. Shuffle palettes, pick fonts, override roles per variant, click any element to recolor. Marks repaint with the palette." },
+  { href: "/print",     eyebrow: "05 — Deliver",     title: "Brand book",       body: "Five-page printable: cover, palette, type, marks, gradients. Open from Brand, or here for a quick look." },
+  { href: "/gradients", eyebrow: "Utility",          title: "Gradients",        body: "Sketch linear / radial / conic gradients from any project color. Drag the angle, drag the stops, copy the CSS." },
 ];
 
 export default function Home() {
@@ -107,7 +108,7 @@ export default function Home() {
                 onClick={() => setCreating(true)}
               >
                 <span className={styles.plus}>+</span>
-                <span>New project</span>
+                <span>Start a new brand project</span>
               </button>
             </>
           )}
@@ -162,7 +163,7 @@ function NewProjectModal({ onClose, onCreate, error }) {
       <form className={styles.modal} onClick={(e) => e.stopPropagation()} onSubmit={submit}>
         <button type="button" className={styles.modalClose} onClick={onClose} aria-label="Close">×</button>
         <h2 className={styles.modalTitle}>New project</h2>
-        <p className={styles.modalHint}>Empty workspace. Add Pinterest pins, upload images, extract palettes, and the project's own brand world starts to take shape.</p>
+        <p className={styles.modalHint}>Empty workspace. Add a Pinterest board or upload images and the project's own brand world starts to take shape. Palettes extract on their own as pins land.</p>
         <label className={styles.field}>
           <span className={styles.fieldLabel}>Project name</span>
           <input

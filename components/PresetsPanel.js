@@ -80,7 +80,7 @@ export default function PresetsPanel({ snapshot, applyPreset }) {
     <section className={styles.panel}>
       <header className={styles.header}>
         <h3 className={styles.heading}>
-          Presets
+          Brand presets
           <span className={styles.count}>{presets.length}</span>
         </h3>
         {!naming && (
@@ -89,8 +89,9 @@ export default function PresetsPanel({ snapshot, applyPreset }) {
             className={styles.saveBtn}
             onClick={() => setNaming(true)}
             disabled={busy}
+            title="Save palette + type + texture + roles as one identity snapshot"
           >
-            Save current
+            Save as preset
           </button>
         )}
       </header>
@@ -132,7 +133,7 @@ export default function PresetsPanel({ snapshot, applyPreset }) {
 
       {loaded && presets.length === 0 && !naming && (
         <p className={styles.empty}>
-          No presets yet. Save the current palette + type + texture as a snapshot.
+          No presets yet. Save the current palette, type, texture, and role overrides as one identity snapshot.
         </p>
       )}
 

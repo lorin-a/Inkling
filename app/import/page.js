@@ -131,15 +131,15 @@ export default function ImportPage() {
         <section className={styles.step}>
           <span className={styles.stepNum}>3</span>
           <div className={styles.stepBody}>
-            <h2 className={styles.stepTitle}>Open your Whelm board and click the bookmark</h2>
+            <h2 className={styles.stepTitle}>Open the Pinterest board for this project and click the bookmark</h2>
             <p className={styles.stepText}>
-              Go to <a href="https://www.pinterest.com/lorinanderberg1/whelm/" target="_blank" rel="noopener noreferrer" className={styles.inlineLink}>pinterest.com/lorinanderberg1/whelm</a>. Click the bookmark.
-            </p>
-            <p className={styles.stepText}>
-              A floating panel appears at the bottom-right of the page. The bookmark will auto-scroll your entire board, capturing every pin (you'll see the count tick up). When it plateaus, a JSON file downloads automatically: <code className={styles.code}>moodbuilder-whelm-{`{timestamp}`}.json</code>.
+              On any Pinterest board page, click the bookmark you just added. A floating panel appears at the bottom-right; the bookmark auto-scrolls the whole board, capturing every pin (you'll see the count tick up). When it plateaus, a JSON file downloads.
             </p>
             <p className={styles.stepHint}>
-              You can also click <em>Stop &amp; Download</em> at any point if you'd rather not wait for the auto-stop. The board has ~354 pins so full capture takes about 90 seconds.
+              You can also click <em>Stop &amp; Download</em> at any point. A few hundred pins takes roughly 90 seconds.
+            </p>
+            <p className={styles.stepHint}>
+              Re-importing the same board later only adds the new pins. Existing ones are kept as-is.
             </p>
           </div>
         </section>
@@ -205,7 +205,15 @@ export default function ImportPage() {
 
             {importStatus?.kind === "done" && (
               <div className={styles.done}>
-                <strong>Imported.</strong> {importStatus.added} new, {importStatus.updated} updated · library now holds {importStatus.librarySize} pins.{" "}
+                <strong>
+                  {importStatus.added > 0
+                    ? `${importStatus.added} new pin${importStatus.added === 1 ? "" : "s"} added.`
+                    : "Nothing new to add."}
+                </strong>{" "}
+                {importStatus.updated > 0 && (
+                  <>{importStatus.updated} already in your library, refreshed with the latest metadata. </>
+                )}
+                Library now holds {importStatus.librarySize} pins.{" "}
                 <Link href="/library" className={styles.inlineLink}>Open library →</Link>
                 <p className={styles.stepHint}>Source URLs are populating in the background. Refresh /library in a minute to see them filled in.</p>
               </div>

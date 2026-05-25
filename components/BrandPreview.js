@@ -1,6 +1,7 @@
 "use client";
 
 import FigmaFrame from "./FigmaFrame";
+import { derivePreviewRoles as mapRoles } from "../lib/derivePreviewRoles";
 import styles from "./BrandPreview.module.css";
 
 /**
@@ -162,57 +163,3 @@ function buildFontVars(fonts) {
   return vars;
 }
 
-function mapRoles(palette, variant) {
-  if (palette.length === 0) {
-    return { bg: "#fff", ink: "#000", muted: "#666", accent: "#888",
-      gradient1: "none", gradient2: "none" };
-  }
-  // Sort by luminance ascending: darkest first, lightest last.
-  const lum = (hex) => {
-    const h = hex.replace("#", "");
-    const r = parseInt(h.slice(0, 2), 16) / 255;
-    const g = parseInt(h.slice(2, 4), 16) / 255;
-    const b = parseInt(h.slice(4, 6), 16) / 255;
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  };
-  const sorted = palette.slice().sort((a, b) => lum(a) - lum(b));
-  const darkest = sorted[0];
-  const lightest = sorted[sorted.length - 1];
-  const mids = sorted.slice(1, -1);
-
-  const isDark = variant === "dark";
-  const bg = isDark ? darkest : lightest;
-  const ink = isDark ? lightest : darkest;
-  // accent: most vivid mid (highest chroma). Fall back to opposite.
-  const accent = mids.length ? mostVivid(mids) : ink;
-  const muted = mids.length ? mids[Math.floor(mids.length / 2)] : accent;
-
-  // Gradients use the palette's full spread
-  const gradient1 = `linear-gradient(135deg, ${sorted.join(", ")})`;
-  const gradient2 = `linear-gradient(90deg, ${sorted.slice().reverse().join(", ")})`;
-
-  return { bg, ink, muted, accent, gradient1, gradient2 };
-}
-
-function mostVivid(hexes) {
-  let best = hexes[0];
-  let bestSat = -1;
-  for (const hex of hexes) {
-    const sat = saturation(hex);
-    if (sat > bestSat) {
-      bestSat = sat;
-      best = hex;
-    }
-  }
-  return best;
-}
-
-function saturation(hex) {
-  const h = hex.replace("#", "");
-  const r = parseInt(h.slice(0, 2), 16) / 255;
-  const g = parseInt(h.slice(2, 4), 16) / 255;
-  const b = parseInt(h.slice(4, 6), 16) / 255;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  return max === 0 ? 0 : (max - min) / max;
-}

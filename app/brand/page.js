@@ -4,7 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePalette } from "../../lib/usePalette";
 import { useProject } from "../../lib/useProject";
-import { POOLS, POOL_LABELS } from "../../lib/palettePool";
+import { POOL_LABELS } from "../../lib/palettePool";
+import { derivePreviewRoles } from "../../lib/derivePreviewRoles";
+import { relativeLuminance as luminance } from "../../lib/colorTheory";
 import { FORMATS, formatExport } from "../../lib/exportFormats";
 import BrandPreview from "../../components/BrandPreview";
 import MarksFrame from "../../components/MarksFrame";
@@ -36,6 +38,9 @@ export default function BrandPage() {
     applySnapshot,
     moodboardPool,
     starredPool,
+    pools,
+    paletteSource,
+    setPaletteSource,
   } = usePalette({ initialSize: 5, initialPoolKey: "starred" });
 
   const { project, save: saveProject } = useProject();
@@ -43,6 +48,23 @@ export default function BrandPage() {
   const [editingProject, setEditingProject] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [shareState, setShareState] = useState({ status: "idle", url: null, error: null });
+
+  // On mount, check if the Colors page handed us a palette to apply via
+  // localStorage. If so, load it and surface the source so we can show a
+  // "from: vogue.com" chip below the toolbar.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("moodbuilder.apply-palette");
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      if (Array.isArray(data?.hexes) && data.hexes.length > 0) {
+        applySnapshot({ palette: data.hexes, size: data.hexes.length });
+        setPaletteSource?.(data.source || null);
+      }
+      localStorage.removeItem("moodbuilder.apply-palette");
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const openForVoting = useCallback(async () => {
     setShareState({ status: "sharing", url: null, error: null });
@@ -180,14 +202,14 @@ export default function BrandPage() {
           type="button"
           className={styles.barTitleBtn}
           onClick={() => setEditingProject(true)}
-          title="Edit project copy"
+          title="Edit the project's wordmark, tagline, and body text"
         >
-          Edit copy
+          <PencilIcon /> Edit brand text
         </button>
 
         <div className={styles.controls}>
-          <label className={styles.control}>
-            <span className={styles.controlLabel}>Pool</span>
+          <label className={styles.control} title="Which set of colors shuffle samples from">
+            <span className={styles.controlLabel}>Source</span>
             <select
               value={poolKey}
               onChange={(e) => setPoolKey(e.target.value)}
@@ -199,9 +221,9 @@ export default function BrandPage() {
             </select>
           </label>
 
-          <label className={styles.control}>
+          <label className={styles.control} title="How many color slots the palette has">
             <span className={styles.controlLabel}>
-              Colors <span className={styles.value}>{size}</span>
+              Slots <span className={styles.value}>{size}</span>
             </span>
             <input
               type="range"
@@ -218,25 +240,27 @@ export default function BrandPage() {
             className={`${styles.btn} ${styles.btnGhost}`}
             onClick={() => stepHistory(-1)}
             disabled={!canUndo}
-            title="Step back (←)"
+            title="Undo. Previous palette."
+            aria-label="Undo"
           >
-            ←
+            <UndoIcon />
           </button>
           <button
             type="button"
             className={`${styles.btn} ${styles.btnGhost}`}
             onClick={() => stepHistory(1)}
             disabled={!canRedo}
-            title="Step forward (→)"
+            title="Redo. Next palette."
+            aria-label="Redo"
           >
-            →
+            <RedoIcon />
           </button>
           <button
             type="button"
             className={`${styles.btn} ${styles.btnPrimary}`}
             onClick={handleShuffle}
             disabled={poolEmpty}
-            title={poolEmpty ? "This pool is empty" : "Shuffle (Space)"}
+            title={poolEmpty ? "This source is empty" : "Shuffle a new palette (Space)"}
           >
             Shuffle
             <kbd className={styles.kbd}>Space</kbd>
@@ -245,16 +269,16 @@ export default function BrandPage() {
             type="button"
             className={`${styles.btn} ${styles.btnFav}`}
             onClick={() => favorite()}
-            title="Save palette (F)"
+            title="Bookmark this palette (F). Saves colors only, not the full brand."
           >
-            ★ Save
+            ★ Bookmark palette
           </button>
           <button
             type="button"
             className={`${styles.btn}`}
             onClick={() => setExportOpen(true)}
             disabled={palette.length === 0}
-            title="Export this palette"
+            title="Export palette as CSS, JSON, Figma tokens, or open as a brand book"
           >
             ↓ Export
           </button>
@@ -263,12 +287,40 @@ export default function BrandPage() {
             className={`${styles.btn} ${styles.btnPrimary}`}
             onClick={openForVoting}
             disabled={shareState.status === "sharing"}
-            title="Publish this project to a shareable voting URL"
+            title="Publish this brand to a shareable URL so collaborators can vote"
           >
             {shareState.status === "sharing" ? "Sharing…" : "↗ Share for voting"}
           </button>
         </div>
       </header>
+
+      {paletteSource?.kind === "pin" && (
+        <div className={styles.sourceChip} role="status" aria-live="polite">
+          <span className={styles.sourceChipDot} />
+          <span className={styles.sourceChipLabel}>
+            Shuffled from pin
+            {paletteSource.sourceDomain && (
+              <>
+                {" "}·{" "}
+                <a
+                  href={paletteSource.sourceUrl || paletteSource.pinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.sourceChipLink}
+                >
+                  {paletteSource.sourceDomain}
+                </a>
+              </>
+            )}
+          </span>
+          <button
+            type="button"
+            className={styles.sourceChipClose}
+            onClick={() => setPaletteSource(null)}
+            aria-label="Dismiss source attribution"
+          >×</button>
+        </div>
+      )}
 
       {shareState.status === "ready" && (
         <ShareToast
@@ -365,10 +417,10 @@ export default function BrandPage() {
                   type="button"
                   className={`${styles.lockBtn} ${locks.has(i) ? styles.lockBtnOn : ""}`}
                   onClick={() => toggleLock(i)}
-                  title={locks.has(i) ? "Unlock slot" : "Lock slot"}
-                  aria-label={locks.has(i) ? "Unlock" : "Lock"}
+                  title={locks.has(i) ? "Locked. Won't change on shuffle. Click to unlock." : "Lock this slot so shuffle leaves it alone."}
+                  aria-label={locks.has(i) ? "Unlock slot" : "Lock slot"}
                 >
-                  {locks.has(i) ? "●" : "○"}
+                  {locks.has(i) ? <LockIcon /> : <LockOpenIcon />}
                 </button>
               </div>
             ))}
@@ -381,7 +433,7 @@ export default function BrandPage() {
                 <button type="button" onClick={() => setPicker(null)} className={styles.pickerClose}>×</button>
               </div>
               <div className={styles.pickerGrid}>
-                {POOLS[poolKey].map((hex, i) => (
+                {(pools[poolKey] || []).map((hex, i) => (
                   <button
                     key={`${hex}-${i}`}
                     type="button"
@@ -398,11 +450,11 @@ export default function BrandPage() {
 
           <div className={styles.favorites}>
             <h2 className={styles.railTitle}>
-              Saved
+              Bookmarked palettes
               <span className={styles.railCount}>{favorites.length}</span>
             </h2>
             {favorites.length === 0 && (
-              <p className={styles.railEmpty}>None yet. Press F or ★ Save to keep one.</p>
+              <p className={styles.railEmpty}>None yet. Press F or ★ Bookmark palette to keep one.</p>
             )}
             <div className={styles.favList}>
               {favorites.map((f) => (
@@ -785,45 +837,53 @@ function ExportModal({ palette, project, roles, gradients, onClose }) {
 }
 
 // ---------- helpers ----------
+// derivePreviewRoles + luminance are now imported from lib/. The local
+// `saturation()` helper used to power the legacy role picker; the shared
+// module replaces it with OKLCH chroma so the composer and the renderer
+// agree on what "most vivid" means.
 
-function luminance(hex) {
-  const h = hex.replace("#", "");
-  const r = parseInt(h.slice(0, 2), 16) / 255;
-  const g = parseInt(h.slice(2, 4), 16) / 255;
-  const b = parseInt(h.slice(4, 6), 16) / 255;
-  const lin = (v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
-  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+// Small inline icons. Glyphs (←→●○) were ambiguous — undo/redo arrows
+// were reading as next/prev page, and the dot pair on the lock toggle
+// read as a radio selection. SVGs make the affordance honest.
+function PencilIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M11.5 1.5l3 3-9 9-3.5.5.5-3.5 9-9z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M9.5 3.5l3 3" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
 }
-
-function saturation(hex) {
-  const h = hex.replace("#", "");
-  const r = parseInt(h.slice(0, 2), 16) / 255;
-  const g = parseInt(h.slice(2, 4), 16) / 255;
-  const b = parseInt(h.slice(4, 6), 16) / 255;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  return max === 0 ? 0 : (max - min) / max;
+function UndoIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M3 6h7a3.5 3.5 0 010 7H6.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5.5 3.5L3 6l2.5 2.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
 }
-
-function derivePreviewRoles(palette, variant = "dark") {
-  if (!palette || palette.length === 0) return null;
-  const sorted = palette.slice().sort((a, b) => luminance(a) - luminance(b));
-  const darkest = sorted[0];
-  const lightest = sorted[sorted.length - 1];
-  const mids = sorted.slice(1, -1);
-  let accent = lightest;
-  if (mids.length) {
-    let bestSat = -1;
-    for (const h of mids) {
-      const s = saturation(h);
-      if (s > bestSat) { bestSat = s; accent = h; }
-    }
-  }
-  const muted = mids.length ? mids[Math.floor(mids.length / 2)] : darkest;
-  if (variant === "light") {
-    return { bg: lightest, ink: darkest, accent, muted };
-  }
-  return { bg: darkest, ink: lightest, accent, muted };
+function RedoIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M13 6H6a3.5 3.5 0 000 7h3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M10.5 3.5L13 6l-2.5 2.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function LockIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect x="3.5" y="7" width="9" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+function LockOpenIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect x="3.5" y="7" width="9" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M5.5 7V5a2.5 2.5 0 014.95-.6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
 }
 
 function ShareToast({ url, error, onClose }) {

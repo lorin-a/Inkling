@@ -46,3 +46,13 @@ next-env.d.ts
 # regenerable Figma asset cache — URLs expire ~7 days, re-run `npm run extract`
 /public/figma-assets/
 .env*.local
+.review-artifacts/
+
+# Local review captures (Playwright screenshots, etc.) — kept out of git
+marks-*.png
+switcher-*.png
+print-marks-*.png
+audit-*.png
+review-*.png
+smart-shuffle-*.png
+phase*-*.png

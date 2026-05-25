@@ -1,19 +1,49 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { allUnique, sourcePool, brandSwatches } from "../../lib/palettePool";
+import { dedupe } from "../../lib/palettePool";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import styles from "./page.module.css";
 
 const TYPES = ["linear", "radial", "conic"];
 
 export default function GradientsPage() {
+  const [brandSwatches, setBrandSwatches] = useState([]);
+  const [sourcePool, setSourcePool] = useState([]);
+  const [moodboardPool, setMoodboardPool] = useState([]);
   const [stops, setStops] = useState([
-    { hex: brandSwatches[6] || "#1f0536", pos: 0 },
-    { hex: brandSwatches[2] || "#895fae", pos: 50 },
-    { hex: brandSwatches[0] || "#bdb7e9", pos: 100 },
+    { hex: "#1f0536", pos: 0 },
+    { hex: "#895fae", pos: 50 },
+    { hex: "#bdb7e9", pos: 100 },
   ]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/library/palette", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        const brand = Array.isArray(data.brand) ? data.brand : [];
+        setBrandSwatches(brand);
+        setSourcePool(data.sourcePool || []);
+        setMoodboardPool(data.palette || []);
+        if (brand.length >= 3) {
+          setStops([
+            { hex: brand[6] || brand[brand.length - 1], pos: 0 },
+            { hex: brand[2] || brand[Math.floor(brand.length / 2)], pos: 50 },
+            { hex: brand[0], pos: 100 },
+          ]);
+        }
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
+  const allUnique = useMemo(
+    () => dedupe([...brandSwatches, ...sourcePool, ...moodboardPool]),
+    [brandSwatches, sourcePool, moodboardPool],
+  );
   const [angle, setAngle] = useState(135);
   const [type, setType] = useState("linear");
   const [activeStop, setActiveStop] = useState(0);
@@ -27,7 +57,7 @@ export default function GradientsPage() {
   function addStop() {
     const last = stops[stops.length - 1];
     const newPos = Math.min(100, last.pos + 10);
-    setStops((prev) => [...prev, { hex: brandSwatches[0] || "#ffffff", pos: newPos }]);
+    setStops((prev) => [...prev, { hex: brandSwatches[0] || allUnique[0] || "#ffffff", pos: newPos }]);
     setActiveStop(stops.length);
   }
   function removeStop(i) {

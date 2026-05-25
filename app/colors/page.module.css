@@ -329,3 +329,243 @@
   z-index: 2;
   outline: none;
 }
+
+/* ---------- Palette rows (training surface) ---------- */
+
+.paletteControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.sortGroup {
+  display: inline-flex;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  padding: 2px;
+}
+
+.sortBtn {
+  padding: 4px 12px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: color var(--motion-fast) var(--ease-out),
+    background var(--motion-fast) var(--ease-out);
+}
+.sortBtn:hover { color: var(--ink); }
+.sortBtnActive {
+  background: var(--ink);
+  color: var(--bg);
+}
+.sortBtnActive:hover { color: var(--bg); }
+
+.surpriseBtn {
+  padding: 5px 14px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+.surpriseBtn:hover { border-color: var(--ink); }
+
+.paletteList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.paletteRow {
+  display: grid;
+  grid-template-columns: 88px 1fr minmax(240px, 1.2fr) minmax(120px, auto);
+  gap: 18px;
+  align-items: center;
+  padding: 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  transition: border-color var(--motion-fast) var(--ease-out),
+    transform var(--motion-fast) var(--ease-out);
+}
+.paletteRow:hover {
+  border-color: rgba(0, 0, 0, 0.18);
+}
+
+.paletteThumb {
+  width: 88px;
+  height: 88px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--hairline);
+  display: block;
+  position: relative;
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+.paletteThumb:hover { transform: scale(1.02); }
+.paletteThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.paletteThumbEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--ink-muted);
+}
+
+.paletteSwatches {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.paletteSwatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  transition: transform var(--motion-fast) var(--ease-out),
+    box-shadow var(--motion-fast) var(--ease-out);
+}
+.paletteSwatch:hover,
+.paletteSwatch:focus-visible {
+  transform: scale(1.12);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+  z-index: 2;
+  outline: none;
+}
+.paletteSwatchStarred::after {
+  content: "★";
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 14px;
+  height: 14px;
+  font-size: 10px;
+  line-height: 14px;
+  text-align: center;
+  background: #f59e0b;
+  color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--bg-elevated);
+}
+
+.palettePreview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.paletteMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.paletteSource {
+  font-size: 11px;
+  color: var(--ink-muted);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+.paletteSource:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+.paletteActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.applyBtn {
+  padding: 6px 12px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+.applyBtn:hover { background: #000; }
+
+.paletteStarBtn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  background: transparent;
+  font-size: 14px;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: color var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out);
+}
+.paletteStarBtn:hover {
+  color: #f59e0b;
+  border-color: #f59e0b;
+}
+.paletteStarBtnOn {
+  color: #f59e0b;
+  border-color: #f59e0b;
+}
+
+@media (max-width: 900px) {
+  .paletteRow {
+    grid-template-columns: 64px 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 12px;
+  }
+  .paletteThumb { width: 64px; height: 64px; }
+  .palettePreview { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; }
+  .paletteMeta { grid-column: 1 / -1; align-items: flex-start; flex-direction: row; justify-content: space-between; }
+}
+
+.swapBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #111;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--motion-fast) var(--ease-out),
+    background var(--motion-fast) var(--ease-out);
+  backdrop-filter: blur(6px);
+}
+.paletteRow:hover .swapBtn,
+.swapBtn:focus-visible { opacity: 1; }
+.swapBtn:hover { background: rgba(255, 255, 255, 0.95); }
+
+.palettePreview { position: relative; }

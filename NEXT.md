@@ -97,7 +97,101 @@ when ready.
 
 ---
 
-## Recommended next-session order
+## Current roadmap *(revised 2026-05-25, supersedes the earlier list)*
+
+The product is a brand identity sketchpad. The wedge is *synthesis from your
+actual taste* — not generation, not curation. Every Phase 2+ decision below
+serves that.
+
+**Phase 1 — Project isolation + automatic palette extraction** *(shipped 2026-05-25)*
+- Deleted `celestial-fizz-co`, migrated `data/palette.json` + `data/moodboard/`
+  into `data/projects/whelm/`.
+- `lib/palettePool.js` is now pure math; pools hydrate per-project from
+  `/api/library/palette` via new `lib/paletteStore.js`.
+- `lib/moodboardStore.js` writes atomically (temp + rename) and serializes
+  through `withLock(file, …)` — concurrent extract workers can't corrupt
+  the library file anymore.
+- Palette extraction runs automatically: after every Pinterest import and
+  on `/library` mount for pins missing a palette. New endpoint
+  `/api/library/extract-missing`; `/library` shows a small animated
+  "Extracting palettes…" chip while a run is in flight.
+- Import message rewritten so re-imports clearly state "X new pins added.
+  Y already in your library, refreshed with the latest metadata."
+
+**Phase 2a — Smart color engine** *(next, ~6 hrs)*
+- `lib/colorTheory.js` — OKLCH conversions, contrast, hue delta, harmony.
+- `lib/composePalette.js` — role-aware composition: pick bg → ink → accent
+  → muted in that order, with explicit contrast and hue thresholds. Spec
+  lives in item #9 below.
+- Wire into `usePalette`'s shuffle. Keep `sampleSpread` for the colors and
+  gradients pages (no role logic needed there).
+- Fall back to `sampleSpread` when the pool is too thin to compose against
+  (<6 colors).
+
+**Phase 2b — Font pairing engine** *(~4 hrs)*
+- Curated library of 30-50 pairings (display + body + optional subhead),
+  each tagged by mood: refined / brutalist / soft / editorial / etc.
+- Shuffle proposes a pair alongside the palette. Lock-and-keep slots like
+  palette slots. Per-mood weighting derived from the palette's saturation
+  and luminance profile (soft palette → soft pairing, etc.).
+- Single biggest manual step in the tool today; biggest win for the
+  "generative identity sketchpad" feeling.
+
+**Phase 2c — Starter pool + auto-promote brand colors** *(~3 hrs)*
+- Sanzo Wada starter pool (MIT, 348 historical combinations, ready in
+  memory) seeds new projects so shuffle works on day one before import.
+- When a project's moodboard contains 5+ colors appearing in 3+ pins each,
+  the tool proposes them as the project's brand palette. One-click promote
+  into `data/projects/{slug}/palette.json`.
+
+**Phase 2d — Library auto-backup + restore-on-corruption** *(~2 hrs)*
+- Versioned backups in `data/projects/{slug}/.backups/` — last 10 writes
+  plus daily rollups, automatic. When `readLibrary` hits a JSON parse
+  error it auto-restores from the most recent valid backup instead of
+  silently returning EMPTY (which is what corrupted the file on 2026-05-25
+  and made it look like the Pinterest board had vanished).
+
+**Phase 2e — Mobile pass** *(~6 hrs)*
+- Mobile's job is *decide and consume*, not *compose*. Compose pages
+  (`/brand`, `/library`, `/import`) stay desktop-first and degrade
+  gracefully on phones (no broken layouts, no claims they work).
+  Real mobile design goes into the Decide surface (Phase 3) and the
+  hosted `/v/[token]` viewer.
+- Concrete cleanups along the way: barMeta wrap at 390px (`/library`,
+  `/colors` clip meta items today); strip the `globals.css` font 404s
+  by removing the dead `@font-face` blocks pointing at missing files;
+  TypePanel sample text and `/probe` page de-Whelm.
+
+**Phase 3 — Combos as the sketch unit + Decide surface** *(~6 hrs)*
+- New lightweight object: `Combo` = palette + font pair, lives in
+  `data/projects/{slug}/combos.json`. Cheap to make, cheap to discard.
+  Distinct from Brand Presets (full identity snapshots).
+- `/decide` page: pick 3-5 Combos or Presets, see them side-by-side at
+  full Brand-page fidelity. This is the missing finishing room.
+- Promote button on a Combo card creates a Preset seeded from it.
+
+**Phase 4 — Universal taste library** *(~5 hrs)*
+- `data/library/{colors,fonts,presets}.json` (NOT pins — Pinterest is
+  already that). Auto-populated from project stars — one gesture, two
+  scopes. No separate "favorite" action.
+- Single `/favorites` page + "Seed from favorites?" prompt on new
+  project creation. No sidebars on every page.
+
+**Phase 5 — Moodvote = "Share Decide for feedback"** *(folds into Phase 7
+below)*
+- Bolt the Neon-backed share flow onto Decide instead of treating it as
+  a separate product mode. Phase A scope holds — collaborators vote on
+  what you compose, they don't add material.
+
+**Deferred to a polish pass** *(later, ~3 hrs together)*
+- New-project-from-Pinterest-board entry point.
+- Pre-named saved Combos / Presets ("Bordeaux Editorial 1").
+- Re-extract failed pins on next library load.
+- Auto-archive current Preset on Share for voting.
+
+---
+
+## Historical roadmap *(kept for reference; mostly superseded)*
 
 1. **Per-project marks** *(45 min)* ✅ shipped 2026-05-14
    Marks moved under `public/projects/{slug}/marks/`. Drop zone +
@@ -194,6 +288,61 @@ when ready.
    `npx create-figma-plugin` boilerplate. Reads from the local
    Moodbuilder server (or a deployed instance) and writes Figma
    Variables + text styles. Publish to Figma community.
+
+9. **Smart color engine — replace shuffle with role-aware composition**
+   *(real work, ~6–8 hrs)*
+
+   Today’s shuffle samples N colors from the pool and maps roles by
+   luminance only: darkest → bg, lightest → ink, most-saturated mid →
+   accent, middle mid → muted. This produces *random* palettes that
+   often land where accent is barely distinguishable from ink, or where
+   the wordmark color clashes with the bg at a contrast level that
+   would fail WCAG. The result is a shuffle button that looks decisive
+   but produces lots of unusable palettes the user shrugs past.
+
+   The upgrade: a *composition engine* that knows what each role wants
+   and picks colors to serve those roles, not the other way around.
+
+   - **Background.** Pick first. Determines whether the palette runs
+     dark-mode or light-mode. Should have enough chroma headroom that
+     accent + muted can both sit on it at ≥4.5:1.
+   - **Ink (main text).** Picked next, with explicit contrast budget vs
+     bg (4.5:1 minimum, 7:1 preferred). Prefer near-neutral or slightly
+     tinted; saturation here fights the wordmark.
+   - **Accent.** The pop. Picked to be *visually distinct* from ink in
+     hue (≥40° apart on the color wheel) and to maintain ≥3:1 contrast
+     vs bg so it reads as a period or punctuation mark. Saturation
+     matters more here than luminance.
+   - **Muted.** The italic / secondary text role. Picked for ≥3:1
+     contrast vs bg, lower saturation than accent, and far enough from
+     ink in luminance to feel like a different voice but close enough
+     in hue to feel related.
+   - **Relationships.** Optionally constrain the whole palette to a
+     known harmony — complementary (accent at 180° from ink),
+     analogous (within 30°), triadic (120° apart). Or freeform when the
+     pool is varied.
+
+   This turns shuffle into a smart engine: the user shuffles and gets
+   a usable identity, not a random one. The seed pool still constrains
+   what colors exist; the engine just composes them with role
+   awareness.
+
+   **Touches both surfaces:** the local `/brand` engine (`usePalette` +
+   `mapRoles` in `BrandPreview.js`) and the eventual hosted shuffle
+   for Moodvote collaborators (Phase 3b). Build once, share the
+   library.
+
+   **Library:** `lib/colorTheory.js` — pure functions for
+   `oklchFromHex`, `hueDeltaDeg`, `contrastRatio`, `pickAccent`,
+   `pickMuted`, `composePalette({pool, size, harmony})`. Existing
+   `mapRoles` becomes the consumer of `composePalette` rather than a
+   post-hoc sorter.
+
+   **Research done (2026-05-16):** Sanzo Wada dataset is MIT-licensed
+   and shippable (159 colors, 348 historical combinations); OKLCH is
+   the right color space; cultural register belongs as a filter, not a
+   generator. Full synthesis at
+   `~/.claude/projects/.../memory/project_color_theory_research.md`.
 
 ---
 
