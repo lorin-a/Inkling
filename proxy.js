@@ -3,18 +3,16 @@ import { NextResponse } from "next/server";
 import { authConfig } from "./lib/auth.config";
 
 /**
- * Feature-flagged auth middleware.
+ * Feature-flagged auth proxy (Next 16's replacement for middleware.js).
  *
  * Edge-compatible — uses authConfig only (no Postgres adapter). The
  * full auth() with DB access lives in lib/auth.js for server routes.
  *
- * Until the file-based → DB migration completes, the editor still
- * works unauthenticated against local files. Setting AUTH_REQUIRED=true
- * in .env.local flips the gate on.
+ * When AUTH_REQUIRED=true, every route except /login, /v/[token], the
+ * auth API, and Next internals requires a signed-in user. Off by
+ * default so the file-based editor keeps working unauthenticated.
  *
- * Public routes always pass: hosted brand viewer (/v/[token]), the
- * auth routes themselves, and Next.js internals. /login is special —
- * if already authenticated, we bounce away from it.
+ * /login is special: if already authenticated, we bounce away from it.
  */
 const PUBLIC_PATH_PREFIXES = [
   "/api/auth/",
