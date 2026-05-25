@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
-import { mergePins, patchPin } from "../../../../lib/moodboardStore";
+import { mergePins as fileMergePins, patchPin as filePatchPin } from "../../../../lib/moodboardStore";
+import * as dbLibrary from "../../../../lib/db/library";
 import { enrichPins } from "../../../../lib/pinterestSourceFetcher";
 import { enrichPalettesForPins } from "../../../../lib/paletteEnricher";
+import { getActiveProjectForUser, getRequestContext } from "../../../../lib/api/context";
 
 // Node runtime — we need fs + DNS lookups, can't run on edge.
 export const runtime = "nodejs";
@@ -28,21 +30,35 @@ export async function POST(request) {
     importedAt: new Date().toISOString(),
   };
 
-  const merged = await mergePins(payload.pins, boardMeta);
+  const { userId } = await getRequestContext();
+  let merged;
+  let writePin;
+
+  if (userId) {
+    const active = await getActiveProjectForUser(userId);
+    if (!active) {
+      return NextResponse.json({ error: "No active project — create one first" }, { status: 400 });
+    }
+    merged = await dbLibrary.mergePins({
+      projectId: active.id,
+      incoming: payload.pins,
+      boardMeta,
+    });
+    writePin = ({ pinId, patch }) => dbLibrary.patchPin({ projectId: active.id, pinId, patch });
+  } else {
+    merged = await fileMergePins(payload.pins, boardMeta);
+    writePin = ({ pinId, patch }) => filePatchPin(pinId, patch);
+  }
 
   // Kick off palette extraction in the background. Only touches pins
   // missing a palette field — re-imports skip already-extracted pins.
-  // The /library page polls /api/library to surface progress.
-  enrichPalettesForPins(payload.pins, { concurrency: 2 })
+  enrichPalettesForPins(payload.pins, { concurrency: 2, writePin })
     .then((r) => {
       console.log(`[pinterest import] palette extraction done — ${r.succeeded} ok, ${r.failed} failed`);
     })
     .catch((e) => console.error("[pinterest import] palette enrichment threw", e));
 
-  // Kick off source enrichment in the background. This can take a while
-  // for hundreds of pins — we don't await it before returning. Progress
-  // is observable via the library page (sourceUrl appears as each pin
-  // gets enriched).
+  // Source URL enrichment — populates outbound link + pinner metadata.
   enrichPins(payload.pins, { concurrency: 6 }).then(async (results) => {
     for (const [pinId, src] of results.entries()) {
       if (!src) continue;
@@ -57,13 +73,12 @@ export async function POST(request) {
         enrichmentOk: src.ok,
       };
       try {
-        await patchPin(pinId, patch);
+        await writePin({ pinId, patch });
       } catch (e) {
-        // best-effort; log to server console
-        console.error("patchPin failed", pinId, e);
+        console.error("patch failed", pinId, e);
       }
     }
-    console.log(`[pinterest import] enrichment done — ${results.size} pins`);
+    console.log(`[pinterest import] source enrichment done — ${results.size} pins`);
   });
 
   return NextResponse.json({
