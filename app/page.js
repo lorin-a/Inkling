@@ -49,14 +49,22 @@ export default function Home() {
 
   useEffect(() => { refresh(); }, []);
 
+  // Selecting a project sets the context the path below acts on — it does
+  // NOT navigate. You choose which project you're inside here, then walk its
+  // steps in the path. (The hero's "Open the studio" button is the express
+  // way straight in.)
   async function selectProject(slug) {
     if (slug === activeSlug) return;
-    await apiFetch("/api/projects/active", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug }),
-    });
-    setActiveSlug(slug);
+    try {
+      await apiFetch("/api/projects/active", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug }),
+      });
+      setActiveSlug(slug);
+    } catch (e) {
+      setError(e.message);
+    }
   }
 
   async function createProject(name) {
@@ -144,50 +152,18 @@ export default function Home() {
         <LiveBrandHero />
       </section>
 
-      <section className={styles.pathSection}>
-        <header className={styles.pathHeader}>
-          <h2 className={styles.sectionTitle}>The path</h2>
-          <p className={styles.sectionHint}>
-            Gather to deliverable. Jump in anywhere; the order is a guide, not
-            a gate.
-          </p>
-        </header>
-        <ol className={styles.pathGrid}>
-          {STEPS.map((step) => (
-            <li key={step.href}>
-              <Link href={step.href} className={styles.stepCard}>
-                <span className={styles.stepHead}>
-                  <span className={styles.stepEyebrow}>
-                    <span className={styles.stepNum}>{step.n}</span>
-                    <span className={styles.stepVerb}>{step.verb}</span>
-                  </span>
-                  <span className={styles.stepTitle}>{step.title}</span>
-                </span>
-                <span className={styles.cardBody}>{step.body}</span>
-                <span className={styles.stepArrow} aria-hidden="true">→</span>
-              </Link>
-            </li>
-          ))}
-        </ol>
-      </section>
-
       <section className={styles.projectSection}>
         <header className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Projects</h2>
+          <h2 className={styles.sectionTitle}>
+            {signedIn && !isEmptyAuthedAccount ? "Choose a project" : "Your project"}
+          </h2>
           <p className={styles.sectionHint}>
             {!signedIn ? (
               <>This is a sample to play with. Rename it, paste your own colors, or import a Pinterest board. It all saves to this browser. Sign in when you want to keep your work and start more projects.</>
             ) : isEmptyAuthedAccount ? (
-              <>Welcome. Start a new brand project below to begin — every project keeps its own palette, pins, uploads, brand text, and starred set.</>
+              <>Welcome. Start a new brand project below to begin &mdash; every project keeps its own palette, pins, uploads, brand text, and starred set.</>
             ) : (
-              <>
-                Each project keeps its own palette, pins, uploads, brand text, and starred set.
-                {activeProject && (
-                  <>
-                    {" "}Active: <strong>{activeProject.name}</strong>.
-                  </>
-                )}
-              </>
+              <>Pick the project you want to work in. Each one keeps its own palette, pins, uploads, brand text, and starred set; the steps below act on whichever you select.</>
             )}
           </p>
         </header>
@@ -197,23 +173,40 @@ export default function Home() {
             <p className={styles.loadingText}>Loading projects…</p>
           ) : (
             <>
-              {projects.map((p) => (
-                <button
-                  key={p.slug}
-                  type="button"
-                  className={`${styles.projectCard} ${p.slug === activeSlug ? styles.projectCardActive : ""}`}
-                  onClick={() => selectProject(p.slug)}
-                >
-                  <span className={styles.projectName}>
-                    {p.name || p.slug}
-                    {!signedIn && <span className={styles.sampleTag}>Sample</span>}
-                  </span>
-                  <span className={styles.projectMeta}>
-                    {p.pins != null ? `${p.pins} pins` : "—"}
-                    {p.slug === activeSlug && <span className={styles.activeChip}>● active</span>}
-                  </span>
-                </button>
-              ))}
+              {projects.map((p) => {
+                const isActive = p.slug === activeSlug;
+                return (
+                  <button
+                    key={p.slug}
+                    type="button"
+                    className={`${styles.projectCard} ${isActive ? styles.projectCardActive : ""}`}
+                    onClick={() => selectProject(p.slug)}
+                    aria-pressed={isActive}
+                  >
+                    {p.swatches?.length > 0 && (
+                      <span className={styles.projectSwatches} aria-hidden="true">
+                        {p.swatches.slice(0, 5).map((hex, i) => (
+                          <span key={`${hex}-${i}`} style={{ background: hex }} />
+                        ))}
+                      </span>
+                    )}
+                    <span className={styles.projectName}>
+                      {p.wordmark || p.name || p.slug}
+                      {!signedIn && <span className={styles.sampleTag}>Sample</span>}
+                    </span>
+                    <span className={styles.projectFoot}>
+                      <span className={styles.projectMeta}>
+                        {p.pins != null ? `${p.pins} pins` : "—"}
+                      </span>
+                      {isActive ? (
+                        <span className={styles.projectSelected}>● Selected</span>
+                      ) : (
+                        <span className={styles.projectSelect} aria-hidden="true">Select →</span>
+                      )}
+                    </span>
+                  </button>
+                );
+              })}
               {signedIn ? (
                 <button
                   type="button"
@@ -233,6 +226,36 @@ export default function Home() {
           )}
         </div>
         {error && <p className={styles.error}>{error}</p>}
+      </section>
+
+      <section className={styles.pathSection}>
+        <header className={styles.pathHeader}>
+          <h2 className={styles.sectionTitle}>The path</h2>
+          <p className={styles.sectionHint}>
+            {activeProject ? (
+              <>Each step works on the project you selected above, <strong>{activeProject.name}</strong>. Jump in anywhere; the order is a guide, not a gate.</>
+            ) : (
+              <>Each step works on the project you selected above. Jump in anywhere; the order is a guide, not a gate.</>
+            )}
+          </p>
+        </header>
+        <ol className={styles.pathGrid}>
+          {STEPS.map((step) => (
+            <li key={step.href}>
+              <Link href={step.href} className={styles.stepCard}>
+                <span className={styles.stepHead}>
+                  <span className={styles.stepEyebrow}>
+                    <span className={styles.stepNum}>{step.n}</span>
+                    <span className={styles.stepVerb}>{step.verb}</span>
+                  </span>
+                  <span className={styles.stepTitle}>{step.title}</span>
+                </span>
+                <span className={styles.cardBody}>{step.body}</span>
+                <span className={styles.stepArrow} aria-hidden="true">→</span>
+              </Link>
+            </li>
+          ))}
+        </ol>
       </section>
 
       {creating && (

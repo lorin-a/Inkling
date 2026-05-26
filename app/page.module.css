@@ -243,38 +243,87 @@
   font-size: 14px;
 }
 
+/* Project card = a small brand tile: a swatch strip, the wordmark, then a
+   foot row with stats and an Open affordance. Clicking opens the project in
+   the studio, so it reads as a launch tile, not a dead toggle. */
 .projectCard {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
-  min-height: 128px;
-  padding: 22px 24px;
+  align-items: stretch;
+  gap: 16px;
+  min-height: 168px;
+  padding: 20px 22px 18px;
   background: var(--bg-elevated);
   border: 1px solid var(--hairline);
-  border-radius: 14px;
+  border-radius: 16px;
   cursor: pointer;
   transition: border-color var(--motion-fast) var(--ease-out),
-    background var(--motion-fast) var(--ease-out);
+    transform var(--motion-fast) var(--ease-out),
+    box-shadow var(--motion-fast) var(--ease-out);
   text-align: left;
 }
-.projectCard:hover { border-color: var(--ink); }
+.projectCard:hover {
+  border-color: rgba(0, 0, 0, 0.18);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
 
 .projectCardActive {
   border-color: var(--ink);
-  background: var(--bg-elevated);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+.projectCardActive:hover { transform: none; }
+
+.projectSwatches {
+  display: flex;
+  gap: 5px;
+  height: 40px;
+}
+.projectSwatches > span {
+  flex: 1;
+  border-radius: 7px;
 }
 
 .projectName {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  margin-top: auto;
   font-family: var(--font-serif);
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 400;
   letter-spacing: -0.01em;
   font-variation-settings: "SOFT" 50, "WONK" 0;
+}
+
+.projectFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Non-active card: a quiet "Select" cue that firms up on hover. */
+.projectSelect {
+  font-family: var(--font-noto);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity var(--motion-fast) var(--ease-out),
+    transform var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
+}
+.projectCard:hover .projectSelect { opacity: 1; transform: translateX(0); color: var(--ink); }
+
+/* Active card: the project you're currently inside. */
+.projectSelected {
+  font-family: var(--font-noto);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #15803d;
 }
 
 /* Marks the seeded sample so it doesn't read as a real saved project. */
@@ -301,11 +350,6 @@
   letter-spacing: 0.06em;
 }
 
-.activeChip {
-  color: #15803d;
-  font-weight: 500;
-}
-
 .newProjectCard {
   display: flex;
   flex-direction: column;
@@ -321,7 +365,7 @@
   color: var(--ink-muted);
   transition: border-color var(--motion-fast) var(--ease-out),
     color var(--motion-fast) var(--ease-out);
-  min-height: 128px;
+  min-height: 168px;
 }
 .newProjectCard:hover {
   border-color: var(--ink);
