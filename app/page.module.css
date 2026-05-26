@@ -72,7 +72,12 @@
   list-style: none;
 }
 .sideDoor {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  /* WCAG 2.2 — 44px min target. Negative margin keeps the visual rhythm
+     tight while the hit area stays full-height. */
+  min-height: 44px;
+  margin: -7px 0;
   padding: 6px 0;
   font-size: 14px;
   color: var(--ink-muted);
@@ -587,6 +592,9 @@
 }
 
 .bannerReset {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   background: none;
   border: none;
   cursor: pointer;
@@ -602,6 +610,7 @@
 .bannerPrimary {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   padding: 9px 16px;
   border-radius: 999px;
   background: var(--ink);
