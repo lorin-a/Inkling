@@ -666,3 +666,46 @@
     justify-content: center;
   }
 }
+
+/* Colophon — quiet credit + license note at the foot of home. Lives here
+   only; the tool pages stay chrome-light. */
+.colophon {
+  margin-top: 96px;
+  padding-top: 32px;
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 640px;
+}
+.colophonLead {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  color: var(--ink);
+}
+.colophonMeta {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+.coffee {
+  align-self: flex-start;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 8px 14px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  transition: border-color var(--motion-fast) var(--ease-out),
+    background var(--motion-fast) var(--ease-out);
+}
+.coffee:hover {
+  background: var(--bg-elevated);
+  border-color: var(--ink-muted);
+}
+/* Placeholder state until a real Buy Me a Coffee URL is wired in. */
+.coffee[data-placeholder="true"] {
+  opacity: 0.5;
+  cursor: default;
+}

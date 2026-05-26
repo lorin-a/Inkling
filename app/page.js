@@ -7,6 +7,10 @@ import { apiFetch } from "../lib/api/client";
 import { resetToSample } from "../lib/storage/localStore";
 import { STEPS } from "../lib/steps";
 import LiveBrandHero from "../components/LiveBrandHero";
+
+// [LORIN] Paste your Buy Me a Coffee URL here once the account exists
+// (e.g. "https://buymeacoffee.com/yourname"). Empty string hides the link.
+const COFFEE_URL = "";
 import styles from "./page.module.css";
 
 export default function Home() {
@@ -240,6 +244,24 @@ export default function Home() {
           ))}
         </ol>
       </section>
+
+      <footer className={styles.colophon}>
+        {/* [LORIN TO WRITE] — one line in your voice: who you are and why
+            Moodbuilder exists. Keep it short. Replace the bracketed text. */}
+        <p className={styles.colophonLead}>[LORIN TO WRITE: a one-line note in your voice. Who you are, why this exists.]</p>
+        <p className={styles.colophonMeta}>
+          A personal project by Lorin Anderberg, built with Next.js, Neon, and Claude Code.
+          Free to use for now. © 2026 Lorin Anderberg, all rights reserved (not open source).
+        </p>
+        {COFFEE_URL ? (
+          <a className={styles.coffee} href={COFFEE_URL} target="_blank" rel="noopener noreferrer">
+            Buy me a coffee
+          </a>
+        ) : (
+          // Placeholder until the Buy Me a Coffee account exists — set COFFEE_URL above.
+          <span className={styles.coffee} data-placeholder="true" aria-hidden="true">Buy me a coffee</span>
+        )}
+      </footer>
 
       {creating && (
         <NewProjectModal
