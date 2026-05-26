@@ -164,14 +164,18 @@ serves that.
 - Fall back to `sampleSpread` when the pool is too thin to compose against
   (<6 colors).
 
-**Phase 2b — Font pairing engine** *(~4 hrs)*
-- Curated library of 30-50 pairings (display + body + optional subhead),
-  each tagged by mood: refined / brutalist / soft / editorial / etc.
-- Shuffle proposes a pair alongside the palette. Lock-and-keep slots like
-  palette slots. Per-mood weighting derived from the palette's saturation
-  and luminance profile (soft palette → soft pairing, etc.).
-- Single biggest manual step in the tool today; biggest win for the
-  "generative identity sketchpad" feeling.
+**Phase 2b — Font pairing engine** *(~3 hrs remaining)*
+- **Manual picker — SHIPPED (was already built).** `TypePanel` +
+  `FontPicker` search the full Google Fonts catalog (~1934 families via the
+  public metadata endpoint, no key), plus upload + custom URL, applied live
+  via `FontLoader`. Discoverability fixed (slots say "Choose a font," not
+  "—"). So "pick any font" is done.
+- **Still to build — the suggestion/taste layer:** a curated library of
+  30-50 mood-tagged pairings (refined / brutalist / soft / editorial) that
+  *shuffle proposes* alongside the palette, lock-and-keep like palette
+  slots, weighted by the palette's saturation/luminance profile. This is
+  the "generative" half — the picker never limits the user, the suggestions
+  give them a starting pair. Layers on top of the existing picker.
 
 **Phase 2c — Starter pool + auto-promote brand colors** *(~3 hrs)*
 - **Sanzo Wada starter pool — SHIPPED.** `lib/sanzoWada.js` (vendored MIT
