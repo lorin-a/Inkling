@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { mergePins as fileMergePins, patchPin as filePatchPin } from "../../../../lib/moodboardStore";
-import * as dbLibrary from "../../../../lib/db/library";
 import { enrichPins } from "../../../../lib/pinterestSourceFetcher";
-import { enrichPalettesForPins } from "../../../../lib/paletteEnricher";
-import { getActiveProjectForUser, getRequestContext } from "../../../../lib/api/context";
+import { getRequestContext } from "../../../../lib/api/context";
+import { resolveLibraryWriter, kickPaletteExtraction } from "../../../../lib/importCommit";
 
 // Node runtime — we need fs + DNS lookups, can't run on edge.
 export const runtime = "nodejs";
@@ -31,32 +29,15 @@ export async function POST(request) {
   };
 
   const { userId } = await getRequestContext();
-  let merged;
-  let writePin;
-
-  if (userId) {
-    const active = await getActiveProjectForUser(userId);
-    if (!active) {
-      return NextResponse.json({ error: "No active project — create one first" }, { status: 400 });
-    }
-    merged = await dbLibrary.mergePins({
-      projectId: active.id,
-      incoming: payload.pins,
-      boardMeta,
-    });
-    writePin = ({ pinId, patch }) => dbLibrary.patchPin({ projectId: active.id, pinId, patch });
-  } else {
-    merged = await fileMergePins(payload.pins, boardMeta);
-    writePin = ({ pinId, patch }) => filePatchPin(pinId, patch);
+  const writer = await resolveLibraryWriter(userId);
+  if (!writer) {
+    return NextResponse.json({ error: "No active project — create one first" }, { status: 400 });
   }
+  const merged = await writer.mergePins(payload.pins, boardMeta);
+  const writePin = writer.writePin;
 
-  // Kick off palette extraction in the background. Only touches pins
-  // missing a palette field — re-imports skip already-extracted pins.
-  enrichPalettesForPins(payload.pins, { concurrency: 2, writePin })
-    .then((r) => {
-      console.log(`[pinterest import] palette extraction done — ${r.succeeded} ok, ${r.failed} failed`);
-    })
-    .catch((e) => console.error("[pinterest import] palette enrichment threw", e));
+  // Palette extraction in the background — shared with every import source.
+  kickPaletteExtraction(payload.pins, writePin, "pinterest import");
 
   // Source URL enrichment — populates outbound link + pinner metadata.
   enrichPins(payload.pins, { concurrency: 6 }).then(async (results) => {

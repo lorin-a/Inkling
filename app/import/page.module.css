@@ -261,3 +261,65 @@
   line-height: 1.6;
 }
 .done strong { font-weight: 600; }
+
+/* ----- Source picker (Pinterest / Are.na) ----- */
+.sourceTabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  align-self: flex-start;
+}
+.sourceTab {
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: color var(--motion-fast) var(--ease-out),
+    background var(--motion-fast) var(--ease-out);
+}
+.sourceTab:hover { color: var(--ink); }
+.sourceTabActive,
+.sourceTabActive:hover {
+  background: var(--ink);
+  color: #fff;
+}
+
+/* ----- Are.na panel ----- */
+.arenaPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.arenaRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.arenaInput {
+  flex: 1;
+  min-width: 240px;
+  padding: 11px 16px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 15px;
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+.arenaInput:focus-visible {
+  outline: none;
+  border-color: var(--ink);
+}
+.arenaRow .commitBtn { align-self: auto; }
+
+.commitBtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}

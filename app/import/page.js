@@ -5,15 +5,23 @@ import Link from "next/link";
 import { BOOKMARKLET_HREF } from "../../lib/pinterestBookmarklet";
 import { isAuthed } from "../../lib/api/client";
 import { commitLocalImport, extractMissingLocal } from "../../lib/storage/localImport";
+import { fetchArenaChannel } from "../../lib/sources/arena";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import PathFooter from "../../components/PathFooter";
 import styles from "./page.module.css";
 
 export default function ImportPage() {
   const dragRef = useRef(null);
+  const [source, setSource] = useState("pinterest"); // "pinterest" | "arena"
   const [copied, setCopied] = useState(false);
   const [importStatus, setImportStatus] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [arenaInput, setArenaInput] = useState("");
+
+  function switchSource(next) {
+    setSource(next);
+    setImportStatus(null); // status belongs to one flow; don't carry it across
+  }
 
   useEffect(() => {
     if (dragRef.current) dragRef.current.setAttribute("href", BOOKMARKLET_HREF);
@@ -93,15 +101,132 @@ export default function ImportPage() {
     if (file) handleFile(file);
   }
 
+  async function importArena() {
+    const input = arenaInput.trim();
+    if (!input) return;
+    setImportStatus({ kind: "committing" });
+    try {
+      const authed = await isAuthed();
+      let result;
+      if (authed) {
+        const res = await fetch("/api/import/arena", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+        result = data;
+      } else {
+        // Signed out: fetch the channel in the browser (Are.na sends open
+        // CORS), merge into localStorage, drive extraction client-side.
+        const payload = await fetchArenaChannel(input);
+        if (payload.pins.length === 0) {
+          throw new Error("That channel has no image blocks to import.");
+        }
+        const merged = commitLocalImport(payload);
+        result = { added: merged.added, updated: merged.updated, librarySize: merged.total, board: payload.boardName };
+        extractMissingLocal({ concurrency: 2 }).catch(() => {});
+      }
+      setImportStatus({
+        kind: "done",
+        added: result.added,
+        updated: result.updated,
+        librarySize: result.librarySize,
+        boardName: result.board,
+        local: !authed,
+      });
+    } catch (e) {
+      setImportStatus({ kind: "error", message: e.message });
+    }
+  }
+
   return (
     <div className={styles.page}>
       <header className={styles.bar}>
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
         <ProjectSwitcher />
-        <div className={styles.barTitle}>Pinterest import</div>
+        <div className={styles.barTitle}>Import</div>
       </header>
 
       <main className={styles.main}>
+        <div className={styles.sourceTabs} role="tablist" aria-label="Inspiration source">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={source === "pinterest"}
+            className={`${styles.sourceTab} ${source === "pinterest" ? styles.sourceTabActive : ""}`}
+            onClick={() => switchSource("pinterest")}
+          >
+            Pinterest
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={source === "arena"}
+            className={`${styles.sourceTab} ${source === "arena" ? styles.sourceTabActive : ""}`}
+            onClick={() => switchSource("arena")}
+          >
+            Are.na
+          </button>
+        </div>
+
+        {source === "arena" && (
+          <section className={styles.arenaPanel}>
+            <h2 className={styles.stepTitle}>Paste an Are.na channel</h2>
+            <p className={styles.stepText}>
+              No bookmark needed. Paste a public channel&rsquo;s link (or just its slug) and Moodbuilder pulls in every image block, with its source link. Palettes extract automatically.
+            </p>
+            <div className={styles.arenaRow}>
+              <input
+                type="text"
+                className={styles.arenaInput}
+                placeholder="are.na/user/channel-name"
+                value={arenaInput}
+                onChange={(e) => setArenaInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") importArena(); }}
+                disabled={importStatus?.kind === "committing"}
+                aria-label="Are.na channel link or slug"
+              />
+              <button
+                type="button"
+                className={styles.commitBtn}
+                onClick={importArena}
+                disabled={!arenaInput.trim() || importStatus?.kind === "committing"}
+              >
+                {importStatus?.kind === "committing" ? "Importing…" : "Import channel"}
+              </button>
+            </div>
+            <p className={styles.stepHint}>
+              The channel must be public. Re-importing only adds new blocks; existing ones are kept as-is.
+            </p>
+
+            {importStatus?.kind === "error" && (
+              <p className={styles.error}>{importStatus.message}</p>
+            )}
+            {importStatus?.kind === "done" && (
+              <div className={styles.done}>
+                <strong>
+                  {importStatus.added > 0
+                    ? `${importStatus.added} new image${importStatus.added === 1 ? "" : "s"} added.`
+                    : "Nothing new to add."}
+                </strong>{" "}
+                {importStatus.updated > 0 && (
+                  <>{importStatus.updated} already in your library, refreshed. </>
+                )}
+                Library now holds {importStatus.librarySize} pins.{" "}
+                <Link href="/library" className={styles.inlineLink}>Open library →</Link>
+                <p className={styles.stepHint}>
+                  {importStatus.local
+                    ? "Palettes are extracting in the background. Sign in to keep your library across devices."
+                    : "Palettes are extracting in the background. Refresh /library in a minute to watch them land."}
+                </p>
+              </div>
+            )}
+          </section>
+        )}
+
+        {source === "pinterest" && (<>
         <section className={styles.step}>
           <span className={styles.stepNum}>1</span>
           <div className={styles.stepBody}>
@@ -239,6 +364,7 @@ export default function ImportPage() {
             )}
           </div>
         </section>
+        </>)}
       </main>
       <PathFooter />
     </div>
