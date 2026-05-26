@@ -34,6 +34,28 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
+/* Exit back to the editor — the brand book is the end of the path, so it
+   needs an obvious way out that isn't the browser back button. */
+.exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  text-decoration: none;
+  opacity: 0.85;
+  /* Padding enlarges the tap target inside the pill without growing it. */
+  padding: 4px 2px;
+  white-space: nowrap;
+  transition: opacity 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.exit:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
+
+.toolbarDivider {
+  width: 1px;
+  align-self: stretch;
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .printBtn {
   background: #fff;
   color: #1a1a1a;

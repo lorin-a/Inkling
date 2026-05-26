@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { remapSvgColors } from "../../lib/svgRemap";
 import { derivePreviewRoles } from "../../lib/derivePreviewRoles";
 import { relativeLuminance as luminance } from "../../lib/colorTheory";
@@ -94,6 +95,10 @@ function PrintInner() {
       <FontLoader fonts={project?.fonts} />
       {/* Toolbar — hidden on print */}
       <div className={styles.toolbar}>
+        <Link href="/brand" className={styles.exit}>
+          <span aria-hidden="true">←</span> Back to Brand
+        </Link>
+        <span className={styles.toolbarDivider} aria-hidden="true" />
         <button type="button" className={styles.printBtn} onClick={() => window.print()}>
           Print / Save as PDF
         </button>
