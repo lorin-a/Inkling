@@ -633,6 +633,24 @@ step 6).
   updates" link on `/import` would help. Not urgent until something
   actually breaks.
 
+- **Inspiration sources beyond Pinterest (Are.na, Cosmos, Behance).**
+  The pipeline already abstracts to "capture items → normalize to
+  { image, sourceUrl, title } → commit → extract palettes," so adding a
+  source is mostly one adapter to that shape. Feasibility, best first:
+  - **Are.na — strong fit, do this first.** Real public REST API
+    (`api.are.na/v2`): channels of blocks with image URLs + source +
+    title, OAuth for private channels. Cleaner than Pinterest — paste a
+    channel slug, fetch JSON server-side, no bookmarklet DOM-scraping to
+    break. The natural second source.
+  - **Cosmos (cosmos.so) — possible, fragile.** No public API; would need
+    the same bookmarklet-capture pattern as Pinterest and inherits its
+    breakage risk when their DOM changes.
+  - **Behance — hardest.** Adobe closed its public API to new keys years
+    ago; scraping is ToS-risky and brittle. Lowest priority.
+  Prerequisite: generalize `/import` and the import API from "pinterest"
+  to a source-agnostic adapter interface first, so each new site is an
+  adapter, not a fork.
+
 ---
 
 ## Useful pointers
