@@ -7,7 +7,7 @@ import { useProject } from "../../lib/useProject";
 import { useAuthed } from "../../lib/api/useAuthed";
 import { POOL_LABELS } from "../../lib/palettePool";
 import { derivePreviewRoles } from "../../lib/derivePreviewRoles";
-import { relativeLuminance as luminance } from "../../lib/colorTheory";
+import { relativeLuminance as luminance, contrastRatio } from "../../lib/colorTheory";
 import { FORMATS, formatExport } from "../../lib/exportFormats";
 import BrandPreview from "../../components/BrandPreview";
 import MarksFrame from "../../components/MarksFrame";
@@ -627,8 +627,62 @@ function RolesPanel({ palette, activeVariant, setActiveVariant, rolesDark, roles
           </div>
         );
       })}
+      <ContrastReadout roles={roles} variant={activeVariant} />
     </div>
   );
+}
+
+// Turns the engine's existing contrast math into a visible AA readout, so you
+// can see whether the identity you're composing is legible — on the variant
+// you're editing. The pairs that matter: text-on-background (body needs AA
+// 4.5:1) and the accent reading against the background (3:1, UI/large bar).
+function ContrastReadout({ roles, variant }) {
+  const pairs = [
+    { label: "Main text", controls: "wordmark + tagline", fg: roles.ink, kind: "text" },
+    { label: "Subtext", controls: "body line", fg: roles.muted, kind: "text" },
+    { label: "Accent", controls: "the period + pop", fg: roles.accent, kind: "ui" },
+  ];
+  return (
+    <div className={styles.contrastPanel}>
+      <h2 className={styles.railTitle}>
+        Contrast
+        <span className={styles.railHint} style={{ textTransform: "none", letterSpacing: 0, fontWeight: 400 }}>
+          WCAG AA · {variant}
+        </span>
+      </h2>
+      {pairs.map(({ label, controls, fg, kind }) => {
+        const ratio = contrastRatio(fg, roles.bg);
+        const status = classifyContrast(ratio, kind);
+        return (
+          <div key={label} className={styles.contrastRow}>
+            <span
+              className={styles.contrastChip}
+              style={{ background: roles.bg, color: fg }}
+              aria-hidden="true"
+            >
+              Aa
+            </span>
+            <span className={styles.contrastRowText}>
+              <span className={styles.contrastLabel}>{label}</span>
+              <span className={styles.contrastControls}>{controls}</span>
+            </span>
+            <span className={styles.contrastRatio}>{ratio.toFixed(2)}:1</span>
+            <span className={`${styles.contrastBadge} ${styles[status.cls]}`}>{status.text}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// AA thresholds: normal text needs 4.5:1, large text 3:1, non-text/UI 3:1.
+function classifyContrast(ratio, kind) {
+  if (kind === "ui") {
+    return ratio >= 3 ? { text: "Pass", cls: "cPass" } : { text: "Low", cls: "cFail" };
+  }
+  if (ratio >= 4.5) return { text: "AA", cls: "cPass" };
+  if (ratio >= 3) return { text: "Large only", cls: "cWarn" };
+  return { text: "Fails", cls: "cFail" };
 }
 
 const ROLE_LABELS = {
