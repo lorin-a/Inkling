@@ -5,6 +5,7 @@ import Link from "next/link";
 import { dedupe } from "../../lib/palettePool";
 import { apiFetch } from "../../lib/api/client";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
+import PathFooter from "../../components/PathFooter";
 import styles from "./page.module.css";
 
 const TYPES = ["linear", "radial", "conic"];
@@ -186,6 +187,8 @@ export default function GradientsPage() {
       <section className={styles.codeWrap}>
         <pre className={styles.code}><code>background: {css};</code></pre>
       </section>
+
+      <PathFooter />
     </div>
   );
 }

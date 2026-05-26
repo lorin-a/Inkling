@@ -6,6 +6,7 @@ import { BOOKMARKLET_HREF } from "../../lib/pinterestBookmarklet";
 import { isAuthed } from "../../lib/api/client";
 import { commitLocalImport, extractMissingLocal } from "../../lib/storage/localImport";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
+import PathFooter from "../../components/PathFooter";
 import styles from "./page.module.css";
 
 export default function ImportPage() {
@@ -239,6 +240,7 @@ export default function ImportPage() {
           </div>
         </section>
       </main>
+      <PathFooter />
     </div>
   );
 }

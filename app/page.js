@@ -5,25 +5,9 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { apiFetch } from "../lib/api/client";
 import { resetToSample } from "../lib/storage/localStore";
+import { STEPS } from "../lib/steps";
 import LiveBrandHero from "../components/LiveBrandHero";
 import styles from "./page.module.css";
-
-// The path, in order. Bodies are the existing (approved) tool copy,
-// unchanged; the verbs are lifted from the eyebrows so the tools read as
-// one journey instead of a flat menu of pages.
-//
-// "Surface" (gradients) is part of the build, not a side utility — it's a
-// material dimension of the identity. It will grow into a texture/gradient
-// combo (grain, image-texture overlay) per NEXT.md #5; the body stays
-// gradient-only until that ships so the copy doesn't overclaim.
-const STEPS = [
-  { href: "/import",    n: "01", verb: "Pull in",  title: "Pinterest import", body: "Save a one-click button to your bookmarks bar, click it on any board, and it captures every pin with source credit. Palettes extract automatically." },
-  { href: "/library",   n: "02", verb: "Browse",   title: "Pin library",      body: "Every pin and upload for this project, with extracted palettes. Click any pin to open the source." },
-  { href: "/colors",    n: "03", verb: "Curate",   title: "Colors",           body: "Starred set, brand swatches, curated pairings, and every color pulled from your pins. Star here, shuffle on Brand." },
-  { href: "/brand",     n: "04", verb: "Compose",  title: "Brand",            body: "The live brand. Shuffle palettes, pick fonts, override roles per variant, click any element to recolor. Marks repaint with the palette." },
-  { href: "/gradients", n: "05", verb: "Surface",  title: "Gradients",        body: "Sketch linear / radial / conic gradients from any project color. Drag the angle, drag the stops, copy the CSS." },
-  { href: "/print",     n: "06", verb: "Deliver",  title: "Brand book",       body: "Five-page printable: cover, palette, type, marks, gradients. The finished artifact. Open from Brand, or here for a quick look." },
-];
 
 export default function Home() {
   const [projects, setProjects] = useState(null);
@@ -137,10 +121,9 @@ export default function Home() {
         <div className={styles.heroText}>
           <p className={styles.eyebrow}>Moodbuilder</p>
           <h1 className={styles.title}>A studio for assembling brand moods.</h1>
-          {/* [LORIN TO OWN] — functional placeholder subhead, plain on purpose so it's easy to replace in your voice. */}
           <p className={styles.heroSub}>
-            Import the images you&rsquo;re drawn to, and it composes a color-and-type
-            identity from them. Shuffle, refine, then export a brand book.
+            The palette is already in the images you love. Moodbuilder finds it,
+            pairs it with type, and helps you shape a brand from what&rsquo;s yours.
           </p>
           <HeroActions
             signedIn={signedIn}
