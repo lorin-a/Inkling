@@ -271,10 +271,10 @@ export default function ColorsPage() {
         <header className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>From your pins</h2>
           <p className={styles.sectionHint}>
-            {isSample ? "Colors extracted from the sample board’s pins." : "Colors extracted from your Pinterest pins."}{" "}
+            {isSample ? "Colors extracted from the sample board’s pins." : "Colors extracted from the pins you’ve imported."}{" "}
             {moodboardPool.palette.length === 0 ? (
               <>
-                Empty so far. Pinned images extract automatically. Drop a board on <Link href="/import" className={styles.inlineLink}>Pinterest import</Link> to fill this.
+                Empty so far. Imported images extract automatically. Bring in a Pinterest board or an Are.na channel on <Link href="/import" className={styles.inlineLink}>Import</Link> to fill this.
               </>
             ) : (
               <>

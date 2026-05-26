@@ -614,14 +614,16 @@ function PinDetail({ pin, onClose, onExtract, busy }) {
                 Open source ↗
               </a>
             )}
-            <a
-              href={pin.pinUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.modalAction}
-            >
-              View on Pinterest ↗
-            </a>
+            {pin.pinUrl && (
+              <a
+                href={pin.pinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.modalAction}
+              >
+                View on {pin.source === "arena" ? "Are.na" : "Pinterest"} ↗
+              </a>
+            )}
             <a
               href={pin.imageOriginal || pin.imageDisplay}
               target="_blank"
