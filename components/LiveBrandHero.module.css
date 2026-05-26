@@ -1,0 +1,107 @@
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: clamp(28px, 2.4vw, 44px);
+  min-height: clamp(440px, 34vw, 560px);
+  border-radius: 22px;
+  border: 1px solid var(--hairline);
+  overflow: hidden;
+  transition: background var(--motion-medium) var(--ease-out),
+    color var(--motion-medium) var(--ease-out);
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-noto);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 11px;
+  border: 1px solid;
+  border-radius: 999px;
+}
+
+.shuffle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  font-family: var(--font-noto);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--ease-out),
+    opacity var(--motion-fast) var(--ease-out);
+}
+.shuffle:hover { opacity: 0.7; }
+.shuffle:active { transform: scale(0.97); }
+.shuffleGlyph { font-size: 15px; line-height: 1; }
+
+/* The lockup is the payoff — centered, generous, recomposes on shuffle. */
+.lockup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  animation: settle var(--motion-medium) var(--ease-out);
+}
+
+.wordmark {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(52px, 7vw, 92px);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  font-variation-settings: "SOFT" 50, "WONK" 0, "opsz" 144;
+}
+
+.tagline {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(17px, 2vw, 22px);
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  max-width: 34ch;
+  font-variation-settings: "opsz" 96;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+}
+.chip {
+  flex: 1;
+  height: 30px;
+  border-radius: 8px;
+  max-width: 88px;
+}
+
+@keyframes settle {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lockup { animation: none; }
+  .panel { transition: none; }
+}
+
+@media (max-width: 600px) {
+  .panel { min-height: 360px; padding: 22px; gap: 22px; }
+}

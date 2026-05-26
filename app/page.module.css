@@ -1,11 +1,90 @@
 .main {
   min-height: 100vh;
-  padding: 96px 64px 64px;
-  max-width: 1200px;
+  /* Proportional gutters so the page fills a real display instead of
+     sitting as a narrow centered column with dead space on the sides. */
+  padding: 80px clamp(28px, 5vw, 104px) 96px;
+  max-width: 1680px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 64px;
+  gap: clamp(56px, 6vw, 96px);
+}
+
+/* Hero — editorial text + the single "Start here" action on the left,
+   the live brand composition on the right. The page leads with the tool
+   working, not with a dashboard. */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: clamp(44px, 5vw, 96px);
+  align-items: center;
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.heroSub {
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  max-width: 42ch;
+  margin: 4px 0 0;
+}
+
+.heroCtas {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 12px;
+}
+
+.heroPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-start;
+  min-height: 48px;
+  padding: 13px 26px;
+  background: var(--ink);
+  color: var(--bg-elevated);
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out),
+    transform var(--motion-fast) var(--ease-out);
+}
+.heroPrimary:hover { background: #000; transform: translateY(-1px); }
+.heroArrow {
+  font-size: 16px;
+  line-height: 1;
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+.heroPrimary:hover .heroArrow { transform: translateX(3px); }
+
+.sideDoors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  list-style: none;
+}
+.sideDoor {
+  display: inline-block;
+  padding: 6px 0;
+  font-size: 14px;
+  color: var(--ink-muted);
+  text-decoration: underline;
+  text-decoration-color: var(--hairline);
+  text-underline-offset: 3px;
+  transition: color var(--motion-fast) var(--ease-out),
+    text-decoration-color var(--motion-fast) var(--ease-out);
+}
+.sideDoor:hover {
+  color: var(--ink);
+  text-decoration-color: currentColor;
 }
 
 .header {
@@ -25,73 +104,97 @@
 .title {
   font-family: var(--font-serif);
   font-weight: 400;
-  font-size: clamp(40px, 5vw, 64px);
-  line-height: 1.05;
+  font-size: clamp(44px, 5.4vw, 80px);
+  line-height: 1.03;
   letter-spacing: -0.02em;
-  max-width: 18ch;
+  max-width: 16ch;
   font-variation-settings: "SOFT" 50, "WONK" 0, "opsz" 144;
 }
 
-.nav {
+/* The path — a composed 2-column grid that fills the width, not a
+   left-hugging index. Four numbered step cards (2×2), then the brand
+   book spans the full row as the destination. Order reads via the
+   numbers; the spanning finale gives the arc a clear terminus. */
+.pathSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.pathHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pathGrid {
+  list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
 }
 
-/* Side utilities, set apart from the five-step arc so the brand book
-   reads as the finale. A divider + quieter heading + a non-stretching
-   card signal "this is off to the side, not the next step." */
-.utilitySection {
+.stepCard {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding-top: 24px;
-  border-top: 1px solid var(--hairline);
-}
-.utilityHeading {
-  font-family: var(--font-noto);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-  margin: 0;
-}
-.utilityCard {
-  max-width: 420px;
-}
-
-.card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 32px;
+  gap: 14px;
+  height: 100%;
+  padding: 30px 32px;
   background: var(--bg-elevated);
   border: 1px solid var(--hairline);
   border-radius: 16px;
   transition: transform var(--motion-fast) var(--ease-out),
     border-color var(--motion-fast) var(--ease-out);
 }
-
-.card:hover {
+.stepCard:hover {
   border-color: rgba(0, 0, 0, 0.18);
   transform: translateY(-2px);
 }
 
-.cardEyebrow {
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
+.stepHead {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-
-.cardTitle {
+.stepEyebrow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.stepNum {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 13px;
+  color: var(--ink-muted);
+  letter-spacing: 0.04em;
+}
+.stepVerb {
+  font-family: var(--font-noto);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.stepTitle {
   font-family: var(--font-serif);
   font-weight: 400;
-  font-size: 36px;
+  font-size: 30px;
+  line-height: 1.1;
   letter-spacing: -0.01em;
   font-variation-settings: "SOFT" 50, "WONK" 0;
 }
+
+.stepArrow {
+  position: absolute;
+  top: 28px;
+  right: 30px;
+  font-size: 18px;
+  color: var(--ink-muted);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity var(--motion-fast) var(--ease-out),
+    transform var(--motion-fast) var(--ease-out);
+}
+.stepCard:hover .stepArrow { opacity: 1; transform: translateX(0); }
 
 .cardBody {
   font-size: 15px;
@@ -131,8 +234,8 @@
 
 .projectGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .loadingText {
@@ -144,11 +247,13 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
-  padding: 18px 20px;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 128px;
+  padding: 22px 24px;
   background: var(--bg-elevated);
   border: 1px solid var(--hairline);
-  border-radius: 12px;
+  border-radius: 14px;
   cursor: pointer;
   transition: border-color var(--motion-fast) var(--ease-out),
     background var(--motion-fast) var(--ease-out);
@@ -216,7 +321,7 @@
   color: var(--ink-muted);
   transition: border-color var(--motion-fast) var(--ease-out),
     color var(--motion-fast) var(--ease-out);
-  min-height: 96px;
+  min-height: 128px;
 }
 .newProjectCard:hover {
   border-color: var(--ink);
@@ -464,6 +569,34 @@
   transition: background var(--motion-fast) var(--ease-out);
 }
 .bannerPrimary:hover { background: #000; }
+
+/* Tablet — stack the hero so the live panel sits under the pitch. */
+@media (max-width: 860px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
+
+/* Tablet — the path and projects drop from three columns to two. */
+@media (max-width: 1024px) {
+  .pathGrid,
+  .projectGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Narrow — single column. */
+@media (max-width: 720px) {
+  .pathGrid,
+  .projectGrid { grid-template-columns: 1fr; }
+}
+
+/* Phone — pull in the page gutters and ease type. */
+@media (max-width: 640px) {
+  .main { padding: 64px 22px 48px; gap: 48px; }
+  .stepCard { padding: 26px 24px; }
+  .stepArrow { display: none; }
+  .heroSub { font-size: 16px; }
+}
 
 @media (max-width: 560px) {
   .authBar {

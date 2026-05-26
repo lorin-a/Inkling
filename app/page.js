@@ -5,19 +5,24 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { apiFetch } from "../lib/api/client";
 import { resetToSample } from "../lib/storage/localStore";
+import LiveBrandHero from "../components/LiveBrandHero";
 import styles from "./page.module.css";
 
-const TOOLS = [
-  { href: "/import",    eyebrow: "01 — Pull in",     title: "Pinterest import", body: "Save a one-click button to your bookmarks bar, click it on any board, and it captures every pin with source credit. Palettes extract automatically." },
-  { href: "/library",   eyebrow: "02 — Browse",      title: "Pin library",      body: "Every pin and upload for this project, with extracted palettes. Click any pin to open the source." },
-  { href: "/colors",    eyebrow: "03 — Curate",      title: "Colors",           body: "Starred set, brand swatches, curated pairings, and every color pulled from your pins. Star here, shuffle on Brand." },
-  { href: "/brand",     eyebrow: "04 — Compose",     title: "Brand",            body: "The live brand. Shuffle palettes, pick fonts, override roles per variant, click any element to recolor. Marks repaint with the palette." },
-  { href: "/print",     eyebrow: "05 — Deliver",     title: "Brand book",       body: "Five-page printable: cover, palette, type, marks, gradients. The finished artifact. Open from Brand, or here for a quick look." },
-];
-
-// Side utilities — not part of the five-step arc that ends at the brand book.
-const UTILITIES = [
-  { href: "/gradients", title: "Gradients", body: "Sketch linear / radial / conic gradients from any project color. Drag the angle, drag the stops, copy the CSS." },
+// The path, in order. Bodies are the existing (approved) tool copy,
+// unchanged; the verbs are lifted from the eyebrows so the tools read as
+// one journey instead of a flat menu of pages.
+//
+// "Surface" (gradients) is part of the build, not a side utility — it's a
+// material dimension of the identity. It will grow into a texture/gradient
+// combo (grain, image-texture overlay) per NEXT.md #5; the body stays
+// gradient-only until that ships so the copy doesn't overclaim.
+const STEPS = [
+  { href: "/import",    n: "01", verb: "Pull in",  title: "Pinterest import", body: "Save a one-click button to your bookmarks bar, click it on any board, and it captures every pin with source credit. Palettes extract automatically." },
+  { href: "/library",   n: "02", verb: "Browse",   title: "Pin library",      body: "Every pin and upload for this project, with extracted palettes. Click any pin to open the source." },
+  { href: "/colors",    n: "03", verb: "Curate",   title: "Colors",           body: "Starred set, brand swatches, curated pairings, and every color pulled from your pins. Star here, shuffle on Brand." },
+  { href: "/brand",     n: "04", verb: "Compose",  title: "Brand",            body: "The live brand. Shuffle palettes, pick fonts, override roles per variant, click any element to recolor. Marks repaint with the palette." },
+  { href: "/gradients", n: "05", verb: "Surface",  title: "Gradients",        body: "Sketch linear / radial / conic gradients from any project color. Drag the angle, drag the stops, copy the CSS." },
+  { href: "/print",     n: "06", verb: "Deliver",  title: "Brand book",       body: "Five-page printable: cover, palette, type, marks, gradients. The finished artifact. Open from Brand, or here for a quick look." },
 ];
 
 export default function Home() {
@@ -120,10 +125,51 @@ export default function Home() {
         </div>
       )}
 
-      <header className={styles.header}>
-        <p className={styles.eyebrow}>Moodbuilder</p>
-        <h1 className={styles.title}>A studio for assembling brand moods.</h1>
-      </header>
+      <section className={styles.hero}>
+        <div className={styles.heroText}>
+          <p className={styles.eyebrow}>Moodbuilder</p>
+          <h1 className={styles.title}>A studio for assembling brand moods.</h1>
+          {/* [LORIN TO OWN] — functional placeholder subhead, plain on purpose so it's easy to replace in your voice. */}
+          <p className={styles.heroSub}>
+            Import the images you&rsquo;re drawn to, and it composes a color-and-type
+            identity from them. Shuffle, refine, then export a brand book.
+          </p>
+          <HeroActions
+            signedIn={signedIn}
+            isEmptyAuthedAccount={isEmptyAuthedAccount}
+            activeProject={activeProject}
+            onNewProject={() => setCreating(true)}
+          />
+        </div>
+        <LiveBrandHero />
+      </section>
+
+      <section className={styles.pathSection}>
+        <header className={styles.pathHeader}>
+          <h2 className={styles.sectionTitle}>The path</h2>
+          <p className={styles.sectionHint}>
+            Gather to deliverable. Jump in anywhere; the order is a guide, not
+            a gate.
+          </p>
+        </header>
+        <ol className={styles.pathGrid}>
+          {STEPS.map((step) => (
+            <li key={step.href}>
+              <Link href={step.href} className={styles.stepCard}>
+                <span className={styles.stepHead}>
+                  <span className={styles.stepEyebrow}>
+                    <span className={styles.stepNum}>{step.n}</span>
+                    <span className={styles.stepVerb}>{step.verb}</span>
+                  </span>
+                  <span className={styles.stepTitle}>{step.title}</span>
+                </span>
+                <span className={styles.cardBody}>{step.body}</span>
+                <span className={styles.stepArrow} aria-hidden="true">→</span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      </section>
 
       <section className={styles.projectSection}>
         <header className={styles.sectionHeader}>
@@ -189,28 +235,6 @@ export default function Home() {
         {error && <p className={styles.error}>{error}</p>}
       </section>
 
-      <nav className={styles.nav}>
-        {TOOLS.map((tool) => (
-          <Link key={tool.href} href={tool.href} className={styles.card}>
-            <span className={styles.cardEyebrow}>{tool.eyebrow}</span>
-            <span className={styles.cardTitle}>{tool.title}</span>
-            <span className={styles.cardBody}>{tool.body}</span>
-          </Link>
-        ))}
-      </nav>
-
-      <section className={styles.utilitySection}>
-        <h2 className={styles.utilityHeading}>Utility</h2>
-        <nav className={styles.nav}>
-          {UTILITIES.map((tool) => (
-            <Link key={tool.href} href={tool.href} className={`${styles.card} ${styles.utilityCard}`}>
-              <span className={styles.cardTitle}>{tool.title}</span>
-              <span className={styles.cardBody}>{tool.body}</span>
-            </Link>
-          ))}
-        </nav>
-      </section>
-
       {creating && (
         <NewProjectModal
           onClose={() => setCreating(false)}
@@ -219,6 +243,59 @@ export default function Home() {
         />
       )}
     </main>
+  );
+}
+
+/**
+ * The single "Start here" action plus quiet side-doors for people who
+ * arrive mid-stream (already have colors, already have a board). One
+ * dominant button; the rest are text links so the hierarchy is obvious.
+ */
+function HeroActions({ signedIn, isEmptyAuthedAccount, activeProject, onNewProject }) {
+  let primary;
+  let sideDoors;
+
+  if (isEmptyAuthedAccount) {
+    primary = { label: "Start a project", onClick: onNewProject };
+    sideDoors = [{ label: "Or import a Pinterest board", href: "/import" }];
+  } else if (signedIn) {
+    primary = {
+      label: activeProject ? `Open ${activeProject.name}` : "Open the studio",
+      href: "/brand",
+    };
+    sideDoors = [
+      { label: "Browse your library", href: "/library" },
+      { label: "Import a board", href: "/import" },
+    ];
+  } else {
+    primary = { label: "Open the sample studio", href: "/brand" };
+    sideDoors = [
+      { label: "Have a Pinterest board? Import it", href: "/import" },
+      { label: "Already have colors? Start there", href: "/colors" },
+    ];
+  }
+
+  return (
+    <div className={styles.heroCtas}>
+      {primary.href ? (
+        <Link href={primary.href} className={styles.heroPrimary}>
+          {primary.label}
+          <span className={styles.heroArrow} aria-hidden="true">→</span>
+        </Link>
+      ) : (
+        <button type="button" className={styles.heroPrimary} onClick={primary.onClick}>
+          {primary.label}
+          <span className={styles.heroArrow} aria-hidden="true">→</span>
+        </button>
+      )}
+      <ul className={styles.sideDoors}>
+        {sideDoors.map((d) => (
+          <li key={d.href}>
+            <Link href={d.href} className={styles.sideDoor}>{d.label}</Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
