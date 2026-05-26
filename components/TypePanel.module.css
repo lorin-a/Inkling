@@ -226,3 +226,11 @@
   color: #b91c1c;
   margin: 0;
 }
+
+/* Empty slot reads as a prompt to act, not a dead "—". Muted with a dotted
+   underline so it's legibly clickable. */
+.slotFamilyEmpty {
+  color: var(--ink-muted);
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}

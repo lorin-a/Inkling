@@ -51,7 +51,7 @@ export default function TypePanel({ fonts, onChange }) {
     <section className={styles.panel} ref={rootRef}>
       <header className={styles.header}>
         <h3 className={styles.heading}>Type</h3>
-        <p className={styles.hint}>Pick a family per role.</p>
+        <p className={styles.hint}>Search every Google font, upload your own, or paste a URL.</p>
       </header>
       <div className={styles.slots}>
         {SLOTS.map((slot) => {
@@ -66,10 +66,10 @@ export default function TypePanel({ fonts, onChange }) {
               >
                 <span className={styles.slotLabel}>{slot.label}</span>
                 <span
-                  className={styles.slotFamily}
+                  className={`${styles.slotFamily} ${value ? "" : styles.slotFamilyEmpty}`}
                   style={value ? { fontFamily: stackFor(value) } : {}}
                 >
-                  {value?.family || "—"}
+                  {value?.family || "Choose a font"}
                 </span>
               </button>
               {open && (
