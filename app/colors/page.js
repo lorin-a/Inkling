@@ -4,13 +4,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useStarred } from "../../lib/useStarred";
 import { useProject } from "../../lib/useProject";
+import { useAuthed } from "../../lib/api/useAuthed";
 import { apiFetch } from "../../lib/api/client";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import MiniBrandPreview from "../../components/MiniBrandPreview";
+import PathFooter from "../../components/PathFooter";
 import styles from "./page.module.css";
 
 export default function ColorsPage() {
   const { project } = useProject();
+  const authed = useAuthed();
+  const isSample = authed === false; // signed-out playground loads the sample studio
   const [hovered, setHovered] = useState(null);
   const [moodboardPool, setMoodboardPool] = useState({ palette: [], sourceMap: {}, loaded: false });
   const [brandSwatches, setBrandSwatches] = useState([]);
@@ -92,13 +96,6 @@ export default function ColorsPage() {
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
         <ProjectSwitcher />
         <div className={styles.barTitle}>Colors</div>
-        <div className={styles.barMeta}>
-          <span title="Palettes you've rated as a yes. Brand shuffle samples from these.">★ {starredPaletteIds.size} top picks</span>
-          <span className={styles.dot}>·</span>
-          <span>{pinPalettes.length} palettes from pins</span>
-          <span className={styles.dot}>·</span>
-          <span>{starred.size} starred colors</span>
-        </div>
       </header>
 
       {pinPalettes.length > 0 && (
@@ -195,7 +192,11 @@ export default function ColorsPage() {
             ★ Starred colors <span className={styles.sectionCount}>{starred.size}</span>
           </h2>
           <p className={styles.sectionHint}>
-            Your curated, growing set. Star any color anywhere on this page to add it; unstar to remove. Feeds the <Link href="/brand" className={styles.inlineLink}>Brand</Link> page's <em>Top picks</em> shuffle alongside your starred palettes.
+            {isSample ? (
+              <>The sample comes with a few colors starred, so you can see how a set builds. Star any color on this page to add your own; unstar to remove. It feeds the <Link href="/brand" className={styles.inlineLink}>Brand</Link> page's <em>Top picks</em> shuffle.</>
+            ) : (
+              <>Your curated, growing set. Star any color anywhere on this page to add it; unstar to remove. Feeds the <Link href="/brand" className={styles.inlineLink}>Brand</Link> page's <em>Top picks</em> shuffle alongside your starred palettes.</>
+            )}
           </p>
         </header>
         {starsHydrated && starredHexes.length === 0 ? (
@@ -223,7 +224,11 @@ export default function ColorsPage() {
         <header className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Project brand</h2>
           <p className={styles.sectionHint}>
-            Colors locked in as the identity for this project. Edit them on <Link href="/brand" className={styles.inlineLink}>Brand</Link>.
+            {isSample ? (
+              <>The sample&rsquo;s locked-in identity: what a finished palette looks like. Edit it on <Link href="/brand" className={styles.inlineLink}>Brand</Link> to make it yours.</>
+            ) : (
+              <>Colors locked in as the identity for this project. Edit them on <Link href="/brand" className={styles.inlineLink}>Brand</Link>.</>
+            )}
           </p>
         </header>
         <div className={styles.rowList}>
@@ -243,7 +248,7 @@ export default function ColorsPage() {
         <header className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Curated pairings</h2>
           <p className={styles.sectionHint}>
-            Hand-grouped color sets for this project. Each row is a combination worth shuffling against on its own.
+            Alternatives to the locked brand above: hand-grouped combinations worth trying. Shuffle against any row on its own, without committing to it.
           </p>
         </header>
         <div className={styles.rowList}>
@@ -266,7 +271,7 @@ export default function ColorsPage() {
         <header className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>From your pins</h2>
           <p className={styles.sectionHint}>
-            Colors extracted from your Pinterest pins.{" "}
+            {isSample ? "Colors extracted from the sample board’s pins." : "Colors extracted from your Pinterest pins."}{" "}
             {moodboardPool.palette.length === 0 ? (
               <>
                 Empty so far. Pinned images extract automatically. Drop a board on <Link href="/import" className={styles.inlineLink}>Pinterest import</Link> to fill this.
@@ -300,6 +305,8 @@ export default function ColorsPage() {
           </div>
         )}
       </section>
+
+      <PathFooter />
 
       <div className={styles.readout} aria-live="polite">
         {hovered ? (

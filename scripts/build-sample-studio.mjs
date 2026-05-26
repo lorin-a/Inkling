@@ -128,11 +128,30 @@ function deriveSeed(pins) {
   const step = Math.max(1, Math.floor(byLum.length / 6));
   const starred = dedupeHexes(byLum.filter((_, i) => i % step === 0)).slice(0, 6);
 
+  // Curated row: a *different* combination from the brand, not a clone of it.
+  // (Seeding it as [bg, ink, accent, muted] made "Project brand" and "Curated
+  // pairings · Row 1" byte-identical, so the two sections looked redundant.)
+  // Greedily pick 4 pool colors farthest — in RGB space — from the brand
+  // quartet and from each other, so the row reads as a distinct mood.
+  const brandSet = [bg, ink, accent, muted];
+  const dist = (a, b) => {
+    const x = hexToRgb(a), y = hexToRgb(b);
+    return Math.hypot(x.r - y.r, x.g - y.g, x.b - y.b);
+  };
+  const minDist = (hex, set) => Math.min(...set.map((s) => dist(hex, s)));
+  const remaining = pool.filter((h) => !brandSet.includes(h));
+  const pairing = [];
+  while (pairing.length < 4 && remaining.length) {
+    const avoid = [...brandSet, ...pairing];
+    remaining.sort((a, b) => minDist(b, avoid) - minDist(a, avoid));
+    pairing.push(remaining.shift());
+  }
+
   return {
     brand: { bg, ink, accent, muted },
     starred,
     source: pool.slice(0, 48),
-    curated: { Highlights: dedupeHexes([bg, ink, accent, muted]) },
+    curated: { Highlights: dedupeHexes(pairing) },
   };
 }
 
