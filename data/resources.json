@@ -1,0 +1,69 @@
+{
+  "_note": "Curated designer resources powering /resources. Add freely — each item is { name, url, note }. Categories render in array order. Foundry entries double as the Type-step directory source later.",
+  "categories": [
+    {
+      "key": "foundries",
+      "title": "Type foundries",
+      "blurb": "Where real type lives — independent and premium houses, mostly not on Google Fonts.",
+      "items": [
+        { "name": "Lost Type Co-op", "url": "https://losttype.com", "note": "Pay-what-you-want indie collective." },
+        { "name": "Open Foundry", "url": "https://open-foundry.com", "note": "Curated open-source typefaces." },
+        { "name": "The League of Moveable Type", "url": "https://www.theleagueofmoveabletype.com", "note": "The first open-source type foundry." },
+        { "name": "Collletttivo", "url": "https://www.collletttivo.it", "note": "Italian open-source foundry." },
+        { "name": "Tunera Type Foundry", "url": "https://tunera.xyz", "note": "Independent, French." },
+        { "name": "Warsaw Types", "url": "https://kroje.org", "note": "Polish independent foundry." },
+        { "name": "Republish", "url": "https://republi.sh", "note": "Vietnamese typography project." },
+        { "name": "Death of Typography", "url": "https://deathoftypography.com", "note": "Experimental display faces." },
+        { "name": "ANRT", "url": "https://anrt-nancy.fr", "note": "French type-research atelier." },
+        { "name": "Type With Pride", "url": "https://www.typewithpride.com", "note": "The Gilbert font, free." },
+        { "name": "Klim Type Foundry", "url": "https://klim.co.nz", "note": "Premium. A taste benchmark." },
+        { "name": "Good Type Foundry", "url": "https://goodtypefoundry.com", "note": "Premium — home of Adieu." },
+        { "name": "TIGHTYPE", "url": "https://tightype.com", "note": "Independent premium foundry." },
+        { "name": "Fontspring", "url": "https://www.fontspring.com", "note": "Worry-free font marketplace." }
+      ]
+    },
+    {
+      "key": "color",
+      "title": "Color tools",
+      "blurb": "Palette generation, naming, and extraction.",
+      "items": [
+        { "name": "Huemint", "url": "https://huemint.com", "note": "AI palette generator." },
+        { "name": "Name That Color", "url": "https://chir.ag/projects/name-that-color/", "note": "Names any hex." },
+        { "name": "Sanzo Wada Dictionary", "url": "https://sanzo-wada.dmbk.io", "note": "1933 color combinations (powers our starter pool)." },
+        { "name": "Data Color Picker", "url": "https://www.learnui.design/tools/data-color-picker.html", "note": "Palettes for charts and data viz." },
+        { "name": "Color Thief", "url": "https://github.com/fengsp/color-thief-py", "note": "Dominant-color extraction (library)." },
+        { "name": "Mesh Gradient", "url": "https://meshgradient.com", "note": "Beautiful mesh gradients." }
+      ]
+    },
+    {
+      "key": "inspiration",
+      "title": "Inspiration",
+      "blurb": "Where to gather taste before you synthesize it.",
+      "items": [
+        { "name": "Are.na", "url": "https://www.are.na", "note": "Visual research channels (importable here)." },
+        { "name": "Savee", "url": "https://savee.com", "note": "Designer moodboard tool." },
+        { "name": "Godly", "url": "https://godly.website", "note": "Astronomically good web design." },
+        { "name": "Refero", "url": "https://refero.design", "note": "UI/UX design reference library." },
+        { "name": "Site of Sites", "url": "https://www.siteofsites.co", "note": "A directory of web-design galleries." },
+        { "name": "Awwwards", "url": "https://www.awwwards.com", "note": "Web design awards + galleries." },
+        { "name": "Dark Mode Design", "url": "https://www.darkmodedesign.com", "note": "Handpicked dark-UI inspiration." },
+        { "name": "LoveFrom", "url": "https://www.lovefrom.com", "note": "Jony Ive's studio. A bar to point at." }
+      ]
+    },
+    {
+      "key": "accessibility",
+      "title": "Accessibility",
+      "blurb": "References for building inclusive web design. Starter set — grow it as you collect.",
+      "items": [
+        { "name": "WCAG 2.2", "url": "https://www.w3.org/TR/WCAG22/", "note": "The standard itself." },
+        { "name": "WebAIM Contrast Checker", "url": "https://webaim.org/resources/contrastchecker/", "note": "The everyday contrast tool." },
+        { "name": "APCA Contrast", "url": "https://www.myndex.com/APCA/", "note": "Perceptual contrast — WCAG's likely successor." },
+        { "name": "The A11y Project", "url": "https://www.a11yproject.com", "note": "Community checklist + patterns." },
+        { "name": "MDN: Accessibility", "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility", "note": "Practical implementation docs." },
+        { "name": "Accessible Color Generator", "url": "https://www.learnui.design/tools/accessible-color-generator.html", "note": "Nudge any color to pass contrast." },
+        { "name": "Who Can Use", "url": "https://whocanuse.com", "note": "How a color pair reads across vision types." },
+        { "name": "Inclusive Components", "url": "https://inclusive-components.design", "note": "Accessible UI pattern library." }
+      ]
+    }
+  ]
+}

@@ -659,6 +659,58 @@ step 6).
 
 ---
 
+## Resources & competitive map *(from Lorin's bookmarks, 2026-05-26)*
+
+Parsed 409 bookmarks by content (folders were unreliable — Klim was filed
+under "Shopping list," 176 links sat in an unnamed root bucket). The signal,
+and what it means for the build.
+
+### The Type step is really two layers
+Lorin collects **independent and premium foundries**, almost none on Google
+Fonts. So the Type step can't be only a Google Fonts search box — that's not
+where her taste lives. It's:
+1. A curated **foundry directory** (discover + link out — how designers
+   actually find type), and
+2. **Google Fonts** breadth for what loads live, sorted by designer facets
+   (serif/sans, weight, contrast, width, mood).
+
+Foundries from her bookmarks, ready to seed the directory:
+- *Indie / open-source:* Lost Type Co-op, Open Foundry, The League of
+  Moveable Type, Collletttivo, Tunera, Warsaw Types (kroje), Republish,
+  Typothèque ESA, Death of Typography, ANRT, Type With Pride.
+- *Premium / taste references:* Klim, Good Type Foundry (Adieu), TIGHTYPE,
+  GT, Fontspring, Creative Market.
+
+### Competitive map (the "tools like this" lens)
+- **Fontjoy** — one-click font pairings. Direct prior art for the pairing
+  suggestion layer (Phase 2b). Differentiate: it pairs algorithmically from
+  nothing; we pair from the user's *collected* type taste.
+- **Huemint**, **EnigmaEasel** — AI palette generators. Same contrast:
+  they generate; we synthesize from what the user already loves. Confirms
+  the wedge is defensible — nobody's doing taste-driven synthesis.
+- **Font Brief** — font discovery by attributes. Study its facet schema
+  before building the faceted browser.
+- **learnui.design** — accessible-contrast tool, same space as the AA
+  readout already shipped on Brand.
+
+### Buildable gems
+- **Name That Color** (chir.ag/ntc) — names any hex ("Burnt Sienna"). Tiny
+  integration; every swatch could carry a human name. Delightful, on-brand.
+- **Sanzo Wada** — bookmarked twice, independently validating the starter
+  pool already shipped.
+- Mesh-gradient generators (meshgradient, magicpattern, colorffy, noise &
+  gradient) — could feed the Surface/Gradients step.
+
+### `/resources` — a curated directory surface *(building now)*
+Lorin wants a home for the resources she tracks, **especially accessibility
+references for web design**. Built data-driven from `data/resources.json`
+(category → items), categories: Type foundries, Color tools, Inspiration,
+Accessibility, Similar tools. Side utility, not a path step. Seeded from the
+bookmarks above plus canonical a11y references; designed to grow as she
+curates. Foundry entries double as the Type-step directory source later.
+
+---
+
 ## Useful pointers
 
 - All swatches reuse the `Swatch` component in `/colors/page.js` for

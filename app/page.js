@@ -253,6 +253,9 @@ export default function Home() {
           A personal project by Lorin Anderberg, built with Next.js, Neon, and Claude Code.
           Free to use for now. © 2026 Lorin Anderberg, all rights reserved (not open source).
         </p>
+        <p className={styles.colophonLinks}>
+          <Link href="/resources" className={styles.colophonLink}>Resources &mdash; foundries, color tools, inspiration, accessibility</Link>
+        </p>
         {COFFEE_URL ? (
           <a className={styles.coffee} href={COFFEE_URL} target="_blank" rel="noopener noreferrer">
             Buy me a coffee
