@@ -102,7 +102,7 @@ export default function ColorsPage() {
         <section className={styles.section}>
           <header className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>
-              ★ Top picks <span className={styles.sectionCount}>{topPicks.length}</span>
+              ▲ Top picks <span className={styles.sectionCount}>{topPicks.length}</span>
             </h2>
             <p className={styles.sectionHint}>
               Palettes you've rated as a yes. The <Link href="/brand" className={styles.inlineLink}>Brand</Link> shuffle samples from these first. Add a palette to Top picks below to lift it here.
@@ -189,28 +189,28 @@ export default function ColorsPage() {
       <section className={styles.section}>
         <header className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>
-            ★ Starred colors <span className={styles.sectionCount}>{starred.size}</span>
+            ★ Saved colors <span className={styles.sectionCount}>{starred.size}</span>
           </h2>
           <p className={styles.sectionHint}>
             {isSample ? (
-              <>The sample comes with a few colors starred, so you can see how a set builds. Star any color on this page to add your own; unstar to remove. It feeds the <Link href="/brand" className={styles.inlineLink}>Brand</Link> page's <em>Top picks</em> shuffle.</>
+              <>The sample comes with a few colors saved, so you can see how a set builds. Save any color on this page to add your own. It feeds the <em>Saved colors</em> source on <Link href="/brand" className={styles.inlineLink}>Brand</Link>.</>
             ) : (
-              <>Your curated, growing set. Star any color anywhere on this page to add it; unstar to remove. Feeds the <Link href="/brand" className={styles.inlineLink}>Brand</Link> page's <em>Top picks</em> shuffle alongside your starred palettes.</>
+              <>Your curated, growing set. Save any color anywhere on this page; it feeds the <em>Saved colors</em> source on <Link href="/brand" className={styles.inlineLink}>Brand</Link>, alongside your Top picks.</>
             )}
           </p>
         </header>
         {starsHydrated && starredHexes.length === 0 ? (
-          <p className={styles.empty}>Nothing starred yet.</p>
+          <p className={styles.empty}>Nothing saved yet.</p>
         ) : (
           <div className={styles.moodboardGrid}>
             {starredHexes.map((hex, i) => (
               <Swatch
                 key={`${hex}-${i}`}
                 hex={hex}
-                label="starred"
+                label="saved"
                 isStarred={isStarred(hex)}
                 toggleStar={toggleStar}
-                onHover={() => setHovered({ hex, label: "starred" })}
+                onHover={() => setHovered({ hex, label: "saved" })}
                 onLeave={() => setHovered(null)}
                 onClick={() => copyHex(hex)}
                 size="md"
@@ -364,7 +364,7 @@ function PaletteRow({
             }}
             onMouseEnter={() => onHover?.(hex)}
             onMouseLeave={() => onLeave?.()}
-            title={`${hex.toUpperCase()} · click to copy · shift-click to star`}
+            title={`${hex.toUpperCase()} · click to copy · shift-click to save`}
             aria-label={hex}
           />
         ))}
@@ -403,7 +403,7 @@ function PaletteRow({
           title={isPaletteStarred ? "In your Top picks. The Brand shuffle samples these first." : "Add to Top picks. The Brand shuffle samples these first."}
           aria-label={isPaletteStarred ? "Remove from Top picks" : "Add to Top picks"}
         >
-          {isPaletteStarred ? "★ Top pick" : "☆ Top pick"}
+          {isPaletteStarred ? "▲ Top pick" : "△ Top pick"}
         </button>
       </div>
     </div>
@@ -483,8 +483,8 @@ function Swatch({
           e.stopPropagation();
           toggleStar?.(hex);
         }}
-        title={isStarred ? "Remove from Starred" : "Add to Starred"}
-        aria-label={isStarred ? "Unstar" : "Star"}
+        title={isStarred ? "Remove from Saved colors" : "Save this color"}
+        aria-label={isStarred ? "Remove from saved colors" : "Save color"}
       >
         {isStarred ? "★" : "☆"}
       </button>

@@ -80,7 +80,7 @@ export default function HostedBrand({ token, audience, voteUnit, project, librar
             <header className={styles.blockHeader}>
               <h2 className={styles.blockTitle}>Palette pool</h2>
               <p className={styles.blockHint}>
-                {poolSwatches.length} {poolSwatches.length === 1 ? "color" : "colors"} the team has starred so far.
+                {poolSwatches.length} {poolSwatches.length === 1 ? "color" : "colors"} the team has saved so far.
               </p>
             </header>
             <ul className={styles.swatchGrid}>

@@ -280,9 +280,9 @@ export default function BrandPage() {
             type="button"
             className={`${styles.btn} ${styles.btnFav}`}
             onClick={() => favorite()}
-            title="Bookmark this palette (F). Saves colors only, not the full brand."
+            title="Save this palette (F). Saves colors only, not the full brand."
           >
-            ★ Bookmark palette
+            ★ Save palette
           </button>
           <button
             type="button"
@@ -404,11 +404,11 @@ export default function BrandPage() {
 
           {starredEmpty && (
             <div className={styles.emptyHint}>
-              No Top picks yet.{" "}
+              No saved colors yet.{" "}
               <Link href="/colors" className={styles.emptyHintLink}>
                 Open the Colors page
               </Link>{" "}
-              and add a palette to Top picks (or star individual colors). They become this shuffle&rsquo;s pool: your highest-signal source.
+              and save a few colors (or add palettes to Top picks). They become this shuffle&rsquo;s pool: your highest-signal source.
             </div>
           )}
 
@@ -461,11 +461,11 @@ export default function BrandPage() {
 
           <div className={styles.favorites}>
             <h2 className={styles.railTitle}>
-              Bookmarked palettes
+              Saved palettes
               <span className={styles.railCount}>{favorites.length}</span>
             </h2>
             {favorites.length === 0 && (
-              <p className={styles.railEmpty}>None yet. Press F or ★ Bookmark palette to keep one.</p>
+              <p className={styles.railEmpty}>None yet. Press F or ★ Save palette to keep one.</p>
             )}
             <div className={styles.favList}>
               {favorites.map((f) => (

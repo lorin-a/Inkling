@@ -148,9 +148,9 @@ export default function Home() {
             {!signedIn ? (
               <>This is a sample to play with. Rename it, paste your own colors, or import a Pinterest board. It all saves to this browser. Sign in when you want to keep your work and start more projects.</>
             ) : isEmptyAuthedAccount ? (
-              <>Welcome. Start a new brand project below to begin &mdash; every project keeps its own palette, pins, uploads, brand text, and starred set.</>
+              <>Welcome. Start a new brand project below to begin &mdash; every project keeps its own palette, pins, uploads, brand text, and saved set.</>
             ) : (
-              <>Pick the project you want to work in. Each one keeps its own palette, pins, uploads, brand text, and starred set; the steps below act on whichever you select.</>
+              <>Pick the project you want to work in. Each one keeps its own palette, pins, uploads, brand text, and saved set; the steps below act on whichever you select.</>
             )}
           </p>
         </header>
