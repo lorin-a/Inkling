@@ -174,8 +174,11 @@ serves that.
   "generative identity sketchpad" feeling.
 
 **Phase 2c — Starter pool + auto-promote brand colors** *(~3 hrs)*
-- Sanzo Wada starter pool (MIT, 348 historical combinations, ready in
-  memory) seeds new projects so shuffle works on day one before import.
+- **Sanzo Wada starter pool — SHIPPED.** `lib/sanzoWada.js` (vendored MIT
+  source + baked artifact via `scripts/build-sanzo.mjs`). Available as the
+  "Sanzo Wada (1933)" source on Brand, and an empty project auto-seeds from
+  it. Still parked: a "browse named historical combinations" UI on top of
+  the 228 baked 3–4 color combinations (`SANZO_COMBINATIONS`).
 - When a project's moodboard contains 5+ colors appearing in 3+ pins each,
   the tool proposes them as the project's brand palette. One-click promote
   into `data/projects/{slug}/palette.json`.
