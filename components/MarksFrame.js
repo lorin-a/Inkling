@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
-import Link from "next/link";
 import InlineMark from "./InlineMark";
 import { getSvgColors } from "../lib/svgRemap";
 import { apiFetch } from "../lib/api/client";
@@ -88,10 +87,6 @@ export default function MarksFrame({ palette }) {
   }
 
   async function handleFiles(fileList) {
-    if (authed === false) {
-      setUploadError("Sign in to upload marks. They’re saved to your account, not this browser.");
-      return;
-    }
     const svgFiles = Array.from(fileList).filter((f) => f.name.toLowerCase().endsWith(".svg"));
     if (svgFiles.length === 0) {
       setUploadError("Drop .svg files only.");
@@ -100,13 +95,27 @@ export default function MarksFrame({ palette }) {
     setUploadError(null);
     setBusy(true);
     try {
-      const fd = new FormData();
-      for (const f of svgFiles) fd.append("files", f);
-      const res = await fetch("/api/marks", { method: "POST", body: fd });
-      const data = await res.json();
-      const failures = (data.results || []).filter((r) => !r.ok);
-      if (failures.length > 0) {
-        setUploadError(failures.map((f) => `${f.name}: ${f.error}`).join(", "));
+      if (authed === false) {
+        // Signed out: read the SVG text client-side and store it locally
+        // (persists across this session's navigation; no account needed).
+        const marks = await Promise.all(
+          svgFiles.map(async (f) => ({ name: f.name.replace(/\.svg$/i, ""), svg: await f.text() })),
+        );
+        const res = await apiFetch("/api/marks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ marks }),
+        });
+        await res.json();
+      } else {
+        const fd = new FormData();
+        for (const f of svgFiles) fd.append("files", f);
+        const res = await fetch("/api/marks", { method: "POST", body: fd });
+        const data = await res.json();
+        const failures = (data.results || []).filter((r) => !r.ok);
+        if (failures.length > 0) {
+          setUploadError(failures.map((f) => `${f.name}: ${f.error}`).join(", "));
+        }
       }
       await refresh();
     } catch (e) {
@@ -120,7 +129,7 @@ export default function MarksFrame({ palette }) {
     if (!confirm(`Delete ${file}?`)) return;
     setBusy(true);
     try {
-      await fetch(`/api/marks?file=${encodeURIComponent(file)}`, { method: "DELETE" });
+      await apiFetch(`/api/marks?file=${encodeURIComponent(file)}`, { method: "DELETE" });
       resetMark(file);
       await refresh();
     } finally {
@@ -149,26 +158,19 @@ export default function MarksFrame({ palette }) {
       <header className={styles.header}>
         <h2 className={styles.title}>Marks</h2>
         <p className={styles.hint}>
-          {authed === false
-            ? "Sign in to upload your own marks and keep them across devices."
-            : marks.length === 0
+          {marks.length === 0
             ? "Drop .svg files anywhere on this frame to add marks."
             : "Click any mark to recolor. Drop .svg files to add."}
+          {authed === false && " Saved in this browser; sign in to keep them across devices."}
         </p>
         <div className={styles.headerActions}>
-          {authed === false ? (
-            <Link href="/login" className={styles.uploadBtn}>
-              Sign in to add marks
-            </Link>
-          ) : (
-            <button
-              type="button"
-              className={styles.uploadBtn}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              Add SVG
-            </button>
-          )}
+          <button
+            type="button"
+            className={styles.uploadBtn}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Add SVG
+          </button>
           <input
             ref={fileInputRef}
             type="file"
@@ -223,9 +225,7 @@ export default function MarksFrame({ palette }) {
             className={styles.emptyHint}
             style={{ color: variant === "light" ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.6)" }}
           >
-            {authed === false
-              ? <>Mark upload needs an account. <Link href="/login" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: "3px" }}>Sign in</Link> to add hand-drawn SVGs.</>
-              : <>Drop hand-drawn SVGs here, or click <em>Add SVG</em>.</>}
+            Drop hand-drawn SVGs here, or click <em>Add SVG</em>.
           </p>
         </div>
       ) : (
