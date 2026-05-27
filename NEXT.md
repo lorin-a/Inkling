@@ -164,18 +164,35 @@ serves that.
 - Fall back to `sampleSpread` when the pool is too thin to compose against
   (<6 colors).
 
-**Phase 2b — Font pairing engine** *(~3 hrs remaining)*
+**Phase 2b — Font pairing engine** *(SHIPPED 2026-05-27)*
 - **Manual picker — SHIPPED (was already built).** `TypePanel` +
   `FontPicker` search the full Google Fonts catalog (~1934 families via the
   public metadata endpoint, no key), plus upload + custom URL, applied live
   via `FontLoader`. Discoverability fixed (slots say "Choose a font," not
   "—"). So "pick any font" is done.
-- **Still to build — the suggestion/taste layer:** a curated library of
-  30-50 mood-tagged pairings (refined / brutalist / soft / editorial) that
-  *shuffle proposes* alongside the palette, lock-and-keep like palette
-  slots, weighted by the palette's saturation/luminance profile. This is
-  the "generative" half — the picker never limits the user, the suggestions
-  give them a starting pair. Layers on top of the existing picker.
+- **Faceted browser — SHIPPED 2026-05-27** *(commit `faa290b`)*. A "Browse
+  all" surface (`components/FontBrowser.js`, portaled to body) filters the
+  full catalog by facets computed server-side from Google's own metadata:
+  Style (sans/serif/slab/display/script/mono via `category`+`stroke`), Width
+  (Condensed/Normal/Wide from the measured per-weight `width` metric), Weight
+  (has-light/has-black), Variable-only, sorted by Popular/Trending/Newest/A–Z.
+  `/api/fonts/google` now takes facet+page params. Deliberately omits
+  "contrast" and "mood" — not derivable across the catalog (single thickness
+  number ≠ stroke contrast; no mood signal). Those live in the pairing layer.
+- **Foundry directory — SHIPPED 2026-05-27** *(commit `0f2c6bd`)*. A
+  "Foundries" segment in the browser presents the curated houses from
+  `/resources` + community-approved foundries (`/api/fonts/foundries`),
+  link-out only with indie/premium/marketplace tier badges. The two-layer
+  Type step from the resources research: live catalog + curated directory.
+- **Suggestion/taste layer — SHIPPED 2026-05-27** *(commit `6b4db17`)*.
+  `lib/fontPairings.js`: ~36 mood-tagged Google-Fonts pairings (display +
+  text). "✦ Suggest a pairing" on the Type panel proposes one, weighted by
+  the palette's OKLCH profile (vivid → expressive moods, muted → quiet),
+  lock-and-keep per slot. Relational/Fontjoy-style: locking a known face
+  restricts candidates to its partners. **Whole Type step is now done.**
+  - Parked next steps if revisited: more pairings; weight-axis bias (the
+    pairings only carry family, not weight); a "shuffle type with palette"
+    combined action; saving a pairing into a Combo/Preset (Phase 3).
 
 **Phase 2c — Starter pool + auto-promote brand colors** *(~3 hrs)*
 - **Sanzo Wada starter pool — SHIPPED.** `lib/sanzoWada.js` (vendored MIT
