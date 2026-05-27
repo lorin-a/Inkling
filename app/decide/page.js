@@ -15,27 +15,56 @@ import styles from "./page.module.css";
 const MAX_COMPARE = 5;
 
 /**
- * The finishing room: saved brand presets side by side at full Brand-page
- * fidelity, so the choice between candidates happens in one view. Same
- * wordmark across all; each preset brings its own palette + type + role
- * overrides. Read-only — composing happens on /brand.
+ * The finishing room: anything you've saved — full Brand Presets and plain
+ * saved palettes — side by side at full Brand-page fidelity, so the choice
+ * happens in one view. Presets bring their own type + role colors; palettes
+ * render with your current fonts/text so you compare them as a brand, not as
+ * abstract swatches. Read-only — composing happens on /brand.
  */
 export default function DecidePage() {
   const { project } = useProject();
-  const [presets, setPresets] = useState(null); // null = loading
+  const [candidates, setCandidates] = useState(null); // null = loading
   const [selected, setSelected] = useState(() => new Set());
   const [variant, setVariant] = useState("dark");
 
   useEffect(() => {
-    apiFetch("/api/presets", { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : { presets: [] }))
-      .then((data) => {
-        const list = data.presets || [];
-        setPresets(list);
-        // Pre-select up to the first few so the page is useful on arrival.
-        setSelected(new Set(list.slice(0, Math.min(3, list.length)).map((p) => p.id)));
-      })
-      .catch(() => setPresets([]));
+    let cancelled = false;
+    async function load() {
+      const out = [];
+      // Brand presets — whole identities.
+      try {
+        const d = await (await apiFetch("/api/presets", { cache: "no-store" })).json();
+        for (const p of d.presets || []) {
+          out.push({ kind: "preset", id: p.id, name: p.name || "Untitled", palette: p.palette || [], fonts: p.fonts, roleOverrides: p.roleOverrides, textures: p.textures });
+        }
+      } catch { /* none */ }
+      // Top picks — rated pin palettes (colors only).
+      try {
+        const d = await (await apiFetch("/api/library/palette", { cache: "no-store" })).json();
+        const starred = new Set(d.starredPalettes || []);
+        for (const pp of d.pinPalettes || []) {
+          if (starred.has(pp.pinId) && Array.isArray(pp.palette) && pp.palette.length) {
+            out.push({ kind: "palette", id: `pin_${pp.pinId}`, name: pp.sourceDomain || "Top pick", palette: pp.palette });
+          }
+        }
+      } catch { /* none */ }
+      // Saved palettes — the ★ favorites (localStorage, per active slug).
+      try {
+        const { slug } = await (await apiFetch("/api/projects/active", { cache: "no-store" })).json();
+        const raw = localStorage.getItem(`moodbuilder.favorites.v1.${slug}`) || localStorage.getItem("moodbuilder.favorites.v1");
+        for (const f of raw ? JSON.parse(raw) : []) {
+          if (Array.isArray(f.palette) && f.palette.length) {
+            out.push({ kind: "palette", id: `fav_${f.id}`, name: f.name || "Saved palette", palette: f.palette });
+          }
+        }
+      } catch { /* none */ }
+
+      if (cancelled) return;
+      setCandidates(out);
+      setSelected(new Set(out.slice(0, Math.min(3, out.length)).map((c) => c.id)));
+    }
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   function toggle(id) {
@@ -48,24 +77,25 @@ export default function DecidePage() {
   }
 
   const chosen = useMemo(
-    () => (presets || []).filter((p) => selected.has(p.id)),
-    [presets, selected],
+    () => (candidates || []).filter((c) => selected.has(c.id)),
+    [candidates, selected],
   );
 
-  // Load every font used across the chosen presets (union), so each preview
-  // renders in its own faces. Fall back to the project’s fonts.
+  // Load every font used across chosen presets (palettes use the project's
+  // fonts, already loaded elsewhere). FontLoader keys on title/subhead/body,
+  // so flatten the union into pseudo-slots.
   const unionFonts = useMemo(() => {
-    const out = {};
-    for (const p of chosen) {
+    const seen = {};
+    for (const c of chosen) {
+      if (c.kind !== "preset") continue;
       for (const slot of ["title", "subhead", "body"]) {
-        const f = p.fonts?.[slot];
-        if (f?.family) out[`${slot}-${f.family}`] = f;
+        const f = c.fonts?.[slot];
+        if (f?.family) seen[`${slot}-${f.family}`] = f;
       }
     }
-    // FontLoader keys on title/subhead/body; flatten the union into pseudo-slots.
     const flat = {};
     let i = 0;
-    for (const f of Object.values(out)) flat[`s${i++}`] = f;
+    for (const f of Object.values(seen)) flat[`s${i++}`] = f;
     return flat;
   }, [chosen]);
 
@@ -93,15 +123,16 @@ export default function DecidePage() {
         </div>
       </header>
 
-      {presets === null ? (
-        <p className={styles.status}>Loading your presets…</p>
-      ) : presets.length === 0 ? (
+      {candidates === null ? (
+        <p className={styles.status}>Loading what you've saved…</p>
+      ) : candidates.length === 0 ? (
         <div className={styles.empty}>
           <h2 className={styles.emptyTitle}>Nothing to compare yet</h2>
           <p className={styles.emptyText}>
-            Save a few brand presets on <Link href="/brand" className={styles.inlineLink}>Brand</Link> —
-            each one captures a whole identity (palette, type, role overrides). Come
-            back here to see them side by side and choose.
+            Save a few things first, then come back to see them side by side: a{" "}
+            <strong>Brand preset</strong> on <Link href="/brand" className={styles.inlineLink}>Brand</Link>{" "}
+            (a whole identity), or any <strong>palette</strong> (★ Save palette on Brand, or rate
+            palettes as Top picks on <Link href="/colors" className={styles.inlineLink}>Colors</Link>).
           </p>
         </div>
       ) : (
@@ -109,20 +140,21 @@ export default function DecidePage() {
           <div className={styles.controls}>
             <span className={styles.controlsLabel}>Compare ({chosen.length}/{MAX_COMPARE})</span>
             <div className={styles.chips}>
-              {presets.map((p) => {
-                const on = selected.has(p.id);
+              {candidates.map((c) => {
+                const on = selected.has(c.id);
                 const atCap = !on && selected.size >= MAX_COMPARE;
                 return (
                   <button
-                    key={p.id}
+                    key={c.id}
                     type="button"
                     className={`${styles.chip} ${on ? styles.chipOn : ""}`}
                     aria-pressed={on}
                     disabled={atCap}
-                    onClick={() => toggle(p.id)}
-                    title={atCap ? `Up to ${MAX_COMPARE} at once` : undefined}
+                    onClick={() => toggle(c.id)}
+                    title={atCap ? `Up to ${MAX_COMPARE} at once` : c.kind === "preset" ? "Brand preset — full identity" : "Palette — colors only"}
                   >
-                    {p.name || "Untitled"}
+                    <span className={`${styles.chipKind} ${c.kind === "preset" ? styles.chipKindPreset : ""}`} aria-hidden="true" />
+                    {c.name}
                   </button>
                 );
               })}
@@ -130,11 +162,11 @@ export default function DecidePage() {
           </div>
 
           {chosen.length === 0 ? (
-            <p className={styles.status}>Pick a preset or two above to compare.</p>
+            <p className={styles.status}>Pick one or two above to compare.</p>
           ) : (
             <div className={styles.grid} data-count={chosen.length}>
-              {chosen.map((p) => (
-                <PresetColumn key={p.id} preset={p} project={project} variant={variant} />
+              {chosen.map((c) => (
+                <CandidateColumn key={c.id} cand={c} project={project} variant={variant} />
               ))}
             </div>
           )}
@@ -146,23 +178,30 @@ export default function DecidePage() {
   );
 }
 
-function PresetColumn({ preset, project, variant }) {
-  const palette = preset.palette || [];
+function CandidateColumn({ cand, project, variant }) {
+  const palette = cand.palette || [];
+  const isPreset = cand.kind === "preset";
+
   const roles = useMemo(() => {
     const auto = derivePreviewRoles(palette, variant);
-    return { ...auto, ...(preset.roleOverrides?.[variant] || {}) };
-  }, [palette, variant, preset.roleOverrides]);
+    return isPreset ? { ...auto, ...(cand.roleOverrides?.[variant] || {}) } : auto;
+  }, [palette, variant, isPreset, cand.roleOverrides]);
 
-  // Same wordmark/text as the project; the preset supplies type + textures.
-  const mergedProject = { ...project, fonts: preset.fonts || project?.fonts, textures: preset.textures };
+  // Presets carry their own type + textures; palettes borrow the project's.
+  const fonts = isPreset ? (cand.fonts || project?.fonts) : project?.fonts;
+  const textures = isPreset ? cand.textures : project?.textures;
+  const mergedProject = { ...project, fonts, textures };
 
-  const pair = [preset.fonts?.title?.family, preset.fonts?.body?.family].filter(Boolean);
+  const pair = [fonts?.title?.family, fonts?.body?.family].filter(Boolean);
   const pairLabel = pair.length ? [...new Set(pair)].join(" + ") : "Project fonts";
 
   return (
     <section className={styles.column}>
       <header className={styles.columnHead}>
-        <h3 className={styles.columnName}>{preset.name || "Untitled"}</h3>
+        <h3 className={styles.columnName}>
+          <span className={`${styles.kindBadge} ${isPreset ? styles.kindBadgePreset : ""}`}>{isPreset ? "Preset" : "Palette"}</span>
+          {cand.name}
+        </h3>
         <span className={styles.columnPair}>{pairLabel}</span>
       </header>
       <div className={styles.previewWrap}>

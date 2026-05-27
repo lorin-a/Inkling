@@ -92,6 +92,32 @@
 .chipOn:hover { color: #fff; }
 .chip:disabled { opacity: 0.4; cursor: not-allowed; }
 
+/* Dot distinguishes a palette (hollow) from a preset (filled). */
+.chipKind {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.chip { display: inline-flex; align-items: center; gap: 7px; }
+.chipKindPreset { background: currentColor; }
+
+.kindBadge {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  color: var(--ink-muted);
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.kindBadgePreset { border-color: var(--ink); color: var(--ink); }
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
