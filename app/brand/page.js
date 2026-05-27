@@ -505,11 +505,11 @@ export default function BrandPage() {
           )}
           <div className={styles.variant}>
             <span className={styles.variantLabel}>Dark</span>
-            <BrandPreview palette={palette} variant="dark" project={project} roles={rolesDark} onPickRole={openPicker} />
+            <BrandPreview palette={palette} variant="dark" project={project} roles={rolesDark} onPickRole={openPicker} onEditText={(field, value) => saveProject({ [field]: value })} />
           </div>
           <div className={styles.variant}>
             <span className={styles.variantLabel}>Light</span>
-            <BrandPreview palette={palette} variant="light" project={project} roles={rolesLight} onPickRole={openPicker} />
+            <BrandPreview palette={palette} variant="light" project={project} roles={rolesLight} onPickRole={openPicker} onEditText={(field, value) => saveProject({ [field]: value })} />
           </div>
           <MarksFrame palette={palette} />
         </section>

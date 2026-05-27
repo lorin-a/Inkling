@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import FigmaFrame from "./FigmaFrame";
 import { derivePreviewRoles as mapRoles } from "../lib/derivePreviewRoles";
 import styles from "./BrandPreview.module.css";
@@ -27,12 +28,29 @@ const DEFAULT_PROJECT = {
  * Variant just swaps bg↔ink at render time so the light/dark pair stays
  * coherent without needing duplicate overrides.
  */
-export default function BrandPreview({ palette, variant = "dark", project, roles: rolesIn, onPickRole }) {
+export default function BrandPreview({ palette, variant = "dark", project, roles: rolesIn, onPickRole, onEditText }) {
   // Each variant carries its own resolved roles now — no more bg↔ink flip
   // at render time. The parent passes variant-specific roles, and clicks
   // on this variant only modify this variant's overrides.
   const roles = rolesIn || mapRoles(palette, variant);
   const p = { ...DEFAULT_PROJECT, ...(project || {}) };
+
+  const editable = !!onEditText;
+  const [editing, setEditing] = useState(null); // which text field, or null
+  const clickTimer = useRef(null);
+  const editRef = useRef(null);
+
+  // Focus + select the field when inline editing starts.
+  useEffect(() => {
+    if (!editing || !editRef.current) return;
+    const el = editRef.current;
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }, [editing]);
 
   const pick = (role) => (e) => {
     if (!onPickRole) return;
@@ -40,6 +58,53 @@ export default function BrandPreview({ palette, variant = "dark", project, roles
     onPickRole(variant, role, e);
   };
   const cls = (base) => `${base} ${onPickRole ? styles.clickable : ""}`;
+
+  // Single click recolors; double click edits. On editable surfaces we delay
+  // the recolor briefly so a double-click can cancel it (capturing the cursor
+  // position up front — openPicker only needs clientX/Y).
+  function textClick(role, field) {
+    return (e) => {
+      e.stopPropagation();
+      if (editing === field) return;
+      if (!onPickRole) return;
+      const { clientX, clientY } = e;
+      if (clickTimer.current) clearTimeout(clickTimer.current);
+      clickTimer.current = setTimeout(() => {
+        onPickRole(variant, role, { clientX, clientY });
+        clickTimer.current = null;
+      }, editable ? 220 : 0);
+    };
+  }
+  function textDouble(field) {
+    if (!editable) return undefined;
+    return (e) => {
+      e.stopPropagation();
+      if (clickTimer.current) { clearTimeout(clickTimer.current); clickTimer.current = null; }
+      setEditing(field);
+    };
+  }
+  function commitEdit(field, el) {
+    if (clickTimer.current) { clearTimeout(clickTimer.current); clickTimer.current = null; }
+    const val = (el.innerText || "").replace(/\s+/g, " ").trim();
+    setEditing(null);
+    if (val && val !== p[field]) onEditText(field, val);
+  }
+  function editProps(field) {
+    if (editing !== field) return {};
+    return {
+      ref: editRef,
+      contentEditable: true,
+      suppressContentEditableWarning: true,
+      spellCheck: false,
+      onClick: (e) => e.stopPropagation(),
+      onBlur: (e) => commitEdit(field, e.currentTarget),
+      onKeyDown: (e) => {
+        if (e.key === "Enter") { e.preventDefault(); e.currentTarget.blur(); }
+        else if (e.key === "Escape") { e.preventDefault(); setEditing(null); }
+      },
+    };
+  }
+  const textTitle = editable ? "Click to recolor · double-click to edit" : (onPickRole ? "Click to recolor" : undefined);
 
   const fontVars = buildFontVars(p.fonts);
   const texture = p.textures?.[variant] || null;
@@ -69,12 +134,16 @@ export default function BrandPreview({ palette, variant = "dark", project, roles
       )}
       {/* primary wordmark */}
       <p
-        className={cls(styles.wordmark)}
+        className={styles.wordmark}
         style={{ left: 142, top: 183, color: roles.ink }}
-        onClick={pick("ink")}
-        title={onPickRole ? "Click to recolor main text" : undefined}
       >
-        {p.wordmark}<span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }} title={onPickRole ? "Click to recolor accent" : undefined}>{p.period}</span>
+        <span
+          className={cls(styles.editText)}
+          onClick={textClick("ink", "wordmark")}
+          onDoubleClick={textDouble("wordmark")}
+          title={textTitle}
+          {...editProps("wordmark")}
+        >{p.wordmark}</span><span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }} title={onPickRole ? "Click to recolor accent" : undefined}>{p.period}</span>
       </p>
       {/* italic wordmark */}
       <p
@@ -105,8 +174,10 @@ export default function BrandPreview({ palette, variant = "dark", project, roles
       <p
         className={cls(styles.tagline)}
         style={{ left: 142, top: 676, color: roles.ink }}
-        onClick={pick("ink")}
-        title={onPickRole ? "Click to recolor main text" : undefined}
+        onClick={textClick("ink", "tagline")}
+        onDoubleClick={textDouble("tagline")}
+        title={textTitle}
+        {...editProps("tagline")}
       >
         {p.tagline}
       </p>
@@ -114,8 +185,10 @@ export default function BrandPreview({ palette, variant = "dark", project, roles
       <p
         className={cls(styles.body)}
         style={{ left: 142, top: 770, color: roles.muted }}
-        onClick={pick("muted")}
-        title={onPickRole ? "Click to recolor subtext" : undefined}
+        onClick={textClick("muted", "body")}
+        onDoubleClick={textDouble("body")}
+        title={textTitle}
+        {...editProps("body")}
       >
         {p.body}
       </p>

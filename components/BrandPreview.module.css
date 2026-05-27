@@ -29,7 +29,9 @@
   font-size: 48px;
   line-height: 1.3;
   letter-spacing: 0.01em;
-  width: 1392px;
+  /* Held to the left zone (clear of the swatch/gradient column at x≈1228) so a
+     long tagline wraps under itself instead of running into the right block. */
+  width: 976px;
   margin: 0;
   font-variation-settings: "opsz" 96;
 }
@@ -64,5 +66,13 @@
   width: 441px;
   height: 63px;
   border-radius: 100px;
+}
+
+/* Inline-editable text: dashed outline + text caret while editing. */
+.editText[contenteditable="true"] {
+  cursor: text;
+  outline: 2px dashed currentColor;
+  outline-offset: 8px;
+  border-radius: 6px;
 }
 
