@@ -95,7 +95,7 @@ export default function BrandPage() {
     }
   }, [authed]);
   // Per-variant role overrides — dark and light are independent. Cleared
-  // on shuffle so each new palette starts from the algorithm's best guess.
+  // on shuffle so each new palette starts from the algorithm’s best guess.
   const [roleOverrides, setRoleOverrides] = useState({ dark: {}, light: {} });
   // Which variant the Roles panel is editing right now.
   const [activeVariant, setActiveVariant] = useState("dark");
@@ -135,8 +135,8 @@ export default function BrandPage() {
     };
   }, [palette, roleOverrides.light, gradientStrings]);
 
-  // For Export / print, we use the dark variant's roles as the "primary"
-  // role set since dark is the brand's default frame.
+  // For Export / print, we use the dark variant’s roles as the "primary"
+  // role set since dark is the brand’s default frame.
   const roles = rolesDark;
 
   const handleShuffle = useCallback(() => {
@@ -214,7 +214,7 @@ export default function BrandPage() {
           type="button"
           className={styles.barTitleBtn}
           onClick={() => setEditingProject(true)}
-          title="Edit the project's wordmark, tagline, and body text"
+          title="Edit the project’s wordmark, tagline, and body text"
         >
           <PencilIcon /> Edit brand text
         </button>
@@ -430,7 +430,7 @@ export default function BrandPage() {
                   type="button"
                   className={`${styles.lockBtn} ${locks.has(i) ? styles.lockBtnOn : ""}`}
                   onClick={() => toggleLock(i)}
-                  title={locks.has(i) ? "Locked. Won't change on shuffle. Click to unlock." : "Lock this slot so shuffle leaves it alone."}
+                  title={locks.has(i) ? "Locked. Won’t change on shuffle. Click to unlock." : "Lock this slot so shuffle leaves it alone."}
                   aria-label={locks.has(i) ? "Unlock slot" : "Lock slot"}
                 >
                   {locks.has(i) ? <LockIcon /> : <LockOpenIcon />}
@@ -634,9 +634,9 @@ function RolesPanel({ palette, activeVariant, setActiveVariant, rolesDark, roles
   );
 }
 
-// Turns the engine's existing contrast math into a visible AA readout, so you
-// can see whether the identity you're composing is legible — on the variant
-// you're editing. The pairs that matter: text-on-background (body needs AA
+// Turns the engine’s existing contrast math into a visible AA readout, so you
+// can see whether the identity you’re composing is legible — on the variant
+// you’re editing. The pairs that matter: text-on-background (body needs AA
 // 4.5:1) and the accent reading against the background (3:1, UI/large bar).
 function ContrastReadout({ roles, variant }) {
   const pairs = [

@@ -20,7 +20,7 @@ export default function ImportPage() {
 
   function switchSource(next) {
     setSource(next);
-    setImportStatus(null); // status belongs to one flow; don't carry it across
+    setImportStatus(null); // status belongs to one flow; don’t carry it across
   }
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function ImportPage() {
       const text = await file.text();
       const payload = JSON.parse(text);
       if (!payload.pins || !Array.isArray(payload.pins)) {
-        throw new Error("This doesn't look like a Moodbuilder import file (no `pins` array).");
+        throw new Error("This doesn’t look like a Moodbuilder import file (no `pins` array).");
       }
       setImportStatus({
         kind: "preview",
@@ -242,7 +242,7 @@ export default function ImportPage() {
           <div className={styles.stepBody}>
             <h2 className={styles.stepTitle}>Drag this button to your bookmarks bar</h2>
             <p className={styles.stepText}>
-              Click and hold the button, drag it up to the bookmarks bar, release. It will live there permanently — click it anytime you're on a Pinterest board.
+              Click and hold the button, drag it up to the bookmarks bar, release. It will live there permanently — click it anytime you’re on a Pinterest board.
             </p>
             <div className={styles.dropArea}>
               <a
@@ -273,7 +273,7 @@ export default function ImportPage() {
           <div className={styles.stepBody}>
             <h2 className={styles.stepTitle}>Open the Pinterest board for this project and click the bookmark</h2>
             <p className={styles.stepText}>
-              On any Pinterest board page, click the bookmark you just added. A floating panel appears at the bottom-right; the bookmark auto-scrolls the whole board, capturing every pin (you'll see the count tick up). When it plateaus, a JSON file downloads.
+              On any Pinterest board page, click the bookmark you just added. A floating panel appears at the bottom-right; the bookmark auto-scrolls the whole board, capturing every pin (you’ll see the count tick up). When it plateaus, a JSON file downloads.
             </p>
             <p className={styles.stepHint}>
               You can also click <em>Stop &amp; Download</em> at any point. A few hundred pins takes roughly 90 seconds.
@@ -289,7 +289,7 @@ export default function ImportPage() {
           <div className={styles.stepBody}>
             <h2 className={styles.stepTitle}>Drop the JSON here</h2>
             <p className={styles.stepText}>
-              When the file is in your Downloads folder, drag it into the dashed area below — or click to pick it. We'll preview the import before committing.
+              When the file is in your Downloads folder, drag it into the dashed area below — or click to pick it. We’ll preview the import before committing.
             </p>
             <label
               className={`${styles.dropZone} ${uploading ? styles.dropZoneBusy : ""}`}
@@ -334,7 +334,7 @@ export default function ImportPage() {
                   Commit {importStatus.count} pins to library
                 </button>
                 <p className={styles.stepHint}>
-                  Source URL enrichment runs in the background after commit — each pin's original site link populates as the server fetches the pin detail page (a minute or two for the full board).
+                  Source URL enrichment runs in the background after commit — each pin’s original site link populates as the server fetches the pin detail page (a minute or two for the full board).
                 </p>
               </div>
             )}

@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from "react";
 
 /**
- * Injects the right <link> / <style> tags so the project's chosen fonts
+ * Injects the right <link> / <style> tags so the project’s chosen fonts
  * are available on the page. Renders nothing visible.
  *
  * fonts shape:

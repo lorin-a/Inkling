@@ -322,7 +322,7 @@
 }
 .projectCard:hover .projectSelect { opacity: 1; transform: translateX(0); color: var(--ink); }
 
-/* Active card: the project you're currently inside. */
+/* Active card: the project you’re currently inside. */
 .projectSelected {
   font-family: var(--font-noto);
   font-size: 12px;
@@ -331,7 +331,7 @@
   color: #15803d;
 }
 
-/* Marks the seeded sample so it doesn't read as a real saved project. */
+/* Marks the seeded sample so it doesn’t read as a real saved project. */
 .sampleTag {
   font-family: var(--font-noto);
   font-size: 10px;

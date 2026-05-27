@@ -47,10 +47,10 @@ data on 2026-05-13). 252 pins, 30 seeded starred hexes, 7 brand swatches,
 
 ### Marks are still global
 `public/marks/` holds 9 SVGs shared by every project. A new project
-inherits Whelm's marks, which is wrong.
+inherits Whelm’s marks, which is wrong.
 **Fix:** move marks under `public/projects/{slug}/marks/`. Add a
 `/marks` page or library-style upload UI for dropping SVGs into the
-active project. `MarksFrame` reads from the active project's marks
+active project. `MarksFrame` reads from the active project’s marks
 directory.
 
 ### No project switcher on sub-pages
@@ -58,9 +58,9 @@ Today the only way to switch projects is going back to `/`. Sub-page
 toolbars (`/brand`, `/library`, etc.) should show a small project chip
 near the title with a dropdown to switch without losing your spot.
 
-### Saved palettes (★ Save) aren't project-scoped
+### Saved palettes (★ Save) aren’t project-scoped
 They use a single `localStorage` key (`moodbuilder.favorites.v1`). When
-you switch projects, you see Whelm's saved palettes inside the new
+you switch projects, you see Whelm’s saved palettes inside the new
 project. Should be `moodbuilder.favorites.v1.{slug}` per project.
 
 ### Pinterest bookmarklet has no project target
@@ -68,14 +68,14 @@ The bookmarklet downloads JSON; the `/import` drop zone commits to
 whichever project is active right now. Two improvements worth
 considering:
 - Add a project picker inside the `/import` page before commit.
-- Or stamp the bookmarklet's filename with the active slug at the time
+- Or stamp the bookmarklet’s filename with the active slug at the time
   of capture so it carries intent.
 
 ### Brand-page picker variants
 Light variant flips bg↔ink in auto-derivation, but role *overrides* are
 fully independent per variant. If a user only overrides dark and never
-touches light, light still auto-derives from the same palette — that's
-the right default. Worth documenting in tooltips so it's obvious.
+touches light, light still auto-derives from the same palette — that’s
+the right default. Worth documenting in tooltips so it’s obvious.
 
 ### Font pairing (deferred from earlier)
 Display / Body slots with Google Fonts search + Fontshare + local upload
@@ -85,14 +85,14 @@ object — already structured in `lib/exportFormats.js` for the JSON
 preset, just needs UI.
 
 ### PDF export — one-click SHIPPED 2026-05-27 *(commit `2649999`)*
-"↓ Download PDF" in the Export modal's Brand book tab renders the /print page
+"↓ Download PDF" in the Export modal’s Brand book tab renders the /print page
 in headless Chromium and streams a Letter-landscape PDF — no Cmd+P. Stack is
-`puppeteer-core` + `@sparticuz/chromium` (NOT full puppeteer — won't run on
+`puppeteer-core` + `@sparticuz/chromium` (NOT full puppeteer — won’t run on
 Vercel and is huge). The headless browser has no session, so the client posts
 the brand snapshot and the route seeds it into localStorage before boot
 (reuses the signed-out editor path) + palette via `?palette=`. Verified
 locally (5-page PDF, custom fonts + palette render). **Prod TODO: verify on
-Vercel after deploy** — serverless Chromium can't be tested locally; may need
+Vercel after deploy** — serverless Chromium can’t be tested locally; may need
 a function memory bump.
 
 ### Figma plugin
@@ -151,7 +151,7 @@ serves that.
 - `lib/palettePool.js` is now pure math; pools hydrate per-project from
   `/api/library/palette` via new `lib/paletteStore.js`.
 - `lib/moodboardStore.js` writes atomically (temp + rename) and serializes
-  through `withLock(file, …)` — concurrent extract workers can't corrupt
+  through `withLock(file, …)` — concurrent extract workers can’t corrupt
   the library file anymore.
 - Palette extraction runs automatically: after every Pinterest import and
   on `/library` mount for pins missing a palette. New endpoint
@@ -178,7 +178,7 @@ serves that.
   "—"). So "pick any font" is done.
 - **Faceted browser — SHIPPED 2026-05-27** *(commit `faa290b`)*. A "Browse
   all" surface (`components/FontBrowser.js`, portaled to body) filters the
-  full catalog by facets computed server-side from Google's own metadata:
+  full catalog by facets computed server-side from Google’s own metadata:
   Style (sans/serif/slab/display/script/mono via `category`+`stroke`), Width
   (Condensed/Normal/Wide from the measured per-weight `width` metric), Weight
   (has-light/has-black), Variable-only, sorted by Popular/Trending/Newest/A–Z.
@@ -193,7 +193,7 @@ serves that.
 - **Suggestion/taste layer — SHIPPED 2026-05-27** *(commit `6b4db17`)*.
   `lib/fontPairings.js`: ~36 mood-tagged Google-Fonts pairings (display +
   text). "✦ Suggest a pairing" on the Type panel proposes one, weighted by
-  the palette's OKLCH profile (vivid → expressive moods, muted → quiet),
+  the palette’s OKLCH profile (vivid → expressive moods, muted → quiet),
   lock-and-keep per slot. Relational/Fontjoy-style: locking a known face
   restricts candidates to its partners. **Whole Type step is now done.**
   - Parked next steps if revisited: more pairings; weight-axis bias (the
@@ -206,8 +206,8 @@ serves that.
   "Sanzo Wada (1933)" source on Brand, and an empty project auto-seeds from
   it. Still parked: a "browse named historical combinations" UI on top of
   the 228 baked 3–4 color combinations (`SANZO_COMBINATIONS`).
-- When a project's moodboard contains 5+ colors appearing in 3+ pins each,
-  the tool proposes them as the project's brand palette. One-click promote
+- When a project’s moodboard contains 5+ colors appearing in 3+ pins each,
+  the tool proposes them as the project’s brand palette. One-click promote
   into `data/projects/{slug}/palette.json`.
 
 **Phase 2d — Library auto-backup + restore-on-corruption** *(~2 hrs)*
@@ -218,7 +218,7 @@ serves that.
   and made it look like the Pinterest board had vanished).
 
 **Phase 2e — Mobile pass** *(~6 hrs)*
-- Mobile's job is *decide and consume*, not *compose*. Compose pages
+- Mobile’s job is *decide and consume*, not *compose*. Compose pages
   (`/brand`, `/library`, `/import`) stay desktop-first and degrade
   gracefully on phones (no broken layouts, no claims they work).
   Real mobile design goes into the Decide surface (Phase 3) and the
@@ -235,7 +235,7 @@ serves that.
   role overrides. Dark/light toggle, union FontLoader, palette swatches named
   via Name That Color. Added as path step 05 "Compare" (home grid + PathFooter
   auto-pick-up; gradients/print renumbered 06/07). Step body copy is
-  placeholder-quality — wants Lorin's voice pass.
+  placeholder-quality — wants Lorin’s voice pass.
 - **Still to do:** the `Combo` object (palette + font pair, cheaper than a full
   Preset) as a lighter sketch unit in `data/projects/{slug}/combos.json`; let
   Decide compare Combos too, not just Presets; a "Promote to preset" button on
@@ -253,11 +253,11 @@ serves that.
 below)*
 - Bolt the Neon-backed share flow onto Decide instead of treating it as
   a separate product mode. Phase A scope holds — collaborators vote on
-  what you compose, they don't add material.
+  what you compose, they don’t add material.
 
 **Phase 6 — Multi-tenant migration** *(in progress; ~70% shipped 2026-05-25)*
 
-The shift from "Lorin's local studio" to "a service strangers can sign
+The shift from "Lorin’s local studio" to "a service strangers can sign
 into." File-based editor stays as a fallback during the transition,
 controlled by `AUTH_REQUIRED` env flag.
 
@@ -266,7 +266,7 @@ controlled by `AUTH_REQUIRED` env flag.
   `verification_token`, `projects`, `pins`, `boards`, `palettes_saved`,
   `colors_saved`, `project_palette`, `bookmarked_palettes`,
   `brand_presets`, `schema_migrations`. JWT session strategy so no
-  collision with Moodvote's existing `sessions` table.
+  collision with Moodvote’s existing `sessions` table.
 - **6a. Auth foundation** ✅ shipped *(commit `5a87613`)*
   Auth.js v5 + Resend (magic-link) + Google OAuth. Split config:
   edge-safe `auth.config.js` for the proxy, full `auth.js` with the
@@ -283,7 +283,7 @@ controlled by `AUTH_REQUIRED` env flag.
   Every read + write API route now branches on session userId. When
   authed, hits DB via `lib/db/*`. When not, hits files via the legacy
   utilities. `paletteEnricher` accepts a `writePin` callback so
-  background extractors don't have to know which backend is in use.
+  background extractors don’t have to know which backend is in use.
   Home page shows an auth bar + sign-out when signed in, plus a
   welcoming empty state for users with zero projects.
 - **6b.3. Production prep** ✅ shipped *(commit `9e8e1a8`)*
@@ -307,7 +307,7 @@ controlled by `AUTH_REQUIRED` env flag.
     `ensureSeeded()` + `resetToSample()`.
   - `lib/sampleStudio.js` — the seed. Wordmark reads **"Your Brand"**
     (legibly a sample), placeholder tagline/body, a warm starter
-    palette so Shuffle works on first visit. **Swap in Lorin's real
+    palette so Shuffle works on first visit. **Swap in Lorin’s real
     content here later** — nothing else changes.
   - `lib/storage/localImport.js` — signed-out Pinterest import:
     merge to localStorage, then client-drive palette extraction via
@@ -332,17 +332,17 @@ controlled by `AUTH_REQUIRED` env flag.
     server file library stays untouched (isolation holds); compute
     extraction returns palettes; reset restores the seed.
   - **Sample Studio content shipped** *(2026-05-25)*: built from
-    Lorin's `pinterest.com/lorinanderberg1/moodbuilder` board (33 pins
+    Lorin’s `pinterest.com/lorinanderberg1/moodbuilder` board (33 pins
     captured, 31 mirrored — 2 i.pinimg originals 403'd). Pipeline:
     `npm run sample <board.json>` (`scripts/build-sample-studio.mjs`)
     mirrors + downscales images into `public/sample/` (~3.1 MB, max
     1000px / q80 jpeg), extracts a palette per pin, derives a brand +
-    starred + source set from the board's colors, and bakes it into
+    starred + source set from the board’s colors, and bakes it into
     `lib/sampleStudio.data.json`. Re-runnable with a new board JSON.
     The "Your Brand" project template (wordmark / tagline / body) stays
     hand-authored in `lib/sampleStudio.js`. Verified: all 31 render
     from the local mirror, 0 broken; Brand page composes from the
-    board's palette.
+    board’s palette.
   - **Polish pass (2026-05-25, autonomous):** independent code review
     of the whole changeset came back clean on data isolation, the
     authed/DB path, and the imageUrl skip-write trap (only low-severity
@@ -364,7 +364,7 @@ controlled by `AUTH_REQUIRED` env flag.
     wordmark (`app/v/[token]/HostedBrand.js`) and the playground
     localStorage keys (`moodvote.local.*` → `moodbuilder.local.*`,
     matching the existing `moodbuilder.favorites` convention). Still
-    infra-only and Lorin's to do: rename the Vercel project / domain off
+    infra-only and Lorin’s to do: rename the Vercel project / domain off
     `moodvote.vercel.app` and update `AUTH_URL`.
   - **Review round 2 (2026-05-25, Lorin eyes-on).** (1) Library header
     was overcrowded: split into a two-tier header (identity row: nav,
@@ -381,7 +381,7 @@ controlled by `AUTH_REQUIRED` env flag.
     separate them if desired.
   - **Review round 3 (2026-05-25).** (1) Signed-out notice reworked into
     a real filled banner (warm fill, accent edge, icon, primary button).
-    (2) "Sample" labeling so the seeded studio doesn't read as a real
+    (2) "Sample" labeling so the seeded studio doesn’t read as a real
     brand: SAMPLE pill on the home project card + ProjectSwitcher chip,
     and a "Sample brand. Placeholder name and colors…" notice above the
     Brand preview (all signed-out only). (3) Home flow IA: gradients
@@ -401,8 +401,8 @@ controlled by `AUTH_REQUIRED` env flag.
     tap target padded for the 44px floor.
   - **Still to do before prod:** (1) push to origin/main (commit
     `public/sample/` + `lib/sampleStudio.data.json`); (2) flip
-    `AUTH_REQUIRED=false` on Vercel — **with Lorin's explicit OK**,
-    since it's the production-facing switch.
+    `AUTH_REQUIRED=false` on Vercel — **with Lorin’s explicit OK**,
+    since it’s the production-facing switch.
   - Known minor: import preview hint still mentions source enrichment
     (authed-only); signed-out source-URL enrichment is deferred.
 - **6d. Sync-on-signin** *(~1 day)* — When a playground user signs
@@ -450,11 +450,11 @@ infra. Order matters: it keeps sign-in working through the cutover.)*
 
 1. **Register the domain.** Confirm `moodbuilder.studio` is available and
    buy it (Porkbun / Namecheap). Grab `@moodbuilderstudio` handles while
-   you're at it (bare `@moodbuilder` is taken by a dormant squatter).
+   you’re at it (bare `@moodbuilder` is taken by a dormant squatter).
 2. **Add the domain in Vercel** → Project → Settings → Domains → add
    `moodbuilder.studio`, set it as the Production domain. Vercel shows the
    DNS records to set at the registrar; wait for it to verify.
-3. **Google Cloud Console (don't remove the old URI yet):**
+3. **Google Cloud Console (don’t remove the old URI yet):**
    - APIs & Services → Credentials → the OAuth client → Authorized
      redirect URIs → **add** `https://moodbuilder.studio/api/auth/callback/google`
      (leave the moodvote one in place for now).
@@ -465,8 +465,8 @@ infra. Order matters: it keeps sign-in working through the cutover.)*
    (Production), then **redeploy** (env changes only take effect on a new
    deploy). This is the var that otherwise bounces sign-in to moodvote.
 5. **Verify on the new domain:** load `moodbuilder.studio`, test Google
-   sign-in and a magic-link sign-in end to end. (Sessions don't carry
-   over from the old domain — cookies are domain-scoped — so you'll
+   sign-in and a magic-link sign-in end to end. (Sessions don’t carry
+   over from the old domain — cookies are domain-scoped — so you’ll
    re-login. Expected.)
 6. **Retire the old subdomain:** Vercel → Settings → General → rename the
    project so the default becomes `moodbuilder.vercel.app`;
@@ -474,7 +474,7 @@ infra. Order matters: it keeps sign-in working through the cutover.)*
    at the custom domain, not the subdomain.)
 7. **Resend (optional but on-brand):** verify `moodbuilder.studio` as a
    sender domain and set the from-name/address to Moodbuilder (e.g.
-   `noreply@moodbuilder.studio`) so magic-link emails aren't generic.
+   `noreply@moodbuilder.studio`) so magic-link emails aren’t generic.
 8. **Cleanup:** once nothing hits the old URL, remove the
    `moodvote.vercel.app` redirect URI from the Google OAuth client.
 
@@ -525,12 +525,12 @@ step 6).
    capture palette + role overrides + per-variant overrides + fonts +
    textures + marks selection + project text. One favorite = one
    whole identity snapshot. JSON shape already exists in
-   `lib/exportFormats.js`; the UI is what's missing.
+   `lib/exportFormats.js`; the UI is what’s missing.
    Open: replace `★ Save`, or live alongside as `Save preset`?
 
 7. **Collaborative Brand Studio + voting — "Moodvote"** *(major, ~20–30 hrs)*
 
-   Vision: collaborators don't just vote on your options, they *use the
+   Vision: collaborators don’t just vote on your options, they *use the
    tool* — compose their own Brand Presets from your library and material,
    contribute them to the pool, and everyone votes together. The audience
    genuinely co-designs.
@@ -686,7 +686,7 @@ step 6).
     fetch for the signed-out playground (open CORS).
   - **Cosmos (cosmos.so) — possible, fragile.** No public API; would need
     the same bookmarklet-capture pattern as Pinterest and inherits its
-    breakage risk. Also can't be tested without an account.
+    breakage risk. Also can’t be tested without an account.
   - **Behance — hardest.** Adobe closed its public API to new keys years
     ago; scraping is ToS-risky and brittle. Lowest priority.
   - **Rule going forward:** only build adapters against sources with a
@@ -695,7 +695,7 @@ step 6).
 
 ---
 
-## Resources & competitive map *(from Lorin's bookmarks, 2026-05-26)*
+## Resources & competitive map *(from Lorin’s bookmarks, 2026-05-26)*
 
 Parsed 409 bookmarks by content (folders were unreliable — Klim was filed
 under "Shopping list," 176 links sat in an unnamed root bucket). The signal,
@@ -703,8 +703,8 @@ and what it means for the build.
 
 ### The Type step is really two layers
 Lorin collects **independent and premium foundries**, almost none on Google
-Fonts. So the Type step can't be only a Google Fonts search box — that's not
-where her taste lives. It's:
+Fonts. So the Type step can’t be only a Google Fonts search box — that’s not
+where her taste lives. It’s:
 1. A curated **foundry directory** (discover + link out — how designers
    actually find type), and
 2. **Google Fonts** breadth for what loads live, sorted by designer facets
@@ -720,10 +720,10 @@ Foundries from her bookmarks, ready to seed the directory:
 ### Competitive map (the "tools like this" lens)
 - **Fontjoy** — one-click font pairings. Direct prior art for the pairing
   suggestion layer (Phase 2b). Differentiate: it pairs algorithmically from
-  nothing; we pair from the user's *collected* type taste.
+  nothing; we pair from the user’s *collected* type taste.
 - **Huemint**, **EnigmaEasel** — AI palette generators. Same contrast:
   they generate; we synthesize from what the user already loves. Confirms
-  the wedge is defensible — nobody's doing taste-driven synthesis.
+  the wedge is defensible — nobody’s doing taste-driven synthesis.
 - **Font Brief** — font discovery by attributes. Study its facet schema
   before building the faceted browser.
 - **learnui.design** — accessible-contrast tool, same space as the AA
@@ -760,6 +760,6 @@ curates. Foundry entries double as the Type-step directory source later.
   a 3rd dynamic source (e.g., per-project favorites), follow the same
   pattern.
 - Pin import flow: bookmarklet → JSON download → drop on `/import` → POST
-  to `/api/import/pinterest` → background enrichment fetches each pin's
+  to `/api/import/pinterest` → background enrichment fetches each pin’s
   source URL with concurrency 6 → library updates incrementally (refresh
   to see new source badges).

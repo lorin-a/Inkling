@@ -53,7 +53,7 @@ export default function DecidePage() {
   );
 
   // Load every font used across the chosen presets (union), so each preview
-  // renders in its own faces. Fall back to the project's fonts.
+  // renders in its own faces. Fall back to the project’s fonts.
   const unionFonts = useMemo(() => {
     const out = {};
     for (const p of chosen) {

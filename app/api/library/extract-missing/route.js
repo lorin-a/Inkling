@@ -14,9 +14,9 @@ const runs = new Map(); // projectKey → { startedAt, total }
 
 /**
  * Background palette extraction for pins already in the library that
- * don't have a palette yet. Called on /library mount; idempotent — if
+ * don’t have a palette yet. Called on /library mount; idempotent — if
  * an extraction is already running for this project, returns the
- * existing run's metadata.
+ * existing run’s metadata.
  */
 export async function POST() {
   const { userId } = await getRequestContext();

@@ -12,7 +12,7 @@ const RESOURCE_CATEGORIES = [
 ];
 const FEEDBACK_TOPICS = [
   { value: "feature", label: "Feature request" },
-  { value: "bug", label: "Something's broken" },
+  { value: "bug", label: "Something’s broken" },
   { value: "other", label: "Other" },
 ];
 
@@ -99,7 +99,7 @@ export default function Submit({ kind, trigger, className, defaultCategory = "fo
                 <h2 className={styles.title}>Thank you</h2>
                 <p className={styles.doneText}>
                   {isResource
-                    ? "Your suggestion is in the queue. If it's a fit, it'll show up on Resources."
+                    ? "Your suggestion is in the queue. If it’s a fit, it’ll show up on Resources."
                     : "Your note is in. It genuinely helps shape what gets built next."}
                 </p>
                 <button type="button" className={styles.primary} onClick={close}>Done</button>
@@ -134,7 +134,7 @@ export default function Submit({ kind, trigger, className, defaultCategory = "fo
                     </label>
                     <label className={styles.field}>
                       <span className={styles.label}>Note <span className={styles.opt}>(optional)</span></span>
-                      <input name="note" maxLength={200} className={styles.input} placeholder="One line on what it's good for" />
+                      <input name="note" maxLength={200} className={styles.input} placeholder="One line on what it’s good for" />
                     </label>
                   </>
                 ) : (
@@ -147,7 +147,7 @@ export default function Submit({ kind, trigger, className, defaultCategory = "fo
                     </label>
                     <label className={styles.field}>
                       <span className={styles.label}>Message</span>
-                      <textarea name="message" required maxLength={2000} rows={5} className={styles.textarea} placeholder="Tell me what you're thinking…" />
+                      <textarea name="message" required maxLength={2000} rows={5} className={styles.textarea} placeholder="Tell me what you’re thinking…" />
                     </label>
                   </>
                 )}

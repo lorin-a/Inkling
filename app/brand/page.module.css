@@ -749,7 +749,7 @@
 }
 
 /* Marks the preview as a placeholder so the big "Your Brand." wordmark
-   doesn't read as a real identity. Warm tone matches the home banner. */
+   doesn’t read as a real identity. Warm tone matches the home banner. */
 .sampleTag {
   display: flex;
   align-items: center;

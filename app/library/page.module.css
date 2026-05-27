@@ -17,7 +17,7 @@
   z-index: 10;
 }
 
-/* Row 1: what you're looking at — nav, title, stats. */
+/* Row 1: what you’re looking at — nav, title, stats. */
 .barTop {
   display: flex;
   align-items: center;

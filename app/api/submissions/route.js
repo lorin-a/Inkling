@@ -10,7 +10,7 @@ const RESOURCE_CATEGORIES = ["foundries", "color", "inspiration", "accessibility
 const FEEDBACK_TOPICS = ["feature", "bug", "other"];
 
 // Best-effort in-memory rate limit (per warm instance). Combined with the
-// honeypot, length caps, and the approval gate, it's enough to keep the
+// honeypot, length caps, and the approval gate, it’s enough to keep the
 // queue clean pre-launch without standing up a shared limiter.
 const hits = new Map();
 function rateLimited(key, max = 5, windowMs = 60_000) {
@@ -56,7 +56,7 @@ export async function POST(request) {
     payload = { topic, message };
   }
 
-  // Capture the submitter's email when signed in; otherwise honor an optional
+  // Capture the submitter’s email when signed in; otherwise honor an optional
   // one they typed, else anonymous.
   let submitterEmail = null;
   try {

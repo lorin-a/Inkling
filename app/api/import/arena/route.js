@@ -8,12 +8,12 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * Import a public Are.na channel by link or slug. Unlike Pinterest there's
+ * Import a public Are.na channel by link or slug. Unlike Pinterest there’s
  * no bookmarklet: we fetch the channel server-side via the Are.na API and
  * normalize blocks to pins, then hand off to the shared commit path. Source
- * URLs come straight from the API, so there's no scraping-enrichment step.
+ * URLs come straight from the API, so there’s no scraping-enrichment step.
  *
- * Signed-out visitors don't hit this route — they fetch Are.na directly in
+ * Signed-out visitors don’t hit this route — they fetch Are.na directly in
  * the browser (CORS is open) and commit to localStorage.
  */
 export async function POST(request) {

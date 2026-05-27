@@ -10,7 +10,7 @@ import styles from "./PresetsPanel.module.css";
  * A preset captures the whole brand decision: palette, size, pool key,
  * per-variant role overrides, fonts, and textures. Clicking a preset
  * overwrites the current state with that snapshot. Save creates a new
- * preset from whatever's on screen.
+ * preset from whatever’s on screen.
  *
  * Marks themselves are project-owned files and not snapshotted; per-mark
  * color overrides are skipped this pass (they live inside MarksFrame and

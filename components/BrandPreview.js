@@ -11,7 +11,7 @@ import styles from "./BrandPreview.module.css";
  * darkest, ink at lightest. Variant "light" reverses.
  *
  * Hand-drawn marks render in their own MarksFrame component, not here —
- * they're intentional multi-color brand assets and don't take part in the
+ * they’re intentional multi-color brand assets and don’t take part in the
  * shuffle.
  */
 const DEFAULT_PROJECT = {
@@ -31,7 +31,7 @@ const DEFAULT_PROJECT = {
 export default function BrandPreview({ palette, variant = "dark", project, roles: rolesIn, onPickRole, onEditText }) {
   // Each variant carries its own resolved roles now — no more bg↔ink flip
   // at render time. The parent passes variant-specific roles, and clicks
-  // on this variant only modify this variant's overrides.
+  // on this variant only modify this variant’s overrides.
   const roles = rolesIn || mapRoles(palette, variant);
   const p = { ...DEFAULT_PROJECT, ...(project || {}) };
 

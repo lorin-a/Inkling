@@ -42,7 +42,7 @@
 }
 
 /* Exit back to the editor — the brand book is the end of the path, so it
-   needs an obvious way out that isn't the browser back button. */
+   needs an obvious way out that isn’t the browser back button. */
 .exit {
   display: inline-flex;
   align-items: center;

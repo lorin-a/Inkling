@@ -297,7 +297,7 @@
 }
 
 /* Empty slot reads as a prompt to act, not a dead "—". Muted with a dotted
-   underline so it's legibly clickable. */
+   underline so it’s legibly clickable. */
 .slotFamilyEmpty {
   color: var(--ink-muted);
   text-decoration: underline dotted;

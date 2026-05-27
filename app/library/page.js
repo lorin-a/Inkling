@@ -240,7 +240,7 @@ export default function LibraryPage() {
   const withSource = allPins.filter((p) => p.sourceUrl).length;
   const withPalette = allPins.filter((p) => p.palette).length;
 
-  // The moodboard pool used by Brand page shuffle is each pin's top 4 colors
+  // The moodboard pool used by Brand page shuffle is each pin’s top 4 colors
   // (matches /api/library/palette). Compute count here for live feedback.
   const moodboardPoolSize = (() => {
     const seen = new Set();
@@ -276,7 +276,7 @@ export default function LibraryPage() {
         </div>
         </div>
         <div className={styles.barTools}>
-        <Link href="/brand" className={styles.poolStat} title="The colors you've extracted feed the Brand page's “From moodboard” shuffle pool.">
+        <Link href="/brand" className={styles.poolStat} title="The colors you’ve extracted feed the Brand page’s “From moodboard” shuffle pool.">
           <span className={styles.poolStatDot} />
           Moodboard pool: <strong>{moodboardPoolSize}</strong> colors →
         </Link>
@@ -321,7 +321,7 @@ export default function LibraryPage() {
                   className={styles.extractAllBtn}
                   disabled={selectedPins.length === 0}
                   onClick={() => extractAll(selectedPins)}
-                  title="Extract palettes from the pins you've selected"
+                  title="Extract palettes from the pins you’ve selected"
                 >
                   ✦ Extract {selectedPins.length || ""} selected
                 </button>
@@ -347,7 +347,7 @@ export default function LibraryPage() {
                 disabled={remainingCount === 0}
                 title={remainingCount === 0
                   ? "Every pin already has a palette."
-                  : `Extract palettes from the ${remainingCount} pins that don't have one yet (originals + k-means; about ~2 min).`}
+                  : `Extract palettes from the ${remainingCount} pins that don’t have one yet (originals + k-means; about ~2 min).`}
               >
                 ✦ Extract {remainingCount || "all"} {remainingCount === 1 ? "pin" : "pins"}
               </button>
@@ -367,7 +367,7 @@ export default function LibraryPage() {
             ↑ Sign in to upload images
           </Link>
         ) : (
-          <label className={styles.uploadBtn} title="Drop or pick images — they're saved locally and extracted just like pins.">
+          <label className={styles.uploadBtn} title="Drop or pick images — they’re saved locally and extracted just like pins.">
             {uploading ? (uploadProgress ? `Uploading ${uploadProgress.total}…` : "Uploading…") : "↑ Upload images"}
             <input
               type="file"

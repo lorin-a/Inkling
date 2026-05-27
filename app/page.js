@@ -39,8 +39,8 @@ export default function Home() {
   useEffect(() => { refresh(); }, []);
 
   // Selecting a project sets the context the path below acts on — it does
-  // NOT navigate. You choose which project you're inside here, then walk its
-  // steps in the path. (The hero's "Open the studio" button is the express
+  // NOT navigate. You choose which project you’re inside here, then walk its
+  // steps in the path. (The hero’s "Open the studio" button is the express
   // way straight in.)
   async function selectProject(slug) {
     if (slug === activeSlug) return;
@@ -359,7 +359,7 @@ function NewProjectModal({ onClose, onCreate, error }) {
       <form className={styles.modal} onClick={(e) => e.stopPropagation()} onSubmit={submit}>
         <button type="button" className={styles.modalClose} onClick={onClose} aria-label="Close">×</button>
         <h2 className={styles.modalTitle}>New project</h2>
-        <p className={styles.modalHint}>Empty workspace. Add a Pinterest board or upload images and the project's own brand world starts to take shape. Palettes extract on their own as pins land.</p>
+        <p className={styles.modalHint}>Empty workspace. Add a Pinterest board or upload images and the project’s own brand world starts to take shape. Palettes extract on their own as pins land.</p>
         <label className={styles.field}>
           <span className={styles.fieldLabel}>Project name</span>
           <input

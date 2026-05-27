@@ -12,7 +12,7 @@
   align-items: center;
   gap: 6px;
   /* Vertical padding enlarges the tap target; negative margin keeps it
-     from changing the header's height/baseline alignment. */
+     from changing the header’s height/baseline alignment. */
   padding: 12px 4px;
   margin: -12px 0;
   font-size: 13px;

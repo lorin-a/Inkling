@@ -62,7 +62,7 @@ export default function ColorsPage() {
   }, [starredPaletteIds, refresh]);
 
   // Sort + partition: top picks (starred) always render first; everything
-  // else respects the user's sortMode.
+  // else respects the user’s sortMode.
   const { topPicks, restPalettes } = useMemo(() => {
     const starredList = [];
     const restList = [];
@@ -73,8 +73,8 @@ export default function ColorsPage() {
     if (sortMode === "recent") {
       restList.sort((a, b) => (b.addedAt || "").localeCompare(a.addedAt || ""));
     } else if (sortMode === "unrated") {
-      // unrated is just "not yet starred" — they're already in restList.
-      // Add a tiny shuffle so each visit isn't identical.
+      // unrated is just "not yet starred" — they’re already in restList.
+      // Add a tiny shuffle so each visit isn’t identical.
       restList.sort((a, b) => (b.addedAt || "").localeCompare(a.addedAt || ""));
     }
     return { topPicks: starredList, restPalettes: restList };
@@ -99,7 +99,7 @@ export default function ColorsPage() {
               ▲ Top picks <span className={styles.sectionCount}>{topPicks.length}</span>
             </h2>
             <p className={styles.sectionHint}>
-              Palettes you've rated as a yes. The <Link href="/brand" className={styles.inlineLink}>Brand</Link> shuffle samples from these first. Add a palette to Top picks below to lift it here.
+              Palettes you’ve rated as a yes. The <Link href="/brand" className={styles.inlineLink}>Brand</Link> shuffle samples from these first. Add a palette to Top picks below to lift it here.
             </p>
           </header>
           {topPicks.length === 0 ? (
@@ -132,7 +132,7 @@ export default function ColorsPage() {
               Palettes from your pins <span className={styles.sectionCount}>{restPalettes.length}</span>
             </h2>
             <p className={styles.sectionHint}>
-              Every pin's extracted palette as a unit. Each shows your wordmark rendered with that palette so you can rate it as a brand, not as abstract colors.
+              Every pin’s extracted palette as a unit. Each shows your wordmark rendered with that palette so you can rate it as a brand, not as abstract colors.
             </p>
             <div className={styles.paletteControls}>
               <div className={styles.sortGroup} role="tablist" aria-label="Sort palettes">
@@ -364,7 +364,7 @@ function PaletteRow({
           type="button"
           className={styles.swapBtn}
           onClick={() => setSwapPrimary((s) => !s)}
-          title={swapPrimary ? "Restore the engine's bg / ink pick" : "Flip bg and ink if the engine guessed wrong for this palette"}
+          title={swapPrimary ? "Restore the engine’s bg / ink pick" : "Flip bg and ink if the engine guessed wrong for this palette"}
           aria-label="Swap background and ink"
         >
           ⇄

@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import styles from "./FontBrowser.module.css";
 
-// Facet options mirror what the API can compute from Google's own metadata.
-// Contrast and mood are deliberately absent — they aren't derivable across
+// Facet options mirror what the API can compute from Google’s own metadata.
+// Contrast and mood are deliberately absent — they aren’t derivable across
 // the catalog and live in the curated pairing layer instead.
 const STYLES = [
   { value: "", label: "All" },
@@ -114,10 +114,10 @@ export default function FontBrowser({ onPick, onClose }) {
     return () => debounceRef.current && clearTimeout(debounceRef.current);
   }, [q, style, width, weight, variable, sort, page]);
 
-  // Load previews for whatever's currently rendered.
+  // Load previews for whatever’s currently rendered.
   useEffect(() => { families.forEach((f) => ensurePreview(f.family)); }, [families]);
 
-  // Lazily fetch the foundry directory the first time it's opened.
+  // Lazily fetch the foundry directory the first time it’s opened.
   useEffect(() => {
     if (mode !== "foundries" || foundries !== null) return;
     fetch("/api/fonts/foundries")

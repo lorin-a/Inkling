@@ -7,16 +7,16 @@ import { SAMPLE_PALETTE, SAMPLE_PROJECT } from "../lib/sampleStudio";
 import styles from "./LiveBrandHero.module.css";
 
 /**
- * The home-page hero, but it's the actual tool running: a live brand
- * composition that recomposes "Your Brand" from the sample board's
+ * The home-page hero, but it’s the actual tool running: a live brand
+ * composition that recomposes "Your Brand" from the sample board’s
  * color pool using the exact engine the /brand page uses
  * (composePalette → derivePreviewRoles). It auto-shuffles on a gentle
  * interval so the page is never static, and Shuffle recomposes on
  * demand. Motion is suppressed under prefers-reduced-motion (the panel
  * holds a single composed palette; the button still works).
  *
- * Seeded from the sample studio so it's self-contained and always
- * available regardless of auth state — the hero's job is to show what
+ * Seeded from the sample studio so it’s self-contained and always
+ * available regardless of auth state — the hero’s job is to show what
  * the tool does, not to mirror a specific project.
  */
 const AUTO_INTERVAL = 4200;
@@ -65,7 +65,7 @@ export default function LiveBrandHero() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Dark variant: the composition engine's strongest showing (dark bg, vivid
+  // Dark variant: the composition engine’s strongest showing (dark bg, vivid
   // accent that reliably clears contrast) and the more striking hero.
   const roles = derivePreviewRoles(palette, "dark", { sourceKind: "composed" });
   const p = SAMPLE_PROJECT;

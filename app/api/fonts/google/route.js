@@ -9,7 +9,7 @@ let cache = null;
 let cachedAt = 0;
 const TTL = 24 * 60 * 60 * 1000;
 
-// Map Google's category + stroke into the style facets a designer browses by.
+// Map Google’s category + stroke into the style facets a designer browses by.
 // `stroke` separates slab serifs from the broad "Serif" bucket; everything
 // else falls back to category.
 function styleOf(f) {

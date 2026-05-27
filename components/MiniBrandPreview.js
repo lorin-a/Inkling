@@ -5,7 +5,7 @@ import styles from "./MiniBrandPreview.module.css";
 
 /**
  * Compact brand preview for /colors palette rows. Shows the active
- * project's wordmark + tagline rendered with the candidate palette's
+ * project’s wordmark + tagline rendered with the candidate palette’s
  * derived roles (bg / ink / accent / muted). The whole point of the
  * /colors training surface — evaluate palettes as brands, not as
  * abstract swatch rows.

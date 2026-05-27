@@ -12,7 +12,7 @@ import styles from "./MarksFrame.module.css";
  * /api/marks. Drop SVGs onto the frame to add. Hover a cell to reveal
  * a delete button. Click any mark to recolor its internal fills + strokes.
  *
- * The frame's surface toggles between the palette's lightest and darkest
+ * The frame’s surface toggles between the palette’s lightest and darkest
  * hexes so marks can be checked against both light and dark backgrounds.
  */
 export default function MarksFrame({ palette }) {
@@ -97,7 +97,7 @@ export default function MarksFrame({ palette }) {
     try {
       if (authed === false) {
         // Signed out: read the SVG text client-side and store it locally
-        // (persists across this session's navigation; no account needed).
+        // (persists across this session’s navigation; no account needed).
         const marks = await Promise.all(
           svgFiles.map(async (f) => ({ name: f.name.replace(/\.svg$/i, ""), svg: await f.text() })),
         );

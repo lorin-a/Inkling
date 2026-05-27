@@ -3,7 +3,7 @@ import { enrichPins } from "../../../../lib/pinterestSourceFetcher";
 import { getRequestContext } from "../../../../lib/api/context";
 import { resolveLibraryWriter, kickPaletteExtraction } from "../../../../lib/importCommit";
 
-// Node runtime — we need fs + DNS lookups, can't run on edge.
+// Node runtime — we need fs + DNS lookups, can’t run on edge.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 

@@ -1,7 +1,7 @@
 /* Serif headings render in Fraunces (loaded via next/font as --font-fraunces);
    its SOFT / WONK / opsz axes are what the headings animate. P22 Mackinac was
    never shipped — its @font-face blocks pointed at missing /fonts/ files and
-   404'd on every page with no visual effect, so they're removed. To use
+   404'd on every page with no visual effect, so they’re removed. To use
    Mackinac later, drop the files into public/fonts/, re-add the @font-face
    blocks, and prepend "P22 Mackinac Pro" to --font-serif. */
 
@@ -63,7 +63,7 @@ button {
 
 /* Keyboard-focus baseline so every interactive element has a visible ring,
    not just the handful of components that style their own. Components with a
-   bespoke :focus-visible override this. Mouse clicks don't trigger it. */
+   bespoke :focus-visible override this. Mouse clicks don’t trigger it. */
 :focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;

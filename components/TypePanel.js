@@ -112,7 +112,7 @@ export default function TypePanel({ fonts, palette = [], onChange }) {
                   className={`${styles.lockBtn} ${locked ? styles.lockBtnOn : ""}`}
                   onClick={() => toggleLock(slot.key)}
                   aria-pressed={locked}
-                  title={locked ? "Locked. Suggest won't change this slot. Click to unlock." : "Lock this slot so Suggest leaves it alone."}
+                  title={locked ? "Locked. Suggest won’t change this slot. Click to unlock." : "Lock this slot so Suggest leaves it alone."}
                   aria-label={locked ? `Unlock ${slot.label}` : `Lock ${slot.label}`}
                 >
                   {locked ? <LockIcon /> : <LockOpenIcon />}
@@ -338,7 +338,7 @@ function UrlTab({ onPick }) {
     try {
       new URL(url.trim());
     } catch {
-      setError("That doesn't look like a valid URL.");
+      setError("That doesn’t look like a valid URL.");
       return;
     }
     onPick({ family: family.trim(), source: "url", url: url.trim() });

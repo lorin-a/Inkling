@@ -60,7 +60,7 @@
         { "name": "Site of Sites", "url": "https://www.siteofsites.co", "note": "A directory of web-design galleries." },
         { "name": "Awwwards", "url": "https://www.awwwards.com", "note": "Web design awards + galleries." },
         { "name": "Dark Mode Design", "url": "https://www.darkmodedesign.com", "note": "Handpicked dark-UI inspiration." },
-        { "name": "LoveFrom", "url": "https://www.lovefrom.com", "note": "Jony Ive's studio. A bar to point at." }
+        { "name": "LoveFrom", "url": "https://www.lovefrom.com", "note": "Jony Ive’s studio. A bar to point at." }
       ]
     },
     {
@@ -70,7 +70,7 @@
       "items": [
         { "name": "WCAG 2.2", "url": "https://www.w3.org/TR/WCAG22/", "note": "The standard itself." },
         { "name": "WebAIM Contrast Checker", "url": "https://webaim.org/resources/contrastchecker/", "note": "The everyday contrast tool." },
-        { "name": "APCA Contrast", "url": "https://www.myndex.com/APCA/", "note": "Perceptual contrast — WCAG's likely successor." },
+        { "name": "APCA Contrast", "url": "https://www.myndex.com/APCA/", "note": "Perceptual contrast — WCAG’s likely successor." },
         { "name": "The A11y Project", "url": "https://www.a11yproject.com", "note": "Community checklist + patterns." },
         { "name": "MDN: Accessibility", "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility", "note": "Practical implementation docs." },
         { "name": "Accessible Color Generator", "url": "https://www.learnui.design/tools/accessible-color-generator.html", "note": "Nudge any color to pass contrast." },

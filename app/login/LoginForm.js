@@ -30,7 +30,7 @@ export default function LoginForm() {
             A sign-in link is on its way. Open the message and click the link to come back here.
           </p>
           <p className={styles.hint}>
-            Didn't arrive? Check spam, or <a href="/login" className={styles.link}>try a different email</a>.
+            Didn’t arrive? Check spam, or <a href="/login" className={styles.link}>try a different email</a>.
           </p>
         </div>
       </main>
@@ -89,7 +89,7 @@ export default function LoginForm() {
         )}
 
         <p className={styles.fineprint}>
-          No password. We'll email you a one-time link, or you can use Google.
+          No password. We’ll email you a one-time link, or you can use Google.
         </p>
         <p className={styles.playgroundHint}>
           An account-free playground is on the way. Until then, sign in to explore.

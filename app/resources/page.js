@@ -26,7 +26,7 @@ async function buildCategories() {
 }
 
 /**
- * A curated designer's toolkit: foundries, color tools, inspiration sources,
+ * A curated designer’s toolkit: foundries, color tools, inspiration sources,
  * and accessibility references. Static and data-driven from
  * data/resources.json — a side utility, not a path step. Foundry entries
  * will later feed the Type-step directory.

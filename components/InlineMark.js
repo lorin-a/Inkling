@@ -6,8 +6,8 @@ import { remapSvgColors } from "../lib/svgRemap";
 /**
  * Loads an SVG from `src` and inlines it.
  *
- * If `palette` is provided, the SVG's internal colors are *remapped* —
- * preserving the mark's internal hierarchy. We find every unique fill /
+ * If `palette` is provided, the SVG’s internal colors are *remapped* —
+ * preserving the mark’s internal hierarchy. We find every unique fill /
  * stroke color in the SVG, sort by luminance (dark → light), and map each
  * to a palette color sorted the same way. So a mark with a deep fill plus a
  * light stroke keeps that relationship; both shift to wherever the palette

@@ -5,7 +5,7 @@ import { listApprovedResources } from "../../../../lib/db/submissions";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic"; // community-approved foundries are live
 
-// Rough tier from the curator's note so the directory can group indie vs.
+// Rough tier from the curator’s note so the directory can group indie vs.
 // premium vs. marketplace. Transparent heuristic — the note is authoritative.
 function tierOf(note = "") {
   const n = note.toLowerCase();

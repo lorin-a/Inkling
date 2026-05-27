@@ -1,12 +1,12 @@
 /* Sits at the foot of each step page: prev on the left, next on the right,
-   a hairline above to separate it from the page's own content. */
+   a hairline above to separate it from the page’s own content. */
 .footer {
   display: flex;
   justify-content: space-between;
   align-items: stretch;
   gap: 24px;
   margin-top: 64px;
-  /* Horizontal gutter matches each page's top bar (20–32px), so the cue
+  /* Horizontal gutter matches each page’s top bar (20–32px), so the cue
      bookends the page chrome rather than floating against the content edge. */
   padding: 28px 32px 32px;
   border-top: 1px solid var(--hairline);
@@ -40,7 +40,7 @@
   line-height: 1.15;
 }
 
-/* The verb leads — the action you're moving toward ("Compose", "Curate") —
+/* The verb leads — the action you’re moving toward ("Compose", "Curate") —
    matching the home path cards so the journey reads as one vocabulary. */
 .verb {
   font-family: var(--font-serif);

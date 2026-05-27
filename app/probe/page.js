@@ -69,7 +69,7 @@ export default function ProbePage() {
               </button>
             </div>
             <p className={styles.stepHint}>
-              If dragging doesn't work: click <em>or copy URL</em>, then right-click the bookmarks bar → Add page → paste as the URL and name it <em>Moodbuilder probe</em>.
+              If dragging doesn’t work: click <em>or copy URL</em>, then right-click the bookmarks bar → Add page → paste as the URL and name it <em>Moodbuilder probe</em>.
             </p>
           </div>
         </section>

@@ -6,8 +6,8 @@ import { adjacentSteps } from "../lib/steps";
 import styles from "./PathFooter.module.css";
 
 /**
- * The "what's next?" cue at the foot of every step page. Answers the question
- * where it's actually asked — at the bottom, once you've finished the step —
+ * The "what’s next?" cue at the foot of every step page. Answers the question
+ * where it’s actually asked — at the bottom, once you’ve finished the step —
  * instead of forcing a trip back home to find the next tool. Reads the path
  * order from lib/steps, so prev/next can never drift from the home path.
  *
