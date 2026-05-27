@@ -316,10 +316,17 @@ controlled by `AUTH_REQUIRED` env flag.
   - All hooks/pages/components routed through `apiFetch`
     (useProject, useStarred, usePalette, ProjectSwitcher,
     PresetsPanel, TexturePanel, MarksFrame, every tool page).
-  - Mark / font / texture / image upload + "Share for voting" gated
-    behind sign-in with quiet contextual upsells (need Blob storage /
-    a server instance). Pinterest import, colors, palettes, presets,
-    gradients, brand text all work signed out.
+  - Font / texture / image upload + "Share for voting" gated behind
+    sign-in with quiet contextual upsells (need Blob storage / a server
+    instance). Pinterest import, colors, palettes, presets, gradients,
+    brand text all work signed out.
+  - **SVG mark upload — now local (2026-05-27, commit `a93977d`).** Marks
+    are text, so signed-out visitors store them in
+    `moodbuilder.local.marks.v1` (data-URL `url`, persists across
+    navigation); `/api/marks` GET/POST/DELETE route through the local
+    store. Per-feature gate removed; the global "Sign in to save" in
+    ProjectSwitcher is the single notice. Font/texture (binary) uploads
+    are the remaining gate — next slice is an IndexedDB/Blob local store.
   - **Verified locally** (AUTH_REQUIRED=false): fresh visitor seeds
     the sample; star/preset writes persist to localStorage and the
     server file library stays untouched (isolation holds); compute
