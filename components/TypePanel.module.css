@@ -12,8 +12,30 @@
 .header {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
+
+.headRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.suggestBtn {
+  padding: 6px 12px;
+  min-height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background: var(--bg);
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out);
+}
+.suggestBtn:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
 
 .heading {
   font-size: 12px;
@@ -39,6 +61,31 @@
 .slot {
   position: relative;
 }
+
+.slotRow {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+.slotRow .slotBtn { flex: 1; }
+
+.lockBtn {
+  flex-shrink: 0;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
+}
+.lockBtn:hover { background: var(--hairline); color: var(--ink); }
+.lockBtnOn { border-color: var(--ink); background: var(--hairline); color: var(--ink); }
 
 .slotBtn {
   width: 100%;

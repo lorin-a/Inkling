@@ -368,6 +368,7 @@ export default function BrandPage() {
 
           <TypePanel
             fonts={project.fonts}
+            palette={palette}
             onChange={(fonts) => saveProject({ fonts })}
           />
 
