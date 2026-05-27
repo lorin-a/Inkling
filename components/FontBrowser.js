@@ -54,6 +54,8 @@ function ensurePreview(family) {
  * way the inline search does ({ family, source: "google" }).
  */
 export default function FontBrowser({ onPick, onClose }) {
+  const [mode, setMode] = useState("google"); // google catalog | foundry directory
+  const [foundries, setFoundries] = useState(null);
   const [q, setQ] = useState("");
   const [style, setStyle] = useState("");
   const [width, setWidth] = useState("");
@@ -115,6 +117,15 @@ export default function FontBrowser({ onPick, onClose }) {
   // Load previews for whatever's currently rendered.
   useEffect(() => { families.forEach((f) => ensurePreview(f.family)); }, [families]);
 
+  // Lazily fetch the foundry directory the first time it's opened.
+  useEffect(() => {
+    if (mode !== "foundries" || foundries !== null) return;
+    fetch("/api/fonts/foundries")
+      .then((r) => r.json())
+      .then((data) => setFoundries(data.foundries || []))
+      .catch(() => setFoundries([]));
+  }, [mode, foundries]);
+
   const widthLabel = (b) => (b === "condensed" ? "Condensed" : b === "wide" ? "Wide" : b === "normal" ? "Normal" : "");
 
   if (!mounted) return null;
@@ -132,9 +143,35 @@ export default function FontBrowser({ onPick, onClose }) {
         <header className={styles.head}>
           <div className={styles.headTop}>
             <h2 className={styles.title}>Browse fonts</h2>
-            <span className={styles.count}>{total.toLocaleString()} families</span>
+            <span className={styles.count}>
+              {mode === "google"
+                ? `${total.toLocaleString()} families`
+                : `${foundries?.length ?? "…"} foundries`}
+            </span>
             <button type="button" className={styles.close} onClick={onClose} aria-label="Close">×</button>
           </div>
+          <div className={styles.modes} role="tablist" aria-label="Type source">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mode === "google"}
+              className={`${styles.mode} ${mode === "google" ? styles.modeOn : ""}`}
+              onClick={() => setMode("google")}
+            >
+              Google Fonts
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mode === "foundries"}
+              className={`${styles.mode} ${mode === "foundries" ? styles.modeOn : ""}`}
+              onClick={() => setMode("foundries")}
+            >
+              Foundries
+            </button>
+          </div>
+          {mode === "google" && (
+          <>
           <input
             ref={searchRef}
             type="search"
@@ -166,8 +203,13 @@ export default function FontBrowser({ onPick, onClose }) {
               </select>
             </div>
           </div>
+          </>
+          )}
         </header>
 
+        {mode === "foundries" ? (
+          <FoundryList foundries={foundries} />
+        ) : (
         <div className={styles.results}>
           {families.length === 0 && !loading ? (
             <p className={styles.empty}>No families match these filters.</p>
@@ -197,9 +239,40 @@ export default function FontBrowser({ onPick, onClose }) {
           )}
           {loading && families.length === 0 && <p className={styles.empty}>Loading…</p>}
         </div>
+        )}
       </div>
     </div>,
     document.body,
+  );
+}
+
+const TIER_LABEL = { indie: "Indie", premium: "Premium", marketplace: "Marketplace" };
+
+function FoundryList({ foundries }) {
+  if (foundries === null) return <div className={styles.results}><p className={styles.empty}>Loading…</p></div>;
+  if (foundries.length === 0) return <div className={styles.results}><p className={styles.empty}>No foundries yet.</p></div>;
+  const hostOf = (url) => { try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return ""; } };
+  return (
+    <div className={styles.results}>
+      <p className={styles.foundryIntro}>
+        Premium and indie type lives off Google Fonts. Browse a house, then bring a
+        font in with the Upload or URL tabs.
+      </p>
+      <ul className={styles.grid}>
+        {foundries.map((f) => (
+          <li key={f.url}>
+            <a className={styles.foundryCard} href={f.url} target="_blank" rel="noopener noreferrer">
+              <span className={styles.foundryTop}>
+                <span className={styles.foundryName}>{f.name}</span>
+                <span className={`${styles.tier} ${styles[`tier_${f.tier}`] || ""}`}>{TIER_LABEL[f.tier] || "Indie"}</span>
+              </span>
+              {f.note && <span className={styles.foundryNote}>{f.note}</span>}
+              <span className={styles.foundryHost}>{hostOf(f.url)} ↗</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
