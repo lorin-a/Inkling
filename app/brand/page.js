@@ -817,8 +817,36 @@ function EditProjectModal({ project, onClose, onSave }) {
 function ExportModal({ palette, project, roles, gradients, onClose }) {
   const [activeFormat, setActiveFormat] = useState(FORMATS[0].id);
   const [copied, setCopied] = useState(false);
+  const [pdf, setPdf] = useState({ status: "idle", error: null }); // idle | working | error
   const activeFormatDef = FORMATS.find((f) => f.id === activeFormat);
   const isPrintFormat = activeFormatDef?.action === "print";
+
+  async function downloadPdf() {
+    setPdf({ status: "working", error: null });
+    try {
+      const res = await fetch("/api/brand/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ palette, project, slug: project?.slug }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Export failed (${res.status})`);
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${(project?.wordmark || project?.name || "brand").toString().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "brand"}-brand-book.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setPdf({ status: "idle", error: null });
+    } catch (e) {
+      setPdf({ status: "error", error: e.message });
+    }
+  }
 
   const { content, filename, mime } = isPrintFormat
     ? { content: "", filename: "", mime: "" }
@@ -876,8 +904,9 @@ function ExportModal({ palette, project, roles, gradients, onClose }) {
 
         {isPrintFormat ? (
           <div className={styles.formatDescription}>
-            <p>Opens a print-ready brand book in a new tab — cover, palette, application, gradients, and marks across five letter-landscape pages.</p>
-            <p>In the new tab, press <kbd>⌘P</kbd> and choose <strong>Save as PDF</strong> as the destination.</p>
+            <p>A print-ready brand book — cover, palette, application, gradients, and marks across five letter-landscape pages.</p>
+            <p>Download it as a PDF in one click, or open the print view to review first.</p>
+            {pdf.status === "error" && <p className={styles.modalError}>{pdf.error}</p>}
           </div>
         ) : activeFormat === "figma" ? (
           <>
@@ -897,9 +926,19 @@ function ExportModal({ palette, project, roles, gradients, onClose }) {
 
         <div className={styles.modalActions}>
           {isPrintFormat ? (
-            <button type="button" className={`${styles.btn} ${styles.btnPrimary}`} onClick={openPrint}>
-              Open print view ↗
-            </button>
+            <>
+              <button type="button" className={styles.btn} onClick={openPrint}>
+                Open print view ↗
+              </button>
+              <button
+                type="button"
+                className={`${styles.btn} ${styles.btnPrimary}`}
+                onClick={downloadPdf}
+                disabled={pdf.status === "working"}
+              >
+                {pdf.status === "working" ? "Building PDF…" : "↓ Download PDF"}
+              </button>
+            </>
           ) : (
             <>
               <button type="button" className={styles.btn} onClick={copy}>{copied ? "Copied" : "Copy to clipboard"}</button>

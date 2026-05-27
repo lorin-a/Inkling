@@ -7,6 +7,13 @@
 @media print {
   body { background: #fff !important; }
   .toolbar { display: none !important; }
+  /* Collapse the on-screen scaffolding (gray mat, gaps between sheets) so the
+     five .page elements tile exactly onto five sheets — no overflow slivers. */
+  .printRoot {
+    padding: 0 !important;
+    gap: 0 !important;
+    background: #fff !important;
+  }
 }
 
 .printRoot {
