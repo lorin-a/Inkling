@@ -1,0 +1,209 @@
+.page {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.back {
+  font-size: 14px;
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+.back:hover { color: var(--ink); }
+
+.barTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.variantToggle {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: var(--bg);
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+}
+.variantBtn {
+  padding: 6px 16px;
+  min-height: 36px;
+  border: none;
+  background: none;
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
+}
+.variantBtn:hover { color: var(--ink); }
+.variantBtnOn { background: var(--ink); color: #fff; }
+.variantBtnOn:hover { color: #fff; }
+
+.controls {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 20px 32px 4px;
+  flex-wrap: wrap;
+}
+.controlsLabel {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  padding: 7px 14px;
+  min-height: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  font-size: 14px;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out);
+}
+.chip:hover:not(:disabled) { color: var(--ink); border-color: var(--ink-muted); }
+.chipOn { background: var(--ink); border-color: var(--ink); color: #fff; }
+.chipOn:hover { color: #fff; }
+.chip:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+  gap: 24px;
+  padding: 24px 32px 56px;
+  align-items: start;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.columnHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.columnName {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.columnPair {
+  font-size: 13px;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.previewWrap {
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.swatches {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+.swatchItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.swatchChip {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  flex-shrink: 0;
+}
+.swatchName {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.status {
+  font-size: 15px;
+  color: var(--ink-muted);
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 80px 32px;
+  text-align: center;
+}
+.emptyTitle {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0;
+}
+.emptyText {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  max-width: 52ch;
+  margin: 0;
+}
+.inlineLink {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+  .bar { gap: 12px; padding: 16px 20px; flex-wrap: wrap; }
+  .variantToggle { margin-left: 0; }
+  .grid { grid-template-columns: 1fr; padding: 20px; }
+  .controls { padding: 16px 20px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .variantBtn, .chip { transition: none; }
+}
