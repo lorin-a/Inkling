@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuthed } from "../lib/api/useAuthed";
+import FontBrowser from "./FontBrowser";
 import styles from "./TypePanel.module.css";
 
 const SLOTS = [
@@ -51,7 +52,7 @@ export default function TypePanel({ fonts, onChange }) {
     <section className={styles.panel} ref={rootRef}>
       <header className={styles.header}>
         <h3 className={styles.heading}>Type</h3>
-        <p className={styles.hint}>Search every Google font, upload your own, or paste a URL.</p>
+        <p className={styles.hint}>Search or browse every Google font, upload your own, or paste a URL.</p>
       </header>
       <div className={styles.slots}>
         {SLOTS.map((slot) => {
@@ -121,6 +122,7 @@ function GoogleTab({ onPick }) {
   const [q, setQ] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [browseOpen, setBrowseOpen] = useState(false);
   const debounceRef = useRef(null);
 
   useEffect(() => {
@@ -153,14 +155,25 @@ function GoogleTab({ onPick }) {
 
   return (
     <div className={styles.tabBody}>
-      <input
-        type="search"
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-        placeholder="Search Google Fonts…"
-        className={styles.search}
-        autoFocus
-      />
+      <div className={styles.searchRow}>
+        <input
+          type="search"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search Google Fonts…"
+          className={styles.search}
+          autoFocus
+        />
+        <button type="button" className={styles.browseBtn} onClick={() => setBrowseOpen(true)}>
+          Browse all
+        </button>
+      </div>
+      {browseOpen && (
+        <FontBrowser
+          onPick={(v) => { onPick(v); setBrowseOpen(false); }}
+          onClose={() => setBrowseOpen(false)}
+        />
+      )}
       <div className={styles.results}>
         {loading && results.length === 0 ? (
           <p className={styles.muted}>Loading…</p>

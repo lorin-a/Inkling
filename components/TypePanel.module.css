@@ -140,6 +140,28 @@
   gap: 8px;
 }
 
+.searchRow {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+.searchRow .search { flex: 1; }
+
+.browseBtn {
+  flex-shrink: 0;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid var(--hairline);
+  background: var(--bg);
+  font-size: 12px;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out);
+}
+.browseBtn:hover { background: var(--hairline); border-color: var(--ink-muted); }
+
 .search,
 .input {
   width: 100%;
