@@ -334,8 +334,8 @@
 
 .main {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 24px;
+  grid-template-columns: 372px 1fr;
+  gap: 28px;
   padding: 24px;
   flex: 1;
 }
@@ -610,24 +610,10 @@
 }
 
 .slotHex {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  flex: 1;
-  min-width: 0;
-}
-.slotName {
-  font-size: 13px;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.slotCode {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.04em;
-  color: var(--ink-muted);
+  flex: 1;
 }
 
 .lockBtn {
@@ -957,6 +943,12 @@
   padding-top: 16px;
   border-top: 1px solid var(--hairline);
 }
+.contrastIntro {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  margin: -2px 0 2px;
+}
 .contrastRow {
   display: flex;
   align-items: center;
@@ -997,12 +989,12 @@
 }
 .contrastBadge {
   flex: none;
-  min-width: 64px;
   text-align: center;
+  white-space: nowrap;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  padding: 3px 8px;
+  padding: 3px 10px;
   border-radius: 999px;
   border: 1px solid transparent;
 }

@@ -425,10 +425,7 @@ export default function BrandPage() {
                   title={`${colorName(hex).name} · ${hex.toUpperCase()} — click to pick`}
                   aria-label={`Slot ${i + 1}: ${colorName(hex).name}, ${hex}`}
                 />
-                <span className={styles.slotHex}>
-                  <span className={styles.slotName}>{colorName(hex).name}</span>
-                  <span className={styles.slotCode}>{hex.toUpperCase()}</span>
-                </span>
+                <span className={styles.slotHex}>{hex.toUpperCase()}</span>
                 <button
                   type="button"
                   className={`${styles.lockBtn} ${locks.has(i) ? styles.lockBtnOn : ""}`}
@@ -650,16 +647,20 @@ function ContrastReadout({ roles, variant }) {
   return (
     <div className={styles.contrastPanel}>
       <h2 className={styles.railTitle}>
-        Contrast
+        Legibility
         <span className={styles.railHint} style={{ textTransform: "none", letterSpacing: 0, fontWeight: 400 }}>
-          WCAG AA · {variant}
+          on {variant}
         </span>
       </h2>
+      <p className={styles.contrastIntro}>
+        Can people read it? Each row checks a color against the background behind it.
+        More contrast means easier to read.
+      </p>
       {pairs.map(({ label, controls, fg, kind }) => {
         const ratio = contrastRatio(fg, roles.bg);
         const status = classifyContrast(ratio, kind);
         return (
-          <div key={label} className={styles.contrastRow}>
+          <div key={label} className={styles.contrastRow} title={status.tip}>
             <span
               className={styles.contrastChip}
               style={{ background: roles.bg, color: fg }}
@@ -671,7 +672,7 @@ function ContrastReadout({ roles, variant }) {
               <span className={styles.contrastLabel}>{label}</span>
               <span className={styles.contrastControls}>{controls}</span>
             </span>
-            <span className={styles.contrastRatio}>{ratio.toFixed(2)}:1</span>
+            <span className={styles.contrastRatio} title={`Contrast ratio ${ratio.toFixed(2)}:1`}>{ratio.toFixed(2)}:1</span>
             <span className={`${styles.contrastBadge} ${styles[status.cls]}`}>{status.text}</span>
           </div>
         );
@@ -680,14 +681,22 @@ function ContrastReadout({ roles, variant }) {
   );
 }
 
-// AA thresholds: normal text needs 4.5:1, large text 3:1, non-text/UI 3:1.
+// Plain-language legibility verdicts mapped from WCAG AA contrast thresholds.
+// Text needs 4.5:1 (7:1 is comfortable); large/headline text and UI/accent
+// elements need 3:1. The tooltip says what to do, not just whether it passed.
 function classifyContrast(ratio, kind) {
   if (kind === "ui") {
-    return ratio >= 3 ? { text: "Pass", cls: "cPass" } : { text: "Low", cls: "cFail" };
+    return ratio >= 3
+      ? { text: "Clear", cls: "cPass", tip: "Stands out against the background as an accent." }
+      : { text: "Too faint", cls: "cFail", tip: "The accent barely separates from the background. Pick a more contrasting color." };
   }
-  if (ratio >= 4.5) return { text: "AA", cls: "cPass" };
-  if (ratio >= 3) return { text: "Large only", cls: "cWarn" };
-  return { text: "Fails", cls: "cFail" };
+  if (ratio >= 7)
+    return { text: "Easy to read", cls: "cPass", tip: "High contrast, comfortable to read at any size." };
+  if (ratio >= 4.5)
+    return { text: "Readable", cls: "cPass", tip: "Passes for body text and headings." };
+  if (ratio >= 3)
+    return { text: "Headings only", cls: "cWarn", tip: "Legible at large/headline sizes only. Darken it for body text, or keep it big." };
+  return { text: "Hard to read", cls: "cFail", tip: "Too low to read comfortably. Choose a darker or lighter color, or change the background." };
 }
 
 const ROLE_LABELS = {
