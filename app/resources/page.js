@@ -1,8 +1,29 @@
 import Link from "next/link";
 import resources from "../../data/resources.json";
+import Submit from "../../components/Submit";
+import { listApprovedResources } from "../../lib/db/submissions";
 import styles from "./page.module.css";
 
 export const metadata = { title: "Resources — Moodbuilder" };
+export const dynamic = "force-dynamic"; // approved community resources are live
+
+/** Seed categories + any community-approved resources, merged by category. */
+async function buildCategories() {
+  const cats = resources.categories.map((c) => ({ ...c, items: [...c.items] }));
+  let approved = [];
+  try { approved = await listApprovedResources(); } catch { /* DB optional in dev */ }
+  const byKey = Object.fromEntries(cats.map((c) => [c.key, c]));
+  const extra = [];
+  for (const item of approved) {
+    const target = byKey[item.category];
+    if (target) target.items.push({ name: item.name, url: item.url, note: item.note });
+    else extra.push({ name: item.name, url: item.url, note: item.note });
+  }
+  if (extra.length) {
+    cats.push({ key: "community", title: "More from the community", blurb: "Suggested and approved by other people using Moodbuilder.", items: extra });
+  }
+  return cats;
+}
 
 /**
  * A curated designer's toolkit: foundries, color tools, inspiration sources,
@@ -10,7 +31,8 @@ export const metadata = { title: "Resources — Moodbuilder" };
  * data/resources.json — a side utility, not a path step. Foundry entries
  * will later feed the Type-step directory.
  */
-export default function ResourcesPage() {
+export default async function ResourcesPage() {
+  const categories = await buildCategories();
   const hostOf = (url) => {
     try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return ""; }
   };
@@ -29,9 +51,10 @@ export default function ResourcesPage() {
             The foundries, tools, and references worth keeping close &mdash; gathered
             in one place so taste, type, color, and access live together.
           </p>
+          <Submit kind="resource" className={styles.suggestBtn} trigger="Suggest a resource" />
         </section>
 
-        {resources.categories.map((cat) => (
+        {categories.map((cat) => (
           <section key={cat.key} className={styles.category}>
             <header className={styles.categoryHead}>
               <h2 className={styles.categoryTitle}>{cat.title}</h2>

@@ -1,0 +1,92 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 100;
+}
+.dialog {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--bg);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.22);
+}
+.close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--ink-muted);
+  border-radius: 999px;
+}
+.close:hover { color: var(--ink); background: var(--bg-elevated); }
+
+.form { display: flex; flex-direction: column; gap: 14px; }
+.title {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  font-variation-settings: "SOFT" 50, "WONK" 0;
+}
+.sub { font-size: 14px; line-height: 1.5; color: var(--ink-muted); margin-top: -6px; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: 12px; font-weight: 500; color: var(--ink); }
+.opt { font-weight: 400; color: var(--ink-muted); }
+.input, .textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  background: var(--bg-elevated);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+}
+.input:focus-visible, .textarea:focus-visible { outline: none; border-color: var(--ink); }
+.textarea { resize: vertical; line-height: 1.5; }
+
+/* Honeypot — kept in the DOM for bots, hidden from people + AT. */
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+.actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
+.primary {
+  min-height: 44px;
+  padding: 11px 20px;
+  background: var(--ink);
+  color: var(--bg-elevated);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+.primary:hover { background: #000; }
+.primary:disabled { opacity: 0.5; cursor: default; }
+.ghost {
+  min-height: 44px;
+  padding: 11px 16px;
+  color: var(--ink-muted);
+  font-size: 14px;
+  border-radius: 999px;
+}
+.ghost:hover { color: var(--ink); }
+
+.error { font-size: 13px; color: #991b1b; }
+
+.done { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.doneText { font-size: 15px; line-height: 1.6; color: var(--ink-muted); }

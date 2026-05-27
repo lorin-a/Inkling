@@ -7,6 +7,7 @@ import { apiFetch } from "../lib/api/client";
 import { resetToSample } from "../lib/storage/localStore";
 import { STEPS } from "../lib/steps";
 import LiveBrandHero from "../components/LiveBrandHero";
+import Submit from "../components/Submit";
 
 // [LORIN] Paste your Buy Me a Coffee URL here once the account exists
 // (e.g. "https://buymeacoffee.com/yourname"). Empty string hides the link.
@@ -255,6 +256,8 @@ export default function Home() {
         </p>
         <p className={styles.colophonLinks}>
           <Link href="/resources" className={styles.colophonLink}>Resources &mdash; foundries, color tools, inspiration, accessibility</Link>
+          <span className={styles.colophonDot} aria-hidden="true">·</span>
+          <Submit kind="feedback" className={styles.colophonLink} trigger="Send feedback" />
         </p>
         {COFFEE_URL ? (
           <a className={styles.coffee} href={COFFEE_URL} target="_blank" rel="noopener noreferrer">

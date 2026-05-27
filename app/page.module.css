@@ -721,6 +721,9 @@
 
 .colophonLinks {
   margin-top: 4px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 .colophonLink {
   font-size: 13px;
@@ -735,3 +738,5 @@
   color: var(--ink);
   text-decoration-color: currentColor;
 }
+
+.colophonDot { color: var(--ink-muted); opacity: 0.5; margin: 0 8px; }
