@@ -23,12 +23,25 @@
       ]
     },
     {
+      "key": "type",
+      "title": "Type & pairing",
+      "blurb": "How typefaces work together: curators, real-world archives, and principled guides. These vet the pairing suggestions on Brand.",
+      "items": [
+        { "name": "Typewolf", "url": "https://www.typewolf.com", "note": "The most-cited type curator. Per-font pages with real examples and suggested pairings." },
+        { "name": "Fonts In Use", "url": "https://fontsinuse.com", "note": "Archive of type in real published work, indexed by typeface, industry, and format." },
+        { "name": "Fontpair", "url": "https://fontpair.co", "note": "1,000+ browsable Google Fonts and Fontshare pairings." },
+        { "name": "Google Fonts Knowledge", "url": "https://fonts.google.com/knowledge", "note": "Type designers on choosing and pairing typefaces." },
+        { "name": "Combining Typefaces", "url": "https://www.smashingmagazine.com/2010/11/best-practices-of-combining-typefaces/", "note": "A foundational best-practices guide (Smashing Magazine)." },
+        { "name": "Typ.io", "url": "https://typ.io", "note": "Real-world pairings organized by font and library." }
+      ]
+    },
+    {
       "key": "color",
       "title": "Color tools",
       "blurb": "Palette generation, naming, and extraction.",
       "items": [
         { "name": "Huemint", "url": "https://huemint.com", "note": "AI palette generator." },
-        { "name": "Name That Color", "url": "https://chir.ag/projects/name-that-color/", "note": "Names any hex. By Chirag Mehta (CC-BY 2.5) — it powers the color names throughout Moodbuilder." },
+        { "name": "Name That Color", "url": "https://chir.ag/projects/name-that-color/", "note": "Names any hex. By Chirag Mehta (CC-BY 2.5). Powers the color names throughout Moodbuilder." },
         { "name": "Sanzo Wada Dictionary", "url": "https://sanzo-wada.dmbk.io", "note": "1933 color combinations (powers our starter pool)." },
         { "name": "Data Color Picker", "url": "https://www.learnui.design/tools/data-color-picker.html", "note": "Palettes for charts and data viz." },
         { "name": "Color Thief", "url": "https://github.com/fengsp/color-thief-py", "note": "Dominant-color extraction (library)." },
