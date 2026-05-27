@@ -228,13 +228,19 @@ serves that.
   by removing the dead `@font-face` blocks pointing at missing files;
   TypePanel sample text and `/probe` page de-Whelm.
 
-**Phase 3 — Combos as the sketch unit + Decide surface** *(~6 hrs)*
-- New lightweight object: `Combo` = palette + font pair, lives in
-  `data/projects/{slug}/combos.json`. Cheap to make, cheap to discard.
-  Distinct from Brand Presets (full identity snapshots).
-- `/decide` page: pick 3-5 Combos or Presets, see them side-by-side at
-  full Brand-page fidelity. This is the missing finishing room.
-- Promote button on a Combo card creates a Preset seeded from it.
+**Phase 3 — Combos as the sketch unit + Decide surface** *(Decide SHIPPED 2026-05-27, commit `d9e76b3`)*
+- **`/decide` page — SHIPPED.** Pick up to 5 saved Brand Presets, see them
+  side by side at full Brand-page fidelity (real `BrandPreview`, auto-scaled
+  via `FigmaFrame`). Same wordmark; each preset brings its palette + type +
+  role overrides. Dark/light toggle, union FontLoader, palette swatches named
+  via Name That Color. Added as path step 05 "Compare" (home grid + PathFooter
+  auto-pick-up; gradients/print renumbered 06/07). Step body copy is
+  placeholder-quality — wants Lorin's voice pass.
+- **Still to do:** the `Combo` object (palette + font pair, cheaper than a full
+  Preset) as a lighter sketch unit in `data/projects/{slug}/combos.json`; let
+  Decide compare Combos too, not just Presets; a "Promote to preset" button on
+  a Combo card. Also nice: a "★ pick this one" / commit action on a Decide
+  column that loads it back into Brand.
 
 **Phase 4 — Universal taste library** *(~5 hrs)*
 - `data/library/{colors,fonts,presets}.json` (NOT pins — Pinterest is
