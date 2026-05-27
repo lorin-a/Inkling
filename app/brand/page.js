@@ -8,6 +8,7 @@ import { useAuthed } from "../../lib/api/useAuthed";
 import { POOL_LABELS } from "../../lib/palettePool";
 import { derivePreviewRoles } from "../../lib/derivePreviewRoles";
 import { relativeLuminance as luminance, contrastRatio } from "../../lib/colorTheory";
+import { colorName } from "../../lib/nameThatColor";
 import { FORMATS, formatExport } from "../../lib/exportFormats";
 import BrandPreview from "../../components/BrandPreview";
 import MarksFrame from "../../components/MarksFrame";
@@ -421,10 +422,13 @@ export default function BrandPage() {
                   className={`${styles.slotChip} ${locks.has(i) ? styles.slotLocked : ""}`}
                   style={{ backgroundColor: hex }}
                   onClick={() => setPicker(picker === i ? null : i)}
-                  title={`${hex.toUpperCase()} — click to pick`}
-                  aria-label={`Slot ${i + 1}: ${hex}`}
+                  title={`${colorName(hex).name} · ${hex.toUpperCase()} — click to pick`}
+                  aria-label={`Slot ${i + 1}: ${colorName(hex).name}, ${hex}`}
                 />
-                <span className={styles.slotHex}>{hex.toUpperCase()}</span>
+                <span className={styles.slotHex}>
+                  <span className={styles.slotName}>{colorName(hex).name}</span>
+                  <span className={styles.slotCode}>{hex.toUpperCase()}</span>
+                </span>
                 <button
                   type="button"
                   className={`${styles.lockBtn} ${locks.has(i) ? styles.lockBtnOn : ""}`}

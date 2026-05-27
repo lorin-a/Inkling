@@ -604,10 +604,24 @@
 }
 
 .slotHex {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 12px;
-  letter-spacing: 0.04em;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
   flex: 1;
+  min-width: 0;
+}
+.slotName {
+  font-size: 13px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.slotCode {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
 }
 
 .lockBtn {

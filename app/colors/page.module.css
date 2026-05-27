@@ -205,10 +205,17 @@
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
+.colorName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
 .hex {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 13px;
   letter-spacing: 0.04em;
+  color: var(--ink-muted);
 }
 
 .group {

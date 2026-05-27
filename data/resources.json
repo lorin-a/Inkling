@@ -28,7 +28,7 @@
       "blurb": "Palette generation, naming, and extraction.",
       "items": [
         { "name": "Huemint", "url": "https://huemint.com", "note": "AI palette generator." },
-        { "name": "Name That Color", "url": "https://chir.ag/projects/name-that-color/", "note": "Names any hex." },
+        { "name": "Name That Color", "url": "https://chir.ag/projects/name-that-color/", "note": "Names any hex. By Chirag Mehta (CC-BY 2.5) — it powers the color names throughout Moodbuilder." },
         { "name": "Sanzo Wada Dictionary", "url": "https://sanzo-wada.dmbk.io", "note": "1933 color combinations (powers our starter pool)." },
         { "name": "Data Color Picker", "url": "https://www.learnui.design/tools/data-color-picker.html", "note": "Palettes for charts and data viz." },
         { "name": "Color Thief", "url": "https://github.com/fengsp/color-thief-py", "note": "Dominant-color extraction (library)." },

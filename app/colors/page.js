@@ -6,6 +6,7 @@ import { useStarred } from "../../lib/useStarred";
 import { useProject } from "../../lib/useProject";
 import { useAuthed } from "../../lib/api/useAuthed";
 import { apiFetch } from "../../lib/api/client";
+import { colorName } from "../../lib/nameThatColor";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import MiniBrandPreview from "../../components/MiniBrandPreview";
 import PathFooter from "../../components/PathFooter";
@@ -312,6 +313,7 @@ export default function ColorsPage() {
         {hovered ? (
           <>
             <span className={styles.chip} style={{ backgroundColor: hovered.hex }} />
+            <span className={styles.colorName}>{colorName(hovered.hex).name}</span>
             <span className={styles.hex}>{hovered.hex.toUpperCase()}</span>
             <span className={styles.group}>{hovered.label}</span>
           </>
@@ -473,8 +475,8 @@ function Swatch({
           onClick?.();
         }
       }}
-      title={`${hex.toUpperCase()} · ${label} · click to copy`}
-      aria-label={`${hex} in ${label}`}
+      title={`${colorName(hex).name} · ${hex.toUpperCase()} · click to copy`}
+      aria-label={`${colorName(hex).name}, ${hex}`}
     >
       <button
         type="button"
