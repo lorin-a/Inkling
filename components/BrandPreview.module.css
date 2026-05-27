@@ -22,28 +22,32 @@
   width: 212px;
 }
 
-.tagline {
+/* Tagline + body stack in the left zone (clear of the swatch/gradient column
+   at x≈1228). Flowing them means a long tagline pushes the body down rather
+   than overlapping it — robust to any tagline length. */
+.textBlock {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.tagline {
   font-family: var(--font-subhead, var(--font-serif)), Georgia, serif;
   font-style: italic;
   font-size: 48px;
   line-height: 1.3;
   letter-spacing: 0.01em;
-  /* Held to the left zone (clear of the swatch/gradient column at x≈1228) so a
-     long tagline wraps under itself instead of running into the right block. */
-  width: 976px;
   margin: 0;
   font-variation-settings: "opsz" 96;
 }
 
 .body {
-  position: absolute;
   font-family: var(--font-body, var(--font-noto)), system-ui, sans-serif;
   font-weight: 300;
   font-size: 36px;
   line-height: 1.3;
   letter-spacing: 0.01em;
-  width: 976px;
   margin: 0;
 }
 

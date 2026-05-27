@@ -80,13 +80,6 @@ export default function ColorsPage() {
     return { topPicks: starredList, restPalettes: restList };
   }, [pinPalettes, starredPaletteIds, sortMode]);
 
-  const surpriseMe = useCallback(() => {
-    if (restPalettes.length === 0) return;
-    const pick = restPalettes[Math.floor(Math.random() * restPalettes.length)];
-    const el = document.getElementById(`palette-${pick.pinId}`);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [restPalettes]);
-
   const copyHex = (hex) => navigator.clipboard?.writeText(hex);
 
   const starredHexes = [...starred];
@@ -158,14 +151,6 @@ export default function ColorsPage() {
                   onClick={() => setSortMode("recent")}
                 >Recent</button>
               </div>
-              <button
-                type="button"
-                className={styles.surpriseBtn}
-                onClick={surpriseMe}
-                title="Jump to a random palette you haven't rated yet"
-              >
-                Surprise me
-              </button>
             </div>
           </header>
           <div className={styles.paletteList}>

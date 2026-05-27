@@ -170,28 +170,30 @@ export default function BrandPreview({ palette, variant = "dark", project, roles
       >
         {p.initial}<span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }}>{p.period}</span>
       </p>
-      {/* tagline */}
-      <p
-        className={cls(styles.tagline)}
-        style={{ left: 142, top: 676, color: roles.ink }}
-        onClick={textClick("ink", "tagline")}
-        onDoubleClick={textDouble("tagline")}
-        title={textTitle}
-        {...editProps("tagline")}
-      >
-        {p.tagline}
-      </p>
-      {/* body */}
-      <p
-        className={cls(styles.body)}
-        style={{ left: 142, top: 770, color: roles.muted }}
-        onClick={textClick("muted", "body")}
-        onDoubleClick={textDouble("body")}
-        title={textTitle}
-        {...editProps("body")}
-      >
-        {p.body}
-      </p>
+      {/* tagline + body flow as a stack so a long tagline pushes the body
+          down instead of overlapping it (handles any tagline length) */}
+      <div className={styles.textBlock} style={{ left: 142, top: 676, width: 976 }}>
+        <p
+          className={cls(styles.tagline)}
+          style={{ color: roles.ink }}
+          onClick={textClick("ink", "tagline")}
+          onDoubleClick={textDouble("tagline")}
+          title={textTitle}
+          {...editProps("tagline")}
+        >
+          {p.tagline}
+        </p>
+        <p
+          className={cls(styles.body)}
+          style={{ color: roles.muted }}
+          onClick={textClick("muted", "body")}
+          onDoubleClick={textDouble("body")}
+          title={textTitle}
+          {...editProps("body")}
+        >
+          {p.body}
+        </p>
+      </div>
       {/* swatch row */}
       <div className={styles.swatchRow} style={{ left: 1228, top: 540 }}>
         {palette.map((hex, i) => (
