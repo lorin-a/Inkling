@@ -84,10 +84,16 @@ page identity. Saved Brand Presets should capture palette + fonts as one
 object — already structured in `lib/exportFormats.js` for the JSON
 preset, just needs UI.
 
-### PDF export is browser-print only
-Works fine but depends on the user clicking Cmd+P. An `/api/brand/export.pdf`
-endpoint via Puppeteer would let "Download PDF" be one click. Adds ~300MB
-to deps (Chrome). Worth doing once we're closer to publishing.
+### PDF export — one-click SHIPPED 2026-05-27 *(commit `2649999`)*
+"↓ Download PDF" in the Export modal's Brand book tab renders the /print page
+in headless Chromium and streams a Letter-landscape PDF — no Cmd+P. Stack is
+`puppeteer-core` + `@sparticuz/chromium` (NOT full puppeteer — won't run on
+Vercel and is huge). The headless browser has no session, so the client posts
+the brand snapshot and the route seeds it into localStorage before boot
+(reuses the signed-out editor path) + palette via `?palette=`. Verified
+locally (5-page PDF, custom fonts + palette render). **Prod TODO: verify on
+Vercel after deploy** — serverless Chromium can't be tested locally; may need
+a function memory bump.
 
 ### Figma plugin
 "Open in Figma" is currently a JSON download with import instructions.
