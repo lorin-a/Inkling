@@ -21,12 +21,17 @@ export default function PrintPage() {
 function PrintInner() {
   const params = useSearchParams();
   const [project, setProject] = useState(null);
+  const [presets, setPresets] = useState([]);
+  const [brandPool, setBrandPool] = useState([]);
+  const [chosenPresetId, setChosenPresetId] = useState(null);
   const [markList, setMarkList] = useState([]);
   const [marks, setMarks] = useState({});
   const [pdf, setPdf] = useState({ status: "idle", error: null });
 
-  // Palette from URL — `?palette=hex1,hex2,...` (no leading #).
-  const palette = (params.get("palette") || "")
+  // Palette from URL — `?palette=hex1,hex2,...` (no leading #). When present
+  // (e.g. "Open print view" from Brand) it wins; otherwise the book falls back
+  // to a saved identity so it's never empty when reached from the path nav.
+  const urlPalette = (params.get("palette") || "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean)
@@ -34,7 +39,27 @@ function PrintInner() {
 
   useEffect(() => {
     apiFetch("/api/project").then((r) => r.json()).then(setProject).catch(() => {});
+    apiFetch("/api/presets", { cache: "no-store" }).then((r) => r.json()).then((d) => setPresets(d.presets || [])).catch(() => {});
+    apiFetch("/api/library/palette", { cache: "no-store" }).then((r) => r.json()).then((d) => setBrandPool(Array.isArray(d.brand) ? d.brand : [])).catch(() => {});
   }, []);
+
+  // Resolve which identity the book shows, in priority order:
+  // URL palette → chosen/most-recent preset → promoted brand colors.
+  const source = useMemo(() => {
+    if (urlPalette.length > 0) {
+      return { palette: urlPalette, fonts: project?.fonts, textures: project?.textures, roleOverrides: null, label: project?.name || "Current palette", kind: "live" };
+    }
+    if (presets.length > 0) {
+      const p = presets.find((x) => x.id === chosenPresetId) || presets[0];
+      return { palette: p.palette || [], fonts: p.fonts || project?.fonts, textures: p.textures, roleOverrides: p.roleOverrides, label: p.name || "Preset", kind: "preset", presetId: p.id };
+    }
+    if (brandPool.length > 0) {
+      return { palette: brandPool.slice(0, 5), fonts: project?.fonts, textures: project?.textures, roleOverrides: null, label: "Brand colors", kind: "brand" };
+    }
+    return { palette: [], fonts: project?.fonts, textures: project?.textures, roleOverrides: null, label: null, kind: "empty" };
+  }, [urlPalette.join(","), presets, chosenPresetId, brandPool, project]);
+
+  const palette = source.palette;
 
   useEffect(() => {
     apiFetch("/api/marks").then((r) => r.json()).then((d) => setMarkList(d.marks || [])).catch(() => {});
@@ -77,7 +102,7 @@ function PrintInner() {
     return out;
   }, [marks, palette.join(",")]);
 
-  const roles = derivePreviewRoles(palette);
+  const roles = { ...derivePreviewRoles(palette), ...(source.roleOverrides?.dark || {}) };
   const sorted = palette.slice().sort((a, b) => luminance(a) - luminance(b));
   const gradient1 = sorted.length ? `linear-gradient(135deg, ${sorted.join(", ")})` : "transparent";
   const gradient2 = sorted.length ? `linear-gradient(90deg, ${sorted.slice().reverse().join(", ")})` : "transparent";
@@ -89,7 +114,7 @@ function PrintInner() {
   const body = project?.body || "";
   const today = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
 
-  const fontVars = buildFontVars(project?.fonts);
+  const fontVars = buildFontVars(source.fonts);
 
   async function downloadPdf() {
     setPdf({ status: "working", error: null });
@@ -97,7 +122,7 @@ function PrintInner() {
       const res = await fetch("/api/brand/export", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ palette, project, slug: project?.slug }),
+        body: JSON.stringify({ palette, project: { ...project, fonts: source.fonts, textures: source.textures }, slug: project?.slug }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -120,12 +145,25 @@ function PrintInner() {
 
   return (
     <div className={styles.printRoot} style={fontVars}>
-      <FontLoader fonts={project?.fonts} />
+      <FontLoader fonts={source.fonts} />
       {/* Toolbar — hidden on print */}
       <div className={styles.toolbar}>
         <Link href="/brand" className={styles.exit}>
           <span aria-hidden="true">←</span> Back to Brand
         </Link>
+        {source.kind === "preset" && presets.length > 0 && urlPalette.length === 0 && (
+          <label className={styles.toolbarSelect}>
+            <span className={styles.toolbarSelectLabel}>Identity</span>
+            <select
+              value={source.presetId || presets[0].id}
+              onChange={(e) => setChosenPresetId(e.target.value)}
+            >
+              {presets.map((p) => (
+                <option key={p.id} value={p.id}>{p.name || "Untitled preset"}</option>
+              ))}
+            </select>
+          </label>
+        )}
         <span className={styles.toolbarDivider} aria-hidden="true" />
         <button
           type="button"
@@ -139,13 +177,23 @@ function PrintInner() {
           Print
         </button>
         <span className={styles.toolbarHint}>
-          {pdf.status === "error" ? pdf.error : "One-click PDF, or print to your own destination."}
+          {pdf.status === "error"
+            ? pdf.error
+            : source.label
+            ? `Showing: ${source.label}${source.kind === "preset" ? " (preset)" : source.kind === "brand" ? " (brand colors)" : ""}`
+            : "One-click PDF, or print to your own destination."}
         </span>
       </div>
 
+      {source.kind === "empty" && (
+        <div className={styles.printEmpty}>
+          <p>Nothing to show yet. Compose a palette on <Link href="/brand" className={styles.emptyLink}>Brand</Link> and open the print view, or save a Brand preset and it will fill this book.</p>
+        </div>
+      )}
+
       {/* Page 1 — Cover */}
       <section className={styles.page} style={{ background: roles?.bg || "#ffffff" }}>
-        <TextureOverlay tx={project?.textures?.dark} />
+        <TextureOverlay tx={source.textures?.dark} />
         <div className={styles.cover}>
           <p className={styles.coverEyebrow} style={{ color: roles?.accent }}>Brand book</p>
           <h1 className={styles.coverWordmark} style={{ color: roles?.ink || "#000" }}>
@@ -187,7 +235,7 @@ function PrintInner() {
 
       {/* Page 3 — Application (the brand mock at print scale) */}
       <section className={styles.page} style={{ background: roles?.bg || "#ffffff" }}>
-        <TextureOverlay tx={project?.textures?.dark} />
+        <TextureOverlay tx={source.textures?.dark} />
         <PageHeader title="Application" subtitle="Wordmark composition" inverted />
         <div className={styles.application}>
           <p className={styles.appWordmark} style={{ color: roles?.ink }}>
