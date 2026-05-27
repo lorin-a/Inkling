@@ -82,8 +82,8 @@ export default function TypePanel({ fonts, palette = [], onChange }) {
         </div>
         <p className={styles.hint}>
           {lastPairing
-            ? `Pairing: ${lastPairing.display}${lastPairing.text !== lastPairing.display ? ` + ${lastPairing.text}` : ""}. Lock a slot and suggest again to keep it.`
-            : "Suggest a pairing, or set each slot by hand — search, browse, upload, or paste a URL."}
+            ? `Pairing: ${lastPairing.display}${lastPairing.text !== lastPairing.display ? ` + ${lastPairing.text}` : ""}${lastPairing.source ? ` (via ${lastPairing.source})` : ""}. Lock a slot and suggest again to keep it.`
+            : "Suggest a pairing, or set each slot by hand: search, browse, upload, or paste a URL."}
         </p>
       </header>
       <div className={styles.slots}>
