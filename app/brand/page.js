@@ -466,6 +466,7 @@ export default function BrandPage() {
               Saved palettes
               <span className={styles.railCount}>{favorites.length}</span>
             </h2>
+            <p className={styles.railHint}>Just the colors. A full identity (palette + type + texture) is a Brand preset above.</p>
             {favorites.length === 0 && (
               <p className={styles.railEmpty}>None yet. Press F or ★ Save palette to keep one.</p>
             )}
@@ -503,6 +504,9 @@ export default function BrandPage() {
               <span><strong>Sample brand.</strong> Placeholder name and colors. Rename, recolor, or import a board to make it yours.</span>
             </div>
           )}
+          <p className={styles.canvasHint}>
+            <strong>Tip:</strong> click any element to recolor it. Double-click the wordmark, tagline, or body to edit the text.
+          </p>
           <div className={styles.variant}>
             <span className={styles.variantLabel}>Dark</span>
             <BrandPreview palette={palette} variant="dark" project={project} roles={rolesDark} onPickRole={openPicker} onEditText={(field, value) => saveProject({ [field]: value })} />

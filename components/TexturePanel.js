@@ -13,6 +13,15 @@ const BLEND_MODES = [
   { value: "screen", label: "Screen" },
 ];
 
+// Self-contained SVG textures (data URLs) so anyone can try a surface without
+// uploading — they apply to project.textures and persist like any other edit.
+const tex = (svg) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+const BUILTIN_TEXTURES = [
+  { name: "Grain", url: tex(`<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(#g)'/></svg>`) },
+  { name: "Noise", url: tex(`<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='turbulence' baseFrequency='0.35' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`) },
+  { name: "Fine grain", url: tex(`<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='1' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(#f)'/></svg>`) },
+];
+
 /**
  * Per-project texture library + per-variant active-texture controls.
  * Layout: variant tabs (Dark / Light) → active preview swatch + opacity
@@ -141,6 +150,11 @@ export default function TexturePanel({ textures: tx, onChange }) {
         </div>
       </header>
 
+      <p className={styles.intro}>
+        A subtle surface (grain, noise, paper) layered behind your wordmark in the
+        preview. Pick one below for the {variant} variant, tune its opacity and blend.
+      </p>
+
       {active ? (
         <div className={styles.activeBlock}>
           <div
@@ -188,38 +202,48 @@ export default function TexturePanel({ textures: tx, onChange }) {
         </p>
       )}
 
-      {items.length === 0 ? (
-        <p className={styles.empty}>
-          Drop image files here, or <button type="button" className={styles.linkBtn} onClick={() => fileInputRef.current?.click()}>browse</button>.
-        </p>
-      ) : (
-        <div className={styles.grid}>
-          {items.map((t) => {
-            const isActive = active?.url === t.url;
-            return (
-              <div key={t.file} className={styles.cell}>
-                <button
-                  type="button"
-                  className={`${styles.tile} ${isActive ? styles.tileActive : ""}`}
-                  style={{ backgroundImage: `url(${t.url})` }}
-                  onClick={() => setVariantTexture(isActive ? null : t.url)}
-                  title={isActive ? `Active on ${variant} — click to clear` : `Apply to ${variant}`}
-                  aria-pressed={isActive}
-                />
-                <button
-                  type="button"
-                  className={styles.tileDelete}
-                  onClick={(e) => { e.stopPropagation(); handleDelete(t.file, t.url); }}
-                  disabled={busy}
-                  aria-label="Delete texture"
-                >
-                  ×
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      )}
+      <div className={styles.grid}>
+        {BUILTIN_TEXTURES.map((t) => {
+          const isActive = active?.url === t.url;
+          return (
+            <div key={t.name} className={styles.cell}>
+              <button
+                type="button"
+                className={`${styles.tile} ${isActive ? styles.tileActive : ""}`}
+                style={{ backgroundImage: `url("${t.url}")`, backgroundColor: "#888" }}
+                onClick={() => setVariantTexture(isActive ? null : t.url)}
+                title={isActive ? `Active on ${variant} — click to clear` : `Apply ${t.name} to ${variant}`}
+                aria-pressed={isActive}
+                aria-label={t.name}
+              />
+            </div>
+          );
+        })}
+        {items.map((t) => {
+          const isActive = active?.url === t.url;
+          return (
+            <div key={t.file} className={styles.cell}>
+              <button
+                type="button"
+                className={`${styles.tile} ${isActive ? styles.tileActive : ""}`}
+                style={{ backgroundImage: `url(${t.url})` }}
+                onClick={() => setVariantTexture(isActive ? null : t.url)}
+                title={isActive ? `Active on ${variant} — click to clear` : `Apply to ${variant}`}
+                aria-pressed={isActive}
+              />
+              <button
+                type="button"
+                className={styles.tileDelete}
+                onClick={(e) => { e.stopPropagation(); handleDelete(t.file, t.url); }}
+                disabled={busy}
+                aria-label="Delete texture"
+              >
+                ×
+              </button>
+            </div>
+          );
+        })}
+      </div>
 
       <button
         type="button"
@@ -227,7 +251,7 @@ export default function TexturePanel({ textures: tx, onChange }) {
         onClick={() => fileInputRef.current?.click()}
         disabled={busy}
       >
-        {busy ? "Uploading…" : "Add texture"}
+        {busy ? "Uploading…" : "Upload your own"}
       </button>
       <input
         ref={fileInputRef}

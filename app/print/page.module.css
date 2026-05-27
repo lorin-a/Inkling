@@ -74,6 +74,19 @@
   cursor: pointer;
 }
 .printBtn:hover { background: #f5f5f5; }
+.printBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.printBtnGhost {
+  background: transparent;
+  color: inherit;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font: inherit;
+  cursor: pointer;
+  opacity: 0.85;
+}
+.printBtnGhost:hover { opacity: 1; }
 
 .toolbarHint {
   opacity: 0.85;

@@ -23,6 +23,7 @@ function PrintInner() {
   const [project, setProject] = useState(null);
   const [markList, setMarkList] = useState([]);
   const [marks, setMarks] = useState({});
+  const [pdf, setPdf] = useState({ status: "idle", error: null });
 
   // Palette from URL — `?palette=hex1,hex2,...` (no leading #).
   const palette = (params.get("palette") || "")
@@ -90,6 +91,33 @@ function PrintInner() {
 
   const fontVars = buildFontVars(project?.fonts);
 
+  async function downloadPdf() {
+    setPdf({ status: "working", error: null });
+    try {
+      const res = await fetch("/api/brand/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ palette, project, slug: project?.slug }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Export failed (${res.status})`);
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${(project?.wordmark || project?.name || "brand").toString().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "brand"}-brand-book.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setPdf({ status: "idle", error: null });
+    } catch (e) {
+      setPdf({ status: "error", error: e.message });
+    }
+  }
+
   return (
     <div className={styles.printRoot} style={fontVars}>
       <FontLoader fonts={project?.fonts} />
@@ -99,11 +127,19 @@ function PrintInner() {
           <span aria-hidden="true">←</span> Back to Brand
         </Link>
         <span className={styles.toolbarDivider} aria-hidden="true" />
-        <button type="button" className={styles.printBtn} onClick={() => window.print()}>
-          Print / Save as PDF
+        <button
+          type="button"
+          className={styles.printBtn}
+          onClick={downloadPdf}
+          disabled={pdf.status === "working" || palette.length === 0}
+        >
+          {pdf.status === "working" ? "Building PDF…" : "↓ Download PDF"}
+        </button>
+        <button type="button" className={styles.printBtnGhost} onClick={() => window.print()}>
+          Print
         </button>
         <span className={styles.toolbarHint}>
-          Cmd+P → choose <strong>Save as PDF</strong> as the destination
+          {pdf.status === "error" ? pdf.error : "One-click PDF, or print to your own destination."}
         </span>
       </div>
 

@@ -97,6 +97,8 @@ export default function PresetsPanel({ snapshot, applyPreset }) {
         )}
       </header>
 
+      <p className={styles.sub}>One whole identity: palette, type, texture, and role colors. (Just the colors? Use Saved palettes.)</p>
+
       {naming && (
         <div className={styles.namer}>
           <input

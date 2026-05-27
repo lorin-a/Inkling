@@ -768,6 +768,14 @@
 .sampleTag span:first-child { color: #b5732f; flex: none; }
 .sampleTag strong { color: var(--ink); font-weight: 600; }
 
+.canvasHint {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  margin: 0;
+}
+.canvasHint strong { color: var(--ink); font-weight: 600; }
+
 .variant {
   background: var(--bg-elevated);
   border: 1px solid var(--hairline);
