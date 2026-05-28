@@ -3,6 +3,72 @@
 State of the tool at the end of the 2026-05-13 session, and the natural next
 moves. Read this top-to-bottom before picking up.
 
+---
+
+## ★ North star — the two-act product *(set 2026-05-28, not yet built)*
+
+A full IA audit + adversarial pass reframed what Moodbuilder is. **Read this
+before any structural work.** Also captured in memory under
+`project_product_direction` and `feedback_studio_word_and_origin`.
+
+**The origin must never get buried:** the reason this exists is to *translate a
+Pinterest inspiration board into real references for moodboards and brand
+identity.* That inspiration→reference translation is the soul and the wedge
+(synthesis from your actual taste, not generation).
+
+**The spine is two acts:**
+
+- **Act I — the Moodboard** (divergent / gather). A first-class **drag-and-drop
+  spatial canvas** (today's Library is only a grid). Arrange a *mix* of reference
+  images (each linked to its pin/source URL — **credit preservation is a hard
+  requirement**), color swatches, type specimens, and textures. Many boards per
+  project = explore many directions.
+- **Act II — the Brand** (convergent / compose). Shuffle that curated material
+  into a solidified *variety* of brand identities. The `/brand` studio stays
+  **thin** — it must not re-accrete every control the way it did historically
+  (9 jobs crammed in one rail = the overcrowding Lorin flagged).
+
+**The IA model ("Model A" + origin correction):** inspiration is the *well*, not
+a peer step. Color / Type / Texture / Marks are *distilled from it* (each its own
+room, each visibly traced back to the board via source chips), then *composed* in
+the thin Brand studio, then *decided / delivered* (Decide, Export, Brand book).
+Inspiration-first is the highlighted narrative but NOT a mandatory gate — the
+hero side-door chips serve the "I have nothing" / "I have client hex" archetypes.
+
+**Resolve the word "studio" to ONE meaning:** platform = Moodbuilder; "the studio"
+= `/brand` specifically. Implies renaming the hero/banner off "sample studio."
+
+**Fork decisions (Lorin's gut still to confirm; recommended calls):**
+- *Library vs Moodboard* → keep both. Library = full searchable inventory;
+  Moodboard = curated spatial composition pulled from it + enriched with
+  swatch/type/texture blocks.
+- *One board or many* → **many.**
+- *Collaboration depth for v1* → **async share only.** "Collaboration throughout"
+  has two flavors an order of magnitude apart: async shared boards (link, edit-on-
+  open, last-write-wins — builds on the existing `instances/sessions/votes` Neon
+  schema + `/v/[token]`) vs **live real-time co-edit** (presence, CRDT/Liveblocks/
+  Yjs — a major project, already deferred to "Phase B"). Do NOT let collaboration
+  balloon the canvas MVP; ship the solo canvas first.
+
+**Recommended build sequencing:**
+1. **Moodboard canvas (solo)** — the centerpiece. Spatial board, image blocks
+   first (pins + credit already exist), then swatch/type/texture blocks. Multiple
+   boards per project. (Build fork: hand-roll the canvas vs a library — decide
+   first; this is the largest single surface: hit-testing, z-order, resize, touch,
+   layout persistence.)
+2. **Board → Brand wiring** — a board's colors/type/textures become the shuffle's
+   source pool (pools already feed Brand; mostly connecting the board as a source).
+3. **Async share** — board gets a shareable link; collaborators edit on open.
+4. **Live co-edit** — only if it earns its place, as its own project.
+
+This **absorbs the earlier "pull Type into its own step" idea** — Type is now just
+one tributary in the distill layer, not a standalone extraction. Don't half-build
+it in isolation; fold it into this arc.
+
+Reference bar for the canvas: Milanote / Cosmos / Are.na / a real physical pinboard.
+
+---
+
 ## Session log — 2026-05-27/28 *(most recent; read first)*
 
 All shipped, on `main` (= branch `phase-6c-playground`, even). Production
