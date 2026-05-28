@@ -3,6 +3,55 @@
 State of the tool at the end of the 2026-05-13 session, and the natural next
 moves. Read this top-to-bottom before picking up.
 
+## Session log — 2026-05-27/28 *(most recent; read first)*
+
+All shipped, on `main` (= branch `phase-6c-playground`, even). Production
+deploys from main; Vercel is building these. Newest first:
+
+- **Decide compares palettes too** *(`df24f3b`)* — `/decide` now gathers Brand
+  presets + Top picks + ★ saved palettes into one comparison; palettes render
+  with the project's current fonts/text, PRESET/PALETTE badges distinguish
+  them. (Supersedes the presets-only Decide below.)
+- **Brand book reflects a saved identity** *(`e2e81b4`)* — `/print` defaults to
+  ?palette → chosen/latest preset → brand colors → empty, with an "Identity"
+  picker + "Showing: <name>" label. No longer empty from the path nav.
+- **Review batch, 10 items** *(`b79b20e`, `6121813`, `f245c76`)*:
+  (1) sample copy names Pinterest + Are.na; (2) **smart curly apostrophes
+  repo-wide** + `scripts/smart-quotes.mjs` guard (run `--write` after adding
+  copy, or wire a pre-commit hook); (3) removed "Surprise me" on /colors;
+  (4) **tagline/body overlap fixed** (flowing text stack in `BrandPreview`,
+  robust to any length) + persistent edit hint above the preview;
+  (5) Brand book PDF also one-click on `/print`; (6) Texture panel explainer +
+  3 built-in SVG textures (signed-out can try without uploading); (7) preset
+  vs saved-palette explainers; (9) "Surface"→"Blend" gradients verb;
+  (8/10 above).
+- **Font pairing expansion** *(`1388c99`)* — 36→49 cited pairings from vetted
+  sources; "(via Fontpair)" provenance in the Type hint. Sources added to
+  `/resources` as a new "Type & pairing" category *(`607fc8b`)*.
+- **Local SVG mark uploads** *(`a93977d`)* — signed-out marks store in
+  localStorage, persist across nav; per-feature gate removed. Font/texture
+  (binary) uploads still gated — next slice is an IndexedDB/Blob local store.
+- **Name That Color** *(`cb29924`)* — names every swatch; demoted to
+  hex-primary in the rail per review (names live in tooltips + /colors readout).
+- **One-click PDF** *(`2649999`)* — `/api/brand/export` via puppeteer-core +
+  @sparticuz/chromium. **Prod TODO: verify on Vercel** (Lambda Chromium can't
+  be tested locally; may need a function memory bump).
+- **Type step complete** *(`faa290b`, `0f2c6bd`, `6b4db17`)* — faceted browser
+  + foundry directory + palette-weighted pairing engine.
+
+**Still on Lorin (deploy/content):** flip `AUTH_REQUIRED=false` on Vercel +
+redeploy (the switch to the sample home); smoke-test the PDF live; run
+`node scripts/migrate.mjs` against prod `DATABASE_URL` (submissions table);
+voice pass on the Decide step body (home grid line is Claude-written), the
+`[LORIN TO WRITE]` colophon in `app/page.js`, and `COFFEE_URL`.
+
+**Top buildable next:** (1) font/texture local uploads (IndexedDB/Blob —
+finishes the signed-out playground; marks done); (2) "Lock identity"/finalize
+commit; (3) Combo object + promote-to-preset (Phase 3 remainder); (4) home-page
+redesign (reads flat vs the tool pages); (5) mobile pass.
+
+---
+
 ## Where we are
 
 A working brand studio with five tools, one active project at a time, and
