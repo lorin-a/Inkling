@@ -125,10 +125,11 @@ export default function Home() {
       <section className={styles.hero}>
         <div className={styles.heroText}>
           <p className={styles.eyebrow}>Moodbuilder</p>
-          <h1 className={styles.title}>A studio for assembling brand moods.</h1>
+          <h1 className={styles.title}>A studio for assembling and shuffling brand moods.</h1>
           <p className={styles.heroSub}>
-            The palette is already in the images you love. Moodbuilder finds it,
-            pairs it with type, and helps you shape a brand from what&rsquo;s yours.
+            An all-in-one platform for importing inspiration, extracting colors,
+            previewing typefaces, textures, and more. Combining top designer
+            resources into one library.
           </p>
           <HeroActions
             signedIn={signedIn}
@@ -288,6 +289,7 @@ export default function Home() {
 function HeroActions({ signedIn, isEmptyAuthedAccount, activeProject, onNewProject }) {
   let primary;
   let sideDoors;
+  let prompt;
 
   if (isEmptyAuthedAccount) {
     primary = { label: "Start a project", onClick: onNewProject };
@@ -304,9 +306,10 @@ function HeroActions({ signedIn, isEmptyAuthedAccount, activeProject, onNewProje
   } else {
     primary = { label: "Open the sample studio", href: "/brand" };
     sideDoors = [
-      { label: "Have a Pinterest board? Import it", href: "/import" },
-      { label: "Already have colors? Start there", href: "/colors" },
+      { label: "Import inspiration", href: "/import" },
+      { label: "Start from colors", href: "/colors" },
     ];
+    prompt = "Already have a starting point?";
   }
 
   return (
@@ -322,13 +325,26 @@ function HeroActions({ signedIn, isEmptyAuthedAccount, activeProject, onNewProje
           <span className={styles.heroArrow} aria-hidden="true">→</span>
         </button>
       )}
-      <ul className={styles.sideDoors}>
-        {sideDoors.map((d) => (
-          <li key={d.href}>
-            <Link href={d.href} className={styles.sideDoor}>{d.label}</Link>
-          </li>
-        ))}
-      </ul>
+      {prompt ? (
+        <div className={styles.startPrompt}>
+          <span className={styles.startPromptLabel}>{prompt}</span>
+          <ul className={styles.doorChips}>
+            {sideDoors.map((d) => (
+              <li key={d.href}>
+                <Link href={d.href} className={styles.doorChip}>{d.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <ul className={styles.sideDoors}>
+          {sideDoors.map((d) => (
+            <li key={d.href}>
+              <Link href={d.href} className={styles.sideDoor}>{d.label}</Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
