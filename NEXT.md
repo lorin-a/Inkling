@@ -67,6 +67,51 @@ it in isolation; fold it into this arc.
 
 Reference bar for the canvas: Milanote / Cosmos / Are.na / a real physical pinboard.
 
+### Canvas build decision *(researched 2026-05-28 — start here next session)*
+
+**Chosen: hand-rolled spatial board on a plain JSON document model.** Rejected the
+alternatives against Lorin's constraints (craft/aesthetic bar, hard credit-link
+requirement, async-now/live-later, WCAG 2.2 AA):
+- *tldraw* — out. License-key enforced in production + "made with tldraw" watermark
+  unless you buy a Business License. Paid + watermark + its own chrome on a free
+  portfolio tool = three strikes.
+- *Excalidraw* (MIT, embeddable) — out. A drawing/whiteboard app with its own
+  hand-drawn aesthetic; bending it into a clean moodboard fights it, and blocks
+  become *its* shapes (credit metadata gets awkward).
+- *dnd-kit* (maintained, React 19-ready, keyboard sensors) — keep in pocket. Not a
+  canvas/resize lib, but its keyboard-accessible dragging is the fallback if
+  hand-rolled keyboard move/resize gets hairy.
+- *Liveblocks* — later, not now. Free tier is dev-only (1 MAU); Pro ~$25/mo. Its
+  Storage model is object-per-shape, so it maps onto the model below when live
+  co-edit eventually earns its place (no rethink needed).
+
+Why hand-rolled: only path that hits the aesthetic bar, makes mixed block types +
+credit-links first-class (they're *our* data, not an engine's shapes), and yields a
+model the existing project store persists today and Liveblocks can adopt later. Cost:
+we own move/resize/z-order. Keep v1 humble (no pan/zoom) and **build keyboard
+move+resize from day one** (arrow-key nudge) for WCAG 2.5.7.
+
+**Board data model (the real asset — portable across file / DB / localStorage / Liveblocks):**
+```
+board = { id, name, createdAt, updatedAt, blocks: [...] }
+block = { id, type, x, y, w, h, z, payload }
+  image   → { src, sourceUrl, pinId, credit }   // credit preserved
+  swatch  → { hex, name }
+  type    → { family, source, url?, sampleText }
+  texture → { kind, params }
+  note    → { text }
+```
+Stored per project as `boards.json` (file) / a DB table (authed) / localStorage
+(signed-out) — mirrors existing project persistence. Many boards = array of these.
+
+**v1 scope (solo, thin):** new `/moodboard` route; create/rename/switch boards (many
+per project); add blocks from library pins (image + credit), saved swatches, a type
+slot, textures, plus a plain note; move + resize + z-order + delete, all
+keyboard-accessible; persist via the existing `apiFetch` pattern. **Not v1:** pan/zoom,
+live collab, share links, connectors, auto-layout. Board → Brand source-pool wiring is
+the next step after this lands. **Start point: the `/moodboard` route with image
+blocks first.**
+
 ---
 
 ## Session log — 2026-05-27/28 *(most recent; read first)*
