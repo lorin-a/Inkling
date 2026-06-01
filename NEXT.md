@@ -232,8 +232,15 @@ isolate → **persists across reload**. Zero console errors. Build passes.
   inside via cover + focal + zoom (`components/canvas/crop.js`). Crop mode
   (double-click / Crop button / Enter) → drag or arrow-keys pan, slider or +/−
   zoom, Done/Esc commits; render clamps so a gap can never show. Stored as
-  `ratio` + `focal{x,y}` + `zoom` on the block payload. A3 (next): block
-  taxonomy rollout (8) — swatch → text → shapes → board bg/texture → video.
+  `ratio` + `focal{x,y}` + `zoom` on the block payload. A3 ✅ **largely SHIPPED
+  2026-06-01** (committed): swatch blocks (Card / Plain / Circle styles), text
+  blocks with **real typefaces** (project fonts + Google catalog + custom URL/
+  upload, via a FontPicker extracted from TypePanel) sized as specimens, and
+  shape blocks (rectangle + line, fill from the project palette). Plus the
+  active-board-memory fix (reopens your last board, not board 1) and a shared
+  ColorPicker. **A3 remaining:** board-level background colour + texture, and
+  video pins (gated on pins that are actually video). Brand-font integration in
+  text is done; the parked nicety is wiring more of the foundry directory in.
 - **Lane B · Texture (4).** Lock the finish-layer reframe, build image-grain
   first (also feeds A3 board texture + export).
 - **Lane C · Narrative/wrapper.** Home pipeline intro + IA wiring (1) · Resources
