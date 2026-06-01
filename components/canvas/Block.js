@@ -21,19 +21,22 @@ import styles from "./canvas.module.css";
 const MIN = 64; // smallest a block can shrink to, px
 const HANDLES = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 
+// Directional, not depth-cued: up arrow = forward a layer, down = backward.
+// (Overlapping-square glyphs read ambiguously at this size.) A faint layer bar
+// grounds the arrow so it reads as "move through the stack," not "scroll."
 function ForwardIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-      <rect x="1.5" y="1.5" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-      <rect x="5.5" y="5.5" width="8" height="8" rx="1.5" fill="currentColor" />
+      <path d="M7.5 2.5 L11.5 6.5 H3.5 Z" fill="currentColor" />
+      <rect x="3" y="9.5" width="9" height="2.5" rx="1.25" fill="currentColor" opacity="0.4" />
     </svg>
   );
 }
 function BackIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-      <rect x="1.5" y="1.5" width="8" height="8" rx="1.5" fill="currentColor" />
-      <rect x="5.5" y="5.5" width="8" height="8" rx="1.5" fill="var(--bg-elevated)" stroke="currentColor" strokeWidth="1.3" />
+      <rect x="3" y="3" width="9" height="2.5" rx="1.25" fill="currentColor" opacity="0.4" />
+      <path d="M7.5 12.5 L11.5 8.5 H3.5 Z" fill="currentColor" />
     </svg>
   );
 }
@@ -262,8 +265,8 @@ export default function Block({
             )}
             {canLayer && (
               <>
-                <button type="button" className={styles.toolBtn} onClick={onForward} title="Bring to front (])" aria-label="Bring to front"><ForwardIcon /></button>
-                <button type="button" className={styles.toolBtn} onClick={onBackward} title="Send to back ([)" aria-label="Send to back"><BackIcon /></button>
+                <button type="button" className={styles.toolBtn} onClick={onForward} title="Bring forward (])" aria-label="Bring forward one layer"><ForwardIcon /></button>
+                <button type="button" className={styles.toolBtn} onClick={onBackward} title="Send backward ([)" aria-label="Send backward one layer"><BackIcon /></button>
               </>
             )}
             <span className={styles.toolDivider} aria-hidden="true" />

@@ -14,17 +14,18 @@ import styles from "./page.module.css";
 const CASCADE = 28;
 const BASE_WIDTH = 260; // a dropped image's starting width, px
 
-// Move a block to the front or back of the stack, then renumber every block's
-// z to a contiguous 0..n-1. Keeps the array (and React keys) in place; only the
-// z values change.
-function reindexZ(blocks, id, where) {
+// Move a block ONE layer forward or backward — swap it with its immediate
+// neighbour in the stack, so it can land between other blocks (collage
+// layering). Then renumber every block's z to a contiguous 0..n-1. Keeps the
+// array (and React keys) in place; only the z values change.
+function stepZ(blocks, id, dir) {
   const order = [...blocks].sort((a, b) => (a.z || 0) - (b.z || 0));
-  const idx = order.findIndex((b) => b.id === id);
-  if (idx === -1) return blocks;
-  const [item] = order.splice(idx, 1);
-  if (where === "front") order.push(item);
-  else order.unshift(item);
-  const zById = new Map(order.map((b, i) => [b.id, i]));
+  const i = order.findIndex((b) => b.id === id);
+  if (i === -1) return blocks;
+  const j = dir === "forward" ? i + 1 : i - 1; // forward = toward the front (higher)
+  if (j < 0 || j >= order.length) return blocks; // already at the end
+  [order[i], order[j]] = [order[j], order[i]];
+  const zById = new Map(order.map((b, k) => [b.id, k]));
   return blocks.map((b) => ({ ...b, z: zById.get(b.id) }));
 }
 
@@ -81,16 +82,15 @@ export default function MoodboardPage() {
     setCroppingId((cur) => (cur === id ? null : cur));
   }, [setBlocks]);
 
-  // Bring to front / send to back. We reassign contiguous z (0..n-1) every time
-  // so the stored order can never go negative or balloon — the rendered
-  // z-index is derived from sort order in Board, but keeping storage clean
-  // means a reload always paints the same stack.
-  const bringToFront = useCallback((id) => {
-    setBlocks((bs) => reindexZ(bs, id, "front"));
+  // One layer forward / backward, so a block can sit between others. Storage
+  // stays contiguous 0..n-1 (the rendered z-index is derived from sort order in
+  // Board, so it can never go negative or balloon).
+  const moveForward = useCallback((id) => {
+    setBlocks((bs) => stepZ(bs, id, "forward"));
   }, [setBlocks]);
 
-  const sendToBack = useCallback((id) => {
-    setBlocks((bs) => reindexZ(bs, id, "back"));
+  const moveBackward = useCallback((id) => {
+    setBlocks((bs) => stepZ(bs, id, "backward"));
   }, [setBlocks]);
 
   // Drop a library pin onto the board. We preload the image to size the block
@@ -166,8 +166,8 @@ export default function MoodboardPage() {
               onSelect={selectBlock}
               onChangeBlock={changeBlock}
               onDeleteBlock={deleteBlock}
-              onForward={bringToFront}
-              onBackward={sendToBack}
+              onForward={moveForward}
+              onBackward={moveBackward}
               onEnterCrop={enterCrop}
               onExitCrop={exitCrop}
               onCropChange={cropChange}
