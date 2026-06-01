@@ -14,6 +14,20 @@ import styles from "./page.module.css";
 const CASCADE = 28;
 const BASE_WIDTH = 260; // a dropped image's starting width, px
 
+// Move a block to the front or back of the stack, then renumber every block's
+// z to a contiguous 0..n-1. Keeps the array (and React keys) in place; only the
+// z values change.
+function reindexZ(blocks, id, where) {
+  const order = [...blocks].sort((a, b) => (a.z || 0) - (b.z || 0));
+  const idx = order.findIndex((b) => b.id === id);
+  if (idx === -1) return blocks;
+  const [item] = order.splice(idx, 1);
+  if (where === "front") order.push(item);
+  else order.unshift(item);
+  const zById = new Map(order.map((b, i) => [b.id, i]));
+  return blocks.map((b) => ({ ...b, z: zById.get(b.id) }));
+}
+
 export default function MoodboardPage() {
   const {
     boards,
@@ -67,18 +81,16 @@ export default function MoodboardPage() {
     setCroppingId((cur) => (cur === id ? null : cur));
   }, [setBlocks]);
 
-  const bringForward = useCallback((id) => {
-    setBlocks((bs) => {
-      const maxZ = bs.reduce((m, b) => Math.max(m, b.z || 0), 0);
-      return bs.map((b) => (b.id === id ? { ...b, z: maxZ + 1 } : b));
-    });
+  // Bring to front / send to back. We reassign contiguous z (0..n-1) every time
+  // so the stored order can never go negative or balloon — the rendered
+  // z-index is derived from sort order in Board, but keeping storage clean
+  // means a reload always paints the same stack.
+  const bringToFront = useCallback((id) => {
+    setBlocks((bs) => reindexZ(bs, id, "front"));
   }, [setBlocks]);
 
-  const sendBackward = useCallback((id) => {
-    setBlocks((bs) => {
-      const minZ = bs.reduce((m, b) => Math.min(m, b.z || 0), 0);
-      return bs.map((b) => (b.id === id ? { ...b, z: minZ - 1 } : b));
-    });
+  const sendToBack = useCallback((id) => {
+    setBlocks((bs) => reindexZ(bs, id, "back"));
   }, [setBlocks]);
 
   // Drop a library pin onto the board. We preload the image to size the block
@@ -154,8 +166,8 @@ export default function MoodboardPage() {
               onSelect={selectBlock}
               onChangeBlock={changeBlock}
               onDeleteBlock={deleteBlock}
-              onForward={bringForward}
-              onBackward={sendBackward}
+              onForward={bringToFront}
+              onBackward={sendToBack}
               onEnterCrop={enterCrop}
               onExitCrop={exitCrop}
               onCropChange={cropChange}

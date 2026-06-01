@@ -47,6 +47,7 @@ function CropIcon() {
 
 export default function Block({
   block,
+  renderZ,
   selected,
   label,
   canLayer,
@@ -221,7 +222,7 @@ export default function Block({
     <div
       ref={rootRef}
       className={`${styles.block} ${selected ? styles.blockSelected : ""} ${cropping ? styles.blockCropping : ""}`}
-      style={{ left: block.x, top: block.y, width: block.w, height: block.h, zIndex: cropping ? 9999 : (block.z || 0) }}
+      style={{ left: block.x, top: block.y, width: block.w, height: block.h, zIndex: cropping ? 9999 : (renderZ || 0) }}
       tabIndex={0}
       role="group"
       aria-label={label}
@@ -261,8 +262,8 @@ export default function Block({
             )}
             {canLayer && (
               <>
-                <button type="button" className={styles.toolBtn} onClick={onForward} title="Bring forward (])" aria-label="Bring forward"><ForwardIcon /></button>
-                <button type="button" className={styles.toolBtn} onClick={onBackward} title="Send backward ([)" aria-label="Send backward"><BackIcon /></button>
+                <button type="button" className={styles.toolBtn} onClick={onForward} title="Bring to front (])" aria-label="Bring to front"><ForwardIcon /></button>
+                <button type="button" className={styles.toolBtn} onClick={onBackward} title="Send to back ([)" aria-label="Send to back"><BackIcon /></button>
               </>
             )}
             <span className={styles.toolDivider} aria-hidden="true" />

@@ -40,6 +40,10 @@ export default function Board({
     }
   }
 
+  // Sort by stored z, but RENDER each block at its contiguous index (0..n-1).
+  // Stored z only needs to define relative order; deriving the painted
+  // z-index here means it can never go negative (which would drop a block
+  // behind the board surface and look like it vanished) or balloon unbounded.
   const ordered = [...blocks].sort((a, b) => (a.z || 0) - (b.z || 0));
 
   return (
@@ -60,10 +64,11 @@ export default function Board({
           </div>
         )}
 
-        {ordered.map((block) => (
+        {ordered.map((block, i) => (
           <Block
             key={block.id}
             block={block}
+            renderZ={i}
             selected={block.id === selectedId}
             cropping={block.id === croppingId}
             label={blockLabel(block)}
