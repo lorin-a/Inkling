@@ -227,8 +227,13 @@ isolate → **persists across reload**. Zero console errors. Build passes.
   layer icons + tooltips, z-order buttons only show when the board has >1 block
   so a single image no longer shows inert controls (7a); two sample SVG marks
   ("Bloom", "Horizon") seeded into the sample studio + one-time backfill, verified
-  rendering/recoloring on /brand (3). A2 (next): crop/focal control (7b). A3:
-  block taxonomy rollout (8) — swatch → text → shapes → board bg/texture → video.
+  rendering/recoloring on /brand (3). A2 ✅ **SHIPPED 2026-06-01** (uncommitted at
+  log time): crop / focal control (7b) — block is a *frame*, image positioned
+  inside via cover + focal + zoom (`components/canvas/crop.js`). Crop mode
+  (double-click / Crop button / Enter) → drag or arrow-keys pan, slider or +/−
+  zoom, Done/Esc commits; render clamps so a gap can never show. Stored as
+  `ratio` + `focal{x,y}` + `zoom` on the block payload. A3 (next): block
+  taxonomy rollout (8) — swatch → text → shapes → board bg/texture → video.
 - **Lane B · Texture (4).** Lock the finish-layer reframe, build image-grain
   first (also feeds A3 board texture + export).
 - **Lane C · Narrative/wrapper.** Home pipeline intro + IA wiring (1) · Resources

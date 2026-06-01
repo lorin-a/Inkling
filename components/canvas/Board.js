@@ -18,11 +18,15 @@ import styles from "./canvas.module.css";
 export default function Board({
   blocks,
   selectedId,
+  croppingId,
   onSelect,
   onChangeBlock,
   onDeleteBlock,
   onForward,
   onBackward,
+  onEnterCrop,
+  onExitCrop,
+  onCropChange,
   empty,
 }) {
   const surfaceRef = useRef(null);
@@ -30,7 +34,10 @@ export default function Board({
   // A pointerdown that lands on the bare surface (not a block) clears
   // selection. Blocks stopPropagation implicitly by being the event target.
   function onSurfacePointerDown(e) {
-    if (e.target === surfaceRef.current) onSelect(null);
+    if (e.target === surfaceRef.current) {
+      if (croppingId) onExitCrop();
+      onSelect(null);
+    }
   }
 
   const ordered = [...blocks].sort((a, b) => (a.z || 0) - (b.z || 0));
@@ -58,6 +65,7 @@ export default function Board({
             key={block.id}
             block={block}
             selected={block.id === selectedId}
+            cropping={block.id === croppingId}
             label={blockLabel(block)}
             canLayer={ordered.length > 1}
             onSelect={() => onSelect(block.id)}
@@ -65,8 +73,13 @@ export default function Board({
             onDelete={() => onDeleteBlock(block.id)}
             onForward={() => onForward(block.id)}
             onBackward={() => onBackward(block.id)}
+            onEnterCrop={() => onEnterCrop(block.id)}
+            onExitCrop={onExitCrop}
+            onCropChange={(patch) => onCropChange(block.id, patch)}
           >
-            {block.type === "image" && <ImageBlock payload={block.payload} />}
+            {block.type === "image" && (
+              <ImageBlock payload={block.payload} frameW={block.w} frameH={block.h} />
+            )}
           </Block>
         ))}
       </div>
@@ -77,7 +90,7 @@ export default function Board({
 function blockLabel(block) {
   if (block.type === "image") {
     const c = block.payload?.credit || block.payload?.sourceDomain || "a source";
-    return `Image reference from ${c}. Arrow keys move, Alt with arrows resize, Delete removes.`;
+    return `Image reference from ${c}. Arrow keys move, Alt with arrows resize, Enter to crop, Delete removes.`;
   }
   return "Board block";
 }

@@ -29,9 +29,28 @@ export default function MoodboardPage() {
   } = useBoards();
 
   const [selectedId, setSelectedId] = useState(null);
+  const [croppingId, setCroppingId] = useState(null);
   const [trayOpen, setTrayOpen] = useState(true);
 
   const blocks = active?.blocks || [];
+
+  // Selecting away from the block being cropped commits the crop and leaves
+  // crop mode — you can't crop a block you're no longer on.
+  const selectBlock = useCallback((id) => {
+    setSelectedId(id);
+    setCroppingId((cur) => (cur && cur !== id ? null : cur));
+  }, []);
+
+  const enterCrop = useCallback((id) => {
+    setSelectedId(id);
+    setCroppingId(id);
+  }, []);
+
+  const exitCrop = useCallback(() => setCroppingId(null), []);
+
+  const cropChange = useCallback((id, patch) => {
+    setBlocks((bs) => bs.map((b) => (b.id === id ? { ...b, payload: { ...b.payload, ...patch } } : b)));
+  }, [setBlocks]);
 
   const usedPinIds = useMemo(
     () => new Set(blocks.filter((b) => b.type === "image").map((b) => b.payload?.pinId)),
@@ -45,6 +64,7 @@ export default function MoodboardPage() {
   const deleteBlock = useCallback((id) => {
     setBlocks((bs) => bs.filter((b) => b.id !== id));
     setSelectedId((cur) => (cur === id ? null : cur));
+    setCroppingId((cur) => (cur === id ? null : cur));
   }, [setBlocks]);
 
   const bringForward = useCallback((id) => {
@@ -90,7 +110,8 @@ export default function MoodboardPage() {
           w,
           h,
           z: maxZ + 1,
-          payload,
+          // ratio + focal/zoom drive the crop model (see components/canvas/crop).
+          payload: { ...payload, ratio: ratio || 1, focal: { x: 0.5, y: 0.5 }, zoom: 1 },
         };
         return [...bs, block];
       });
@@ -118,10 +139,10 @@ export default function MoodboardPage() {
           <BoardBar
             boards={boards}
             activeId={activeId}
-            onSwitch={(id) => { setActiveId(id); setSelectedId(null); }}
-            onCreate={() => { createBoard("Untitled board"); setSelectedId(null); }}
+            onSwitch={(id) => { setActiveId(id); setSelectedId(null); setCroppingId(null); }}
+            onCreate={() => { createBoard("Untitled board"); setSelectedId(null); setCroppingId(null); }}
             onRename={renameBoard}
-            onDelete={(id) => { deleteBoard(id); setSelectedId(null); }}
+            onDelete={(id) => { deleteBoard(id); setSelectedId(null); setCroppingId(null); }}
             saving={saving}
           />
 
@@ -129,11 +150,15 @@ export default function MoodboardPage() {
             <Board
               blocks={blocks}
               selectedId={selectedId}
-              onSelect={setSelectedId}
+              croppingId={croppingId}
+              onSelect={selectBlock}
               onChangeBlock={changeBlock}
               onDeleteBlock={deleteBlock}
               onForward={bringForward}
               onBackward={sendBackward}
+              onEnterCrop={enterCrop}
+              onExitCrop={exitCrop}
+              onCropChange={cropChange}
               empty={blocks.length === 0}
             />
             <PinTray

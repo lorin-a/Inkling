@@ -1,27 +1,26 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { dispDims, clampFocal, clampZoom, ZOOM_MIN, ZOOM_MAX } from "./crop";
 import styles from "./canvas.module.css";
 
 /**
  * A positioned block on the board: the generic geometry + chrome wrapper.
  * Payload rendering (image, and later swatch / type / texture) is the
- * `children`; this owns move, 8-way resize, z-order, delete, and — from day
- * one — full keyboard operation (arrows nudge, Alt+arrows resize) so the
- * board meets WCAG 2.5.7 without a pointer. Hand-rolled exactly so this
- * stays true.
+ * `children`; this owns move, 8-way resize, z-order, delete, crop, and — from
+ * day one — full keyboard operation (arrows nudge, Alt+arrows resize, arrows
+ * pan in crop mode) so the board meets WCAG 2.5.7 without a pointer.
  *
- * Pointer move + resize both run through the root via pointer capture: a
- * pointerdown on a [data-resize] handle resizes, anywhere else moves, and
- * [data-noselect] children (credit link, toolbar) opt out so they stay
- * clickable. One coordinate space, no zoom — board px == client px.
+ * Two pointer modes share the root via pointer capture:
+ *   - normal: pointerdown on a [data-resize] handle resizes, anywhere else
+ *     moves; [data-noselect] children (credit link, toolbar) opt out.
+ *   - crop: pointerdown anywhere pans the image inside the frame (focal point);
+ *     resize handles + the normal toolbar are hidden, a crop bar takes over.
  */
 
 const MIN = 64; // smallest a block can shrink to, px
 const HANDLES = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
 
-// Layer icons read as "this card in front of / behind another" — far clearer
-// than the old ⤓⤒ glyphs, which looked like up/down nudges that did nothing.
 function ForwardIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
@@ -38,24 +37,60 @@ function BackIcon() {
     </svg>
   );
 }
+function CropIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <path d="M4 1v10h10M1 4h10v10" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 export default function Block({
   block,
   selected,
   label,
   canLayer,
+  cropping,
   onSelect,
   onChange,
   onDelete,
   onForward,
   onBackward,
+  onEnterCrop,
+  onExitCrop,
+  onCropChange,
   children,
 }) {
+  const rootRef = useRef(null);
   const drag = useRef(null);
 
+  // The image's aspect ratio (for crop math): stored on the payload, else the
+  // frame's own ratio (true for an un-resized block).
+  const ratio = block.payload?.ratio || block.w / block.h;
+  const zoom = block.payload?.zoom ?? 1;
+
+  // Focus the block when crop mode opens so keyboard pan works immediately.
+  useEffect(() => {
+    if (cropping && rootRef.current) rootRef.current.focus();
+  }, [cropping]);
+
   function onPointerDown(e) {
-    if (e.button != null && e.button !== 0) return; // left / primary only
-    if (e.target.closest("[data-noselect]")) return; // links + toolbar buttons
+    if (e.button != null && e.button !== 0) return; // primary only
+    if (e.target.closest("[data-noselect]")) return; // links, toolbars, slider
+
+    if (cropping) {
+      onSelect();
+      e.currentTarget.setPointerCapture(e.pointerId);
+      drag.current = {
+        mode: "crop",
+        px: e.clientX,
+        py: e.clientY,
+        fx: block.payload?.focal?.x ?? 0.5,
+        fy: block.payload?.focal?.y ?? 0.5,
+      };
+      return;
+    }
+
     onSelect();
     const handle = e.target.closest("[data-resize]");
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -76,6 +111,13 @@ export default function Block({
     if (!d) return;
     const dx = e.clientX - d.px;
     const dy = e.clientY - d.py;
+    if (d.mode === "crop") {
+      const { dispW, dispH } = dispDims(block.w, block.h, ratio, zoom);
+      const nx = d.fx - (dispW > 0 ? dx / dispW : 0);
+      const ny = d.fy - (dispH > 0 ? dy / dispH : 0);
+      onCropChange({ focal: clampFocal(nx, ny, block.w, block.h, ratio, zoom) });
+      return;
+    }
     if (d.mode === "move") {
       onChange({ x: Math.max(0, Math.round(d.x + dx)), y: Math.max(0, Math.round(d.y + dy)) });
       return;
@@ -90,7 +132,52 @@ export default function Block({
     }
   }
 
+  function setZoom(next) {
+    const z = clampZoom(next);
+    const focal = clampFocal(
+      block.payload?.focal?.x ?? 0.5,
+      block.payload?.focal?.y ?? 0.5,
+      block.w, block.h, ratio, z
+    );
+    onCropChange({ zoom: z, focal });
+  }
+
   function onKeyDown(e) {
+    if (cropping) {
+      const panStep = e.shiftKey ? 0.06 : 0.02;
+      switch (e.key) {
+        case "ArrowLeft":
+        case "ArrowRight":
+        case "ArrowUp":
+        case "ArrowDown": {
+          e.preventDefault();
+          const dfx = e.key === "ArrowLeft" ? -panStep : e.key === "ArrowRight" ? panStep : 0;
+          const dfy = e.key === "ArrowUp" ? -panStep : e.key === "ArrowDown" ? panStep : 0;
+          const cur = block.payload?.focal || { x: 0.5, y: 0.5 };
+          onCropChange({ focal: clampFocal(cur.x + dfx, cur.y + dfy, block.w, block.h, ratio, zoom) });
+          break;
+        }
+        case "+":
+        case "=":
+          e.preventDefault();
+          setZoom(zoom + 0.15);
+          break;
+        case "-":
+        case "_":
+          e.preventDefault();
+          setZoom(zoom - 0.15);
+          break;
+        case "Escape":
+        case "Enter":
+          e.preventDefault();
+          onExitCrop();
+          break;
+        default:
+          break;
+      }
+      return;
+    }
+
     const step = e.shiftKey ? 10 : 1;
     const resizing = e.altKey;
     switch (e.key) {
@@ -113,6 +200,10 @@ export default function Block({
         e.preventDefault();
         onDelete();
         break;
+      case "Enter":
+        e.preventDefault();
+        if (onEnterCrop) onEnterCrop();
+        break;
       case "]":
         e.preventDefault();
         onForward();
@@ -128,8 +219,9 @@ export default function Block({
 
   return (
     <div
-      className={`${styles.block} ${selected ? styles.blockSelected : ""}`}
-      style={{ left: block.x, top: block.y, width: block.w, height: block.h, zIndex: block.z || 0 }}
+      ref={rootRef}
+      className={`${styles.block} ${selected ? styles.blockSelected : ""} ${cropping ? styles.blockCropping : ""}`}
+      style={{ left: block.x, top: block.y, width: block.w, height: block.h, zIndex: cropping ? 9999 : (block.z || 0) }}
       tabIndex={0}
       role="group"
       aria-label={label}
@@ -137,21 +229,43 @@ export default function Block({
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
-      onFocus={onSelect}
+      onFocus={cropping ? undefined : onSelect}
+      onDoubleClick={() => { if (!cropping && onEnterCrop) onEnterCrop(); }}
       onKeyDown={onKeyDown}
     >
       {children}
 
-      {selected && (
+      {cropping && (
+        <div className={styles.cropBar} data-noselect role="toolbar" aria-label="Crop image">
+          <span className={styles.cropHint} aria-hidden="true">Drag to reframe</span>
+          <input
+            className={styles.zoomSlider}
+            type="range"
+            min={ZOOM_MIN}
+            max={ZOOM_MAX}
+            step="0.01"
+            value={zoom}
+            onChange={(e) => setZoom(parseFloat(e.target.value))}
+            aria-label="Zoom"
+            title="Zoom"
+          />
+          <button type="button" className={styles.cropDone} onClick={onExitCrop}>Done</button>
+        </div>
+      )}
+
+      {selected && !cropping && (
         <>
           <div className={styles.toolbar} data-noselect role="toolbar" aria-label="Block actions">
+            {block.type === "image" && (
+              <button type="button" className={styles.toolBtn} onClick={onEnterCrop} title="Crop (double-click)" aria-label="Crop image"><CropIcon /></button>
+            )}
             {canLayer && (
               <>
                 <button type="button" className={styles.toolBtn} onClick={onForward} title="Bring forward (])" aria-label="Bring forward"><ForwardIcon /></button>
                 <button type="button" className={styles.toolBtn} onClick={onBackward} title="Send backward ([)" aria-label="Send backward"><BackIcon /></button>
-                <span className={styles.toolDivider} aria-hidden="true" />
               </>
             )}
+            <span className={styles.toolDivider} aria-hidden="true" />
             <button type="button" className={`${styles.toolBtn} ${styles.toolDelete}`} onClick={onDelete} title="Delete (⌫)" aria-label="Delete block">✕</button>
           </div>
           {HANDLES.map((dir) => (
