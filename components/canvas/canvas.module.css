@@ -396,22 +396,6 @@ a.credit:hover {
   color: var(--ink);
 }
 
-.traySearch {
-  margin: 0 16px 12px;
-  font: inherit;
-  font-size: 14px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--hairline);
-  background: var(--bg);
-  color: var(--ink);
-}
-
-.traySearch:focus-visible {
-  outline: none;
-  border-color: var(--whelm-vivid);
-}
-
 /* Masonry, not a grid of cropped squares: each pin keeps its true aspect so you
    see the whole reference before you pick it (the Are.na column read). */
 .trayGrid {

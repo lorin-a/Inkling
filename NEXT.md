@@ -240,6 +240,11 @@ isolate → **persists across reload**. Zero console errors. Build passes.
   library (2) · /decide labeling + spacing (5). The cross-cutting "name by
   identity, not domain" fix lives here and clears 5 + the credit ambiguity.
 
+**Decided 2026-06-01:** the PinTray text-search was removed — a moodboard
+library is browsed visually, not queried by text, and at one project's scale a
+masonry scans fine. If filtering ever earns its place at scale, the right axis is
+**by color** (each pin already carries an extracted palette), not free text.
+
 ### PAUSED — re-ask Lorin on resume (do not decide unilaterally)
 
 - **Texture direction:** finish-layer reframe (image grain first) vs image-grain

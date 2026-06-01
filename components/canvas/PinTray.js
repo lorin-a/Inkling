@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { apiFetch } from "../../lib/api/client";
 import styles from "./canvas.module.css";
 
@@ -10,12 +10,15 @@ import styles from "./canvas.module.css";
  * credit (handled by the parent's onAdd). A collapsible side panel so the
  * board stays the focus.
  *
+ * No search box on purpose: a moodboard library is browsed visually, not
+ * queried by text. If filtering ever earns its place at scale, the right axis
+ * is by color (each pin already carries an extracted palette), not free text.
+ *
  * Pins already on the board read as "added" — a quiet check, not a lockout
  * (the same reference can appear twice if you want it twice).
  */
 export default function PinTray({ open, onToggle, onAdd, usedPinIds }) {
   const [pins, setPins] = useState(null);
-  const [query, setQuery] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -33,15 +36,6 @@ export default function PinTray({ open, onToggle, onAdd, usedPinIds }) {
       .catch(() => setPins([]));
     return () => { cancelled = true; };
   }, []);
-
-  const filtered = useMemo(() => {
-    if (!pins) return [];
-    const q = query.trim().toLowerCase();
-    if (!q) return pins;
-    return pins.filter((p) =>
-      [p.title, p.alt, p.sourceDomain, p.pinner].filter(Boolean).join(" ").toLowerCase().includes(q)
-    );
-  }, [pins, query]);
 
   if (!open) {
     return (
@@ -66,24 +60,13 @@ export default function PinTray({ open, onToggle, onAdd, usedPinIds }) {
         </button>
       </header>
 
-      <input
-        className={styles.traySearch}
-        type="search"
-        placeholder="Filter pins"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        aria-label="Filter pins"
-      />
-
       <div className={styles.trayGrid}>
         {pins == null ? (
           <p className={styles.trayEmpty}>Loading pins…</p>
-        ) : filtered.length === 0 ? (
-          <p className={styles.trayEmpty}>
-            {pins.length === 0 ? "No pins in this project yet. Import a board first." : "No pins match that filter."}
-          </p>
+        ) : pins.length === 0 ? (
+          <p className={styles.trayEmpty}>No pins in this project yet. Import a board first.</p>
         ) : (
-          filtered.map((pin) => {
+          pins.map((pin) => {
             const used = usedPinIds.has(pin.pinId);
             return (
               <button
