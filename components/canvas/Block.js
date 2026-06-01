@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { dispDims, clampFocal, clampZoom, ZOOM_MIN, ZOOM_MAX } from "./crop";
+import TextFontPopover from "./TextFontPopover";
 import styles from "./canvas.module.css";
 
 /**
@@ -64,6 +65,7 @@ export default function Block({
   canLayer,
   cropping,
   bare,
+  projectFonts,
   onSelect,
   onChange,
   onDelete,
@@ -78,6 +80,12 @@ export default function Block({
 }) {
   const rootRef = useRef(null);
   const drag = useRef(null);
+  const [fontOpen, setFontOpen] = useState(false);
+
+  // Close the typeface popover when the block is deselected.
+  useEffect(() => {
+    if (!selected && fontOpen) setFontOpen(false);
+  }, [selected, fontOpen]);
 
   // The image's aspect ratio (for crop math): stored on the payload, else the
   // frame's own ratio (true for an un-resized block).
@@ -280,7 +288,7 @@ export default function Block({
               <button type="button" className={styles.toolBtn} onClick={onStyle} title="Swatch style" aria-label="Change swatch style"><StyleIcon /></button>
             )}
             {block.type === "text" && (
-              <button type="button" className={styles.toolBtn} onClick={onFont} title="Typeface" aria-label="Change typeface"><span className={styles.toolText}>Aa</span></button>
+              <button type="button" className={`${styles.toolBtn} ${fontOpen ? styles.toolBtnOn : ""}`} onClick={() => setFontOpen((v) => !v)} title="Typeface" aria-label="Change typeface" aria-expanded={fontOpen}><span className={styles.toolText}>Aa</span></button>
             )}
             {canLayer && (
               <>
@@ -295,6 +303,15 @@ export default function Block({
             <span key={dir} data-resize={dir} className={`${styles.handle} ${styles[`handle_${dir}`]}`} aria-hidden="true" />
           ))}
         </>
+      )}
+
+      {fontOpen && block.type === "text" && (
+        <TextFontPopover
+          current={block.payload?.font}
+          projectFonts={projectFonts || []}
+          onPick={(font) => { onFont(font); setFontOpen(false); }}
+          onClose={() => setFontOpen(false)}
+        />
       )}
     </div>
   );

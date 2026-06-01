@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { fontCss } from "./blockOptions";
+import { resolveFontFamily } from "./blockOptions";
 import styles from "./canvas.module.css";
 
 /**
@@ -13,7 +13,7 @@ import styles from "./canvas.module.css";
 export default function TextBlock({ payload, selected, onChange }) {
   const text = payload?.text || "";
   const color = payload?.color || "var(--ink)";
-  const fontFamily = fontCss(payload?.font);
+  const fontFamily = resolveFontFamily(payload?.font);
   const [editing, setEditing] = useState(!text); // a new (empty) block edits immediately
   const ref = useRef(null);
 

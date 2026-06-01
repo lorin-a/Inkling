@@ -1,13 +1,15 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
+import FontLoader, { fontStack } from "../../components/FontLoader";
+import { apiFetch } from "../../lib/api/client";
 import Board from "../../components/canvas/Board";
 import BoardBar from "../../components/canvas/BoardBar";
 import PinTray from "../../components/canvas/PinTray";
 import AddBlocks from "../../components/canvas/AddBlocks";
-import { SWATCH_STYLES, TEXT_FONTS, nextIn } from "../../components/canvas/blockOptions";
+import { SWATCH_STYLES, nextIn, fontKey } from "../../components/canvas/blockOptions";
 import { useBoards } from "../../lib/useBoards";
 import styles from "./page.module.css";
 
@@ -59,8 +61,44 @@ export default function MoodboardPage() {
   const [selectedId, setSelectedId] = useState(null);
   const [croppingId, setCroppingId] = useState(null);
   const [trayOpen, setTrayOpen] = useState(true);
+  const [projectFonts, setProjectFonts] = useState({}); // { title, subhead, body } font values
+
+  // The project's chosen brand fonts, offered as quick picks on text blocks.
+  useEffect(() => {
+    apiFetch("/api/project", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((p) => setProjectFonts(p?.fonts || {}))
+      .catch(() => {});
+  }, []);
 
   const blocks = active?.blocks || [];
+
+  // Brand fonts as { label, value, stack } for the typeface popover.
+  const projectFontQuick = useMemo(() => {
+    const out = [];
+    const seen = new Set();
+    for (const key of ["title", "subhead", "body"]) {
+      const v = projectFonts?.[key];
+      if (v?.family && !seen.has(v.family)) {
+        seen.add(v.family);
+        out.push({ label: v.family, value: v, stack: fontStack(v, "sans") });
+      }
+    }
+    return out;
+  }, [projectFonts]);
+
+  // Unique Google/custom fonts used by text blocks on this board — one
+  // FontLoader each so the faces actually render.
+  const textFontLoaders = useMemo(() => {
+    const map = new Map();
+    for (const b of blocks) {
+      if (b.type === "text" && b.payload?.font && typeof b.payload.font === "object") {
+        const k = fontKey(b.payload.font);
+        if (k && !map.has(k)) map.set(k, b.payload.font);
+      }
+    }
+    return [...map.entries()];
+  }, [blocks]);
 
   // Selecting away from the block being cropped commits the crop and leaves
   // crop mode — you can't crop a block you're no longer on.
@@ -107,12 +145,9 @@ export default function MoodboardPage() {
     )));
   }, [setBlocks]);
 
-  const cycleFont = useCallback((id) => {
-    const keys = TEXT_FONTS.map((f) => f.key);
-    setBlocks((bs) => bs.map((b) => (
-      b.id === id ? { ...b, payload: { ...b.payload, font: nextIn(keys, b.payload?.font || "sans") } } : b
-    )));
-  }, [setBlocks]);
+  const setFont = useCallback((id, font) => {
+    changePayload(id, { font });
+  }, [changePayload]);
 
   const usedPinIds = useMemo(
     () => new Set(blocks.filter((b) => b.type === "image").map((b) => b.payload?.pinId)),
@@ -185,6 +220,10 @@ export default function MoodboardPage() {
 
   return (
     <div className={styles.page}>
+      <FontLoader fonts={projectFonts} />
+      {textFontLoaders.map(([k, fv]) => (
+        <FontLoader key={k} fonts={{ title: fv }} />
+      ))}
       <header className={styles.bar}>
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
         <ProjectSwitcher />
@@ -220,7 +259,8 @@ export default function MoodboardPage() {
               onCropChange={changePayload}
               onPayloadChange={changePayload}
               onCycleStyle={cycleStyle}
-              onCycleFont={cycleFont}
+              onSetFont={setFont}
+              projectFonts={projectFontQuick}
               empty={blocks.length === 0}
             />
             <AddBlocks onAddText={addText} onAddSwatch={addSwatch} />

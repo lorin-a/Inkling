@@ -342,6 +342,90 @@ a.credit:hover {
   letter-spacing: -0.01em;
 }
 
+.toolBtnOn {
+  background: rgba(177, 104, 239, 0.16);
+  color: var(--ink);
+}
+
+/* ----------------------------------------------------------- typeface popover */
+
+.fontPop {
+  position: absolute;
+  top: -10px;
+  left: calc(100% + 10px);
+  width: 304px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+  cursor: default;
+  z-index: 30;
+}
+
+.fontPopHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.fontPopClose {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  color: var(--ink-muted);
+}
+
+.fontPopClose:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--ink);
+}
+
+.fontQuick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fontQuickBtn {
+  font-size: 15px;
+  line-height: 1.1;
+  padding: 7px 12px;
+  border-radius: 7px;
+  border: 1px solid var(--hairline);
+  background: var(--bg);
+  color: var(--ink);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+
+.fontQuickBtn:hover {
+  border-color: var(--ink-muted);
+}
+
+.fontQuickOn {
+  border-color: var(--whelm-vivid);
+}
+
+.fontGroupLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+  margin: 12px 0 7px;
+}
+
 .toolDelete:hover {
   background: rgba(180, 35, 42, 0.1);
   color: #b4232a;
@@ -690,6 +774,7 @@ a.credit:hover {
   .trayHandle,
   .addBtn,
   .pickerSwatch,
+  .fontQuickBtn,
   .tab,
   .newBoard {
     transition: none;
