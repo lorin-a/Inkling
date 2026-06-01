@@ -20,6 +20,9 @@
 }
 
 .tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-size: 14px;
   color: var(--ink-muted);
   padding: 7px 14px;
@@ -55,6 +58,9 @@
 }
 
 .newBoard {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-size: 14px;
   color: var(--ink-muted);
   padding: 7px 12px;
@@ -84,6 +90,7 @@
 .bgButton {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: 8px;
   font-size: 13px;
   color: var(--ink-muted);
@@ -123,7 +130,9 @@
 }
 
 .bgDefault {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: 40px;
   width: 100%;
   text-align: left;
   font-size: 13px;
@@ -152,6 +161,9 @@
 }
 
 .deleteBoard {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-size: 13px;
   color: var(--ink-muted);
   padding: 6px 10px;
@@ -343,19 +355,19 @@
   font-size: 11px;
   line-height: 1.2;
   color: #fff;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.72);
   backdrop-filter: blur(4px);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  opacity: 0.85;
+  opacity: 0.94;
   transition: opacity var(--motion-fast) var(--ease-out),
     background var(--motion-fast) var(--ease-out);
 }
 
 a.credit:hover {
   opacity: 1;
-  background: rgba(0, 0, 0, 0.82);
+  background: rgba(0, 0, 0, 0.86);
 }
 
 .creditArrow {
@@ -382,9 +394,9 @@ a.credit:hover {
 .toolBtn {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 5px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
   font-size: 14px;
   color: var(--ink-muted);
   transition: background var(--motion-fast) var(--ease-out),
@@ -554,8 +566,8 @@ a.credit:hover {
 .trayClose {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border-radius: 6px;
   font-size: 13px;
   color: var(--ink-muted);
@@ -653,6 +665,7 @@ a.credit:hover {
   z-index: 12;
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: 7px;
   font-size: 14px;
   color: var(--ink);
@@ -778,6 +791,7 @@ a.credit:hover {
 .addBtn {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: 7px;
   font-size: 14px;
   color: var(--ink);
@@ -876,6 +890,7 @@ a.credit:hover {
 .shapeMenuItem {
   display: flex;
   align-items: center;
+  min-height: 44px;
   gap: 11px;
   padding: 8px 10px;
   border-radius: 7px;

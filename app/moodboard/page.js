@@ -72,6 +72,11 @@ export default function MoodboardPage() {
       .catch(() => {});
   }, []);
 
+  // On a narrow screen the 288px tray would crush the board — start it closed.
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth <= 700) setTrayOpen(false);
+  }, []);
+
   const blocks = active?.blocks || [];
 
   // Brand fonts as { label, value, stack } for the typeface popover.

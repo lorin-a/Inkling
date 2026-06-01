@@ -44,7 +44,9 @@ export default function DecidePage() {
         const starred = new Set(d.starredPalettes || []);
         for (const pp of d.pinPalettes || []) {
           if (starred.has(pp.pinId) && Array.isArray(pp.palette) && pp.palette.length) {
-            out.push({ kind: "palette", id: `pin_${pp.pinId}`, name: pp.sourceDomain || "Top pick", palette: pp.palette });
+            // Name by the palette's lead colour (a real identity) rather than the
+            // source domain — otherwise every pinned palette reads "pinterest.com".
+            out.push({ kind: "palette", id: `pin_${pp.pinId}`, name: colorName(pp.palette[0]).name || "Top pick", palette: pp.palette });
           }
         }
       } catch { /* none */ }
