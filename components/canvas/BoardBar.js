@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ColorPicker from "./ColorPicker";
 import styles from "./canvas.module.css";
 
 /**
@@ -13,15 +14,31 @@ import styles from "./canvas.module.css";
 export default function BoardBar({
   boards,
   activeId,
+  background,
   onSwitch,
   onCreate,
   onRename,
   onDelete,
+  onSetBackground,
   saving,
 }) {
   const [editingId, setEditingId] = useState(null);
   const [draft, setDraft] = useState("");
+  const [bgOpen, setBgOpen] = useState(false);
   const inputRef = useRef(null);
+  const bgRef = useRef(null);
+
+  useEffect(() => {
+    if (!bgOpen) return;
+    const onDown = (e) => { if (bgRef.current && !bgRef.current.contains(e.target)) setBgOpen(false); };
+    const onKey = (e) => { if (e.key === "Escape") setBgOpen(false); };
+    window.addEventListener("mousedown", onDown);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("mousedown", onDown);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [bgOpen]);
 
   useEffect(() => {
     if (editingId && inputRef.current) {
@@ -88,6 +105,39 @@ export default function BoardBar({
       </div>
 
       <div className={styles.boardBarRight}>
+        <div className={styles.bgControl} ref={bgRef}>
+          <button
+            type="button"
+            className={styles.bgButton}
+            onClick={() => setBgOpen((v) => !v)}
+            aria-haspopup="menu"
+            aria-expanded={bgOpen}
+            title="Board background"
+          >
+            <span
+              className={styles.bgSwatch}
+              style={background ? { background } : undefined}
+              data-empty={background ? undefined : "true"}
+              aria-hidden="true"
+            />
+            Background
+          </button>
+          {bgOpen && (
+            <div className={styles.bgPop} role="menu" aria-label="Board background colour">
+              <button
+                type="button"
+                role="menuitem"
+                className={styles.bgDefault}
+                onClick={() => { onSetBackground(null); setBgOpen(false); }}
+              >
+                Default surface
+              </button>
+              <div className={styles.bgGrid}>
+                <ColorPicker onPick={(hex) => { onSetBackground(hex); setBgOpen(false); }} />
+              </div>
+            </div>
+          )}
+        </div>
         <span className={styles.saveState} aria-live="polite">
           {saving ? "Saving…" : "Saved"}
         </span>

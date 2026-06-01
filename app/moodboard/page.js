@@ -56,6 +56,7 @@ export default function MoodboardPage() {
     createBoard,
     renameBoard,
     deleteBoard,
+    setBoardBackground,
   } = useBoards();
 
   const [selectedId, setSelectedId] = useState(null);
@@ -253,10 +254,12 @@ export default function MoodboardPage() {
           <BoardBar
             boards={boards}
             activeId={activeId}
+            background={active?.background || null}
             onSwitch={(id) => { setActiveId(id); setSelectedId(null); setCroppingId(null); }}
             onCreate={() => { createBoard("Untitled board"); setSelectedId(null); setCroppingId(null); }}
             onRename={renameBoard}
             onDelete={(id) => { deleteBoard(id); setSelectedId(null); setCroppingId(null); }}
+            onSetBackground={setBoardBackground}
             saving={saving}
           />
 
@@ -278,6 +281,7 @@ export default function MoodboardPage() {
               onSetFont={setFont}
               onSetFill={setFill}
               projectFonts={projectFontQuick}
+              background={active?.background || null}
               empty={blocks.length === 0}
             />
             <AddBlocks onAddText={addText} onAddSwatch={addSwatch} onAddShape={addShape} />

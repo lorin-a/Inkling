@@ -35,6 +35,7 @@ export default function Board({
   onSetFont,
   onSetFill,
   projectFonts,
+  background,
   empty,
 }) {
   const surfaceRef = useRef(null);
@@ -55,7 +56,10 @@ export default function Board({
   const ordered = [...blocks].sort((a, b) => (a.z || 0) - (b.z || 0));
 
   return (
-    <div className={styles.surfaceScroll}>
+    <div
+      className={styles.surfaceScroll}
+      style={background ? { backgroundColor: background } : undefined}
+    >
       <div
         ref={surfaceRef}
         className={styles.surface}
