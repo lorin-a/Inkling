@@ -7,6 +7,7 @@ import Board from "../../components/canvas/Board";
 import BoardBar from "../../components/canvas/BoardBar";
 import PinTray from "../../components/canvas/PinTray";
 import AddBlocks from "../../components/canvas/AddBlocks";
+import { SWATCH_STYLES, TEXT_FONTS, nextIn } from "../../components/canvas/blockOptions";
 import { useBoards } from "../../lib/useBoards";
 import styles from "./page.module.css";
 
@@ -93,9 +94,24 @@ export default function MoodboardPage() {
     const id = newBlockId();
     setBlocks((bs) => {
       const p = placement(bs);
-      return [...bs, { id, type: "swatch", x: p.x, y: p.y, w: 132, h: 156, z: p.z, payload: { hex, name } }];
+      return [...bs, { id, type: "swatch", x: p.x, y: p.y, w: 132, h: 156, z: p.z, payload: { hex, name, style: "card" } }];
     });
     setSelectedId(id);
+  }, [setBlocks]);
+
+  // Cycle a swatch through its styles (card → plain → circle) or a text block
+  // through its typefaces (sans → serif → mono).
+  const cycleStyle = useCallback((id) => {
+    setBlocks((bs) => bs.map((b) => (
+      b.id === id ? { ...b, payload: { ...b.payload, style: nextIn(SWATCH_STYLES, b.payload?.style || "card") } } : b
+    )));
+  }, [setBlocks]);
+
+  const cycleFont = useCallback((id) => {
+    const keys = TEXT_FONTS.map((f) => f.key);
+    setBlocks((bs) => bs.map((b) => (
+      b.id === id ? { ...b, payload: { ...b.payload, font: nextIn(keys, b.payload?.font || "sans") } } : b
+    )));
   }, [setBlocks]);
 
   const usedPinIds = useMemo(
@@ -203,6 +219,8 @@ export default function MoodboardPage() {
               onExitCrop={exitCrop}
               onCropChange={changePayload}
               onPayloadChange={changePayload}
+              onCycleStyle={cycleStyle}
+              onCycleFont={cycleFont}
               empty={blocks.length === 0}
             />
             <AddBlocks onAddText={addText} onAddSwatch={addSwatch} />

@@ -47,6 +47,14 @@ function CropIcon() {
     </svg>
   );
 }
+function StyleIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <rect x="1.5" y="4" width="6" height="6" rx="1.2" fill="currentColor" />
+      <circle cx="10.5" cy="7" r="3" fill="currentColor" opacity="0.45" />
+    </svg>
+  );
+}
 
 export default function Block({
   block,
@@ -55,6 +63,7 @@ export default function Block({
   label,
   canLayer,
   cropping,
+  bare,
   onSelect,
   onChange,
   onDelete,
@@ -63,6 +72,8 @@ export default function Block({
   onEnterCrop,
   onExitCrop,
   onCropChange,
+  onStyle,
+  onFont,
   children,
 }) {
   const rootRef = useRef(null);
@@ -226,7 +237,7 @@ export default function Block({
   return (
     <div
       ref={rootRef}
-      className={`${styles.block} ${selected ? styles.blockSelected : ""} ${cropping ? styles.blockCropping : ""}`}
+      className={`${styles.block} ${bare ? styles.bare : ""} ${selected ? styles.blockSelected : ""} ${cropping ? styles.blockCropping : ""}`}
       style={{ left: block.x, top: block.y, width: block.w, height: block.h, zIndex: cropping ? 9999 : (renderZ || 0) }}
       tabIndex={0}
       role="group"
@@ -264,6 +275,12 @@ export default function Block({
           <div className={styles.toolbar} data-noselect role="toolbar" aria-label="Block actions">
             {block.type === "image" && (
               <button type="button" className={styles.toolBtn} onClick={onEnterCrop} title="Crop (double-click)" aria-label="Crop image"><CropIcon /></button>
+            )}
+            {block.type === "swatch" && (
+              <button type="button" className={styles.toolBtn} onClick={onStyle} title="Swatch style" aria-label="Change swatch style"><StyleIcon /></button>
+            )}
+            {block.type === "text" && (
+              <button type="button" className={styles.toolBtn} onClick={onFont} title="Typeface" aria-label="Change typeface"><span className={styles.toolText}>Aa</span></button>
             )}
             {canLayer && (
               <>

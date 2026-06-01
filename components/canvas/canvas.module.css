@@ -233,6 +233,19 @@
   background: var(--whelm-purple);
 }
 
+/* A "bare" block has no card chrome — for swatch chips (circles) that should
+   float on the board. The selection ring still shows; the drop shadow doesn't. */
+.bare,
+.bare:hover {
+  background: transparent;
+  box-shadow: none;
+}
+
+.blockSelected.bare,
+.blockSelected.bare:hover {
+  box-shadow: 0 0 0 2px var(--whelm-vivid);
+}
+
 /* ----------------------------------------------------------- image block */
 
 .imageBlock {
@@ -321,6 +334,12 @@ a.credit:hover {
   align-self: stretch;
   margin: 4px 2px;
   background: var(--hairline);
+}
+
+.toolText {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .toolDelete:hover {
@@ -567,6 +586,31 @@ a.credit:hover {
   font-size: 11px;
   color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
+}
+
+/* Plain: the colour, full-bleed, no caption. */
+.swatchPlain {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+/* Circle: a chip floating on the board (the block is bare). The chip sizes to
+   the smaller side of the frame so it stays a true circle on any resize. */
+.swatchCircleWrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swatchCircle {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 100%;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
 
 /* ============================================================== add cluster */

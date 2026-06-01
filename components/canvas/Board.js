@@ -30,6 +30,8 @@ export default function Board({
   onExitCrop,
   onCropChange,
   onPayloadChange,
+  onCycleStyle,
+  onCycleFont,
   empty,
 }) {
   const surfaceRef = useRef(null);
@@ -76,6 +78,7 @@ export default function Board({
             cropping={block.id === croppingId}
             label={blockLabel(block)}
             canLayer={ordered.length > 1}
+            bare={block.type === "swatch" && block.payload?.style === "circle"}
             onSelect={() => onSelect(block.id)}
             onChange={(patch) => onChangeBlock(block.id, patch)}
             onDelete={() => onDeleteBlock(block.id)}
@@ -84,6 +87,8 @@ export default function Board({
             onEnterCrop={() => onEnterCrop(block.id)}
             onExitCrop={onExitCrop}
             onCropChange={(patch) => onCropChange(block.id, patch)}
+            onStyle={() => onCycleStyle(block.id)}
+            onFont={() => onCycleFont(block.id)}
           >
             {block.type === "image" && (
               <ImageBlock payload={block.payload} frameW={block.w} frameH={block.h} />

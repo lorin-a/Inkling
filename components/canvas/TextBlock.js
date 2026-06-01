@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { fontCss } from "./blockOptions";
 import styles from "./canvas.module.css";
 
 /**
@@ -12,6 +13,7 @@ import styles from "./canvas.module.css";
 export default function TextBlock({ payload, selected, onChange }) {
   const text = payload?.text || "";
   const color = payload?.color || "var(--ink)";
+  const fontFamily = fontCss(payload?.font);
   const [editing, setEditing] = useState(!text); // a new (empty) block edits immediately
   const ref = useRef(null);
 
@@ -34,7 +36,7 @@ export default function TextBlock({ payload, selected, onChange }) {
         ref={ref}
         data-noselect
         className={styles.textArea}
-        style={{ color }}
+        style={{ color, fontFamily }}
         defaultValue={text}
         placeholder="Type something…"
         onBlur={(e) => { onChange({ text: e.target.value }); setEditing(false); }}
@@ -49,7 +51,7 @@ export default function TextBlock({ payload, selected, onChange }) {
   return (
     <div
       className={styles.textView}
-      style={{ color }}
+      style={{ color, fontFamily }}
       onDoubleClick={(e) => { e.stopPropagation(); setEditing(true); }}
     >
       {text || <span className={styles.textPlaceholder}>Double-click to edit</span>}
