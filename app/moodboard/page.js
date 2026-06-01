@@ -137,6 +137,22 @@ export default function MoodboardPage() {
     setSelectedId(id);
   }, [setBlocks]);
 
+  const addShape = useCallback((kind) => {
+    const id = newBlockId();
+    const geom = kind === "line"
+      ? { w: 220, h: 28, fill: "#1a1a1a" }
+      : { w: 180, h: 120, fill: "#c9c4bd" };
+    setBlocks((bs) => {
+      const p = placement(bs);
+      return [...bs, { id, type: "shape", x: p.x, y: p.y, w: geom.w, h: geom.h, z: p.z, payload: { kind, fill: geom.fill } }];
+    });
+    setSelectedId(id);
+  }, [setBlocks]);
+
+  const setFill = useCallback((id, hex) => {
+    changePayload(id, { fill: hex });
+  }, [changePayload]);
+
   // Cycle a swatch through its styles (card → plain → circle) or a text block
   // through its typefaces (sans → serif → mono).
   const cycleStyle = useCallback((id) => {
@@ -260,10 +276,11 @@ export default function MoodboardPage() {
               onPayloadChange={changePayload}
               onCycleStyle={cycleStyle}
               onSetFont={setFont}
+              onSetFill={setFill}
               projectFonts={projectFontQuick}
               empty={blocks.length === 0}
             />
-            <AddBlocks onAddText={addText} onAddSwatch={addSwatch} />
+            <AddBlocks onAddText={addText} onAddSwatch={addSwatch} onAddShape={addShape} />
             <PinTray
               open={trayOpen}
               onToggle={() => setTrayOpen((v) => !v)}

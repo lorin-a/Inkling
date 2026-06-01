@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { dispDims, clampFocal, clampZoom, ZOOM_MIN, ZOOM_MAX } from "./crop";
 import TextFontPopover from "./TextFontPopover";
+import ColorPicker from "./ColorPicker";
 import styles from "./canvas.module.css";
 
 /**
@@ -56,6 +57,13 @@ function StyleIcon() {
     </svg>
   );
 }
+function FillIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <rect x="2.5" y="2.5" width="10" height="10" rx="2.5" fill="currentColor" />
+    </svg>
+  );
+}
 
 export default function Block({
   block,
@@ -76,16 +84,18 @@ export default function Block({
   onCropChange,
   onStyle,
   onFont,
+  onFill,
   children,
 }) {
   const rootRef = useRef(null);
   const drag = useRef(null);
   const [fontOpen, setFontOpen] = useState(false);
+  const [fillOpen, setFillOpen] = useState(false);
 
-  // Close the typeface popover when the block is deselected.
+  // Close the typeface / fill popovers when the block is deselected.
   useEffect(() => {
-    if (!selected && fontOpen) setFontOpen(false);
-  }, [selected, fontOpen]);
+    if (!selected) { setFontOpen(false); setFillOpen(false); }
+  }, [selected]);
 
   // The image's aspect ratio (for crop math): stored on the payload, else the
   // frame's own ratio (true for an un-resized block).
@@ -290,6 +300,9 @@ export default function Block({
             {block.type === "text" && (
               <button type="button" className={`${styles.toolBtn} ${fontOpen ? styles.toolBtnOn : ""}`} onClick={() => setFontOpen((v) => !v)} title="Typeface" aria-label="Change typeface" aria-expanded={fontOpen}><span className={styles.toolText}>Aa</span></button>
             )}
+            {block.type === "shape" && (
+              <button type="button" className={`${styles.toolBtn} ${fillOpen ? styles.toolBtnOn : ""}`} onClick={() => setFillOpen((v) => !v)} title="Fill colour" aria-label="Change fill colour" aria-expanded={fillOpen}><FillIcon /></button>
+            )}
             {canLayer && (
               <>
                 <button type="button" className={styles.toolBtn} onClick={onForward} title="Bring forward (])" aria-label="Bring forward one layer"><ForwardIcon /></button>
@@ -312,6 +325,12 @@ export default function Block({
           onPick={(font) => { onFont(font); setFontOpen(false); }}
           onClose={() => setFontOpen(false)}
         />
+      )}
+
+      {fillOpen && block.type === "shape" && (
+        <div className={styles.fillPop} data-noselect role="menu" aria-label="Fill colour" onPointerDown={(e) => e.stopPropagation()}>
+          <ColorPicker onPick={(hex) => { onFill(hex); setFillOpen(false); }} />
+        </div>
       )}
     </div>
   );

@@ -5,6 +5,7 @@ import Block from "./Block";
 import ImageBlock from "./ImageBlock";
 import TextBlock from "./TextBlock";
 import SwatchBlock from "./SwatchBlock";
+import ShapeBlock from "./ShapeBlock";
 import styles from "./canvas.module.css";
 
 /**
@@ -32,6 +33,7 @@ export default function Board({
   onPayloadChange,
   onCycleStyle,
   onSetFont,
+  onSetFill,
   projectFonts,
   empty,
 }) {
@@ -79,7 +81,10 @@ export default function Board({
             cropping={block.id === croppingId}
             label={blockLabel(block)}
             canLayer={ordered.length > 1}
-            bare={block.type === "swatch" && block.payload?.style === "circle"}
+            bare={
+              (block.type === "swatch" && block.payload?.style === "circle") ||
+              (block.type === "shape" && block.payload?.kind === "line")
+            }
             projectFonts={projectFonts}
             onSelect={() => onSelect(block.id)}
             onChange={(patch) => onChangeBlock(block.id, patch)}
@@ -91,6 +96,7 @@ export default function Board({
             onCropChange={(patch) => onCropChange(block.id, patch)}
             onStyle={() => onCycleStyle(block.id)}
             onFont={(font) => onSetFont(block.id, font)}
+            onFill={(hex) => onSetFill(block.id, hex)}
           >
             {block.type === "image" && (
               <ImageBlock payload={block.payload} frameW={block.w} frameH={block.h} />
@@ -103,6 +109,7 @@ export default function Board({
               />
             )}
             {block.type === "swatch" && <SwatchBlock payload={block.payload} />}
+            {block.type === "shape" && <ShapeBlock payload={block.payload} />}
           </Block>
         ))}
       </div>
