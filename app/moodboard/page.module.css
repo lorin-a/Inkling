@@ -1,0 +1,52 @@
+.page {
+  height: 100vh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.back {
+  font-size: 14px;
+  color: var(--ink-muted);
+  transition: color var(--motion-fast) var(--ease-out);
+}
+
+.back:hover {
+  color: var(--ink);
+}
+
+.barTitle {
+  font-family: var(--font-serif);
+  margin-left: auto;
+  font-size: 22px;
+  font-variation-settings: "SOFT" 50, "WONK" 0;
+  letter-spacing: -0.01em;
+}
+
+.loading {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  color: var(--ink-muted);
+  font-size: 15px;
+}
+
+/* The board + the pins tray, side by side, filling the rest of the viewport. */
+.work {
+  flex: 1;
+  position: relative;
+  display: flex;
+  min-height: 0;
+}

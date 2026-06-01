@@ -101,8 +101,11 @@ block = { id, type, x, y, w, h, z, payload }
   texture → { kind, params }
   note    → { text }
 ```
-Stored per project as `boards.json` (file) / a DB table (authed) / localStorage
-(signed-out) — mirrors existing project persistence. Many boards = array of these.
+Stored per project as `moodboards.json` (file) / the `moodboards` DB table
+(authed) / localStorage key `moodbuilder.local.moodboards.v1` (signed-out) —
+mirrors existing project persistence. The surface is named **`moodboards`**, NOT
+`boards`, to avoid colliding with `library.boards` (Pinterest capture metadata).
+Many boards = array of these. *(As built 2026-06-01 — see session log.)*
 
 **v1 scope (solo, thin):** new `/moodboard` route; create/rename/switch boards (many
 per project); add blocks from library pins (image + credit), saved swatches, a type
@@ -112,9 +115,148 @@ live collab, share links, connectors, auto-layout. Board → Brand source-pool w
 the next step after this lands. **Start point: the `/moodboard` route with image
 blocks first.**
 
+> **v1 SHIPPED 2026-06-01 (not yet committed).** The `/moodboard` route, image
+> blocks, keyboard interactions, and the multi-board flow are all built and
+> browser-verified. See the **2026-06-01 session log** below for the file map,
+> Lorin's 8 review notes + diagnoses, and the three-lane plan. Two design forks
+> are paused awaiting Lorin (texture reframe; what to build first).
+
 ---
 
-## Session log — 2026-05-27/28 *(most recent; read first)*
+## Session log — 2026-06-01 *(most recent; read first)*
+
+### Moodboard canvas v1 — BUILT + verified, not yet committed
+
+Act I, v1 (the solo `/moodboard` spatial canvas) is done and browser-tested.
+Working tree is clean of stray data (signed-out testing wrote only to
+localStorage). **Not committed yet** — Lorin wants eyes-on + the review notes
+below addressed first.
+
+**File map (new, all untracked):**
+- `app/moodboard/page.js` + `page.module.css` — route + shell (ProjectSwitcher,
+  BoardBar, Board, PinTray); owns selection, block CRUD, z-order, add-pin (image
+  preloaded to size the block to true aspect, not a cropped square).
+- `components/canvas/Board.js` — scrollable pinboard surface (dot-grid bg, no
+  pan/zoom), deselect-on-empty, renders blocks sorted by z.
+- `components/canvas/Block.js` — generic geometry/chrome wrapper: pointer move +
+  8-way resize via pointer capture, **full keyboard ops** (arrows nudge 1px /
+  Shift×10, Alt+arrows resize, `[`/`]` z-order, Delete) for WCAG 2.5.7.
+- `components/canvas/ImageBlock.js` — image payload + **persistent source-credit
+  link** (verified resolves to real pin URL — the hard requirement holds).
+- `components/canvas/BoardBar.js` — create / rename (inline) / switch / delete +
+  saved-state.
+- `components/canvas/PinTray.js` — right panel of the project's library pins;
+  click to drop. (Currently square-crop grid — see note 6.)
+- `components/canvas/canvas.module.css` — all canvas styling (selection ring =
+  `--whelm-vivid`, dot grid, credit pills, handles).
+- `lib/useBoards.js` — load/create/rename/switch + **debounced whole-board PUT**
+  autosave, via `apiFetch`.
+- Persistence surface named **`moodboards`** (separate from the taken
+  `library.boards` = Pinterest captures), all three backends:
+  `lib/boardsStore.js` (file/active-slug), `lib/db/moodboards.js` +
+  `migrations/008_moodboards.sql` (DB — **needs `node scripts/migrate.mjs` vs
+  Neon before authed parity**), `localStore.js` moodboards fns +
+  `lib/api/client.js` routing (signed-out).
+- IA decision (Lorin, this session): keep `/moodboard` **standalone for now**,
+  wire it into the numbered path later (note 1 below is that wiring).
+
+**Verified working:** add pin → block at true aspect + credit link → move/resize
+(pointer + keyboard) → z-order → delete → multi-board create/rename/switch/
+isolate → **persists across reload**. Zero console errors. Build passes.
+
+### Lorin's 8 review notes (2026-06-01) — catalogued, with my diagnoses
+
+1. **Home intro = the pipeline, as verbs.** Lorin's structure + copy (her words,
+   preserve verbatim): the acts —
+   *"Import (Inspiration), Assemble (Moodboards), Shuffle (Colors + Type),
+   Generate (Gradients + Textures), Export (Brand Books)"*; taglines
+   *"Transform Inspiration into Identity."* and *"A creative studio for iterating
+   on the mood of your project."* This IS the home redesign + the deferred
+   "wire Moodboard into the path" step. **FLAG:** her tagline uses "studio" for
+   the whole platform, which reactivates the studio-word ambiguity we resolved
+   (studio = `/brand` only). Her call; don't edit her words, just surfaced it.
+   The "Type" and "Textures" acts depend on other work (type lives in Brand
+   today; textures depends on note 4).
+2. **Resources MUCH more obvious — a true resource library.** Promote `/resources`
+   from side-utility to a first-class destination (prominent home entry, richer
+   library UI, maybe nav presence).
+3. **Sample studio needs a couple SVG marks** to showcase the Marks feature.
+   Signed-out marks are empty today; seed 1–2 into the sample. Small, additive.
+   (`ensureSeeded()` in `localStore.js` doesn't seed marks; sample marks would
+   go in `lib/sampleStudio*`.)
+4. **Rethink texture — DESIGN FORK (paused).** My read, endorsed pending her nod:
+   texture is not a peer dimension — it's a **finish applied across image /
+   surface / type**, matching her Riso instinct. Three surfaces by payoff:
+   (1) image grain/Riso/halftone/duotone on moodboard images + exports (the
+   Whelm look — build first); (2) surface grain behind Brand preview + as board
+   background (note 8 overlap); (3) masked into type/marks (subtle, last).
+   Reframes the Texture step to "pick a finish + intensity, see it ride across
+   something live" — kills the "what does texture even do" problem because it's
+   never an abstract swatch. Impl: CSS/SVG `feTurbulence` + blend modes + duotone
+   map.
+5. **/decide [Image #1]: spacing/label clip + palette labeling.** The
+   `● pinterest.com` chips are saved Top-pick palettes; they all read
+   "pinterest.com" because sample pins aren't source-enriched, so the label is
+   the *source*, not an *identity*. **Cross-cutting fix:** name palettes/credits
+   by identity (NTC lead-color name, or pin title/thumbnail) — clears it on
+   /decide, the PinTray, AND the block credit chips at once. Plus a real
+   spacing/clip bug to fix on the compare cards.
+6. **PinTray [Image #2]: card-stack hides content.** Diagnosis: I forced every
+   pin to `aspect-ratio:1/1` + `object-fit:cover`, cropping tall/wide pins and
+   butting them together. Fix: true-aspect **masonry columns** (CSS columns),
+   more vertical rhythm, hover-to-enlarge — the Are.na column read.
+7. **Block toolbar + crop [Image #3].** (a) The ↑/↓ are bring-forward/send-back
+   (z-order); they look inert because nothing overlaps yet. Make legible (clearer
+   icons + tooltips), likely move z-order to a right-click menu so the inline
+   toolbar stays minimal. (b) **Crop is the real ask + highest-value next
+   feature:** block = a *frame*; drag/zoom the image *inside* it to choose the
+   focal crop. "Crop mode" — drag to pan, slider/scroll to zoom, click out to
+   commit; store `objectPosition` + `scale` on the block payload.
+8. **More moodboard features (block taxonomy + tools).** Full set: image (done) ·
+   color swatch/palette · text/label · type specimen · shapes (rect/line/divider)
+   · video pins (loop/replay) · link/URL cards · **board background color** ·
+   **board texture/paper** (note 4) · sections. Connectors/arrows stay deferred.
+   Canvas tools (left rail): select · add text · add shape · import image · drop
+   swatch · drop type. Suggested order: swatch + text first (cheapest, highest
+   value) → shapes + board bg/texture → type specimens → video.
+
+### The plan — three lanes (Act I stays the spine)
+
+- **Lane A · Canvas (on-track).** A1 ✅ **SHIPPED 2026-06-01** (uncommitted):
+  PinTray rebuilt as true-aspect masonry (6); block toolbar clarified — clear
+  layer icons + tooltips, z-order buttons only show when the board has >1 block
+  so a single image no longer shows inert controls (7a); two sample SVG marks
+  ("Bloom", "Horizon") seeded into the sample studio + one-time backfill, verified
+  rendering/recoloring on /brand (3). A2 (next): crop/focal control (7b). A3:
+  block taxonomy rollout (8) — swatch → text → shapes → board bg/texture → video.
+- **Lane B · Texture (4).** Lock the finish-layer reframe, build image-grain
+  first (also feeds A3 board texture + export).
+- **Lane C · Narrative/wrapper.** Home pipeline intro + IA wiring (1) · Resources
+  library (2) · /decide labeling + spacing (5). The cross-cutting "name by
+  identity, not domain" fix lives here and clears 5 + the credit ambiguity.
+
+### PAUSED — re-ask Lorin on resume (do not decide unilaterally)
+
+- **Texture direction:** finish-layer reframe (image grain first) vs image-grain
+  only vs keep as standalone dimension.
+- **What to build first:** Canvas polish now (A1) vs crop (A2) vs texture (B) vs
+  home+IA+Resources (C).
+- Then: commit the canvas v1 once she's looked at it live.
+
+### Carried from the v1 review (still open, low priority)
+
+- Touch-target deviation from the 44px floor: block toolbar buttons 28px,
+  resize handles 11px. Keyboard equivalents exist (Delete, `[`/`]`, Alt+arrows)
+  so functionally WCAG-OK; Lorin's call on whether to enlarge vs keep dense.
+- Mobile: the 288px tray squeezes the board to ~102px (desktop-first compose
+  tool; degrades without breaking). Consider collapsing the tray by default
+  under ~700px.
+- Credit chip contrast is image-dependent (white on `rgba(0,0,0,0.6)` + blur);
+  bump to ~0.66 if it goes marginal over a bright image.
+
+---
+
+## Session log — 2026-05-27/28 *(superseded by 2026-06-01 above)*
 
 All shipped, on `main` (= branch `phase-6c-playground`, even). Production
 deploys from main; Vercel is building these. Newest first:
