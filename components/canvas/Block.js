@@ -205,8 +205,10 @@ export default function Block({
         onDelete();
         break;
       case "Enter":
-        e.preventDefault();
-        if (onEnterCrop) onEnterCrop();
+        if (block.type === "image" && onEnterCrop) {
+          e.preventDefault();
+          onEnterCrop();
+        }
         break;
       case "]":
         e.preventDefault();
@@ -234,7 +236,7 @@ export default function Block({
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
       onFocus={cropping ? undefined : onSelect}
-      onDoubleClick={() => { if (!cropping && onEnterCrop) onEnterCrop(); }}
+      onDoubleClick={() => { if (!cropping && block.type === "image" && onEnterCrop) onEnterCrop(); }}
       onKeyDown={onKeyDown}
     >
       {children}

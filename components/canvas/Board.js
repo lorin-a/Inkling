@@ -3,6 +3,8 @@
 import { useRef } from "react";
 import Block from "./Block";
 import ImageBlock from "./ImageBlock";
+import TextBlock from "./TextBlock";
+import SwatchBlock from "./SwatchBlock";
 import styles from "./canvas.module.css";
 
 /**
@@ -27,6 +29,7 @@ export default function Board({
   onEnterCrop,
   onExitCrop,
   onCropChange,
+  onPayloadChange,
   empty,
 }) {
   const surfaceRef = useRef(null);
@@ -57,9 +60,9 @@ export default function Board({
           <div className={styles.emptyHint}>
             <p className={styles.emptyTitle}>An empty board</p>
             <p className={styles.emptyBody}>
-              Open the pins panel and click to drop references here. Drag to
-              arrange, drag a corner to resize, and every image keeps a link
-              back to its source.
+              Click pins on the right to drop references here, or add text and
+              color swatches from the top left. Drag to arrange, drag a corner to
+              resize, and every image keeps a link back to its source.
             </p>
           </div>
         )}
@@ -85,6 +88,14 @@ export default function Board({
             {block.type === "image" && (
               <ImageBlock payload={block.payload} frameW={block.w} frameH={block.h} />
             )}
+            {block.type === "text" && (
+              <TextBlock
+                payload={block.payload}
+                selected={block.id === selectedId}
+                onChange={(patch) => onPayloadChange(block.id, patch)}
+              />
+            )}
+            {block.type === "swatch" && <SwatchBlock payload={block.payload} />}
           </Block>
         ))}
       </div>

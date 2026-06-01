@@ -6,6 +6,7 @@ import ProjectSwitcher from "../../components/ProjectSwitcher";
 import Board from "../../components/canvas/Board";
 import BoardBar from "../../components/canvas/BoardBar";
 import PinTray from "../../components/canvas/PinTray";
+import AddBlocks from "../../components/canvas/AddBlocks";
 import { useBoards } from "../../lib/useBoards";
 import styles from "./page.module.css";
 
@@ -13,6 +14,17 @@ import styles from "./page.module.css";
 // one spot you have to dig apart.
 const CASCADE = 28;
 const BASE_WIDTH = 260; // a dropped image's starting width, px
+
+function newBlockId() {
+  return `bk_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+}
+
+// Cascade position + top-of-stack z for a freshly added block.
+function placement(blocks) {
+  const n = blocks.length;
+  const maxZ = blocks.reduce((m, b) => Math.max(m, b.z || 0), 0);
+  return { x: 48 + (n % 7) * CASCADE, y: 48 + (n % 7) * CASCADE, z: maxZ + 1 };
+}
 
 // Move a block ONE layer forward or backward — swap it with its immediate
 // neighbour in the stack, so it can land between other blocks (collage
@@ -63,8 +75,27 @@ export default function MoodboardPage() {
 
   const exitCrop = useCallback(() => setCroppingId(null), []);
 
-  const cropChange = useCallback((id, patch) => {
+  // Merge a patch into a block's payload — crop focal/zoom, text edits, etc.
+  const changePayload = useCallback((id, patch) => {
     setBlocks((bs) => bs.map((b) => (b.id === id ? { ...b, payload: { ...b.payload, ...patch } } : b)));
+  }, [setBlocks]);
+
+  const addText = useCallback(() => {
+    const id = newBlockId();
+    setBlocks((bs) => {
+      const p = placement(bs);
+      return [...bs, { id, type: "text", x: p.x, y: p.y, w: 240, h: 72, z: p.z, payload: { text: "" } }];
+    });
+    setSelectedId(id);
+  }, [setBlocks]);
+
+  const addSwatch = useCallback((hex, name) => {
+    const id = newBlockId();
+    setBlocks((bs) => {
+      const p = placement(bs);
+      return [...bs, { id, type: "swatch", x: p.x, y: p.y, w: 132, h: 156, z: p.z, payload: { hex, name } }];
+    });
+    setSelectedId(id);
   }, [setBlocks]);
 
   const usedPinIds = useMemo(
@@ -170,9 +201,11 @@ export default function MoodboardPage() {
               onBackward={moveBackward}
               onEnterCrop={enterCrop}
               onExitCrop={exitCrop}
-              onCropChange={cropChange}
+              onCropChange={changePayload}
+              onPayloadChange={changePayload}
               empty={blocks.length === 0}
             />
+            <AddBlocks onAddText={addText} onAddSwatch={addSwatch} />
             <PinTray
               open={trayOpen}
               onToggle={() => setTrayOpen((v) => !v)}
