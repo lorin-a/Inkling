@@ -125,6 +125,45 @@ blocks first.**
 
 ## Session log — 2026-06-01 *(most recent; read first)*
 
+### ⏸ END-OF-SESSION STATUS (2026-06-01) — START HERE NEXT TIME
+
+**The whole moodboard canvas (Act I) shipped this session and is COMMITTED**
+(13 commits, `a235cad` → `4cff2db`, on `phase-6c-playground`). Working tree is
+clean. **Commits are local only — NOT pushed to origin yet** (Lorin's call to
+push when ready).
+
+**What works now at `/moodboard`** (all browser-verified, signed-out/localStorage
+path): a hand-rolled spatial board with **image blocks** (drag/resize/delete +
+crop & focal reframing, source-credit link preserved), **swatch blocks**
+(Card / Plain / Circle, colours from the project palette), **text blocks** with
+**real typefaces** (project brand fonts + Google catalog + custom URL/upload,
+shared FontPicker extracted from TypePanel), **shape blocks** (rectangle + line,
+fill from palette), one-step **layering**, **board background colour**, **many
+boards** that **reopen where you left off**. Persistence mirrors all three
+backends (file / Postgres `moodboards` table / localStorage). **DB TODO before
+authed parity:** `node scripts/migrate.mjs` (migrations 008 + 009).
+
+**Quick fixes also done this session** (`4cff2db`): credit-pill contrast, tray
+collapses under 700px, primary controls at the 44px touch floor, and `/decide`
+names palettes by lead colour (Name That Color) instead of "pinterest.com".
+
+**↳ NEXT SESSION — pick up with Lane B, then Lane C** (see "The plan" below):
+- **Lane B — texture / Riso finish** *(Lorin LOCKED this: a finish applied across
+  image / surface / type, **image grain first**; see memory
+  `project_product_direction` "Texture is a finish"). This also delivers the
+  board paper/texture that's the last canvas item.* Build image grain/Riso/
+  halftone/duotone on moodboard images + export first, then surface (board bg
+  texture), then masked-into-type.
+- **Lane C — narrative/wrapper:** pipeline-verb home + IA wiring (note 1, with
+  Lorin's verbs + taglines — mind the "studio" word flag), Resources as a true
+  library (note 2), remaining /decide spacing polish (note 5).
+- Deferred: **video pins** (note 8) — gated until a board has actual video to
+  test against.
+- Canvas parked niceties: a *picker* (vs cycle) for swatch styles; wiring more of
+  the foundry directory into the text typeface popover.
+
+---
+
 ### Moodboard canvas v1 — BUILT + verified, not yet committed
 
 Act I, v1 (the solo `/moodboard` spatial canvas) is done and browser-tested.
