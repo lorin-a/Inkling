@@ -5,11 +5,40 @@ moves. Read this top-to-bottom before picking up.
 
 ---
 
-## ★ North star — the two-act product *(set 2026-05-28, not yet built)*
+## ★ North star — a recognition-driven brand co-design studio *(reframed 2026-06-02 with Lorin)*
 
-A full IA audit + adversarial pass reframed what Moodbuilder is. **Read this
-before any structural work.** Also captured in memory under
-`project_product_direction` and `feedback_studio_word_and_origin`.
+> **This reframe supersedes the "two-act pipeline" framing in the rest of this
+> section.** Full, canonical vision is in memory `project_product_direction` (the
+> "★ THE REFRAME" section — read it first). The detailed two-act / Model-A notes
+> below are kept only for build-history and the parts that carry over (the canvas,
+> board→brand, provenance, many boards, the compose engine).
+
+**What it is.** A studio for designing brand identities that *resonate* — it
+registers your resonance, brings intuition into the equation, and makes co-creation
+tangible and embodied. *(Public taglines [LORIN TO WRITE].)*
+
+**Core mechanic — recognition, not articulation.** Users know it when they see it
+but can't specify it forward. The tool generates/curates things to react to, reads
+the YES (and the informative NO), and converges; reactions become the direction *and*
+a brief to hand a collaborator. A **briefing instrument**, not a designer-replacer.
+
+**Shape — one canvas is the heart; the old rooms become back-of-house tools.** Not a
+hallway of segmented steps. One spatial studio: the sourced "everything" well always
+present, hand-curation primary + tactile (you stay the author), shuffle/react a
+strategic power-tool, react-in-context by default + isolate as a lens, everything
+linked to source. Solo and collaborative are the same canvas (card-sort / affinity /
+annotate / vote = the multiplayer form; the deferred Moodvote infra's true home).
+**Do NOT build the old "segmented pipeline home" — it reinforces what this rejects.**
+
+**Journey (Lorin's real client practice):** pool (multi-contributor import) → look
+together: sort/rate + pull the *aspects* you like (colour / type / composition /
+layout / icon style / illustration / graphics / IA / copy / voice — each reference is
+a bundle of dimensions) → affinity-map (items in multiple clusters; annotate or
+duplicate) → extract by dimension (+ import type/shapes/colours/icons, upload existing
+assets) → 3–4 clusters → shuffle into ~20 iterations → narrow/refine/decide (what's
+working/not/why/missing; isolate; try on merch/app/web mockups to get the feel). The
+well stays open at every layer; recognition drives each transition. Draft values +
+difficulty gradient live in the memory entry.
 
 **The origin must never get buried:** the reason this exists is to *translate a
 Pinterest inspiration board into real references for moodboards and brand
