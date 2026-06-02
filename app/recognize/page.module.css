@@ -294,25 +294,41 @@
   font-size: 13px;
   font-style: italic;
 }
+.previewCaption {
+  margin: 8px 2px 0;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--ink-muted);
+}
 
-.roles {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+/* The direction's colours, ranked by how much they recurred in what you loved —
+   a loose prominence, not functional brand roles (those belong to the Brand stage). */
+.prominence {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
   margin: 16px 0 4px;
 }
-.role { display: flex; align-items: center; gap: 8px; }
-.roleSwatch {
-  width: 26px;
-  height: 26px;
+.prom { display: flex; align-items: center; gap: 11px; }
+.promSwatch {
+  width: 28px;
+  height: 28px;
   border-radius: 7px;
   flex: none;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  transition: width var(--motion-fast) var(--ease-out), height var(--motion-fast) var(--ease-out);
 }
-.roleMeta { display: flex; flex-direction: column; min-width: 0; }
-.roleName { font-size: 12px; color: var(--ink-muted); }
-.roleHex {
-  font-size: 12px;
+.prom[data-lead="true"] .promSwatch { width: 38px; height: 38px; }
+.promMeta { display: flex; flex-direction: column; min-width: 0; }
+.promTier {
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.promName {
+  font-size: 14px;
+  color: var(--ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

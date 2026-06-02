@@ -321,13 +321,20 @@ function DirectionPanel({
     );
   }
 
+  // The preview still needs functional roles to render a glimpse, but those stay
+  // under the hood — at the recognition stage you think in prominence, not in
+  // "background" and "ink." So the readout ranks the colours by how much they
+  // recurred in what you loved: primary / secondary / tertiary, if at all.
   const roles = derivePreviewRoles(direction.palette, "dark", { sourceKind: "composed" });
-  const roleList = [
-    ["Background", roles.bg],
-    ["Ink", roles.ink],
-    ["Accent", roles.accent],
-    ["Muted", roles.muted],
-  ];
+  const recur = new Map(pool.map((c) => [c.hex, c]));
+  const TIERS = ["Primary", "Secondary", "Tertiary"];
+  const ranked = direction.palette
+    .map((hex) => {
+      const h = hex.toLowerCase();
+      const info = recur.get(h);
+      return { hex: h, count: info?.count ?? 0, weight: info?.weight ?? 0 };
+    })
+    .sort((a, b) => b.count - a.count || b.weight - a.weight);
 
   return (
     <div className={styles.direction} data-settling={settling ? "true" : undefined}>
@@ -336,6 +343,7 @@ function DirectionPanel({
       </h2>
 
       <DirectionPreview roles={roles} fonts={direction.fonts} project={project} />
+      <p className={styles.previewCaption}>A glimpse of how they might sit together, not a brand yet.</p>
 
       {pool.length > 0 && (
         <div className={styles.curate}>
@@ -371,13 +379,13 @@ function DirectionPanel({
         </div>
       )}
 
-      <div className={styles.roles}>
-        {roleList.map(([name, hex]) => (
-          <div key={name} className={styles.role}>
-            <span className={styles.roleSwatch} style={{ background: hex }} />
-            <span className={styles.roleMeta}>
-              <span className={styles.roleName}>{name}</span>
-              <span className={styles.roleHex}>{colorName(hex).name}</span>
+      <div className={styles.prominence}>
+        {ranked.map((c, i) => (
+          <div key={c.hex} className={styles.prom} data-lead={i === 0 ? "true" : undefined}>
+            <span className={styles.promSwatch} style={{ background: c.hex }} />
+            <span className={styles.promMeta}>
+              {i < TIERS.length && <span className={styles.promTier}>{TIERS[i]}</span>}
+              <span className={styles.promName}>{colorName(c.hex).name}</span>
             </span>
           </div>
         ))}
