@@ -270,6 +270,49 @@
   margin: 0;
 }
 
+/* Curated-vs-all toggle — the curated set stays the default, but the full
+   extracted set is always one tap away with its count, so nothing reads as lost. */
+.gatherHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.gatherHead .directionH { margin: 0; }
+.viewToggle {
+  display: inline-flex;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 2px;
+}
+.viewToggle button {
+  border: none;
+  background: none;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+.viewToggle button[data-on="true"] {
+  background: var(--whelm-vivid);
+  color: #fff;
+}
+.viewToggle button:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: 2px;
+}
+.gatherNote {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--ink-muted);
+}
+
 /* The gathered colours — extracted from everything that resonated, for use later.
    Just the swatch and its hex; no names, no roles, no categorising at this stage. */
 .spectrum {

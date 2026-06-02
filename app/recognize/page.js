@@ -75,7 +75,11 @@ export default function RecognizePage() {
     (key) => {
       if (!current?.pin) return;
       const pin = current.pin;
-      setReactions((prev) => [...prev, { pin, key }]);
+      // Idempotent per pin: a fast double-press (two keydowns before re-render)
+      // must not react to the same pin twice.
+      setReactions((prev) =>
+        prev.some((r) => r.pin.pinId === pin.pinId) ? prev : [...prev, { pin, key }],
+      );
     },
     [current],
   );
@@ -150,7 +154,12 @@ export default function RecognizePage() {
         </section>
 
         <aside className={styles.directionCol} aria-label="Colours you’re gathering">
-          <GatherPanel pool={pool} likedPins={profile.likedPins} onEditPin={setEditingPinId} />
+          <GatherPanel
+            curated={pool}
+            all={profile.likedColours}
+            likedPins={profile.likedPins}
+            onEditPin={setEditingPinId}
+          />
         </aside>
       </div>
 
@@ -240,8 +249,12 @@ function ExhaustedCard({ count, resonating, onReset }) {
   );
 }
 
-function GatherPanel({ pool, likedPins, onEditPin }) {
-  if (pool.length === 0) {
+function GatherPanel({ curated, all, likedPins, onEditPin }) {
+  // Default to the curated set (she likes it), but the full extracted set is always
+  // one tap away with its count shown — nothing narrowed is ever hidden.
+  const [view, setView] = useState("curated");
+
+  if (all.length === 0) {
     return (
       <div className={styles.directionEmpty}>
         <h2 className={styles.directionH}>Colours you’re gathering</h2>
@@ -253,21 +266,51 @@ function GatherPanel({ pool, likedPins, onEditPin }) {
     );
   }
 
+  const narrowed = all.length > curated.length;
+  const hexes = view === "all" ? all : curated.map((c) => c.hex);
+
   return (
     <div className={styles.direction}>
-      <h2 className={styles.directionH}>Colours you’re gathering</h2>
+      <div className={styles.gatherHead}>
+        <h2 className={styles.directionH}>Colours you’re gathering</h2>
+        {narrowed && (
+          <div className={styles.viewToggle} role="group" aria-label="How many colours to show">
+            <button
+              type="button"
+              data-on={view === "curated" ? "true" : undefined}
+              onClick={() => setView("curated")}
+            >
+              Curated {curated.length}
+            </button>
+            <button
+              type="button"
+              data-on={view === "all" ? "true" : undefined}
+              onClick={() => setView("all")}
+            >
+              All {all.length}
+            </button>
+          </div>
+        )}
+      </div>
+      {narrowed && (
+        <p className={styles.gatherNote}>
+          {view === "curated"
+            ? `A tidied set of ${curated.length}. Nothing’s lost. Tap All for every colour you gathered.`
+            : `Every colour extracted from the pins you kept.`}
+        </p>
+      )}
 
       <div className={styles.spectrum}>
-        {pool.map((c) => (
+        {hexes.map((hex) => (
           <button
-            key={c.hex}
+            key={hex}
             type="button"
             className={styles.spectrumItem}
-            onClick={() => copyHex(c.hex.toUpperCase())}
+            onClick={() => copyHex(hex.toUpperCase())}
             title="Click to copy"
           >
-            <span className={styles.spectrumSwatch} style={{ background: c.hex }} />
-            <span className={styles.spectrumHex}>{c.hex.toUpperCase()}</span>
+            <span className={styles.spectrumSwatch} style={{ background: hex }} />
+            <span className={styles.spectrumHex}>{hex.toUpperCase()}</span>
           </button>
         ))}
       </div>
