@@ -152,9 +152,61 @@ blocks first.**
 
 ---
 
-## Session log — 2026-06-02 *(most recent; read first)*
+## Session log — 2026-06-02 · recognition loop + colour authorship *(most recent; read first)*
 
-### ⏸ END-OF-SESSION STATUS (2026-06-02) — START HERE NEXT TIME
+### ⏸ END-OF-SESSION STATUS — START HERE NEXT TIME
+
+Built the **first recognition-loop slices on `/recognize`** and dogfooded them with
+Lorin live. The reframe's load-bearing claim **held**: reacting (YES / Sure / Maybe /
+Meh / Nope) to her real Whelm pins genuinely *narrows the pile* — "I sensed when
+something was a no, it helped me narrow down." But dogfooding surfaced the real spine:
+**authorship over colour.** Her words, now the north-star line in memory
+`project_product_direction`: *"I don't need the machine to tell me my taste. I need
+it to give me tools to extract my taste from inspiration."*
+
+**Four commits, `phase-6c-playground`, LOCAL ONLY (not pushed), tree clean.** Restore
+tag **`pre-recognition-loop`** marks the pre-pivot HEAD (`d22e243`).
+- `e926fda` — **recognition loop**: react to pins → a colour direction emerges,
+  steered by a cumulative resonance profile (re-ranked finite queue + a contrast
+  probe every 3rd card so the NO stays informative), settling when it stops moving.
+- `3c0e557` — **curate the proposal**: the auto-pull becomes a starting proposal; she
+  toggles colours from a recurrence-ranked candidate pool and the direction recomposes.
+- `66513e3` — **eyedropper**: sample colours straight off the pin image (the real ask
+  — the extractor pulls foliage, not the bloom). Per-pin overrides feed the direction.
+  Reframe: a YES means "this image belongs in my world"; colours are mined from yeses,
+  never the basis of them, so a wrong auto-colour can't poison the reaction.
+- `7e89012` — **loupe polish**: cursor-centred magnifier + hollow target ring + big
+  live readout (swatch + hex + colour name). All four browser-verified, build green,
+  console clean.
+
+**File map (new):** `app/recognize/page.js` + `page.module.css` (the one screen:
+react card · live Direction panel · curation pool · cluster), `lib/recognition.js`
+(pure deterministic engine — profile, steering, candidate pool, compose, settle),
+`components/PinColourEditor.js` + `.module.css` (the eyedropper).
+
+**Known limit (told to Lorin):** canvas pixel-sampling works for the **same-origin
+Whelm sample** (`/sample/`). A cross-origin pin taints the canvas, so the eyedropper
+disables itself and falls back to swatch-delete + hex-entry. **Remote pins need a
+small image-proxy step** before the eyedropper works on them.
+
+**↳ NEXT — the threads Lorin raised, in priority order (all in memory
+`project_product_direction` "Dogfood result" section):**
+1. **Role-pinning** — colour *selection* is hers, but roles (bg/accent/muted) still
+   auto-assign by luminance/chroma, so a dark rose lands as "muted" not "accent."
+   Let her pin "this colour is the accent." Small; completes the authorship story.
+2. **★ Recognition-guided sourcing (the big one)** — feed *new* Pinterest pins
+   matched to the resonance profile, so the loop *grows* the pool, not just narrows
+   it. Frontier (needs Pinterest/Are.na retrieval). Her most excited idea.
+3. **Aspect-level reaction** — react to a pin's *aspects* (not the whole image);
+   colour is solved, type/composition tagging is frontier.
+- Also pending: the eyedropper image-proxy for remote pins; wiring the settled
+  direction into the Brand spine ("Keep this direction"). Don't push until Lorin asks.
+
+---
+
+## Session log — 2026-06-02 (earlier) · Board → Brand seam + image finishes
+
+### ⏸ END-OF-SESSION STATUS (2026-06-02) — superseded by the recognition-loop session above
 
 **★ MID-SESSION PIVOT — read this first.** Lorin flagged (correctly) that we were
 hyper-focused on Act I *details* (crop, shape blocks, finishes) without confirming
@@ -225,7 +277,7 @@ effects are static SVG/CSS (reduced-motion safe, export-safe).
 - `Block.js` (Finish button + popover), `Board.js` + `app/moodboard/page.js`
   (`onSetFinish` / `applyFinishAll` wiring), `canvas.module.css` (finish styles).
 
-**↳ NEXT SESSION — START HERE (decided 2026-06-02): scope the first recognition-loop slice on Whelm.**
+**↳ ✅ DONE (in the recognition-loop session above): scoped + built the first recognition-loop slices on Whelm.**
 The vision reframed mid-session into a **recognition-driven brand co-design studio**
 — read the rewritten north star above + memory `project_product_direction`
 "★ THE REFRAME" FIRST; the dogfood walk + the long vision conversation with Lorin
