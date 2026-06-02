@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "./Onboarding.module.css";
 
 /**
@@ -11,7 +11,7 @@ import styles from "./Onboarding.module.css";
  */
 const TIP_W = 300;
 
-function computeTip(rect, placement) {
+function computeTip(rect, placement, tipH) {
   if (typeof window === "undefined" || !rect) {
     return { left: "50%", top: "40%", transform: "translate(-50%, -50%)", width: TIP_W };
   }
@@ -23,17 +23,21 @@ function computeTip(rect, placement) {
   switch (placement) {
     case "right": left = rect.left + rect.width + pad; top = rect.top; break;
     case "left": left = rect.left - TIP_W - pad; top = rect.top; break;
-    case "top": left = rect.left; top = rect.top - pad - 150; break;
+    case "top": left = rect.left; top = rect.top - pad - tipH; break;
     default: left = rect.left; top = rect.top + rect.height + pad; // bottom
   }
   left = Math.max(8, Math.min(left, vw - TIP_W - 8));
-  top = Math.max(8, Math.min(top, vh - 168));
+  // Clamp by the tooltip's real height so it's always fully on screen — scroll is
+  // locked during the tour, so a clipped tooltip would strand the user.
+  top = Math.max(8, Math.min(top, vh - tipH - 12));
   return { left, top, width: TIP_W };
 }
 
 export default function Onboarding({ steps, onClose }) {
   const [i, setI] = useState(0);
   const [rect, setRect] = useState(null);
+  const [tipH, setTipH] = useState(200);
+  const tipRef = useRef(null);
   const step = steps[i];
   const last = i === steps.length - 1;
 
@@ -86,6 +90,11 @@ export default function Onboarding({ steps, onClose }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [next, onClose]);
 
+  // Measure the tooltip's real height so it can be clamped fully on screen.
+  useLayoutEffect(() => {
+    if (tipRef.current) setTipH(tipRef.current.offsetHeight);
+  }, [i, rect]);
+
   // Lock user scroll while the tour is up — the tour scrolls itself to each target,
   // and free-scrolling under a fixed spotlight desyncs it and reads as glitchy.
   useEffect(() => {
@@ -98,7 +107,7 @@ export default function Onboarding({ steps, onClose }) {
     };
   }, []);
 
-  const tip = computeTip(rect, step?.placement);
+  const tip = computeTip(rect, step?.placement, tipH);
 
   return (
     <div className={styles.layer} role="dialog" aria-modal="true" aria-label="How it works">
@@ -111,7 +120,7 @@ export default function Onboarding({ steps, onClose }) {
         <div className={styles.dim} />
       )}
 
-      <div className={styles.tip} style={tip}>
+      <div ref={tipRef} className={styles.tip} style={tip}>
         <p className={styles.count}>{i + 1} of {steps.length}</p>
         <p className={styles.title}>{step.title}</p>
         <p className={styles.body}>{step.body}</p>

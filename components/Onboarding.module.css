@@ -26,6 +26,8 @@
   border-radius: 14px;
   padding: 16px;
   box-shadow: 0 16px 48px rgba(20, 12, 28, 0.35);
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
 }
 .count {
   margin: 0 0 6px;
@@ -46,6 +48,7 @@
   font-size: 14px;
   line-height: 1.5;
   color: var(--ink);
+  text-wrap: pretty;
 }
 .actions {
   display: flex;

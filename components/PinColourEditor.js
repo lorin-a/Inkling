@@ -196,7 +196,7 @@ export default function PinColourEditor({ pin, colours, isOverridden, onChange, 
               value={hexInput}
               onChange={(e) => setHexInput(e.target.value)}
               placeholder="#hex"
-              aria-label="Add a colour by hex"
+              aria-label="Add a color by hex"
               spellCheck={false}
             />
             <button type="submit" className={styles.hexAdd} disabled={!HEX.test(norm(hexInput || ""))}>Add</button>

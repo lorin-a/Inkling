@@ -21,33 +21,53 @@ const TOUR_STEPS = [
     selector: '[data-tour="image"]',
     placement: "right",
     title: "Start here: react to the image",
-    body: "You’re reacting to the picture itself, not its colours. A yes just means this belongs in your world.",
+    body: "React to the image itself, not its colors. A yes, sure, or maybe means it’s worth taking to the next round.",
   },
   {
     selector: '[data-tour="react"]',
     placement: "right",
     title: "Trust your gut",
-    body: "YES, Sure, Maybe, Meh, Nope, or press 1 to 5. Change it anytime by picking the pin again.",
+    body: "YES, Sure, Maybe, Meh, Nope, or press 1 to 5. Change it anytime by picking it again.",
   },
   {
     selector: '[data-tour="colours"]',
     placement: "right",
-    title: "The colours are yours to pick",
-    body: "Those swatches are a rough auto-guess. Click to open an eyedropper and sample colours straight off the image, delete ones you don’t want, or add more.",
+    title: "The colors are yours",
+    body: "These swatches are an auto-guess. Open the eyedropper to sample colors off the image, or delete and add your own.",
   },
   {
     selector: '[data-tour="board"]',
     placement: "top",
-    title: "Your whole field is below",
-    body: "Every pin, in any order, as many times as you like. Nothing’s chosen for you, nothing hides. You drive.",
+    title: "Your pool of inspiration",
+    body: "Everything you’ve collected, in one place. Pick any, in any order.",
   },
   {
     selector: '[data-tour="gather"]',
     placement: "left",
-    title: "It all collects here",
-    body: "The colours from your yeses gather on this side. When you’re ready, put what you learned into words and make a direction.",
+    title: "Your colors collect here",
+    body: "The colors from what you keep gather here. When you’re ready, put it into words and make a moodboard.",
   },
 ];
+
+function EyedropperIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m2 22 1-1h3l9-9" />
+      <path d="M3 21v-3l9-9" />
+      <path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z" />
+    </svg>
+  );
+}
 
 const copyHex = (hex) => {
   try {
@@ -276,8 +296,8 @@ export default function RecognizePage() {
       </header>
 
       <p className={styles.lede}>
-        React to your own inspiration. You know it when you see it. Pick through your
-        pins in any order; the colours from what resonates collect on the right.
+        React to your own inspiration. You know it when you see it. Pick through it in
+        any order; the colors from what resonates collect on the right.
       </p>
 
       <div className={styles.layout}>
@@ -311,7 +331,7 @@ export default function RecognizePage() {
           )}
         </section>
 
-        <aside className={styles.directionCol} aria-label="Colours you’re gathering" data-tour="gather">
+        <aside className={styles.directionCol} aria-label="Colors you’re gathering" data-tour="gather">
           <GatherPanel
             curated={pool}
             all={profile.likedColours}
@@ -372,7 +392,10 @@ function FocusCard({ pin, colours, reaction, reactedCount, total, onReact, onEdi
             <span key={i} className={styles.cardSwatch} style={{ background: hex }} />
           ))}
         </span>
-        <span className={styles.cardColoursLabel}>auto-picked · pick your own</span>
+        <span className={styles.cardColoursLabel}>
+          <EyedropperIcon />
+          pick your own
+        </span>
       </button>
 
       <div className={styles.reactions} role="group" aria-label="How does this land?" data-tour="react">
@@ -409,7 +432,7 @@ function FocusCard({ pin, colours, reaction, reactedCount, total, onReact, onEdi
 function Board({ pins, reactions, activePinId, onSelect }) {
   return (
     <div className={styles.boardWrap}>
-      <p className={styles.boardLabel}>All your pins · pick any, in any order</p>
+      <p className={styles.boardLabel}>Your pool of inspiration · pick any, in any order</p>
       <div className={styles.board} data-tour="board">
         {pins.map((p) => {
           const key = reactions[p.pinId];
@@ -460,10 +483,10 @@ function GatherPanel({
   if (all.length === 0) {
     return (
       <div className={styles.directionEmpty}>
-        <h2 className={styles.directionH}>Colours you’re gathering</h2>
+        <h2 className={styles.directionH}>Colors you’re gathering</h2>
         <p className={styles.directionHint}>
-          Mark a pin <strong>YES</strong> or <strong>Sure</strong> and the colours from
-          it collect here to build from later.
+          Mark something <strong>YES</strong>, <strong>Sure</strong>, or{" "}
+          <strong>Maybe</strong> and its colors collect here to build from later.
         </p>
       </div>
     );
@@ -475,9 +498,9 @@ function GatherPanel({
   return (
     <div className={styles.direction}>
       <div className={styles.gatherHead}>
-        <h2 className={styles.directionH}>Colours you’re gathering</h2>
+        <h2 className={styles.directionH}>Colors you’re gathering</h2>
         {narrowed && (
-          <div className={styles.viewToggle} role="group" aria-label="How many colours to show">
+          <div className={styles.viewToggle} role="group" aria-label="How many colors to show">
             <button
               type="button"
               data-on={view === "curated" ? "true" : undefined}
@@ -498,8 +521,8 @@ function GatherPanel({
       {narrowed && (
         <p className={styles.gatherNote}>
           {view === "curated"
-            ? `A tidied set of ${curated.length}. Nothing’s lost. Tap All for every colour you gathered.`
-            : `Every colour extracted from the pins you kept.`}
+            ? `A tidied set of ${curated.length}. Nothing’s lost. Tap All for every color you gathered.`
+            : `Every color from what you kept.`}
         </p>
       )}
 
@@ -521,7 +544,7 @@ function GatherPanel({
       {likedPins.length > 0 && (
         <div className={styles.cluster}>
           <p className={styles.clusterLabel}>
-            What you resonated with <span className={styles.clusterHint}>tap a pin to pick its colours</span>
+            What you resonated with <span className={styles.clusterHint}>tap one to pick its colors</span>
           </p>
           <div className={styles.clusterThumbs}>
             {likedPins.map((p) => (
@@ -530,7 +553,7 @@ function GatherPanel({
                   type="button"
                   className={styles.clusterPick}
                   onClick={() => onEditPin(p.pinId)}
-                  title={`Pick colours from ${p.title || "this reference"}`}
+                  title={`Pick colors from ${p.title || "this reference"}`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={p.thumbnail} alt={p.title || "Reference"} />
@@ -565,7 +588,7 @@ function GatherPanel({
             className={styles.reflectInput}
             value={reflectYes}
             onChange={(e) => setReflectYes(e.target.value)}
-            placeholder="It’s yours to name…"
+            placeholder="e.g. Soft, faded, coastal. Muted greens and dusty rose, nothing too sharp or corporate."
             rows={4}
           />
 
@@ -583,8 +606,8 @@ function GatherPanel({
                 </Link>
               </div>
               <p className={styles.directionSavedHint}>
-                Your board <em>is</em> the direction. Shape it, add notes, then compose it
-                into a brand whenever you’re ready.
+                Your moodboard is yours to shape. Add notes, then compose it into a brand
+                whenever you’re ready.
               </p>
             </div>
           ) : (
@@ -595,10 +618,10 @@ function GatherPanel({
                 onClick={onMakeDirection}
                 disabled={creating}
               >
-                {creating ? "Making your direction…" : "Make a direction"}
+                {creating ? "Making your moodboard…" : "Make a moodboard"}
               </button>
               <p className={styles.reflectHint}>
-                Turns what resonated into a moodboard you can shape and compose into a brand.
+                Turns what you kept into a moodboard to shape and compose into a brand.
               </p>
             </>
           )}
