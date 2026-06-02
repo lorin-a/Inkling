@@ -225,19 +225,26 @@ effects are static SVG/CSS (reduced-motion safe, export-safe).
 - `Block.js` (Finish button + popover), `Board.js` + `app/moodboard/page.js`
   (`onSetFinish` / `applyFinishAll` wiring), `canvas.module.css` (finish styles).
 
-**↳ NEXT — keep finishing the architecture, then dogfood (per the pivot):**
-1. **Flow legibility — home pipeline + IA wiring** *(the second architecture
-   move).* Make the path read as a path: Lorin's verbs/taglines (note 1 below —
-   her words verbatim; mind the **"studio" word flag**), wire `/moodboard` into the
-   numbered arc, and surface where Board → Brand happens. This is "confirm
-   function/flow." Likely its own plan-mode pass.
-2. **Dogfood the full spine on Whelm** end-to-end (inspiration → board → "This
-   board" shuffle → brand → export). Let what's missing/gold-plated reveal itself;
-   that dictates the next detail work — do NOT pre-spec it.
-3. Resources as a true library (note 2) + `/decide` spacing (note 5) — Lane C
-   tail, lower urgency than the flow.
+**↳ NEXT SESSION — START HERE (decided 2026-06-02): scope the first recognition-loop slice on Whelm.**
+The vision reframed mid-session into a **recognition-driven brand co-design studio**
+— read the rewritten north star above + memory `project_product_direction`
+"★ THE REFRAME" FIRST; the dogfood walk + the long vision conversation with Lorin
+landed this pickup.
 
-**PARKED until the spine proves out** (the details we stopped gold-plating):
+- **Build the smallest slice that lets Lorin *feel* the recognition loop on real
+  Whelm inspiration** — react (YES / Sure / Maybe / Meh / Nope) to her pooled pins
+  and watch a *direction* emerge from what resonates. **NOT** a full canvas rebuild,
+  **NOT** a new home page. The point is to prove the one thing the whole vision
+  rests on: does the YES/NO loop actually converge on something she *feels*? Start in
+  plan mode; keep the slice small and dogfoodable on Whelm.
+- **REJECTED — do not build:** the old "flow legibility / segmented pipeline home."
+  It reinforces the room-by-room segmentation the reframe explicitly rejects.
+- **Open design Qs to settle while scoping:** the *unit* you react to (a whole
+  composed cluster vs an image/colour/type triad — granularity sets how fast
+  recognition fires), and how a reaction *steers what comes next* (so it converges,
+  not a slot machine). Full journey + aspect-as-unit + difficulty gradient in memory.
+
+**PARKED until the recognition loop proves out** (details we stopped gold-plating):
 - Lane B slice 2 (surface grain / board paper — reuse `finish.js` on board bg) +
   slice 3 (grain masked into type/marks). Board *type*/*finish* → Brand seams.
 - Board-image PNG export (none exists yet; finishes are built export-safe).
