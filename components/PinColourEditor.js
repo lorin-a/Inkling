@@ -18,6 +18,10 @@ import styles from "./PinColourEditor.module.css";
 const HEX = /^#?[0-9a-fA-F]{6}$/;
 const norm = (h) => (h.startsWith("#") ? h : `#${h}`).toLowerCase();
 
+const ZOOM = 8; // magnification — high enough to see individual pixels
+const LOUPE = 132; // loupe diameter in px
+const LR = LOUPE / 2; // loupe radius (centres the magnified view on the cursor)
+
 export default function PinColourEditor({ pin, colours, isOverridden, onChange, onReset, onClose }) {
   const imgRef = useRef(null);
   const canvasRef = useRef(null);
@@ -68,8 +72,11 @@ export default function PinColourEditor({ pin, colours, isOverridden, onChange, 
       return null;
     }
     if (!n) return null;
-    const hex = "#" + [R, G, B].map((v) => Math.round(v / n).toString(16).padStart(2, "0")).join("");
-    return { hex, px: rx * rect.width, py: ry * rect.height, dispW: rect.width, dispH: rect.height };
+    const aR = Math.round(R / n), aG = Math.round(G / n), aB = Math.round(B / n);
+    const hex = "#" + [aR, aG, aB].map((v) => v.toString(16).padStart(2, "0")).join("");
+    // Luminance → does the colour need dark or light text laid over it.
+    const light = (0.299 * aR + 0.587 * aG + 0.114 * aB) / 255 > 0.6;
+    return { hex, light, px: rx * rect.width, py: ry * rect.height, dispW: rect.width, dispH: rect.height };
   }, []);
 
   const onMove = useCallback((e) => {
@@ -133,23 +140,40 @@ export default function PinColourEditor({ pin, colours, isOverridden, onChange, 
                 left: loupe.px,
                 top: loupe.py,
                 backgroundImage: `url(${src})`,
-                backgroundSize: `${loupe.dispW * 5}px ${loupe.dispH * 5}px`,
-                backgroundPosition: `${-(loupe.px * 5 - 55)}px ${-(loupe.py * 5 - 55)}px`,
+                backgroundSize: `${loupe.dispW * ZOOM}px ${loupe.dispH * ZOOM}px`,
+                backgroundPosition: `${-(loupe.px * ZOOM - LR)}px ${-(loupe.py * ZOOM - LR)}px`,
               }}
             >
-              <span className={styles.loupeDot} style={{ background: loupe.hex }} />
+              {/* hollow target — marks the exact pixel under the cursor, the one
+                  being sampled, so there's no doubt which part of the image you're on */}
+              <span className={styles.loupeTarget} />
+              <span
+                className={styles.loupeHex}
+                style={{ background: loupe.hex, color: loupe.light ? "#1a1a1a" : "#fff" }}
+              >
+                {loupe.hex.toUpperCase()}
+              </span>
             </span>
           )}
         </div>
         <canvas ref={canvasRef} className={styles.hiddenCanvas} aria-hidden="true" />
 
-        <p className={styles.hint}>
-          {canSample ? (
-            <>Hover the image to find a colour, click to add it.{loupe && <code className={styles.hex}>{loupe.hex}</code>}</>
+        <div className={styles.readout} aria-live="polite">
+          {!canSample ? (
+            <span className={styles.readTip}>
+              This image is hosted elsewhere, so it can’t be sampled yet — edit the swatches below or add a hex.
+            </span>
+          ) : loupe ? (
+            <>
+              <span className={styles.readSwatch} style={{ background: loupe.hex }} />
+              <code className={styles.readHex}>{loupe.hex.toUpperCase()}</code>
+              <span className={styles.readName}>{colorName(loupe.hex).name}</span>
+              <span className={styles.readTip}>click to add</span>
+            </>
           ) : (
-            "This image is hosted elsewhere, so it can’t be sampled yet — edit the swatches below or add a hex."
+            <span className={styles.readTip}>Hover the image to find a colour, click to add it.</span>
           )}
-        </p>
+        </div>
 
         <div className={styles.swatchRow}>
           {colours.map((hex) => (
