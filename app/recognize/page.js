@@ -6,17 +6,18 @@ import { apiFetch } from "../../lib/api/client";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import PinColourEditor from "../../components/PinColourEditor";
 import Onboarding from "../../components/Onboarding";
-import { REACTIONS, buildProfile, pickNext, candidateColours } from "../../lib/recognition";
+import { REACTIONS, buildProfile, candidateColours } from "../../lib/recognition";
 import styles from "./page.module.css";
 
 const ONBOARDING_KEY = "moodbuilder.recognize.onboarding.v1";
+const LABEL = Object.fromEntries(REACTIONS.map((r) => [r.key, r.label]));
 
 const TOUR_STEPS = [
   {
-    selector: '[data-tour="react"]',
+    selector: '[data-tour="board"]',
     placement: "top",
-    title: "React to each reference",
-    body: "YES, Sure, Maybe, Meh, Nope, or press 1 to 5. Go with your gut. The no matters as much as the yes.",
+    title: "All your pins, your order",
+    body: "Here’s your whole field. Pick any pin, in any order, as many times as you like. Nothing’s chosen for you, nothing hides.",
   },
   {
     selector: '[data-tour="image"]',
@@ -25,16 +26,22 @@ const TOUR_STEPS = [
     body: "Not its colours. A yes just means this belongs in your world. You’ll choose the actual colours separately.",
   },
   {
+    selector: '[data-tour="react"]',
+    placement: "right",
+    title: "React to the one you’re on",
+    body: "YES, Sure, Maybe, Meh, Nope, or press 1 to 5. Go with your gut. Change it anytime by picking the pin again.",
+  },
+  {
     selector: '[data-tour="colours"]',
     placement: "right",
     title: "Pick your own colours",
-    body: "The swatches are a rough auto-guess. Click here to open an eyedropper and sample colours straight off the image, delete ones you don’t want, or add more.",
+    body: "The swatches are a rough auto-guess. Click here to open an eyedropper and sample colours off the image, delete ones you don’t want, or add more.",
   },
   {
     selector: '[data-tour="gather"]',
     placement: "left",
     title: "Your colours collect here",
-    body: "Everything you gather lands on this side, with its hex. Start from the curated set or tap All to see every colour. Tap a pin to refine its colours anytime.",
+    body: "Everything from your yeses lands here, with its hex. Curated by default, tap All to see every colour. Tap a pin to refine its colours anytime.",
   },
 ];
 
@@ -49,8 +56,9 @@ const copyHex = (hex) => {
 export default function RecognizePage() {
   const [pins, setPins] = useState([]);
   const [loaded, setLoaded] = useState(false);
-  const [reactions, setReactions] = useState([]); // [{ pin, key }]
+  const [reactions, setReactions] = useState({}); // pinId → reaction key (revisitable, overwrite-able)
   const [pinOverrides, setPinOverrides] = useState({}); // pinId → hex[] she hand-sampled off the image
+  const [activePinId, setActivePinId] = useState(null); // the pin in the focused card
   const [editingPinId, setEditingPinId] = useState(null);
   const [tour, setTour] = useState(false);
   const tourAutoStarted = useRef(false);
@@ -78,59 +86,63 @@ export default function RecognizePage() {
     [pinOverrides, pinById],
   );
 
-  const reactedIds = useMemo(() => new Set(reactions.map((r) => r.pin.pinId)), [reactions]);
-  const remaining = useMemo(
-    () => pins.filter((p) => !reactedIds.has(p.pinId)),
-    [pins, reactedIds],
-  );
+  // Focus the first pin once loaded, so there's always something on screen.
+  useEffect(() => {
+    if (!activePinId && pins.length) setActivePinId(pins[0].pinId);
+  }, [pins, activePinId]);
 
-  // Reactions keep the original pins; overrides apply here so editing a pin's
-  // colours reshapes what's gathered without rewriting the reaction log.
+  // Reactions are a map (pinId → key), so a pin can be re-reacted or un-reacted at
+  // will. Build the profile from it, applying any per-pin colour overrides.
   const effReactions = useMemo(
-    () => reactions.map((r) => ({
-      key: r.key,
-      pin: { ...r.pin, palette: pinOverrides[r.pin.pinId] ?? r.pin.palette },
-    })),
-    [reactions, pinOverrides],
+    () =>
+      Object.entries(reactions)
+        .map(([pinId, key]) => {
+          const p = pinById.get(pinId);
+          return p ? { key, pin: { ...p, palette: pinOverrides[pinId] ?? p.palette } } : null;
+        })
+        .filter(Boolean),
+    [reactions, pinById, pinOverrides],
   );
   const profile = useMemo(() => buildProfile(effReactions), [effReactions]);
-  const current = useMemo(
-    () => pickNext(remaining, profile, { turn: reactions.length }),
-    [remaining, profile, reactions.length],
-  );
-
-  // The colours gathered from everything that resonated — clustered + deduped.
-  // This step's whole job: bring in the images and their colours, for use later.
   const pool = useMemo(() => candidateColours(profile), [profile]);
+  const reactedCount = Object.keys(reactions).length;
+  const activePin = activePinId ? pinById.get(activePinId) : null;
 
+  // React to a specific pin. After reacting the *focused* pin, gently move the
+  // focus to the next un-reacted pin in board order — predictable, sequential,
+  // never hidden, and overridable by clicking any pin. (Not the old steering: the
+  // whole board stays visible and you stay in charge of where you go.)
   const react = useCallback(
-    (key) => {
-      if (!current?.pin) return;
-      const pin = current.pin;
-      // Idempotent per pin: a fast double-press (two keydowns before re-render)
-      // must not react to the same pin twice.
-      setReactions((prev) =>
-        prev.some((r) => r.pin.pinId === pin.pinId) ? prev : [...prev, { pin, key }],
-      );
+    (pinId, key) => {
+      if (!pinId) return;
+      const updated = { ...reactions, [pinId]: key };
+      setReactions(updated);
+      if (activePinId === pinId) {
+        const idx = pins.findIndex((p) => p.pinId === pinId);
+        const nextUn =
+          pins.slice(idx + 1).find((p) => !updated[p.pinId]) ||
+          pins.find((p) => !updated[p.pinId]);
+        if (nextUn) setActivePinId(nextUn.pinId);
+      }
     },
-    [current],
+    [reactions, activePinId, pins],
   );
 
-  // Keyboard: 1–5 map to the five reactions, warm → cold.
+  // Keyboard 1–5 react the focused pin.
   useEffect(() => {
     const onKey = (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const tag = e.target?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
       const idx = ["1", "2", "3", "4", "5"].indexOf(e.key);
-      if (idx >= 0 && REACTIONS[idx]) {
+      if (idx >= 0 && REACTIONS[idx] && activePinId) {
         e.preventDefault();
-        react(REACTIONS[idx].key);
+        react(activePinId, REACTIONS[idx].key);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [react]);
+  }, [react, activePinId]);
 
   const setPinColours = useCallback((id, colours) => {
     setPinOverrides((prev) => ({ ...prev, [id]: colours }));
@@ -144,21 +156,22 @@ export default function RecognizePage() {
   }, []);
 
   const reset = useCallback(() => {
-    setReactions([]);
+    setReactions({});
     setPinOverrides({});
     setEditingPinId(null);
-  }, []);
+    setActivePinId(pins[0]?.pinId ?? null);
+  }, [pins]);
 
-  // First visit, once the card is actually on screen: run the tour. Remembered after.
+  // First visit, once the board is on screen: run the tour. Remembered after.
   useEffect(() => {
-    if (tourAutoStarted.current || !loaded || !current) return;
+    if (tourAutoStarted.current || !loaded || !pins.length) return;
     tourAutoStarted.current = true;
     try {
       if (!localStorage.getItem(ONBOARDING_KEY)) setTour(true);
     } catch {
       /* localStorage blocked — skip onboarding */
     }
-  }, [loaded, current]);
+  }, [loaded, pins.length]);
 
   const closeTour = useCallback(() => {
     setTour(false);
@@ -183,28 +196,37 @@ export default function RecognizePage() {
       </header>
 
       <p className={styles.lede}>
-        React to your own inspiration. You know it when you see it. The colours from
-        everything that resonates collect on the right, to build from later.
+        React to your own inspiration. You know it when you see it. Pick through your
+        pins in any order; the colours from what resonates collect on the right.
       </p>
 
       <div className={styles.layout}>
-        <section className={styles.reactCol} aria-label="React to a reference">
+        <section className={styles.reactCol} aria-label="Your pins">
           {!loaded ? (
             <div className={styles.cardEmpty}>Loading your inspiration…</div>
-          ) : !current ? (
-            <ExhaustedCard count={pins.length} resonating={profile.resonantCount} onReset={reset} />
+          ) : !pins.length ? (
+            <div className={styles.cardEmpty}>No pins in this studio yet.</div>
           ) : (
-            <ReactCard
-              key={current.pin.pinId}
-              pin={current.pin}
-              colours={effPalette(current.pin.pinId)}
-              reason={current.reason}
-              seen={reactions.length}
-              total={pins.length}
-              resonating={profile.resonantCount}
-              onReact={react}
-              onEditColours={() => setEditingPinId(current.pin.pinId)}
-            />
+            <>
+              {activePin && (
+                <FocusCard
+                  pin={activePin}
+                  colours={effPalette(activePin.pinId)}
+                  reaction={reactions[activePin.pinId]}
+                  reactedCount={reactedCount}
+                  total={pins.length}
+                  onReact={(key) => react(activePin.pinId, key)}
+                  onEditColours={() => setEditingPinId(activePin.pinId)}
+                  onReset={reactedCount ? reset : null}
+                />
+              )}
+              <Board
+                pins={pins}
+                reactions={reactions}
+                activePinId={activePinId}
+                onSelect={setActivePinId}
+              />
+            </>
           )}
         </section>
 
@@ -234,15 +256,12 @@ export default function RecognizePage() {
   );
 }
 
-function ReactCard({ pin, colours, reason, seen, total, resonating, onReact, onEditColours }) {
+function FocusCard({ pin, colours, reaction, reactedCount, total, onReact, onEditColours, onReset }) {
   const credit = pin.sourceDomain && pin.sourceDomain !== "pinterest.com"
     ? pin.sourceDomain
     : "Pinterest";
   return (
     <div className={styles.card}>
-      {reason === "contrast" && (
-        <p className={styles.probe}>A contrast. Does this land too, or sharpen the no?</p>
-      )}
       <figure className={styles.figure} data-tour="image">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className={styles.cardImg} src={pin.thumbnail} alt={pin.title || "Reference"} />
@@ -274,7 +293,9 @@ function ReactCard({ pin, colours, reason, seen, total, resonating, onReact, onE
             type="button"
             className={styles.reactBtn}
             data-key={r.key}
+            data-on={reaction === r.key ? "true" : undefined}
             onClick={() => onReact(r.key)}
+            aria-pressed={reaction === r.key}
             aria-label={`${r.label} — ${r.hint}`}
           >
             <span className={styles.reactNum}>{i + 1}</span>
@@ -284,24 +305,47 @@ function ReactCard({ pin, colours, reason, seen, total, resonating, onReact, onE
       </div>
 
       <p className={styles.progress}>
-        {seen} of {total} · <strong>{resonating}</strong> resonating
+        <strong>{reactedCount}</strong> of {total} sorted
         <span className={styles.kbdHint}>press 1–5</span>
+        {onReset && (
+          <button type="button" className={styles.resetInline} onClick={onReset}>
+            Start over
+          </button>
+        )}
       </p>
     </div>
   );
 }
 
-function ExhaustedCard({ count, resonating, onReset }) {
+function Board({ pins, reactions, activePinId, onSelect }) {
   return (
-    <div className={styles.cardEmpty}>
-      <p className={styles.exhaustedTitle}>That’s the whole well.</p>
-      <p className={styles.exhaustedBody}>
-        You reacted to all {count} references, and {resonating} resonated. The colours
-        on the right are everything you gathered.
-      </p>
-      <button type="button" className={styles.resetBtn} onClick={onReset}>
-        Start over
-      </button>
+    <div className={styles.boardWrap}>
+      <p className={styles.boardLabel}>All your pins · pick any, in any order</p>
+      <div className={styles.board} data-tour="board">
+        {pins.map((p) => {
+          const key = reactions[p.pinId];
+          return (
+            <button
+              key={p.pinId}
+              type="button"
+              className={styles.boardPin}
+              data-active={p.pinId === activePinId ? "true" : undefined}
+              data-reacted={key ? "true" : undefined}
+              onClick={() => onSelect(p.pinId)}
+              title={p.title || "Reference"}
+              aria-label={key ? `${p.title || "Reference"}, marked ${LABEL[key]}` : p.title || "Reference"}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={p.thumbnail} alt="" />
+              {key && (
+                <span className={styles.boardBadge} data-key={key}>
+                  {LABEL[key]}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -316,8 +360,8 @@ function GatherPanel({ curated, all, likedPins, onEditPin }) {
       <div className={styles.directionEmpty}>
         <h2 className={styles.directionH}>Colours you’re gathering</h2>
         <p className={styles.directionHint}>
-          React <strong>YES</strong> or <strong>Sure</strong> to a few references, and
-          the colours from them collect here to build from later.
+          Mark a pin <strong>YES</strong> or <strong>Sure</strong> and the colours from
+          it collect here to build from later.
         </p>
       </div>
     );

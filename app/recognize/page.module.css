@@ -209,6 +209,14 @@
 }
 .reactBtn[data-key="meh"] .reactLabel,
 .reactBtn[data-key="nope"] .reactLabel { color: var(--ink-muted); }
+/* The reaction this pin currently holds — a clear filled state so you can see and
+   change your call. */
+.reactBtn[data-on="true"] {
+  border-color: var(--whelm-vivid);
+  background: color-mix(in oklab, var(--whelm-vivid) 22%, var(--bg-elevated));
+  box-shadow: inset 0 0 0 1px var(--whelm-vivid);
+}
+.reactBtn[data-on="true"] .reactLabel { color: var(--ink); }
 
 .progress {
   margin: 14px 2px 2px;
@@ -224,6 +232,78 @@
   font-size: 12px;
   opacity: 0.7;
 }
+.resetInline {
+  border: none;
+  background: none;
+  padding: 4px 2px;
+  font-size: 12px;
+  color: var(--whelm-purple);
+  cursor: pointer;
+}
+.resetInline:hover { text-decoration: underline; }
+.resetInline:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* — The board: your whole field of pins, pick any in any order — */
+.boardWrap { margin-top: 22px; }
+.boardLabel {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+  gap: 8px;
+}
+.boardPin {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #f0eef2;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  transition: transform var(--motion-fast) var(--ease-out), box-shadow var(--motion-fast) var(--ease-out);
+}
+.boardPin img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.boardPin:hover { transform: translateY(-2px); }
+.boardPin[data-reacted="true"] img { opacity: 0.92; }
+.boardPin[data-active="true"] {
+  box-shadow: 0 0 0 2px var(--bg-elevated), 0 0 0 4px var(--whelm-vivid);
+}
+.boardPin:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: 2px;
+}
+.boardBadge {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: rgba(20, 12, 28, 0.7);
+  backdrop-filter: blur(3px);
+}
+.boardBadge[data-key="yes"] { background: var(--whelm-vivid); }
+.boardBadge[data-key="sure"] { background: color-mix(in oklab, var(--whelm-vivid) 72%, #2b2440); }
+.boardBadge[data-key="maybe"] { background: rgba(20, 12, 28, 0.62); }
+.boardBadge[data-key="meh"] { background: rgba(40, 34, 52, 0.66); }
+.boardBadge[data-key="nope"] { background: rgba(70, 64, 80, 0.7); }
 
 /* — Exhausted / empty react states — */
 .cardEmpty {
