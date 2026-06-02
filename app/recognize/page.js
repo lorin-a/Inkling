@@ -7,6 +7,7 @@ import ProjectSwitcher from "../../components/ProjectSwitcher";
 import PinColourEditor from "../../components/PinColourEditor";
 import Onboarding from "../../components/Onboarding";
 import { REACTIONS, buildProfile, candidateColours } from "../../lib/recognition";
+import { createDirection } from "../../lib/makeDirection";
 import styles from "./page.module.css";
 
 const ONBOARDING_KEY = "moodbuilder.recognize.onboarding.v1";
@@ -62,6 +63,12 @@ export default function RecognizePage() {
   const [editingPinId, setEditingPinId] = useState(null);
   const [tour, setTour] = useState(false);
   const tourAutoStarted = useRef(false);
+  // Reflection — your own words, never autofilled (cultivate, don't supply).
+  const [reflectYes, setReflectYes] = useState("");
+  const [reflectNo, setReflectNo] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [direction, setDirection] = useState(null); // the saved direction (a moodboard)
+  const [directionError, setDirectionError] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -160,7 +167,31 @@ export default function RecognizePage() {
     setPinOverrides({});
     setEditingPinId(null);
     setActivePinId(pins[0]?.pinId ?? null);
+    setReflectYes("");
+    setReflectNo("");
+    setDirection(null);
+    setDirectionError(null);
   }, [pins]);
+
+  // Turn what resonated into a direction — a real moodboard that feeds Brand.
+  const makeDirection = useCallback(async () => {
+    if (!profile.likedPins.length || creating) return;
+    setCreating(true);
+    setDirectionError(null);
+    try {
+      const board = await createDirection({
+        pins: profile.likedPins,
+        colours: pool.map((c) => c.hex),
+        reflectionYes: reflectYes,
+        reflectionNo: reflectNo,
+      });
+      setDirection(board);
+    } catch (e) {
+      setDirectionError(e?.message || "Could not save the direction.");
+    } finally {
+      setCreating(false);
+    }
+  }, [profile.likedPins, pool, reflectYes, reflectNo, creating]);
 
   // First visit, once the board is on screen: run the tour. Remembered after.
   useEffect(() => {
@@ -236,6 +267,14 @@ export default function RecognizePage() {
             all={profile.likedColours}
             likedPins={profile.likedPins}
             onEditPin={setEditingPinId}
+            reflectYes={reflectYes}
+            setReflectYes={setReflectYes}
+            reflectNo={reflectNo}
+            setReflectNo={setReflectNo}
+            onMakeDirection={makeDirection}
+            creating={creating}
+            direction={direction}
+            directionError={directionError}
           />
         </aside>
       </div>
@@ -350,7 +389,20 @@ function Board({ pins, reactions, activePinId, onSelect }) {
   );
 }
 
-function GatherPanel({ curated, all, likedPins, onEditPin }) {
+function GatherPanel({
+  curated,
+  all,
+  likedPins,
+  onEditPin,
+  reflectYes,
+  setReflectYes,
+  reflectNo,
+  setReflectNo,
+  onMakeDirection,
+  creating,
+  direction,
+  directionError,
+}) {
   // Default to the curated set (she likes it), but the full extracted set is always
   // one tap away with its count shown — nothing narrowed is ever hidden.
   const [view, setView] = useState("curated");
@@ -446,6 +498,68 @@ function GatherPanel({ curated, all, likedPins, onEditPin }) {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* The capstone: your words → a direction → a brand. The seam that makes this
+          a product, not an island. */}
+      {likedPins.length > 0 && (
+        <div className={styles.reflect}>
+          <h3 className={styles.reflectH}>In your own words</h3>
+          <label className={styles.reflectLabel} htmlFor="reflect-yes">
+            Looking at everything you kept — what do these have in common in your eyes?
+            What feelings or sensations do they evoke?
+          </label>
+          <textarea
+            id="reflect-yes"
+            className={styles.reflectInput}
+            value={reflectYes}
+            onChange={(e) => setReflectYes(e.target.value)}
+            placeholder="It’s yours to name…"
+            rows={3}
+          />
+          <label className={styles.reflectLabel} htmlFor="reflect-no">
+            Anything you’re steering away from? What wasn’t working?
+          </label>
+          <textarea
+            id="reflect-no"
+            className={styles.reflectInput}
+            value={reflectNo}
+            onChange={(e) => setReflectNo(e.target.value)}
+            placeholder="Optional"
+            rows={2}
+          />
+
+          {direction ? (
+            <div className={styles.directionSaved}>
+              <p className={styles.directionSavedTitle}>
+                ✓ Saved as <strong>“{direction.name}”</strong>
+              </p>
+              <div className={styles.directionActions}>
+                <Link href="/brand" className={styles.directionPrimary}>
+                  Compose a brand →
+                </Link>
+                <Link href="/moodboard" className={styles.directionSecondary}>
+                  Open the board
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <>
+              <button
+                type="button"
+                className={styles.makeDirection}
+                onClick={onMakeDirection}
+                disabled={creating}
+              >
+                {creating ? "Making your direction…" : "Make a direction"}
+              </button>
+              <p className={styles.reflectHint}>
+                Turns what resonated into a moodboard you can shape and compose into a brand.
+              </p>
+            </>
+          )}
+          {directionError && <p className={styles.directionError}>{directionError}</p>}
         </div>
       )}
     </div>

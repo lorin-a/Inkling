@@ -512,6 +512,119 @@
 }
 
 
+/* — The capstone: reflect in your words → make a direction → compose a brand — */
+.reflect {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--hairline);
+}
+.reflectH {
+  margin: 0 0 10px;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.reflectLabel {
+  display: block;
+  margin: 12px 0 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+.reflectInput {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+.reflectInput::placeholder { color: var(--ink-muted); font-style: italic; }
+.reflectInput:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.makeDirection {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 16px;
+  border: none;
+  border-radius: 12px;
+  background: var(--whelm-vivid);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: filter var(--motion-fast) var(--ease-out);
+}
+.makeDirection:hover { filter: brightness(1.06); }
+.makeDirection:disabled { opacity: 0.6; cursor: default; }
+.makeDirection:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: 2px;
+}
+.reflectHint {
+  margin: 8px 2px 0;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.directionSaved {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--whelm-vivid) 9%, var(--bg-elevated));
+  border: 1px solid color-mix(in oklab, var(--whelm-vivid) 30%, var(--hairline));
+}
+.directionSavedTitle {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--ink);
+}
+.directionActions { display: flex; flex-wrap: wrap; gap: 10px; }
+.directionPrimary,
+.directionSecondary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.directionPrimary {
+  background: var(--whelm-vivid);
+  color: #fff;
+}
+.directionPrimary:hover { filter: brightness(1.06); }
+.directionSecondary {
+  background: var(--bg-elevated);
+  color: var(--ink);
+  border: 1px solid var(--hairline);
+}
+.directionSecondary:hover { border-color: var(--ink-muted); }
+.directionPrimary:focus-visible,
+.directionSecondary:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: 2px;
+}
+.directionError {
+  margin: 10px 2px 0;
+  font-size: 13px;
+  color: #b5542f;
+}
+
 @media (max-width: 880px) {
   .layout { grid-template-columns: 1fr; }
   .directionCol { position: static; }
