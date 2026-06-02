@@ -613,13 +613,13 @@ function GatherPanel({
                 <Link href="/moodboard" className={styles.directionPrimary}>
                   Open your board →
                 </Link>
-                <Link href="/brand" className={styles.directionSecondary}>
-                  Compose a brand
+                <Link href="/type" className={styles.directionSecondary}>
+                  Add type
                 </Link>
               </div>
               <p className={styles.directionSavedHint}>
-                Your moodboard is yours to shape. Add notes, then compose it into a brand
-                whenever you’re ready.
+                Keep building your board with your intuition. Type next, then texture,
+                layout, and more.
               </p>
             </div>
           ) : (

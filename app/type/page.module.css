@@ -1,0 +1,116 @@
+/* The focused specimen — a large live setting of your wordmark + a sample line. */
+.specimenCard {
+  display: flex;
+  flex-direction: column;
+}
+.specimen {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: center;
+  min-height: 320px;
+  padding: 16px 12px 28px;
+  text-align: center;
+}
+.specimenWordmark {
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  word-break: break-word;
+}
+.specimenSample {
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--ink);
+  max-width: 34ch;
+  margin: 0 auto;
+}
+.specimenMeta {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The deck — every candidate face, set in itself, pick any to focus. */
+.typeBoard {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+.typeChip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 10px 14px;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  color: var(--ink);
+  font-size: 18px;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: transform var(--motion-fast) var(--ease-out), box-shadow var(--motion-fast) var(--ease-out);
+}
+.typeChip > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.typeChip:hover { transform: translateY(-2px); }
+.typeChip[data-reacted="true"] { color: var(--ink-muted); }
+.typeChip[data-active="true"] {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--bg-elevated), 0 0 0 4px var(--whelm-vivid);
+}
+.typeChip:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: 2px;
+}
+.typeBadge {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(20, 12, 28, 0.7);
+}
+.typeBadge[data-key="yes"] { background: var(--whelm-vivid); }
+.typeBadge[data-key="sure"] { background: color-mix(in oklab, var(--whelm-vivid) 72%, #2b2440); }
+.typeBadge[data-key="maybe"] { background: rgba(20, 12, 28, 0.62); }
+.typeBadge[data-key="meh"] { background: rgba(40, 34, 52, 0.66); }
+.typeBadge[data-key="nope"] { background: rgba(70, 64, 80, 0.7); }
+
+/* Kept type, in the gather panel. */
+.keptList {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.keptItem {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--hairline);
+}
+.keptItem:last-child { border-bottom: none; padding-bottom: 0; }
+.keptName {
+  font-size: 22px;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.keptText {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
