@@ -329,3 +329,29 @@ recognize flow):
    (Phase 2 collaboration: "I like / I wish / what if"); pulls that forward in priority.
 5. **Board default name + invite to edit** — minor; the direction already names itself
    from her words and moodboard names rename inline.
+
+---
+
+## 14. Review round 2 (Lorin, 2026-06-02 eve)
+
+**Shipped:** onboarding tooltip clamp (no more cut-off under the scroll-lock); copy
+pass (American "colors", no Pin assumption → "pool of inspiration", de-fluff, dropped
+"yeses", "make a moodboard" not "direction", worked-example placeholder, no orphans via
+text-wrap); **Maybe now moves forward** (yes/sure/maybe all "worth taking to the next
+round" — Maybe contributes colors, lower weight); eyedropper icon on the colors strip;
+"How it works" reads as help.
+
+**Queued:**
+1. **★ /brand is overcrowded vs recognize + the canvas — redesign it to match their
+   calm, sophisticated style.** Lorin: "what you built in recognize feels right; build
+   a brand looks way overcrowded compared." This is the long-flagged "thin Brand studio
+   / 9 jobs in one rail" problem. Major next piece: re-architect `/brand` to the
+   recognize/canvas language (spacious, one job at a time, summon controls rather than
+   stack them). High priority once the recognize spine settles.
+2. **Reactions organized into categories** (yes / sure / maybe / meh / nope buckets) —
+   a view to revisit; relates to the card-sort/affinity "keep / maybe / no" zones.
+3. **Browser extension** to clip URLs into the library, with a **project picker inside
+   the extension** — reinforces the resource-hub clipper (Section 7); the "one place,
+   not 50 bookmarks" promise.
+4. **Inspiration is not always a Pin** — uploads, URL, Are.na. Keep all copy + the data
+   model source-agnostic (the well holds "sources", not "pins").
