@@ -375,6 +375,172 @@ a.credit:hover {
   opacity: 0.8;
 }
 
+/* ----------------------------------------------------------- image finish */
+
+/* Off-layout container for a block's duotone SVG <filter>. */
+.finishDefs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Tiling film/Riso grain, multiplied onto the image (opacity = intensity,
+   set inline). Static noise — no animation, so reduced-motion is unaffected. */
+.grain {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  background-repeat: repeat;
+}
+
+/* Halftone dot screen over the grayscale base. */
+.halftone {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  color: #161310;
+  background-image: radial-gradient(currentColor 32%, transparent 34%);
+  background-size: 5px 5px;
+}
+
+/* ----------------------------------------------------------- finish popover */
+
+.finishPop {
+  position: absolute;
+  top: -10px;
+  left: calc(100% + 10px);
+  width: 244px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+  cursor: default;
+  z-index: 30;
+}
+
+.finishChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.finishChip {
+  font-size: 13px;
+  min-height: 44px;
+  padding: 7px 14px;
+  border-radius: 7px;
+  border: 1px solid var(--hairline);
+  background: var(--bg);
+  color: var(--ink);
+  transition: border-color var(--motion-fast) var(--ease-out),
+    background var(--motion-fast) var(--ease-out);
+}
+
+.finishChip:hover {
+  border-color: var(--ink-muted);
+}
+
+.finishChipOn,
+.finishChipOn:hover {
+  border-color: var(--whelm-vivid);
+  background: rgba(177, 104, 239, 0.1);
+}
+
+.finishField {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 12px;
+}
+
+.finishLabel {
+  font-size: 12px;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.finishRange {
+  width: 100%;
+  accent-color: var(--whelm-vivid);
+  cursor: pointer;
+}
+
+.finishInks {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.finishInk {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  font-size: 12px;
+  color: var(--ink);
+  padding: 6px 9px;
+  border-radius: 7px;
+  border: 1px solid var(--hairline);
+  background: var(--bg);
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+
+.finishInk:hover {
+  border-color: var(--ink-muted);
+}
+
+.finishInkOn,
+.finishInkOn:hover {
+  border-color: var(--whelm-vivid);
+}
+
+.finishInkSwatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--hairline);
+  flex-shrink: 0;
+}
+
+.finishInkPicker {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+  padding: 9px;
+  border-radius: 9px;
+  background: var(--bg);
+  border: 1px solid var(--hairline);
+}
+
+.finishApplyAll {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  padding: 9px 12px;
+  border-radius: 7px;
+  border: 1px solid var(--hairline);
+  background: var(--bg);
+  transition: background var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out);
+}
+
+.finishApplyAll:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: var(--ink-muted);
+}
+
 /* ----------------------------------------------------------- block toolbar */
 
 .toolbar {
@@ -948,7 +1114,10 @@ a.credit:hover {
   .shapeMenuItem,
   .bgButton,
   .tab,
-  .newBoard {
+  .newBoard,
+  .finishChip,
+  .finishInk,
+  .finishApplyAll {
     transition: none;
   }
 }

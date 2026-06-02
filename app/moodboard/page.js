@@ -171,6 +171,20 @@ export default function MoodboardPage() {
     changePayload(id, { font });
   }, [changePayload]);
 
+  // Per-image finish (grain / Riso / duotone / halftone). `finish` is the whole
+  // finish object or null (= clean); the popover composes it with defaults.
+  const setFinish = useCallback((id, finish) => {
+    changePayload(id, { finish });
+  }, [changePayload]);
+
+  // The unified-Riso escape hatch: push one finish across every image on the
+  // board (and leave non-image blocks untouched).
+  const applyFinishAll = useCallback((finish) => {
+    setBlocks((bs) => bs.map((b) => (
+      b.type === "image" ? { ...b, payload: { ...b.payload, finish } } : b
+    )));
+  }, [setBlocks]);
+
   const usedPinIds = useMemo(
     () => new Set(blocks.filter((b) => b.type === "image").map((b) => b.payload?.pinId)),
     [blocks]
@@ -285,6 +299,8 @@ export default function MoodboardPage() {
               onCycleStyle={cycleStyle}
               onSetFont={setFont}
               onSetFill={setFill}
+              onSetFinish={setFinish}
+              onApplyFinishAll={applyFinishAll}
               projectFonts={projectFontQuick}
               background={active?.background || null}
               empty={blocks.length === 0}

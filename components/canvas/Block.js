@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { dispDims, clampFocal, clampZoom, ZOOM_MIN, ZOOM_MAX } from "./crop";
 import TextFontPopover from "./TextFontPopover";
+import FinishPopover from "./FinishPopover";
 import ColorPicker from "./ColorPicker";
 import styles from "./canvas.module.css";
 
@@ -64,6 +65,15 @@ function FillIcon() {
     </svg>
   );
 }
+// A tonally split circle — reads as "apply a finish / duotone" without depth cues.
+function FinishIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <circle cx="7.5" cy="7.5" r="5.6" fill="none" stroke="currentColor" strokeWidth="1.3" />
+      <path d="M7.5 1.9 a5.6 5.6 0 0 1 0 11.2 Z" fill="currentColor" />
+    </svg>
+  );
+}
 
 export default function Block({
   block,
@@ -85,16 +95,19 @@ export default function Block({
   onStyle,
   onFont,
   onFill,
+  onFinish,
+  onApplyFinishAll,
   children,
 }) {
   const rootRef = useRef(null);
   const drag = useRef(null);
   const [fontOpen, setFontOpen] = useState(false);
   const [fillOpen, setFillOpen] = useState(false);
+  const [finishOpen, setFinishOpen] = useState(false);
 
-  // Close the typeface / fill popovers when the block is deselected.
+  // Close the typeface / fill / finish popovers when the block is deselected.
   useEffect(() => {
-    if (!selected) { setFontOpen(false); setFillOpen(false); }
+    if (!selected) { setFontOpen(false); setFillOpen(false); setFinishOpen(false); }
   }, [selected]);
 
   // The image's aspect ratio (for crop math): stored on the payload, else the
@@ -294,6 +307,9 @@ export default function Block({
             {block.type === "image" && (
               <button type="button" className={styles.toolBtn} onClick={onEnterCrop} title="Crop (double-click)" aria-label="Crop image"><CropIcon /></button>
             )}
+            {block.type === "image" && (
+              <button type="button" className={`${styles.toolBtn} ${finishOpen ? styles.toolBtnOn : ""}`} onClick={() => setFinishOpen((v) => !v)} title="Finish (grain / Riso / duotone)" aria-label="Image finish" aria-expanded={finishOpen}><FinishIcon /></button>
+            )}
             {block.type === "swatch" && (
               <button type="button" className={styles.toolBtn} onClick={onStyle} title="Swatch style" aria-label="Change swatch style"><StyleIcon /></button>
             )}
@@ -331,6 +347,15 @@ export default function Block({
         <div className={styles.fillPop} data-noselect role="menu" aria-label="Fill colour" onPointerDown={(e) => e.stopPropagation()}>
           <ColorPicker onPick={(hex) => { onFill(hex); setFillOpen(false); }} />
         </div>
+      )}
+
+      {finishOpen && block.type === "image" && (
+        <FinishPopover
+          finish={block.payload?.finish || null}
+          onChange={(finish) => onFinish(finish)}
+          onApplyAll={(finish) => onApplyFinishAll(finish)}
+          onClose={() => setFinishOpen(false)}
+        />
       )}
     </div>
   );

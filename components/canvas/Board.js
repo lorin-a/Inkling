@@ -34,6 +34,8 @@ export default function Board({
   onCycleStyle,
   onSetFont,
   onSetFill,
+  onSetFinish,
+  onApplyFinishAll,
   projectFonts,
   background,
   empty,
@@ -101,9 +103,11 @@ export default function Board({
             onStyle={() => onCycleStyle(block.id)}
             onFont={(font) => onSetFont(block.id, font)}
             onFill={(hex) => onSetFill(block.id, hex)}
+            onFinish={(finish) => onSetFinish(block.id, finish)}
+            onApplyFinishAll={onApplyFinishAll}
           >
             {block.type === "image" && (
-              <ImageBlock payload={block.payload} frameW={block.w} frameH={block.h} />
+              <ImageBlock payload={block.payload} frameW={block.w} frameH={block.h} blockId={block.id} />
             )}
             {block.type === "text" && (
               <TextBlock
