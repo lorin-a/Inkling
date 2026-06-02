@@ -1,12 +1,42 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { apiFetch } from "../../lib/api/client";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import PinColourEditor from "../../components/PinColourEditor";
+import Onboarding from "../../components/Onboarding";
 import { REACTIONS, buildProfile, pickNext, candidateColours } from "../../lib/recognition";
 import styles from "./page.module.css";
+
+const ONBOARDING_KEY = "moodbuilder.recognize.onboarding.v1";
+
+const TOUR_STEPS = [
+  {
+    selector: '[data-tour="react"]',
+    placement: "top",
+    title: "React to each reference",
+    body: "YES, Sure, Maybe, Meh, Nope, or press 1 to 5. Go with your gut. The no matters as much as the yes.",
+  },
+  {
+    selector: '[data-tour="image"]',
+    placement: "right",
+    title: "You’re reacting to the image",
+    body: "Not its colours. A yes just means this belongs in your world. You’ll choose the actual colours separately.",
+  },
+  {
+    selector: '[data-tour="colours"]',
+    placement: "right",
+    title: "Pick your own colours",
+    body: "The swatches are a rough auto-guess. Click here to open an eyedropper and sample colours straight off the image, delete ones you don’t want, or add more.",
+  },
+  {
+    selector: '[data-tour="gather"]',
+    placement: "left",
+    title: "Your colours collect here",
+    body: "Everything you gather lands on this side, with its hex. Start from the curated set or tap All to see every colour. Tap a pin to refine its colours anytime.",
+  },
+];
 
 const copyHex = (hex) => {
   try {
@@ -22,6 +52,8 @@ export default function RecognizePage() {
   const [reactions, setReactions] = useState([]); // [{ pin, key }]
   const [pinOverrides, setPinOverrides] = useState({}); // pinId → hex[] she hand-sampled off the image
   const [editingPinId, setEditingPinId] = useState(null);
+  const [tour, setTour] = useState(false);
+  const tourAutoStarted = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -117,6 +149,26 @@ export default function RecognizePage() {
     setEditingPinId(null);
   }, []);
 
+  // First visit, once the card is actually on screen: run the tour. Remembered after.
+  useEffect(() => {
+    if (tourAutoStarted.current || !loaded || !current) return;
+    tourAutoStarted.current = true;
+    try {
+      if (!localStorage.getItem(ONBOARDING_KEY)) setTour(true);
+    } catch {
+      /* localStorage blocked — skip onboarding */
+    }
+  }, [loaded, current]);
+
+  const closeTour = useCallback(() => {
+    setTour(false);
+    try {
+      localStorage.setItem(ONBOARDING_KEY, "1");
+    } catch {
+      /* non-fatal */
+    }
+  }, []);
+
   const editingPin = editingPinId ? pinById.get(editingPinId) : null;
 
   return (
@@ -124,6 +176,9 @@ export default function RecognizePage() {
       <header className={styles.bar}>
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
         <ProjectSwitcher />
+        <button type="button" className={styles.howto} onClick={() => setTour(true)}>
+          How it works
+        </button>
         <div className={styles.barTitle}>Recognize</div>
       </header>
 
@@ -153,7 +208,7 @@ export default function RecognizePage() {
           )}
         </section>
 
-        <aside className={styles.directionCol} aria-label="Colours you’re gathering">
+        <aside className={styles.directionCol} aria-label="Colours you’re gathering" data-tour="gather">
           <GatherPanel
             curated={pool}
             all={profile.likedColours}
@@ -173,6 +228,8 @@ export default function RecognizePage() {
           onClose={() => setEditingPinId(null)}
         />
       )}
+
+      {tour && <Onboarding steps={TOUR_STEPS} onClose={closeTour} />}
     </div>
   );
 }
@@ -186,7 +243,7 @@ function ReactCard({ pin, colours, reason, seen, total, resonating, onReact, onE
       {reason === "contrast" && (
         <p className={styles.probe}>A contrast. Does this land too, or sharpen the no?</p>
       )}
-      <figure className={styles.figure}>
+      <figure className={styles.figure} data-tour="image">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className={styles.cardImg} src={pin.thumbnail} alt={pin.title || "Reference"} />
         <a
@@ -201,7 +258,7 @@ function ReactCard({ pin, colours, reason, seen, total, resonating, onReact, onE
 
       {/* React to the image, not the swatches — the colours are a rough first
           guess you can overwrite, never the basis of a yes. */}
-      <button type="button" className={styles.cardColours} onClick={onEditColours}>
+      <button type="button" className={styles.cardColours} onClick={onEditColours} data-tour="colours">
         <span className={styles.cardSwatches} aria-hidden="true">
           {colours.slice(0, 8).map((hex, i) => (
             <span key={i} className={styles.cardSwatch} style={{ background: hex }} />
@@ -210,7 +267,7 @@ function ReactCard({ pin, colours, reason, seen, total, resonating, onReact, onE
         <span className={styles.cardColoursLabel}>auto-picked · pick your own</span>
       </button>
 
-      <div className={styles.reactions} role="group" aria-label="How does this land?">
+      <div className={styles.reactions} role="group" aria-label="How does this land?" data-tour="react">
         {REACTIONS.map((r, i) => (
           <button
             key={r.key}

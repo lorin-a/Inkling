@@ -1,0 +1,96 @@
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+.dim {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 12, 28, 0.55);
+}
+/* The spotlight: a transparent rect over the highlighted element whose huge
+   box-shadow dims everything else. */
+.spot {
+  position: fixed;
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(20, 12, 28, 0.55);
+  pointer-events: none;
+  transition: top 200ms var(--ease-out), left 200ms var(--ease-out),
+    width 200ms var(--ease-out), height 200ms var(--ease-out);
+}
+
+.tip {
+  position: fixed;
+  z-index: 61;
+  background: var(--bg-elevated);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 16px 48px rgba(20, 12, 28, 0.35);
+}
+.count {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--whelm-purple);
+}
+.title {
+  margin: 0 0 6px;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.body {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.skip {
+  border: none;
+  background: none;
+  padding: 11px 6px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+.skip:hover { color: var(--ink); }
+.nav { display: flex; gap: 8px; }
+.back,
+.next {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.back {
+  border: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  color: var(--ink);
+}
+.back:hover { border-color: var(--ink-muted); }
+.next {
+  border: none;
+  background: var(--whelm-vivid);
+  color: #fff;
+  font-weight: 500;
+}
+.next:hover { filter: brightness(1.05); }
+.skip:focus-visible,
+.back:focus-visible,
+.next:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spot { transition: none; }
+}
