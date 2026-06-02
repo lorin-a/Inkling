@@ -13,6 +13,7 @@ import {
   buildProfile,
   pickNext,
   composeDirection,
+  candidateColours,
   paletteShift,
   isSettling,
 } from "../../lib/recognition";
@@ -23,6 +24,7 @@ export default function RecognizePage() {
   const [pins, setPins] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [reactions, setReactions] = useState([]); // [{ pin, key }]
+  const [selectedColours, setSelectedColours] = useState(null); // null = follow the proposal; array = she's curating
 
   useEffect(() => {
     let cancelled = false;
@@ -51,14 +53,29 @@ export default function RecognizePage() {
     [remaining, profile, reactions.length],
   );
 
-  const direction = useMemo(() => composeDirection(profile), [profile]);
-  // The convergence metric: how far the direction moved on the last reaction.
-  // Pure — recompose from the prior reaction rather than threading a ref.
+  // The auto-proposal — what the loop suggests from what resonated. Drives the
+  // "settling" signal (the convergence of the narrowing, independent of edits).
+  const autoDirection = useMemo(() => composeDirection(profile), [profile]);
+  // What's actually shown: her hand-picked colours once she's curating, else the
+  // proposal. She stays the author.
+  const direction = useMemo(
+    () => composeDirection(profile, { selected: selectedColours }),
+    [profile, selectedColours],
+  );
+  // Every colour from everything that resonated — the pool she curates from.
+  const pool = useMemo(() => candidateColours(profile), [profile]);
+  // Which pool swatches are currently in the palette (her picks, or the proposal).
+  const activeSet = useMemo(
+    () => new Set((selectedColours ?? autoDirection?.palette ?? []).map((h) => h.toLowerCase())),
+    [selectedColours, autoDirection],
+  );
+
+  // Convergence metric: how far the *proposal* moved on the last reaction.
   const recentShift = useMemo(() => {
-    if (!direction) return Infinity;
+    if (!autoDirection) return Infinity;
     const prev = composeDirection(buildProfile(reactions.slice(0, -1)));
-    return paletteShift(prev?.palette, direction.palette);
-  }, [direction, reactions]);
+    return paletteShift(prev?.palette, autoDirection.palette);
+  }, [autoDirection, reactions]);
   const settling = isSettling({ resonantCount: profile.resonantCount, recentShift });
 
   const react = useCallback(
@@ -69,6 +86,23 @@ export default function RecognizePage() {
     },
     [current],
   );
+
+  // Click a pool swatch: drop into curate mode (seeding from the current
+  // proposal) and toggle that colour. From here the direction follows her.
+  const toggleColour = useCallback(
+    (hex) => {
+      const h = hex.toLowerCase();
+      setSelectedColours((prev) => {
+        const base = prev ?? autoDirection?.palette ?? [];
+        const set = new Set(base.map((c) => c.toLowerCase()));
+        if (set.has(h)) set.delete(h);
+        else set.add(h);
+        return [...set];
+      });
+    },
+    [autoDirection],
+  );
+  const resetColours = useCallback(() => setSelectedColours(null), []);
 
   // Keyboard: 1–5 map to the five reactions, warm → cold.
   useEffect(() => {
@@ -86,7 +120,10 @@ export default function RecognizePage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [react]);
 
-  const reset = useCallback(() => setReactions([]), []);
+  const reset = useCallback(() => {
+    setReactions([]);
+    setSelectedColours(null);
+  }, []);
 
   return (
     <div className={styles.page}>
@@ -127,6 +164,11 @@ export default function RecognizePage() {
             project={project}
             profile={profile}
             settling={settling}
+            pool={pool}
+            activeSet={activeSet}
+            curating={selectedColours !== null}
+            onToggleColour={toggleColour}
+            onResetColours={resetColours}
           />
         </aside>
       </div>
@@ -201,7 +243,17 @@ function ExhaustedCard({ count, resonating, onReset }) {
   );
 }
 
-function DirectionPanel({ direction, project, profile, settling }) {
+function DirectionPanel({
+  direction,
+  project,
+  profile,
+  settling,
+  pool,
+  activeSet,
+  curating,
+  onToggleColour,
+  onResetColours,
+}) {
   if (!direction) {
     return (
       <div className={styles.directionEmpty}>
@@ -230,6 +282,40 @@ function DirectionPanel({ direction, project, profile, settling }) {
 
       <DirectionPreview roles={roles} fonts={direction.fonts} project={project} />
 
+      {pool.length > 0 && (
+        <div className={styles.curate}>
+          <div className={styles.curateHead}>
+            <p className={styles.curateLabel}>
+              Your colours <span className={styles.curateHint}>pick which ones are the direction</span>
+            </p>
+            {curating && (
+              <button type="button" className={styles.resetColours} onClick={onResetColours}>
+                Reset to suggested
+              </button>
+            )}
+          </div>
+          <div className={styles.curatePool} role="group" aria-label="Colours from what you resonated with">
+            {pool.map((c) => {
+              const on = activeSet.has(c.hex);
+              return (
+                <button
+                  key={c.hex}
+                  type="button"
+                  className={styles.curateSwatch}
+                  data-on={on ? "true" : undefined}
+                  style={{ background: c.hex }}
+                  onClick={() => onToggleColour(c.hex)}
+                  aria-pressed={on}
+                  title={`${colorName(c.hex).name} · in ${c.count} of what you liked${on ? " · in the direction" : ""}`}
+                >
+                  {on && <span className={styles.curateCheck} aria-hidden="true">✓</span>}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className={styles.roles}>
         {roleList.map(([name, hex]) => (
           <div key={name} className={styles.role}>
@@ -250,7 +336,9 @@ function DirectionPanel({ direction, project, profile, settling }) {
         <span style={{ fontFamily: fontStack(direction.fonts.body, "sans") }}>
           {direction.pairing.text}
         </span>
-        <span className={styles.typeNote}>suggested from your colours</span>
+        <span className={styles.typeNote}>
+          {curating ? "suggested from the colours you chose" : "suggested from your colours"}
+        </span>
       </p>
 
       {profile.likedPins.length > 0 && (
