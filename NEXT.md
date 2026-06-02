@@ -127,10 +127,41 @@ blocks first.**
 
 ### ⏸ END-OF-SESSION STATUS (2026-06-02) — START HERE NEXT TIME
 
-**Lane B, slice 1 shipped + committed:** per-image moodboard image finishes
-(`0207375` on `phase-6c-playground`). Working tree clean. **Local only — NOT
-pushed.** Browser-verified all six finish states + keyboard focus; build green;
-console clean; source-credit attribution stays crisp above every finish.
+**★ MID-SESSION PIVOT — read this first.** Lorin flagged (correctly) that we were
+hyper-focused on Act I *details* (crop, shape blocks, finishes) without confirming
+the product's function/flow/need — the moodboard had become a **beautiful island**
+that fed nothing. We agreed to **finish the connective architecture before
+deepening details.** Reordered roadmap: (1) Board → Brand seam ✅ *shipped this
+session*; (2) flow legibility (home pipeline + IA); (3) **dogfood the full spine on
+Whelm** and let real use — not the spec — drive the next detail work. Act I detail
+depth (Lane B slices 2–3, halftone upgrade, image-by-URL, etc.) is **parked until
+the spine proves out.** Approved plan: `~/.claude/plans/graceful-strolling-lagoon.md`.
+
+**Two commits shipped this session, `phase-6c-playground`, LOCAL ONLY (not pushed),
+tree clean:**
+- `0207375` — Lane B slice 1: per-image moodboard image finishes.
+- `5e07220` — **Board → Brand seam** (the pivot's first move): a board's colours
+  now feed the Brand shuffle. Both browser-verified (signed-out), build green, no
+  console errors.
+
+**Board → Brand seam — what works now** (`/brand`): Source dropdown has a new
+**"This board"** pool. Pick it → a **board picker** appears (compose from any board
+= many-boards→many-directions) + a **"Composed from <board>"** provenance chip.
+Shuffle composes the identity from that board's colours — swatch hexes + shape
+fills + finish inks + the extracted palettes of its pinned references (via
+`lib/extractBoardMaterials.js`, intent-ordered + deduped). Sources the active board
+(browser-local `moodbuilder.moodboard.activeId` → most-recently-updated fallback);
+switching the picker auto-reshuffles; empty board disables Shuffle + links to
+`/moodboard`. Also relabeled the misnamed old `moodboard` pool (= library pin
+aggregation) → **"Library colours."** No API/DB/store changes; works authed + signed
+out (authed not live-tested — identical client path, same response shapes).
+**Next seams (sequenced, NOT built):** board *type* → Type panel; board *finish* →
+Brand preview surface (ties to deferred Lane B slice 2). `extractBoardMaterials`
+already returns `fonts` + `finishes` for these.
+
+**Lane B slice 1 (finishes) — committed earlier same session:** browser-verified
+all six finish states + keyboard focus; source-credit stays crisp above every
+finish.
 
 **What works now** at `/moodboard`: select an image block → the **Image finish**
 toolbar button (tonal-circle icon, beside Crop) opens a **FinishPopover** —
@@ -165,23 +196,25 @@ effects are static SVG/CSS (reduced-motion safe, export-safe).
 - `Block.js` (Finish button + popover), `Board.js` + `app/moodboard/page.js`
   (`onSetFinish` / `applyFinishAll` wiring), `canvas.module.css` (finish styles).
 
-**↳ NEXT — finish Lane B, then the URL-add quick win, then Lane C:**
-- **Lane B slice 2 — surface grain / board paper:** apply the same finish engine
-  to the *board background* (the last open canvas item). Extend the BoardBar
-  Background control (or a sibling) with a paper/grain texture. Reuse `finish.js`.
-- **Lane B slice 3 — masked into type/marks** (subtle, last): grain clipped to
-  wordmark/SVG fills.
-- **Export:** there's no board-image export surface yet (only persistence +
-  Brand-book PDF). The finish is built export-safe; board PNG export is a
-  separate follow-up.
-- **Image-by-URL quick win** (Lorin raised it): let users paste an Unsplash/any
-  image URL → image block (remote `src` + URL as credit). Cheap, no storage.
-  Lives near PinTray / AddBlocks. **Desktop image upload** is heavier — needs the
-  deferred IndexedDB/Blob local binary store (same gate as font/texture uploads).
-- **Lane C** — pipeline-verb home + IA wiring (note 1, mind the “studio” flag),
-  Resources as a true library (note 2), `/decide` spacing (note 5).
-- Parked: video pins (gated on real video); halftone tone-map upgrade; a swatch-
-  style *picker* vs cycle; more foundry directory in the text typeface popover.
+**↳ NEXT — keep finishing the architecture, then dogfood (per the pivot):**
+1. **Flow legibility — home pipeline + IA wiring** *(the second architecture
+   move).* Make the path read as a path: Lorin's verbs/taglines (note 1 below —
+   her words verbatim; mind the **"studio" word flag**), wire `/moodboard` into the
+   numbered arc, and surface where Board → Brand happens. This is "confirm
+   function/flow." Likely its own plan-mode pass.
+2. **Dogfood the full spine on Whelm** end-to-end (inspiration → board → "This
+   board" shuffle → brand → export). Let what's missing/gold-plated reveal itself;
+   that dictates the next detail work — do NOT pre-spec it.
+3. Resources as a true library (note 2) + `/decide` spacing (note 5) — Lane C
+   tail, lower urgency than the flow.
+
+**PARKED until the spine proves out** (the details we stopped gold-plating):
+- Lane B slice 2 (surface grain / board paper — reuse `finish.js` on board bg) +
+  slice 3 (grain masked into type/marks). Board *type*/*finish* → Brand seams.
+- Board-image PNG export (none exists yet; finishes are built export-safe).
+- Image-by-URL (cheap: paste URL → image block); desktop upload (needs IndexedDB/
+  Blob local binary store); halftone tone-map upgrade; swatch-style picker; more
+  foundry directory in the text popover; video pins.
 - Before authed parity: `node scripts/migrate.mjs` (migrations 008 + 009).
 
 ---
