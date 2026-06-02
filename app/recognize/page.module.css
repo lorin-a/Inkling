@@ -111,7 +111,19 @@
   overflow: hidden;
   background: #f0eef2;
 }
+.figureBackdrop {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(30px) saturate(1.25);
+  transform: scale(1.25);
+  opacity: 0.55;
+  z-index: 0;
+}
 .cardImg {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   max-height: 56vh;
@@ -119,6 +131,7 @@
 }
 .credit {
   position: absolute;
+  z-index: 2;
   left: 10px;
   bottom: 10px;
   padding: 5px 10px;
@@ -374,6 +387,32 @@
   border: 1px solid var(--hairline);
   border-radius: 16px;
   padding: 20px;
+}
+/* Empty state: a calm, anchored guide — not a small box in a void. */
+.directionEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 400px;
+  padding: 32px 24px;
+}
+.directionEmpty .directionH { margin: 0 0 8px; }
+.directionEmpty .directionHint { max-width: 32ch; }
+.emptyGhost {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 208px;
+  margin-bottom: 22px;
+}
+.emptyGhostSwatch {
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  border: 1.5px dashed color-mix(in oklab, var(--whelm-vivid) 24%, var(--hairline));
+  opacity: 0.6;
 }
 .directionH {
   font-family: var(--font-serif);

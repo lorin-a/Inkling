@@ -114,7 +114,7 @@ export default function PinColourEditor({ pin, colours, isOverridden, onChange, 
     <div className={styles.overlay} role="dialog" aria-modal="true" aria-label="Pick colours from this image" onClick={onClose}>
       <div className={styles.panel} onClick={(e) => e.stopPropagation()}>
         <div className={styles.head}>
-          <p className={styles.title}>Pick your colours</p>
+          <p className={styles.title}>Pick your colors</p>
           <button type="button" className={styles.close} onClick={onClose} aria-label="Done">Done</button>
         </div>
 
@@ -160,7 +160,7 @@ export default function PinColourEditor({ pin, colours, isOverridden, onChange, 
         <div className={styles.readout} aria-live="polite">
           {!canSample ? (
             <span className={styles.readTip}>
-              This image is hosted elsewhere, so it can’t be sampled yet — edit the swatches below or add a hex.
+              This image is hosted elsewhere, so it can’t be sampled yet. Edit the swatches below or add a hex.
             </span>
           ) : loupe ? (
             <>
@@ -169,7 +169,7 @@ export default function PinColourEditor({ pin, colours, isOverridden, onChange, 
               <span className={styles.readTip}>click to add</span>
             </>
           ) : (
-            <span className={styles.readTip}>Hover the image to find a colour, click to add it.</span>
+            <span className={styles.readTip}>Hover the image to find a color, click to add it.</span>
           )}
         </div>
 
@@ -186,7 +186,7 @@ export default function PinColourEditor({ pin, colours, isOverridden, onChange, 
               </button>
             </span>
           ))}
-          {colours.length === 0 && <span className={styles.swatchEmpty}>No colours yet — sample some from the image.</span>}
+          {colours.length === 0 && <span className={styles.swatchEmpty}>No colors yet. Sample some from the image.</span>}
         </div>
 
         <div className={styles.foot}>

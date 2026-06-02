@@ -296,8 +296,8 @@ export default function RecognizePage() {
       </header>
 
       <p className={styles.lede}>
-        React to your own inspiration. You know it when you see it. Pick through it in
-        any order; the colors from what resonates collect on the right.
+        React to your own inspiration in any order. You know it when you see it; the
+        colors you keep collect on the right.
       </p>
 
       <div className={styles.layout}>
@@ -372,6 +372,13 @@ function FocusCard({ pin, colours, reaction, reactedCount, total, onReact, onEdi
   return (
     <div className={styles.card}>
       <figure className={styles.figure} data-tour="image">
+        {/* A soft blurred backdrop of the same image fills the letterbox gutters of
+            tall/wide references, so they never sit in stark grey bars. */}
+        <span
+          className={styles.figureBackdrop}
+          style={{ backgroundImage: `url("${pin.thumbnail}")` }}
+          aria-hidden="true"
+        />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className={styles.cardImg} src={pin.thumbnail} alt={pin.title || "Reference"} />
         <a
@@ -483,10 +490,15 @@ function GatherPanel({
   if (all.length === 0) {
     return (
       <div className={styles.directionEmpty}>
+        <div className={styles.emptyGhost} aria-hidden="true">
+          {Array.from({ length: 12 }).map((_, n) => (
+            <span key={n} className={styles.emptyGhostSwatch} />
+          ))}
+        </div>
         <h2 className={styles.directionH}>Colors you’re gathering</h2>
         <p className={styles.directionHint}>
           Mark something <strong>YES</strong>, <strong>Sure</strong>, or{" "}
-          <strong>Maybe</strong> and its colors collect here to build from later.
+          <strong>Maybe</strong>, and its colors collect here.
         </p>
       </div>
     );
