@@ -301,3 +301,31 @@ opens in Brand. End-to-end, connected, in the vision.
 4. **Is `/recognize` a room that feeds the canvas, or a gesture on it?** Deferred:
    start as a focused room that *feeds* a moodboard (lowest risk, reuses what’s
    built); revisit “collapse into one canvas” once the spine is proven.
+
+---
+
+## 13. Review backlog (Lorin, 2026-06-02 — she gasped at the board; "I am impressed")
+
+**Shipped from this review** (recognize surface): session **persistence** (navigating
+to the board/brand and back no longer loses reactions, words, or the direction — the
+critical data-loss fix); reflection reframed to her learning prompt (*"what did you
+learn shuffling… what are you gravitating toward, and what isn't quite working?"*),
+one open field not a form; the stuck reaction-highlight fixed; success state leads with
+**Open your board** (the gasp) then **Compose a brand**, with a clarifier; onboarding
+reordered top→down (no jarring scroll-to-board first) + user-scroll locked during the
+tour (kills the glitch).
+
+**Queued for a focused moodboard pass** (separate surface — don't bolt onto the
+recognize flow):
+1. **Crop icon → reposition icon.** The control repositions/zooms the image inside its
+   frame; a crop glyph misreads. Use a target/move/position icon.
+2. **Background belongs with the add-block tools** (Text / Swatch / Shape), and offer
+   basic **surface textures**: paper, canvas, denim, brown paper, notebook. (Aligns
+   with the parked "board paper / texture is a finish" idea — endorsed.)
+3. **A clear "what next" on the board** — once a direction is shaped, guide forward
+   (compose a brand / share). Right now the board dead-ends.
+4. **Annotation / comments layer** (Figma-style), distinct from text blocks — for her
+   own notes *and* collaborators' comments. This is the co-design annotation primitive
+   (Phase 2 collaboration: "I like / I wish / what if"); pulls that forward in priority.
+5. **Board default name + invite to edit** — minor; the direction already names itself
+   from her words and moodboard names rename inline.
