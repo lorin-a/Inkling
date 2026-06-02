@@ -41,6 +41,11 @@ export default function BrandPage() {
     applySnapshot,
     moodboardPool,
     starredPool,
+    boardPool,
+    boardName,
+    boards,
+    boardId,
+    setBoardId,
     pools,
     paletteSource,
     setPaletteSource,
@@ -101,7 +106,8 @@ export default function BrandPage() {
   const [activeVariant, setActiveVariant] = useState("dark");
   const moodboardEmpty = poolKey === "moodboard" && moodboardPool.length === 0;
   const starredEmpty = poolKey === "starred" && starredPool.length === 0;
-  const poolEmpty = moodboardEmpty || starredEmpty;
+  const boardEmpty = poolKey === "board" && boardPool.length === 0;
+  const poolEmpty = moodboardEmpty || starredEmpty || boardEmpty;
 
   const gradientStrings = useMemo(() => {
     if (palette.length === 0) return [];
@@ -233,6 +239,21 @@ export default function BrandPage() {
             </select>
           </label>
 
+          {poolKey === "board" && boards.length > 0 && (
+            <label className={styles.control} title="Which moodboard board to compose this identity from">
+              <span className={styles.controlLabel}>Board</span>
+              <select
+                value={boardId || ""}
+                onChange={(e) => setBoardId(e.target.value)}
+                className={styles.select}
+              >
+                {boards.map((b) => (
+                  <option key={b.id} value={b.id}>{b.name || "Untitled board"}</option>
+                ))}
+              </select>
+            </label>
+          )}
+
           <label className={styles.control} title="How many color slots the palette has">
             <span className={styles.controlLabel}>
               Slots <span className={styles.value}>{size}</span>
@@ -334,6 +355,16 @@ export default function BrandPage() {
         </div>
       )}
 
+      {poolKey === "board" && boardName && !boardEmpty && (
+        <div className={styles.sourceChip} role="status" aria-live="polite">
+          <span className={styles.sourceChipDot} />
+          <span className={styles.sourceChipLabel}>
+            Composed from{" "}
+            <Link href="/moodboard" className={styles.sourceChipLink}>{boardName}</Link>
+          </span>
+        </div>
+      )}
+
       {shareState.status === "ready" && (
         <ShareToast
           url={shareState.url}
@@ -394,9 +425,19 @@ export default function BrandPage() {
             }}
           />
 
+          {boardEmpty && (
+            <div className={styles.emptyHint}>
+              This board has no colours yet.{" "}
+              <Link href="/moodboard" className={styles.emptyHintLink}>
+                Open the board
+              </Link>{" "}
+              and add a few swatches or pin some images — then come back and shuffle a brand from it.
+            </div>
+          )}
+
           {moodboardEmpty && (
             <div className={styles.emptyHint}>
-              The moodboard pool is empty.{" "}
+              The library pool is empty.{" "}
               <Link href="/library" className={styles.emptyHintLink}>
                 Open the library
               </Link>{" "}
