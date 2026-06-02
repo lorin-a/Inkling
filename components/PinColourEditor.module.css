@@ -140,10 +140,6 @@
   letter-spacing: 0.02em;
   color: var(--ink);
 }
-.readName {
-  font-size: 14px;
-  color: var(--ink);
-}
 .readTip {
   font-size: 13px;
   color: var(--ink-muted);

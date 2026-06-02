@@ -1,31 +1,25 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useProject } from "../../lib/useProject";
 import { apiFetch } from "../../lib/api/client";
-import { colorName } from "../../lib/nameThatColor";
-import { derivePreviewRoles } from "../../lib/derivePreviewRoles";
-import FontLoader, { fontStack } from "../../components/FontLoader";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import PinColourEditor from "../../components/PinColourEditor";
-import {
-  REACTIONS,
-  buildProfile,
-  pickNext,
-  composeDirection,
-  candidateColours,
-  paletteShift,
-  isSettling,
-} from "../../lib/recognition";
+import { REACTIONS, buildProfile, pickNext, candidateColours } from "../../lib/recognition";
 import styles from "./page.module.css";
 
+const copyHex = (hex) => {
+  try {
+    navigator.clipboard?.writeText(hex);
+  } catch {
+    /* clipboard unavailable — non-fatal */
+  }
+};
+
 export default function RecognizePage() {
-  const { project } = useProject();
   const [pins, setPins] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [reactions, setReactions] = useState([]); // [{ pin, key }]
-  const [selectedColours, setSelectedColours] = useState(null); // null = follow the proposal; array = she's curating
   const [pinOverrides, setPinOverrides] = useState({}); // pinId → hex[] she hand-sampled off the image
   const [editingPinId, setEditingPinId] = useState(null);
 
@@ -59,7 +53,7 @@ export default function RecognizePage() {
   );
 
   // Reactions keep the original pins; overrides apply here so editing a pin's
-  // colours reshapes the direction without rewriting the reaction log.
+  // colours reshapes what's gathered without rewriting the reaction log.
   const effReactions = useMemo(
     () => reactions.map((r) => ({
       key: r.key,
@@ -73,30 +67,9 @@ export default function RecognizePage() {
     [remaining, profile, reactions.length],
   );
 
-  // The auto-proposal — what the loop suggests from what resonated. Drives the
-  // "settling" signal (the convergence of the narrowing, independent of edits).
-  const autoDirection = useMemo(() => composeDirection(profile), [profile]);
-  // What's actually shown: her hand-picked colours once she's curating, else the
-  // proposal. She stays the author.
-  const direction = useMemo(
-    () => composeDirection(profile, { selected: selectedColours }),
-    [profile, selectedColours],
-  );
-  // Every colour from everything that resonated — the pool she curates from.
+  // The colours gathered from everything that resonated — clustered + deduped.
+  // This step's whole job: bring in the images and their colours, for use later.
   const pool = useMemo(() => candidateColours(profile), [profile]);
-  // Which pool swatches are currently in the palette (her picks, or the proposal).
-  const activeSet = useMemo(
-    () => new Set((selectedColours ?? autoDirection?.palette ?? []).map((h) => h.toLowerCase())),
-    [selectedColours, autoDirection],
-  );
-
-  // Convergence metric: how far the *proposal* moved on the last reaction.
-  const recentShift = useMemo(() => {
-    if (!autoDirection) return Infinity;
-    const prev = composeDirection(buildProfile(effReactions.slice(0, -1)));
-    return paletteShift(prev?.palette, autoDirection.palette);
-  }, [autoDirection, effReactions]);
-  const settling = isSettling({ resonantCount: profile.resonantCount, recentShift });
 
   const react = useCallback(
     (key) => {
@@ -106,23 +79,6 @@ export default function RecognizePage() {
     },
     [current],
   );
-
-  // Click a pool swatch: drop into curate mode (seeding from the current
-  // proposal) and toggle that colour. From here the direction follows her.
-  const toggleColour = useCallback(
-    (hex) => {
-      const h = hex.toLowerCase();
-      setSelectedColours((prev) => {
-        const base = prev ?? autoDirection?.palette ?? [];
-        const set = new Set(base.map((c) => c.toLowerCase()));
-        if (set.has(h)) set.delete(h);
-        else set.add(h);
-        return [...set];
-      });
-    },
-    [autoDirection],
-  );
-  const resetColours = useCallback(() => setSelectedColours(null), []);
 
   // Keyboard: 1–5 map to the five reactions, warm → cold.
   useEffect(() => {
@@ -153,7 +109,6 @@ export default function RecognizePage() {
 
   const reset = useCallback(() => {
     setReactions([]);
-    setSelectedColours(null);
     setPinOverrides({});
     setEditingPinId(null);
   }, []);
@@ -162,7 +117,6 @@ export default function RecognizePage() {
 
   return (
     <div className={styles.page}>
-      <FontLoader fonts={direction?.fonts} />
       <header className={styles.bar}>
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
         <ProjectSwitcher />
@@ -170,8 +124,8 @@ export default function RecognizePage() {
       </header>
 
       <p className={styles.lede}>
-        React to your own inspiration. You know it when you see it. A colour
-        direction emerges from what resonates, sharpened by what doesn’t.
+        React to your own inspiration. You know it when you see it. The colours from
+        everything that resonates collect on the right, to build from later.
       </p>
 
       <div className={styles.layout}>
@@ -195,19 +149,8 @@ export default function RecognizePage() {
           )}
         </section>
 
-        <aside className={styles.directionCol} aria-label="The emerging direction">
-          <DirectionPanel
-            direction={direction}
-            project={project}
-            profile={profile}
-            settling={settling}
-            pool={pool}
-            activeSet={activeSet}
-            curating={selectedColours !== null}
-            onToggleColour={toggleColour}
-            onResetColours={resetColours}
-            onEditPin={setEditingPinId}
-          />
+        <aside className={styles.directionCol} aria-label="Colours you’re gathering">
+          <GatherPanel pool={pool} likedPins={profile.likedPins} onEditPin={setEditingPinId} />
         </aside>
       </div>
 
@@ -287,8 +230,8 @@ function ExhaustedCard({ count, resonating, onReset }) {
     <div className={styles.cardEmpty}>
       <p className={styles.exhaustedTitle}>That’s the whole well.</p>
       <p className={styles.exhaustedBody}>
-        You reacted to all {count} references, and {resonating} resonated. The
-        direction on the right is everything that landed.
+        You reacted to all {count} references, and {resonating} resonated. The colours
+        on the right are everything you gathered.
       </p>
       <button type="button" className={styles.resetBtn} onClick={onReset}>
         Start over
@@ -297,120 +240,45 @@ function ExhaustedCard({ count, resonating, onReset }) {
   );
 }
 
-function DirectionPanel({
-  direction,
-  project,
-  profile,
-  settling,
-  pool,
-  activeSet,
-  curating,
-  onToggleColour,
-  onResetColours,
-  onEditPin,
-}) {
-  if (!direction) {
+function GatherPanel({ pool, likedPins, onEditPin }) {
+  if (pool.length === 0) {
     return (
       <div className={styles.directionEmpty}>
-        <h2 className={styles.directionH}>The direction so far</h2>
+        <h2 className={styles.directionH}>Colours you’re gathering</h2>
         <p className={styles.directionHint}>
-          React <strong>YES</strong> or <strong>Sure</strong> to a few references
-          and a direction will start to take shape here.
+          React <strong>YES</strong> or <strong>Sure</strong> to a few references, and
+          the colours from them collect here to build from later.
         </p>
       </div>
     );
   }
 
-  // The preview still needs functional roles to render a glimpse, but those stay
-  // under the hood — at the recognition stage you think in prominence, not in
-  // "background" and "ink." So the readout ranks the colours by how much they
-  // recurred in what you loved: primary / secondary / tertiary, if at all.
-  const roles = derivePreviewRoles(direction.palette, "dark", { sourceKind: "composed" });
-  const recur = new Map(pool.map((c) => [c.hex, c]));
-  const TIERS = ["Primary", "Secondary", "Tertiary"];
-  const ranked = direction.palette
-    .map((hex) => {
-      const h = hex.toLowerCase();
-      const info = recur.get(h);
-      return { hex: h, count: info?.count ?? 0, weight: info?.weight ?? 0 };
-    })
-    .sort((a, b) => b.count - a.count || b.weight - a.weight);
-
   return (
-    <div className={styles.direction} data-settling={settling ? "true" : undefined}>
-      <h2 className={styles.directionH}>
-        {settling ? "Your direction is settling" : "The direction so far"}
-      </h2>
+    <div className={styles.direction}>
+      <h2 className={styles.directionH}>Colours you’re gathering</h2>
 
-      <DirectionPreview roles={roles} fonts={direction.fonts} project={project} />
-      <p className={styles.previewCaption}>A glimpse of how they might sit together, not a brand yet.</p>
-
-      {pool.length > 0 && (
-        <div className={styles.curate}>
-          <div className={styles.curateHead}>
-            <p className={styles.curateLabel}>
-              Your colours <span className={styles.curateHint}>pick which ones are the direction</span>
-            </p>
-            {curating && (
-              <button type="button" className={styles.resetColours} onClick={onResetColours}>
-                Reset to suggested
-              </button>
-            )}
-          </div>
-          <div className={styles.curatePool} role="group" aria-label="Colours from what you resonated with">
-            {pool.map((c) => {
-              const on = activeSet.has(c.hex);
-              return (
-                <button
-                  key={c.hex}
-                  type="button"
-                  className={styles.curateSwatch}
-                  data-on={on ? "true" : undefined}
-                  style={{ background: c.hex }}
-                  onClick={() => onToggleColour(c.hex)}
-                  aria-pressed={on}
-                  title={`${colorName(c.hex).name} · in ${c.count} of what you liked${on ? " · in the direction" : ""}`}
-                >
-                  {on && <span className={styles.curateCheck} aria-hidden="true">✓</span>}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      <div className={styles.prominence}>
-        {ranked.map((c, i) => (
-          <div key={c.hex} className={styles.prom} data-lead={i === 0 ? "true" : undefined}>
-            <span className={styles.promSwatch} style={{ background: c.hex }} />
-            <span className={styles.promMeta}>
-              {i < TIERS.length && <span className={styles.promTier}>{TIERS[i]}</span>}
-              <span className={styles.promName}>{colorName(c.hex).name}</span>
-            </span>
-          </div>
+      <div className={styles.spectrum}>
+        {pool.map((c) => (
+          <button
+            key={c.hex}
+            type="button"
+            className={styles.spectrumItem}
+            onClick={() => copyHex(c.hex.toUpperCase())}
+            title="Click to copy"
+          >
+            <span className={styles.spectrumSwatch} style={{ background: c.hex }} />
+            <span className={styles.spectrumHex}>{c.hex.toUpperCase()}</span>
+          </button>
         ))}
       </div>
 
-      <p className={styles.typeLine}>
-        <span style={{ fontFamily: fontStack(direction.fonts.title, "serif") }}>
-          {direction.pairing.display}
-        </span>
-        <span className={styles.typeSlash}>·</span>
-        <span style={{ fontFamily: fontStack(direction.fonts.body, "sans") }}>
-          {direction.pairing.text}
-        </span>
-        <span className={styles.typeNote}>
-          {curating ? "suggested from the colours you chose" : "suggested from your colours"}
-        </span>
-      </p>
-
-      {profile.likedPins.length > 0 && (
+      {likedPins.length > 0 && (
         <div className={styles.cluster}>
           <p className={styles.clusterLabel}>
             What you resonated with <span className={styles.clusterHint}>tap a pin to pick its colours</span>
           </p>
           <div className={styles.clusterThumbs}>
-            {profile.likedPins.map((p) => (
+            {likedPins.map((p) => (
               <div key={p.pinId} className={styles.clusterThumb}>
                 <button
                   type="button"
@@ -436,44 +304,6 @@ function DirectionPanel({
           </div>
         </div>
       )}
-
-      {profile.rejectedPins.length > 0 && (
-        <div className={styles.rejected}>
-          <span className={styles.rejectedLabel}>Pulling away from</span>
-          <div className={styles.rejectedSwatches} aria-hidden="true">
-            {profile.rejectedPins.slice(0, 8).map((p) => (
-              <span
-                key={p.pinId}
-                className={styles.rejectedSwatch}
-                style={{ background: p.palette?.[0] || "#ccc" }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function DirectionPreview({ roles, fonts, project }) {
-  const wordmark = project?.wordmark || "Your Brand";
-  const period = project?.period || ".";
-  const tagline = project?.tagline || "A direction, emerging.";
-  return (
-    <div className={styles.preview} style={{ background: roles.bg, color: roles.ink }}>
-      <span
-        className={styles.previewWordmark}
-        style={{ fontFamily: fontStack(fonts.title, "serif") }}
-      >
-        {wordmark}
-        <span style={{ color: roles.accent }}>{period}</span>
-      </span>
-      <span
-        className={styles.previewTagline}
-        style={{ color: roles.muted, fontFamily: fontStack(fonts.body, "sans") }}
-      >
-        {tagline}
-      </span>
     </div>
   );
 }

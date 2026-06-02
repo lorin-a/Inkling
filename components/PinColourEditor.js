@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { colorName } from "../lib/nameThatColor";
 import styles from "./PinColourEditor.module.css";
 
 /**
@@ -167,7 +166,6 @@ export default function PinColourEditor({ pin, colours, isOverridden, onChange, 
             <>
               <span className={styles.readSwatch} style={{ background: loupe.hex }} />
               <code className={styles.readHex}>{loupe.hex.toUpperCase()}</code>
-              <span className={styles.readName}>{colorName(loupe.hex).name}</span>
               <span className={styles.readTip}>click to add</span>
             </>
           ) : (
@@ -177,12 +175,12 @@ export default function PinColourEditor({ pin, colours, isOverridden, onChange, 
 
         <div className={styles.swatchRow}>
           {colours.map((hex) => (
-            <span key={hex} className={styles.swatch} style={{ background: hex }} title={colorName(hex).name}>
+            <span key={hex} className={styles.swatch} style={{ background: hex }} title={hex.toUpperCase()}>
               <button
                 type="button"
                 className={styles.swatchRemove}
                 onClick={() => removeColour(hex)}
-                aria-label={`Remove ${colorName(hex).name}`}
+                aria-label={`Remove ${hex.toUpperCase()}`}
               >
                 ×
               </button>
