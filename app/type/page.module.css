@@ -1,116 +1,258 @@
-/* The focused specimen — a large live setting of your wordmark + a sample line. */
-.specimenCard {
-  display: flex;
-  flex-direction: column;
-}
-.specimen {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  justify-content: center;
-  min-height: 320px;
-  padding: 16px 12px 28px;
-  text-align: center;
-}
-.specimenWordmark {
-  font-size: clamp(40px, 6vw, 72px);
-  line-height: 1.05;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-  word-break: break-word;
-}
-.specimenSample {
-  font-size: 19px;
-  line-height: 1.5;
-  color: var(--ink);
-  max-width: 34ch;
-  margin: 0 auto;
-}
-.specimenMeta {
-  margin-top: 6px;
-  font-size: 13px;
-  color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-/* The deck — every candidate face, set in itself, pick any to focus. */
-.typeBoard {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 8px;
-}
-.typeChip {
-  position: relative;
+/* The copy bar — set every specimen in your own words, browse by vibe. */
+.copyBar {
+  max-width: 1080px;
+  margin: 18px auto 0;
   display: flex;
   align-items: center;
-  min-height: 56px;
-  padding: 10px 14px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.copyLabel {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.copyInput {
+  flex: 1;
+  min-width: 220px;
+  max-width: 420px;
+  height: 44px;
+  padding: 0 14px;
   border: 1px solid var(--hairline);
-  border-radius: 12px;
+  border-radius: 10px;
+  background: var(--bg-elevated);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 18px;
+}
+.copyInput:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: 1px;
+}
+.vibes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+}
+/* Each chip is set in a face that embodies it — you feel the vibe, not read it. */
+.vibe {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
   background: var(--bg-elevated);
   color: var(--ink);
   font-size: 18px;
-  text-align: left;
+  line-height: 1;
   cursor: pointer;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  transition: transform var(--motion-fast) var(--ease-out), box-shadow var(--motion-fast) var(--ease-out);
+  transition: border-color var(--motion-fast) var(--ease-out), background var(--motion-fast) var(--ease-out);
 }
-.typeChip > span:first-child {
-  overflow: hidden;
-  text-overflow: ellipsis;
+.vibe:hover { border-color: var(--ink-muted); }
+.vibe[data-on="true"] {
+  border-color: var(--whelm-vivid);
+  background: color-mix(in oklab, var(--whelm-vivid) 12%, var(--bg-elevated));
 }
-.typeChip:hover { transform: translateY(-2px); }
-.typeChip[data-reacted="true"] { color: var(--ink-muted); }
-.typeChip[data-active="true"] {
-  border-color: transparent;
-  box-shadow: 0 0 0 2px var(--bg-elevated), 0 0 0 4px var(--whelm-vivid);
-}
-.typeChip:focus-visible {
+.vibe:focus-visible {
   outline: 2px solid var(--whelm-vivid);
   outline-offset: 2px;
 }
-.typeBadge {
-  position: absolute;
-  right: 6px;
-  bottom: 6px;
-  padding: 2px 6px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 600;
-  color: #fff;
-  background: rgba(20, 12, 28, 0.7);
-}
-.typeBadge[data-key="yes"] { background: var(--whelm-vivid); }
-.typeBadge[data-key="sure"] { background: color-mix(in oklab, var(--whelm-vivid) 72%, #2b2440); }
-.typeBadge[data-key="maybe"] { background: rgba(20, 12, 28, 0.62); }
-.typeBadge[data-key="meh"] { background: rgba(40, 34, 52, 0.66); }
-.typeBadge[data-key="nope"] { background: rgba(70, 64, 80, 0.7); }
 
-/* Kept type, in the gather panel. */
+/* Import path — bring favorites you already know by name. */
+.importBar {
+  max-width: 1080px;
+  margin: 12px auto 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.importLabel {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.importField {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+  max-width: 420px;
+}
+.importInput {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  background: var(--bg-elevated);
+  color: var(--ink);
+  font-size: 14px;
+}
+.importInput:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: 1px;
+}
+.importResults {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(20, 12, 28, 0.18);
+  max-height: 340px;
+  overflow-y: auto;
+}
+.importResult {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 8px;
+  border-radius: 8px;
+}
+.importResult:hover { background: var(--bg); }
+.importSpecimen {
+  flex: 1;
+  font-size: 22px;
+  line-height: 1.1;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.importName {
+  flex: none;
+  font-size: 12px;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.importNote {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--ink-muted);
+}
+
+/* The board — every face of the vibe, set in your words, side by side to compare. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.gridCard {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  background: var(--bg-elevated);
+  overflow: hidden;
+  transition: box-shadow var(--motion-fast) var(--ease-out);
+}
+.gridCard[data-kept="true"] {
+  border-color: transparent;
+  box-shadow: inset 0 0 0 2px var(--whelm-vivid);
+}
+.gridSpecimen {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 22px 18px;
+  min-height: 96px;
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.05;
+  color: var(--ink);
+  word-break: break-word;
+  overflow: hidden;
+}
+.gridFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--hairline);
+}
+.gridName {
+  font-size: 12px;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.keepBtn {
+  flex: none;
+  min-height: 32px;
+  padding: 0 14px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  color: var(--ink);
+  font-size: 13px;
+  cursor: pointer;
+}
+.keepBtn:hover { border-color: var(--ink-muted); }
+.keepBtn[data-on="true"] {
+  border-color: var(--whelm-vivid);
+  background: var(--whelm-vivid);
+  color: #fff;
+}
+.keepBtn:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: 2px;
+}
+
+/* Your collected type, in the gather panel. */
+.count {
+  font-size: 13px;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-sans);
+  font-weight: 400;
+}
 .keptList {
   list-style: none;
   margin: 0 0 16px;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 .keptItem {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  padding-bottom: 10px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--hairline);
 }
 .keptItem:last-child { border-bottom: none; padding-bottom: 0; }
-.keptName {
-  font-size: 22px;
+.keptSpecimen {
+  display: block;
+  font-size: 26px;
   line-height: 1.1;
   color: var(--ink);
+  word-break: break-word;
 }
-.keptText {
-  font-size: 13px;
+.keptRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+.keptName {
+  font-size: 12px;
   color: var(--ink-muted);
+}
+.keptRemove {
+  border: none;
+  background: none;
+  color: var(--ink-muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+.keptRemove:hover { color: var(--ink); }
+.keptRemove:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: 1px;
+  border-radius: 4px;
 }

@@ -2,64 +2,52 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { apiFetch } from "../../lib/api/client";
 import { useProject } from "../../lib/useProject";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import FontLoader, { fontStack } from "../../components/FontLoader";
-import { REACTIONS } from "../../lib/recognition";
-import { rankPairings } from "../../lib/fontPairings";
 import { addTypeToBoard } from "../../lib/addTypeToBoard";
 import styles from "../recognize/page.module.css";
 import t from "./page.module.css";
 
 const SESSION_KEY = "moodbuilder.type.session.v1";
-const LABEL = Object.fromEntries(REACTIONS.map((r) => [r.key, r.label]));
-const DECK_SIZE = 24;
-const KEPT = new Set(["yes", "sure", "maybe"]); // "worth taking to the next round"
+
+// Expressive vibe chips — each label set in a face that embodies it (the Adobe Fonts
+// pattern). They map to the catalog's classification so the board fills with real faces.
+const VIBES = [
+  { key: "serif", label: "Editorial", font: "Fraunces" },
+  { key: "sans", label: "Clean", font: "Inter" },
+  { key: "display", label: "Loud", font: "Anton" },
+  { key: "slab", label: "Sturdy", font: "Zilla Slab" },
+  { key: "handwriting", label: "Hand", font: "Caveat" },
+  { key: "mono", label: "Technical", font: "Space Mono" },
+];
 
 export default function TypePage() {
   const { project } = useProject();
-  const wordmark = project?.wordmark || "Your Brand";
-  const [pairings, setPairings] = useState([]);
-  const [loaded, setLoaded] = useState(false);
-  const [reactions, setReactions] = useState({}); // pairingId → reaction key
-  const [activeId, setActiveId] = useState(null);
+  const [word, setWord] = useState("");
+  const [vibe, setVibe] = useState("serif");
+  const [facesByVibe, setFacesByVibe] = useState({}); // vibeKey → [family]
+  const [loadingVibe, setLoadingVibe] = useState(false);
+  const [kept, setKept] = useState([]); // your collected faces (family names)
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
   const [error, setError] = useState(null);
   const hydrated = useRef(false);
 
-  // Mood-rank the deck by the colors you already gathered (the project palette), so
-  // the faces that suit your direction come up first. Same engine as recognize.
-  useEffect(() => {
-    let cancelled = false;
-    apiFetch("/api/library/palette", { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (cancelled) return;
-        const palette = (data?.palette || []).slice(0, 24);
-        setPairings(rankPairings({ palette }).slice(0, DECK_SIZE));
-      })
-      .catch(() => !cancelled && setPairings(rankPairings({}).slice(0, DECK_SIZE)))
-      .finally(() => !cancelled && setLoaded(true));
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  // The word everything is set in — your copy. Falls back to the project wordmark.
+  const shown = word.trim() || project?.wordmark || "Your Brand";
 
-  useEffect(() => {
-    if (!activeId && pairings.length) setActiveId(pairings[0].id);
-  }, [pairings, activeId]);
-
+  // Restore / persist your exploration (the word, the vibe, your kept faces).
   useEffect(() => {
     try {
       const s = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
       if (s && typeof s === "object") {
-        if (s.reactions) setReactions(s.reactions);
-        if (s.activeId) setActiveId(s.activeId);
+        if (typeof s.word === "string") setWord(s.word);
+        if (s.vibe) setVibe(s.vibe);
+        if (Array.isArray(s.kept)) setKept(s.kept);
       }
     } catch {
-      /* fresh session */
+      /* fresh */
     }
   }, []);
   useEffect(() => {
@@ -68,84 +56,65 @@ export default function TypePage() {
       return;
     }
     try {
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ reactions, activeId }));
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ word, vibe, kept }));
     } catch {
       /* storage off */
     }
-  }, [reactions, activeId]);
+  }, [word, vibe, kept]);
 
-  const families = useMemo(() => {
-    const s = new Set();
-    pairings.forEach((p) => {
-      s.add(p.display);
-      s.add(p.text);
-    });
-    return [...s];
-  }, [pairings]);
-
-  const active = pairings.find((p) => p.id === activeId) || null;
-  const reactedCount = Object.keys(reactions).length;
-  const kept = pairings.filter((p) => KEPT.has(reactions[p.id]));
-
-  const react = useCallback(
-    (id, key) => {
-      if (!id) return;
-      const updated = { ...reactions, [id]: key };
-      setReactions(updated);
-      setAdded(false);
-      if (activeId === id) {
-        const idx = pairings.findIndex((p) => p.id === id);
-        const next =
-          pairings.slice(idx + 1).find((p) => !updated[p.id]) || pairings.find((p) => !updated[p.id]);
-        if (next) setActiveId(next.id);
-      }
-    },
-    [reactions, activeId, pairings],
-  );
-
+  // Fill the board with real faces of the chosen vibe (cached per vibe).
   useEffect(() => {
-    const onKey = (e) => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      const tag = e.target?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA") return;
-      const idx = ["1", "2", "3", "4", "5"].indexOf(e.key);
-      if (idx >= 0 && REACTIONS[idx] && activeId) {
-        e.preventDefault();
-        react(activeId, REACTIONS[idx].key);
-      }
+    if (facesByVibe[vibe]) return;
+    let cancelled = false;
+    setLoadingVibe(true);
+    fetch(`/api/fonts/google?style=${vibe}&sort=popular&limit=28&page=0`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (cancelled || !d) return;
+        setFacesByVibe((prev) => ({ ...prev, [vibe]: (d.families || []).map((f) => f.family) }));
+      })
+      .catch(() => {})
+      .finally(() => !cancelled && setLoadingVibe(false));
+    return () => {
+      cancelled = true;
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [react, activeId]);
+  }, [vibe, facesByVibe]);
 
-  const reset = useCallback(() => {
-    setReactions({});
+  const faces = facesByVibe[vibe] || [];
+
+  // Load every face that's on screen — the active vibe, your kept set, and the
+  // chip exemplars — so the whole board renders live in your words.
+  const loadFamilies = useMemo(() => {
+    const s = new Set();
+    faces.forEach((f) => s.add(f));
+    kept.forEach((f) => s.add(f));
+    VIBES.forEach((v) => s.add(v.font));
+    return [...s];
+  }, [faces, kept]);
+
+  const keptSet = useMemo(() => new Set(kept), [kept]);
+  const toggleKeep = useCallback((family) => {
     setAdded(false);
-    setActiveId(pairings[0]?.id ?? null);
-    try {
-      localStorage.removeItem(SESSION_KEY);
-    } catch {
-      /* fine */
-    }
-  }, [pairings]);
+    setKept((prev) => (prev.includes(family) ? prev.filter((f) => f !== family) : [...prev, family]));
+  }, []);
 
   const addToBoard = useCallback(async () => {
     if (!kept.length || adding) return;
     setAdding(true);
     setError(null);
     try {
-      await addTypeToBoard({ pairings: kept, wordmark });
+      await addTypeToBoard({ faces: kept.map((f) => ({ family: f })), word: shown });
       setAdded(true);
     } catch (e) {
       setError(e?.message || "Could not add to your board.");
     } finally {
       setAdding(false);
     }
-  }, [kept, adding, wordmark]);
+  }, [kept, adding, shown]);
 
   return (
     <div className={styles.page}>
-      {families.map((f) => (
+      {loadFamilies.map((f) => (
         <FontLoader key={f} fonts={{ title: { family: f, source: "google" } }} />
       ))}
 
@@ -156,117 +125,102 @@ export default function TypePage() {
       </header>
 
       <p className={styles.lede}>
-        React to type the way you reacted to your inspiration. The faces that suit the
-        colors you gathered come first; keep the ones that feel right.
+        Set every typeface in your own words and feel your way through. Keep the ones
+        that fit; they collect on the right and land on your board.
       </p>
 
+      {/* The copy you’re testing — change it once, the whole board re-typesets. */}
+      <div className={t.copyBar}>
+        <label className={t.copyLabel} htmlFor="type-word">Your words</label>
+        <input
+          id="type-word"
+          className={t.copyInput}
+          value={word}
+          onChange={(e) => setWord(e.target.value)}
+          placeholder={project?.wordmark || "Your Brand"}
+          spellCheck={false}
+        />
+        <div className={t.vibes} role="group" aria-label="Browse by vibe">
+          {VIBES.map((v) => (
+            <button
+              key={v.key}
+              type="button"
+              className={t.vibe}
+              data-on={vibe === v.key ? "true" : undefined}
+              onClick={() => setVibe(v.key)}
+              style={{ fontFamily: fontStack({ family: v.font }, v.key === "sans" || v.key === "mono" ? "sans" : "serif") }}
+            >
+              {v.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* No collection? Browse the vibes above. Already have favorites? Bring them. */}
+      <SearchAdd shown={shown} keptSet={keptSet} onKeep={toggleKeep} />
+
       <div className={styles.layout}>
-        <section className={styles.reactCol} aria-label="React to a typeface">
-          {!loaded ? (
+        <section className={styles.reactCol} aria-label="Typefaces">
+          {loadingVibe && faces.length === 0 ? (
             <div className={styles.cardEmpty}>Loading type…</div>
-          ) : !active ? (
-            <div className={styles.cardEmpty}>No type to show.</div>
           ) : (
-            <>
-              <div className={`${styles.card} ${t.specimenCard}`} key={active.id}>
-                <div className={t.specimen}>
-                  <span
-                    className={t.specimenWordmark}
-                    style={{ fontFamily: fontStack({ family: active.display }, "serif") }}
-                  >
-                    {wordmark}
-                  </span>
-                  <span
-                    className={t.specimenSample}
-                    style={{ fontFamily: fontStack({ family: active.text }, "sans") }}
-                  >
-                    The quick brown fox jumps over the lazy dog.
-                  </span>
-                  <span className={t.specimenMeta}>
-                    {active.display === active.text ? active.display : `${active.display} + ${active.text}`}
-                    {active.source ? ` · via ${active.source}` : ""}
-                  </span>
-                </div>
-
-                <div className={styles.reactions} role="group" aria-label="How does this land?">
-                  {REACTIONS.map((r, i) => (
-                    <button
-                      key={r.key}
-                      type="button"
-                      className={styles.reactBtn}
-                      data-key={r.key}
-                      data-on={reactions[active.id] === r.key ? "true" : undefined}
-                      onClick={() => react(active.id, r.key)}
-                      aria-pressed={reactions[active.id] === r.key}
-                      aria-label={`${r.label} — ${r.hint}`}
+            <div className={t.grid}>
+              {faces.map((fam) => {
+                const on = keptSet.has(fam);
+                return (
+                  <div key={fam} className={t.gridCard} data-kept={on ? "true" : undefined}>
+                    <span
+                      className={t.gridSpecimen}
+                      style={{ fontFamily: fontStack({ family: fam }, "serif") }}
                     >
-                      <span className={styles.reactNum}>{i + 1}</span>
-                      <span className={styles.reactLabel}>{r.label}</span>
-                    </button>
-                  ))}
-                </div>
-
-                <p className={styles.progress}>
-                  <strong>{reactedCount}</strong> of {pairings.length} sorted
-                  <span className={styles.kbdHint}>press 1–5</span>
-                  {reactedCount > 0 && (
-                    <button type="button" className={styles.resetInline} onClick={reset}>
-                      Start over
-                    </button>
-                  )}
-                </p>
-              </div>
-
-              <div className={styles.boardWrap}>
-                <p className={styles.boardLabel}>Type that suits your colors · pick any, in any order</p>
-                <div className={t.typeBoard}>
-                  {pairings.map((p) => {
-                    const k = reactions[p.id];
-                    return (
+                      {shown}
+                    </span>
+                    <div className={t.gridFoot}>
+                      <span className={t.gridName}>{fam}</span>
                       <button
-                        key={p.id}
                         type="button"
-                        className={t.typeChip}
-                        data-active={p.id === activeId ? "true" : undefined}
-                        data-reacted={k ? "true" : undefined}
-                        onClick={() => setActiveId(p.id)}
-                        title={`${p.display} + ${p.text}`}
+                        className={t.keepBtn}
+                        data-on={on ? "true" : undefined}
+                        onClick={() => toggleKeep(fam)}
+                        aria-pressed={on}
                       >
-                        <span style={{ fontFamily: fontStack({ family: p.display }, "serif") }}>{p.display}</span>
-                        {k && (
-                          <span className={t.typeBadge} data-key={k}>
-                            {LABEL[k]}
-                          </span>
-                        )}
+                        {on ? "✓ Kept" : "Keep"}
                       </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           )}
         </section>
 
         <aside className={styles.directionCol} aria-label="Your type">
           <div className={styles.direction}>
-            <h2 className={styles.directionH}>Your type so far</h2>
+            <h2 className={styles.directionH}>
+              Your type <span className={t.count}>{kept.length}</span>
+            </h2>
             {kept.length === 0 ? (
               <p className={styles.directionHint}>
-                Mark a typeface <strong>YES</strong>, <strong>Sure</strong>, or{" "}
-                <strong>Maybe</strong>, and it collects here.
+                Browse a vibe, set it in your words, and <strong>Keep</strong> the faces
+                that feel right. They collect here.
               </p>
             ) : (
               <>
                 <ul className={t.keptList}>
-                  {kept.map((p) => (
-                    <li key={p.id} className={t.keptItem}>
+                  {kept.map((fam) => (
+                    <li key={fam} className={t.keptItem}>
                       <span
-                        className={t.keptName}
-                        style={{ fontFamily: fontStack({ family: p.display }, "serif") }}
+                        className={t.keptSpecimen}
+                        style={{ fontFamily: fontStack({ family: fam }, "serif") }}
                       >
-                        {p.display}
+                        {shown}
                       </span>
-                      {p.display !== p.text && <span className={t.keptText}>+ {p.text}</span>}
+                      <span className={t.keptRow}>
+                        <span className={t.keptName}>{fam}</span>
+                        <button type="button" className={t.keptRemove} onClick={() => toggleKeep(fam)} aria-label={`Remove ${fam}`}>
+                          ×
+                        </button>
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -284,16 +238,11 @@ export default function TypePage() {
                   </div>
                 ) : (
                   <>
-                    <button
-                      type="button"
-                      className={styles.makeDirection}
-                      onClick={addToBoard}
-                      disabled={adding}
-                    >
+                    <button type="button" className={styles.makeDirection} onClick={addToBoard} disabled={adding}>
                       {adding ? "Adding…" : `Add ${kept.length} to your board`}
                     </button>
                     <p className={styles.reflectHint}>
-                      Drops your type onto the same board as your colors, as live specimens.
+                      Drops your kept type onto the same board as your colors, as live specimens.
                     </p>
                   </>
                 )}
@@ -303,6 +252,75 @@ export default function TypePage() {
           </div>
         </aside>
       </div>
+    </div>
+  );
+}
+
+// Import path: search the catalog by name and add favorites you already know — for
+// anyone who arrives with a list, not a blank slate. (Upload-your-own is next.)
+function SearchAdd({ shown, keptSet, onKeep }) {
+  const [q, setQ] = useState("");
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    if (q.trim().length < 2) {
+      setResults([]);
+      return;
+    }
+    const ctl = new AbortController();
+    const id = setTimeout(() => {
+      fetch(`/api/fonts/google?q=${encodeURIComponent(q)}&limit=8&page=0`, { signal: ctl.signal })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => setResults((d?.families || []).map((f) => f.family)))
+        .catch(() => {});
+    }, 200);
+    return () => {
+      clearTimeout(id);
+      ctl.abort();
+    };
+  }, [q]);
+
+  return (
+    <div className={t.importBar}>
+      {results.map((fam) => (
+        <FontLoader key={fam} fonts={{ title: { family: fam, source: "google" } }} />
+      ))}
+      <span className={t.importLabel}>Already have favorites?</span>
+      <div className={t.importField}>
+        <input
+          className={t.importInput}
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Add any font by name…"
+          spellCheck={false}
+          aria-label="Search the catalog to add a font by name"
+        />
+        {results.length > 0 && (
+          <ul className={t.importResults}>
+            {results.map((fam) => {
+              const on = keptSet.has(fam);
+              return (
+                <li key={fam} className={t.importResult}>
+                  <span className={t.importSpecimen} style={{ fontFamily: fontStack({ family: fam }, "serif") }}>
+                    {shown}
+                  </span>
+                  <span className={t.importName}>{fam}</span>
+                  <button
+                    type="button"
+                    className={t.keepBtn}
+                    data-on={on ? "true" : undefined}
+                    onClick={() => onKeep(fam)}
+                    aria-pressed={on}
+                  >
+                    {on ? "✓ Kept" : "Keep"}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+      <span className={t.importNote}>Upload your own fonts — coming with sign-in.</span>
     </div>
   );
 }
