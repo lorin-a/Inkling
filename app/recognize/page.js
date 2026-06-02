@@ -8,6 +8,7 @@ import { colorName } from "../../lib/nameThatColor";
 import { derivePreviewRoles } from "../../lib/derivePreviewRoles";
 import FontLoader, { fontStack } from "../../components/FontLoader";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
+import PinColourEditor from "../../components/PinColourEditor";
 import {
   REACTIONS,
   buildProfile,
@@ -25,6 +26,8 @@ export default function RecognizePage() {
   const [loaded, setLoaded] = useState(false);
   const [reactions, setReactions] = useState([]); // [{ pin, key }]
   const [selectedColours, setSelectedColours] = useState(null); // null = follow the proposal; array = she's curating
+  const [pinOverrides, setPinOverrides] = useState({}); // pinId → hex[] she hand-sampled off the image
+  const [editingPinId, setEditingPinId] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,13 +44,30 @@ export default function RecognizePage() {
     };
   }, []);
 
+  const pinById = useMemo(() => new Map(pins.map((p) => [p.pinId, p])), [pins]);
+  // A pin contributes the colours she hand-sampled if she's edited it, else the
+  // auto-extraction. The eyedropper writes here; everything downstream reads it.
+  const effPalette = useCallback(
+    (id) => pinOverrides[id] ?? pinById.get(id)?.palette ?? [],
+    [pinOverrides, pinById],
+  );
+
   const reactedIds = useMemo(() => new Set(reactions.map((r) => r.pin.pinId)), [reactions]);
   const remaining = useMemo(
     () => pins.filter((p) => !reactedIds.has(p.pinId)),
     [pins, reactedIds],
   );
 
-  const profile = useMemo(() => buildProfile(reactions), [reactions]);
+  // Reactions keep the original pins; overrides apply here so editing a pin's
+  // colours reshapes the direction without rewriting the reaction log.
+  const effReactions = useMemo(
+    () => reactions.map((r) => ({
+      key: r.key,
+      pin: { ...r.pin, palette: pinOverrides[r.pin.pinId] ?? r.pin.palette },
+    })),
+    [reactions, pinOverrides],
+  );
+  const profile = useMemo(() => buildProfile(effReactions), [effReactions]);
   const current = useMemo(
     () => pickNext(remaining, profile, { turn: reactions.length }),
     [remaining, profile, reactions.length],
@@ -73,9 +93,9 @@ export default function RecognizePage() {
   // Convergence metric: how far the *proposal* moved on the last reaction.
   const recentShift = useMemo(() => {
     if (!autoDirection) return Infinity;
-    const prev = composeDirection(buildProfile(reactions.slice(0, -1)));
+    const prev = composeDirection(buildProfile(effReactions.slice(0, -1)));
     return paletteShift(prev?.palette, autoDirection.palette);
-  }, [autoDirection, reactions]);
+  }, [autoDirection, effReactions]);
   const settling = isSettling({ resonantCount: profile.resonantCount, recentShift });
 
   const react = useCallback(
@@ -120,10 +140,25 @@ export default function RecognizePage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [react]);
 
+  const setPinColours = useCallback((id, colours) => {
+    setPinOverrides((prev) => ({ ...prev, [id]: colours }));
+  }, []);
+  const resetPinColours = useCallback((id) => {
+    setPinOverrides((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  }, []);
+
   const reset = useCallback(() => {
     setReactions([]);
     setSelectedColours(null);
+    setPinOverrides({});
+    setEditingPinId(null);
   }, []);
+
+  const editingPin = editingPinId ? pinById.get(editingPinId) : null;
 
   return (
     <div className={styles.page}>
@@ -149,11 +184,13 @@ export default function RecognizePage() {
             <ReactCard
               key={current.pin.pinId}
               pin={current.pin}
+              colours={effPalette(current.pin.pinId)}
               reason={current.reason}
               seen={reactions.length}
               total={pins.length}
               resonating={profile.resonantCount}
               onReact={react}
+              onEditColours={() => setEditingPinId(current.pin.pinId)}
             />
           )}
         </section>
@@ -169,14 +206,26 @@ export default function RecognizePage() {
             curating={selectedColours !== null}
             onToggleColour={toggleColour}
             onResetColours={resetColours}
+            onEditPin={setEditingPinId}
           />
         </aside>
       </div>
+
+      {editingPin && (
+        <PinColourEditor
+          pin={editingPin}
+          colours={effPalette(editingPin.pinId)}
+          isOverridden={Object.prototype.hasOwnProperty.call(pinOverrides, editingPin.pinId)}
+          onChange={(colours) => setPinColours(editingPin.pinId, colours)}
+          onReset={() => resetPinColours(editingPin.pinId)}
+          onClose={() => setEditingPinId(null)}
+        />
+      )}
     </div>
   );
 }
 
-function ReactCard({ pin, reason, seen, total, resonating, onReact }) {
+function ReactCard({ pin, colours, reason, seen, total, resonating, onReact, onEditColours }) {
   const credit = pin.sourceDomain && pin.sourceDomain !== "pinterest.com"
     ? pin.sourceDomain
     : "Pinterest";
@@ -198,11 +247,16 @@ function ReactCard({ pin, reason, seen, total, resonating, onReact }) {
         </a>
       </figure>
 
-      <div className={styles.cardSwatches} aria-hidden="true">
-        {pin.palette.slice(0, 6).map((hex, i) => (
-          <span key={i} className={styles.cardSwatch} style={{ background: hex }} />
-        ))}
-      </div>
+      {/* React to the image, not the swatches — the colours are a rough first
+          guess you can overwrite, never the basis of a yes. */}
+      <button type="button" className={styles.cardColours} onClick={onEditColours}>
+        <span className={styles.cardSwatches} aria-hidden="true">
+          {colours.slice(0, 8).map((hex, i) => (
+            <span key={i} className={styles.cardSwatch} style={{ background: hex }} />
+          ))}
+        </span>
+        <span className={styles.cardColoursLabel}>auto-picked · pick your own</span>
+      </button>
 
       <div className={styles.reactions} role="group" aria-label="How does this land?">
         {REACTIONS.map((r, i) => (
@@ -253,6 +307,7 @@ function DirectionPanel({
   curating,
   onToggleColour,
   onResetColours,
+  onEditPin,
 }) {
   if (!direction) {
     return (
@@ -343,20 +398,32 @@ function DirectionPanel({
 
       {profile.likedPins.length > 0 && (
         <div className={styles.cluster}>
-          <p className={styles.clusterLabel}>What you resonated with</p>
+          <p className={styles.clusterLabel}>
+            What you resonated with <span className={styles.clusterHint}>tap a pin to pick its colours</span>
+          </p>
           <div className={styles.clusterThumbs}>
             {profile.likedPins.map((p) => (
-              <a
-                key={p.pinId}
-                className={styles.clusterThumb}
-                href={p.sourceUrl || p.pinUrl}
-                target="_blank"
-                rel="noreferrer noopener"
-                title={p.title || "Reference"}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.thumbnail} alt={p.title || "Reference"} />
-              </a>
+              <div key={p.pinId} className={styles.clusterThumb}>
+                <button
+                  type="button"
+                  className={styles.clusterPick}
+                  onClick={() => onEditPin(p.pinId)}
+                  title={`Pick colours from ${p.title || "this reference"}`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.thumbnail} alt={p.title || "Reference"} />
+                </button>
+                <a
+                  className={styles.clusterSource}
+                  href={p.sourceUrl || p.pinUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  aria-label="Open source"
+                  title="Open source"
+                >
+                  ↗
+                </a>
+              </div>
             ))}
           </div>
         </div>
