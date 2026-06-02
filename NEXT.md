@@ -123,7 +123,70 @@ blocks first.**
 
 ---
 
-## Session log — 2026-06-01 *(most recent; read first)*
+## Session log — 2026-06-02 *(most recent; read first)*
+
+### ⏸ END-OF-SESSION STATUS (2026-06-02) — START HERE NEXT TIME
+
+**Lane B, slice 1 shipped + committed:** per-image moodboard image finishes
+(`0207375` on `phase-6c-playground`). Working tree clean. **Local only — NOT
+pushed.** Browser-verified all six finish states + keyboard focus; build green;
+console clean; source-credit attribution stays crisp above every finish.
+
+**What works now** at `/moodboard`: select an image block → the **Image finish**
+toolbar button (tonal-circle icon, beside Crop) opens a **FinishPopover** —
+finish chips **None / Riso / Grain / Duotone / Halftone / B&W**, an intensity
+slider, two palette **ink pickers** (Shadow / Light, duotone + Riso only), and
+**Apply to all images**. The finish lives on `block.payload.finish` and persists
+via the existing autosave (no backend change). Controls at the 44px touch floor;
+effects are static SVG/CSS (reduced-motion safe, export-safe).
+
+**Decisions Lorin made this session (locked):**
+- **Per-image, NOT board-wide.** A board-wide finish would destroy the colour/
+  mood each reference was collected for and read incoherently next to true-colour
+  swatches. Default is none; vary per image; **Apply to all** is the one-click
+  unified-Riso escape hatch. (Captured in memory `project_product_direction`.)
+- **Menu = all six** (she added **B&W**). Halftone kept but is the weakest —
+  it's a *uniform* dot grid, not true tone-mapped (dot size ∝ luminance). If she
+  wants it stronger later, upgrade to a real tone-mapped halftone (SVG-heavier).
+- **Default inks = darkest + lightest from the palette, but the shadow ink is
+  biased toward the most *chromatic* dark** so duotone reads as two colours, not
+  grayscale (else Riso/Duotone/B&W collapse together). Both inks stay editable.
+- Default intensity 0.8 so a finish reads on first apply.
+
+**File map (this slice):**
+- `components/canvas/finish.js` (new) — FINISHES list, grain/Riso noise tiles
+  (feTurbulence data URLs), `hexToRgb` / `luminance` / `chroma`, `deriveInks`
+  (palette → chromatic-dark + light pair), `duotoneStops`, `withDefaults`.
+- `components/canvas/FinishPopover.js` (new) — the chooser; the *live board image
+  is the preview* (no abstract swatch), fetches `/api/library/palette` for inks.
+- `components/canvas/ImageBlock.js` — renders duotone (SVG `feColorMatrix` →
+  `feComponentTransfer`), grain/halftone/grayscale overlays, all
+  `pointer-events:none`, credit chip above.
+- `Block.js` (Finish button + popover), `Board.js` + `app/moodboard/page.js`
+  (`onSetFinish` / `applyFinishAll` wiring), `canvas.module.css` (finish styles).
+
+**↳ NEXT — finish Lane B, then the URL-add quick win, then Lane C:**
+- **Lane B slice 2 — surface grain / board paper:** apply the same finish engine
+  to the *board background* (the last open canvas item). Extend the BoardBar
+  Background control (or a sibling) with a paper/grain texture. Reuse `finish.js`.
+- **Lane B slice 3 — masked into type/marks** (subtle, last): grain clipped to
+  wordmark/SVG fills.
+- **Export:** there's no board-image export surface yet (only persistence +
+  Brand-book PDF). The finish is built export-safe; board PNG export is a
+  separate follow-up.
+- **Image-by-URL quick win** (Lorin raised it): let users paste an Unsplash/any
+  image URL → image block (remote `src` + URL as credit). Cheap, no storage.
+  Lives near PinTray / AddBlocks. **Desktop image upload** is heavier — needs the
+  deferred IndexedDB/Blob local binary store (same gate as font/texture uploads).
+- **Lane C** — pipeline-verb home + IA wiring (note 1, mind the “studio” flag),
+  Resources as a true library (note 2), `/decide` spacing (note 5).
+- Parked: video pins (gated on real video); halftone tone-map upgrade; a swatch-
+  style *picker* vs cycle; more foundry directory in the text typeface popover.
+- Before authed parity: `node scripts/migrate.mjs` (migrations 008 + 009).
+
+---
+
+## Session log — 2026-06-01
 
 ### ⏸ END-OF-SESSION STATUS (2026-06-01) — START HERE NEXT TIME
 
