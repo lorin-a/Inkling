@@ -11,38 +11,41 @@ import { createDirection } from "../../lib/makeDirection";
 import styles from "./page.module.css";
 
 const ONBOARDING_KEY = "moodbuilder.recognize.onboarding.v1";
+const SESSION_KEY = "moodbuilder.recognize.session.v1";
 const LABEL = Object.fromEntries(REACTIONS.map((r) => [r.key, r.label]));
 
+// Ordered top → down so the tour orients you where the page starts (the reference
+// you're on) and only travels to the board below once you're settled.
 const TOUR_STEPS = [
-  {
-    selector: '[data-tour="board"]',
-    placement: "top",
-    title: "All your pins, your order",
-    body: "Here’s your whole field. Pick any pin, in any order, as many times as you like. Nothing’s chosen for you, nothing hides.",
-  },
   {
     selector: '[data-tour="image"]',
     placement: "right",
-    title: "You’re reacting to the image",
-    body: "Not its colours. A yes just means this belongs in your world. You’ll choose the actual colours separately.",
+    title: "Start here: react to the image",
+    body: "You’re reacting to the picture itself, not its colours. A yes just means this belongs in your world.",
   },
   {
     selector: '[data-tour="react"]',
     placement: "right",
-    title: "React to the one you’re on",
-    body: "YES, Sure, Maybe, Meh, Nope, or press 1 to 5. Go with your gut. Change it anytime by picking the pin again.",
+    title: "Trust your gut",
+    body: "YES, Sure, Maybe, Meh, Nope, or press 1 to 5. Change it anytime by picking the pin again.",
   },
   {
     selector: '[data-tour="colours"]',
     placement: "right",
-    title: "Pick your own colours",
-    body: "The swatches are a rough auto-guess. Click here to open an eyedropper and sample colours off the image, delete ones you don’t want, or add more.",
+    title: "The colours are yours to pick",
+    body: "Those swatches are a rough auto-guess. Click to open an eyedropper and sample colours straight off the image, delete ones you don’t want, or add more.",
+  },
+  {
+    selector: '[data-tour="board"]',
+    placement: "top",
+    title: "Your whole field is below",
+    body: "Every pin, in any order, as many times as you like. Nothing’s chosen for you, nothing hides. You drive.",
   },
   {
     selector: '[data-tour="gather"]',
     placement: "left",
-    title: "Your colours collect here",
-    body: "Everything from your yeses lands here, with its hex. Curated by default, tap All to see every colour. Tap a pin to refine its colours anytime.",
+    title: "It all collects here",
+    body: "The colours from your yeses gather on this side. When you’re ready, put what you learned into words and make a direction.",
   },
 ];
 
@@ -63,6 +66,7 @@ export default function RecognizePage() {
   const [editingPinId, setEditingPinId] = useState(null);
   const [tour, setTour] = useState(false);
   const tourAutoStarted = useRef(false);
+  const sessionHydrated = useRef(false);
   // Reflection — your own words, never autofilled (cultivate, don't supply).
   const [reflectYes, setReflectYes] = useState("");
   const [reflectNo, setReflectNo] = useState("");
@@ -84,6 +88,40 @@ export default function RecognizePage() {
       cancelled = true;
     };
   }, []);
+
+  // Restore an in-progress session — reactions, your words, the direction — so
+  // navigating away (to the board or to Brand) and back never loses your work.
+  useEffect(() => {
+    try {
+      const s = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+      if (s && typeof s === "object") {
+        if (s.reactions) setReactions(s.reactions);
+        if (s.pinOverrides) setPinOverrides(s.pinOverrides);
+        if (typeof s.reflectYes === "string") setReflectYes(s.reflectYes);
+        if (typeof s.reflectNo === "string") setReflectNo(s.reflectNo);
+        if (s.direction) setDirection(s.direction);
+        if (s.activePinId) setActivePinId(s.activePinId);
+      }
+    } catch {
+      /* storage off — fresh session */
+    }
+  }, []);
+
+  // Persist on every change (skip the first run so restore lands first).
+  useEffect(() => {
+    if (!sessionHydrated.current) {
+      sessionHydrated.current = true;
+      return;
+    }
+    try {
+      localStorage.setItem(
+        SESSION_KEY,
+        JSON.stringify({ reactions, pinOverrides, reflectYes, reflectNo, direction, activePinId }),
+      );
+    } catch {
+      /* storage off — fine */
+    }
+  }, [reactions, pinOverrides, reflectYes, reflectNo, direction, activePinId]);
 
   const pinById = useMemo(() => new Map(pins.map((p) => [p.pinId, p])), [pins]);
   // A pin contributes the colours she hand-sampled if she's edited it, else the
@@ -171,6 +209,11 @@ export default function RecognizePage() {
     setReflectNo("");
     setDirection(null);
     setDirectionError(null);
+    try {
+      localStorage.removeItem(SESSION_KEY);
+    } catch {
+      /* fine */
+    }
   }, [pins]);
 
   // Turn what resonated into a direction — a real moodboard that feeds Brand.
@@ -241,6 +284,7 @@ export default function RecognizePage() {
             <>
               {activePin && (
                 <FocusCard
+                  key={activePin.pinId}
                   pin={activePin}
                   colours={effPalette(activePin.pinId)}
                   reaction={reactions[activePin.pinId]}
@@ -506,28 +550,17 @@ function GatherPanel({
       {likedPins.length > 0 && (
         <div className={styles.reflect}>
           <h3 className={styles.reflectH}>In your own words</h3>
-          <label className={styles.reflectLabel} htmlFor="reflect-yes">
-            Looking at everything you kept — what do these have in common in your eyes?
-            What feelings or sensations do they evoke?
+          <label className={styles.reflectLabel} htmlFor="reflect-words">
+            What did you learn shuffling through your inspiration? What are you
+            gravitating toward, and what isn’t quite working?
           </label>
           <textarea
-            id="reflect-yes"
+            id="reflect-words"
             className={styles.reflectInput}
             value={reflectYes}
             onChange={(e) => setReflectYes(e.target.value)}
             placeholder="It’s yours to name…"
-            rows={3}
-          />
-          <label className={styles.reflectLabel} htmlFor="reflect-no">
-            Anything you’re steering away from? What wasn’t working?
-          </label>
-          <textarea
-            id="reflect-no"
-            className={styles.reflectInput}
-            value={reflectNo}
-            onChange={(e) => setReflectNo(e.target.value)}
-            placeholder="Optional"
-            rows={2}
+            rows={4}
           />
 
           {direction ? (
@@ -536,13 +569,17 @@ function GatherPanel({
                 ✓ Saved as <strong>“{direction.name}”</strong>
               </p>
               <div className={styles.directionActions}>
-                <Link href="/brand" className={styles.directionPrimary}>
-                  Compose a brand →
+                <Link href="/moodboard" className={styles.directionPrimary}>
+                  Open your board →
                 </Link>
-                <Link href="/moodboard" className={styles.directionSecondary}>
-                  Open the board
+                <Link href="/brand" className={styles.directionSecondary}>
+                  Compose a brand
                 </Link>
               </div>
+              <p className={styles.directionSavedHint}>
+                Your board <em>is</em> the direction. Shape it, add notes, then compose it
+                into a brand whenever you’re ready.
+              </p>
             </div>
           ) : (
             <>

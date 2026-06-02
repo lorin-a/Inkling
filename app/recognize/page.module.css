@@ -619,6 +619,13 @@
   outline: 2px solid var(--whelm-vivid);
   outline-offset: 2px;
 }
+.directionSavedHint {
+  margin: 12px 2px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  font-style: italic;
+  color: var(--ink-muted);
+}
 .directionError {
   margin: 10px 2px 0;
   font-size: 13px;

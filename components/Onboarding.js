@@ -86,6 +86,18 @@ export default function Onboarding({ steps, onClose }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [next, onClose]);
 
+  // Lock user scroll while the tour is up — the tour scrolls itself to each target,
+  // and free-scrolling under a fixed spotlight desyncs it and reads as glitchy.
+  useEffect(() => {
+    const block = (e) => e.preventDefault();
+    window.addEventListener("wheel", block, { passive: false });
+    window.addEventListener("touchmove", block, { passive: false });
+    return () => {
+      window.removeEventListener("wheel", block);
+      window.removeEventListener("touchmove", block);
+    };
+  }, []);
+
   const tip = computeTip(rect, step?.placement);
 
   return (
