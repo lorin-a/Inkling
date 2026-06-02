@@ -410,3 +410,126 @@ project-ready); (2) the crop+tag pull gesture generalizing the eyedropper; (3) t
 templates + the curated-collage copy flow. Later: cross-project library search,
 joint/live collaboration, brand summon. **Recognize is the calm reference standard
 (Section 13/14) every new surface must match.**
+
+---
+
+## 16. Roadmap & forward thinking — the rest of the plan, with reasoning (preserved 2026-06-02 night)
+
+*This is the handoff of my actual thinking: what's next, in what order, and **why** —
+the tradeoffs I was weighing, my recommendations, and the open decisions. Read it as
+"if I picked this up cold, here's how I'd reason about it."*
+
+### Where we are (built + proven)
+- **Recognition engine, proven across two dimensions.** Color (`/recognize`) and type
+  (`/type`) both run the same intuition-curation loop. This is the load-bearing proof
+  that the hub-and-spoke model is real, not theoretical.
+- **`/recognize` is the calm reference standard** (the design pass set the bar:
+  one-job-in-focus, generous space, designed empty states, one accent used sparingly,
+  blurred-image sophistication, progressive disclosure, you-stay-author).
+- **The canvas is the home, wired:** color → make a moodboard → add type → both land on
+  one board, tagged. Brand is no longer the next click.
+- **The tagged-reference atom exists** (type blocks carry `tags`), the seam to it is open.
+
+### The sequencing logic (why this order)
+Three principles drive the order, learned the hard way this session:
+1. **Thin connected vertical before deepening any node.** We got stuck early by polishing
+   an island (`/recognize`) that fed nothing. Never again: each slice must connect forward.
+2. **Build the shared spine, validate via one dogfoodable path.** Not "build for one
+   persona," not "abstract platform" — the spine, proven on Whelm (Lorin's own case).
+3. **Dependency graph, not preference.** Solo spine → collaboration on top → per-persona
+   leaves. You literally can't build group-react without single-react. So solo-first is
+   forced, not chosen.
+
+### Next, in priority order
+
+**A. Type-spoke depth (immediate — the surface Lorin is actively in).** Pick by her steer;
+my reasoning on each:
+- **Title / subhead / body roles** *(my lean for first)* — she judges type *in a lockup*,
+  not a single word. This is her "see it in context" instinct, and it's cheap (more copy
+  fields + a small lockup specimen). Highest taste-payoff per effort. Do this first.
+- **Upload your own fonts** — real users arrive with licensed/foundry files. Blocked on
+  sign-in + Blob storage (or a local IndexedDB binary store — same gate as marks/texture
+  uploads). Higher value for pros, more infra. Second.
+- **Richer mood vibe-tags** — the 6 we shipped map to *classification* (serif/sans…).
+  Adobe's real power was *aesthetic* tags (Funky/Luxury/Brutalist) which the Google
+  catalog doesn't tag. Needs curated tag→font lists. Medium; nice-to-have.
+- **Finalist "in context" depth** — once narrowed to 2–3, show a real lockup + link OUT to
+  Typewolf / Fonts-In-Use for in-the-wild (don't rebuild a curation archive). The decide
+  layer; comes after narrowing works.
+- **Moodboard re-copies its type blocks** — the global copy-swap currently lives on
+  `/type`; making the *canvas itself* re-typeset its type blocks turns the board into the
+  true exploration space (closest to her Figma file). Powerful, but touches the canvas.
+
+**B. The crop-and-tag "pull" gesture (next structural move).** *"This part, and it's about
+___"* — crop a region of a reference + tag its dimension. **Why high-leverage:** it
+generalises *input* the way the type spoke generalised *output*, and it's the only honest
+way to handle "a pin I love for its layout/texture/illustration, not its color" (you can't
+machine-extract those). The eyedropper is the color special-case of it. **Honest limit:**
+for non-color aspects it's crop-and-name (a tagged visual reference), with optional
+"find similar" link-outs — no faked AI identification. Build the crop+tag on the moodboard
+(there's already a crop/reframe model to extend), producing tagged references in the well.
+
+**C. The tagged library / well, cross-project (foundational, do alongside B).** The atom is
+a tagged reference (visual + source + tags). Tags make the user's whole inventory
+searchable and **cross-project** — the real "one place, not 50 bookmarks," and the thing
+that makes the tool *compound* (stickiness). Design the reference/tag model cross-project-
+ready even if v1 scopes to one project. This is mostly data-model + a search/filter UI.
+
+**D. Workshop-board templates + curated collage (the canvas as the organizing home).**
+Two board kinds: **workshop** (affinity — template levels: blank / named-editable sections
+Type·Color·Texture·Vibe·Layout·Illustration / guided pre-sort; solo or joint) and
+**curated collage** (the presentable deliverable; copy references over, provenance kept).
+One well/master → many direction-boards. This is where the co-design method becomes real.
+
+**E. More dimensions via the same engine** (texture/finish, layout/grid, illustration).
+Each is "just another deck/board," but each curates differently: color *extracts*, type
+is a *catalog you set in your words*, texture/illustration are *react-to-your-own-refs +
+a curated deck*, layout is *composition references*. The pull gesture (B) feeds these.
+
+**F. Collaboration (Nadia + Priya — pulls forward because 2 of 5 personas need it).**
+Async first (builds on the deferred Moodvote `instances/sessions/votes` schema): invite to
+react, **react-then-reveal** (anti-anchor, a hard rule), **optional** roles
+(client/designer) / anonymity / timing, and the **divergence/tension map** (the unique
+value — show where the group *splits*, not just consensus). Live co-sort is the frontier.
+The annotation/comments layer (Figma-style, Lorin's review note) is the entry to this.
+
+**G. The /brand redesign (the long-flagged overcrowding).** `/brand` reads cluttered next
+to recognize/canvas — the "thin Brand studio / nine jobs in one rail" problem. Apply the
+recognize standard (one job at a time, summon controls onto the surface, calm spacing,
+one accent). **Approach:** audit what's crammed in against the 8 standard rules (VISION
+§ "the standard recognize sets"), then re-architect. Brand is *summoned from a curated
+board*, far downstream — keep it there.
+
+**H. The resource hub / inspiration inbox / clipper (the sourcing pillar).** The well is
+sourced like images were (Pinterest/Are.na/upload) + a curated library + an **inspiration
+inbox** (holding pen before sorting) + a **browser-extension clipper** (validated by
+Fontpair's own extension) with a project picker. Plus **image-to-type search** (Adobe's
+camera) as the bridge from a loved pin to type discovery. These make "one place" real.
+
+### Open decisions still pending (need Lorin)
+1. Type depth: which first — **roles** (my lean) or **upload**?
+2. Crop-and-tag: confirm *"this part, and it's about ___"* as the one input gesture.
+3. Clusters: name-your-own with suggestions (she leaned yes) — confirm the suggested
+   starter set (Type·Color·Imagery·Illustration·Texture·Vibe·Layout).
+4. Boards: one well → many curated (she leaned yes via copy/duplicate) — confirm.
+5. Is `/recognize` a room that *feeds* the canvas (current) or a *gesture on* it (deferred
+   "one canvas" option)? Revisit once the spine proves out.
+
+### Known rough edges / debt (don't lose these)
+- **Moodboard text blocks render at a default size** — type specimens added to the canvas
+  look modest, not big like on `/type`. Canvas text-block sizing needs a `size` on payload
+  (or auto-fit). Flagged.
+- **`lib/makeDirection.js` has an unused `truncate`** (vestigial after the name change).
+- **Type deck font loading** is heavy (loads ~28 catalog fonts per vibe). Fine for a tool
+  page; lazy-load on scroll if it ever drags.
+- **Eyedropper modal image** still has grey gutters (backdrop applied to the recognize
+  hero, not the modal — left intentionally; minor, transient).
+- **Authed parity:** `node scripts/migrate.mjs` (migrations 008+009) before authed
+  moodboards work; type/recognize sessions are localStorage (signed-out path) today.
+- **The "in context / finalist" depth and subhead/body roles** are the two things Lorin
+  most wants for type — don't let them slip.
+
+### The throughline to protect
+Every move above serves the same soul: **the tool gives you instruments to extract your
+own taste; you stay the author; nothing is hidden or decided for you; it cultivates your
+intuition rather than supplying it.** When in doubt, that's the test.
