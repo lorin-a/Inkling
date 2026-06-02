@@ -355,3 +355,58 @@ round" — Maybe contributes colors, lower weight); eyedropper icon on the color
    not 50 bookmarks" promise.
 4. **Inspiration is not always a Pin** — uploads, URL, Are.na. Keep all copy + the data
    model source-agnostic (the well holds "sources", not "pins").
+
+---
+
+## 15. The full model: tagged references, a cross-project library, one engine, two board kinds (Lorin + Claude, 2026-06-02 night)
+
+The biggest reframe of the project. Recognition is not a color tool — it is the
+**engine of intuition-curation**, run once per *dimension*, feeding a **playground
+canvas** that is the home. Brand is summoned from it, far downstream — never the next
+click.
+
+**Atom — a tagged reference.** Everything you pull is a first-class object: a visual
+(image / crop / color swatch / type specimen / texture) + its **source** (credit,
+link — always preserved) + **tags** (a dimension tag *and* your own free tags).
+
+**The well = your tagged library, searchable and CROSS-PROJECT.** Tags make the user's
+whole accumulated inventory searchable ("all my type refs", "all my earthy palettes")
+and reusable in *future* projects. This is the real "one place, not 50 bookmarks", and
+it makes the tool compound: the longer you use it, the more valuable *your own library*
+becomes (stickiness). Design the reference/tag model cross-project-ready now; v1 may
+scope to one project.
+
+**The pull gesture — "this part, and it's about ___".** Crop a region of a reference +
+tag its dimension. The **eyedropper is the color special-case** (it also samples hexes);
+type / layout / illustration / texture are cropped *visual* references (honest — no
+faked machine identification; optional "find fonts like this" link-outs). This solves
+"a pin may be about layout, not color" and makes aspect-tagging a by-product of pulling,
+not a chore.
+
+**Recognition = one reusable engine (a spoke), run per dimension.** react → narrow →
+reflect → gather. **Color** is built. **Type** is next (proves it generalizes; reuses
+the existing Google-Fonts browser + foundry directory + palette-weighted pairing
+engine — don't reinvent; meet every knowledge level: none → guided deck + mood
+suggestions; has-a-top-5 → bring + find companions; surface foundries/free libraries,
+"add to library" in one tap). Then illustration, texture, layout, icon, voice.
+
+**Two board kinds (the hub):**
+- **Workshop board** — organize/affinity, for *thinking spatially*. Template levels:
+  **blank** (free collage) · **named-editable affinity sections** (Type · Color ·
+  Imagery · Illustration · Texture · Vibe · Layout — rename/add/delete) · **guided**
+  (tool pre-sorts your gathered stuff into suggested zones; accept / move / ignore).
+  Self **or** joint (invite others to sort the same board — the co-design layer).
+- **Curated collage** — the polished, *presentable* direction. Built by copying
+  references from the well/master into a focused board (provenance preserved; a
+  reference can live on many boards). This is the deliverable; the workshop board is
+  the thinking.
+
+**Boards: one well/master (everything) → many curated direction-boards** (copy/
+duplicate over). The funnel made literal.
+
+**Build sequence (proposed):** (1) the tagged-reference + tag model (atom, cross-
+project-ready); (2) the crop+tag pull gesture generalizing the eyedropper; (3) the
+**type spoke** (proves generalization, reuses font tooling); (4) workshop-board
+templates + the curated-collage copy flow. Later: cross-project library search,
+joint/live collaboration, brand summon. **Recognize is the calm reference standard
+(Section 13/14) every new surface must match.**
