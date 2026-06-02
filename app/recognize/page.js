@@ -263,7 +263,13 @@ export default function RecognizePage() {
       <header className={styles.bar}>
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
         <ProjectSwitcher />
-        <button type="button" className={styles.howto} onClick={() => setTour(true)}>
+        <button
+          type="button"
+          className={styles.howto}
+          onClick={() => setTour(true)}
+          aria-label="How it works: replay the intro"
+        >
+          <span className={styles.howtoMark} aria-hidden="true">?</span>
           How it works
         </button>
         <div className={styles.barTitle}>Recognize</div>

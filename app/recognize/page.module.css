@@ -23,19 +23,38 @@
 .back:hover { color: var(--ink); }
 .howto {
   margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   min-height: 36px;
-  padding: 0 14px;
-  border: 1px solid var(--hairline);
+  padding: 0 14px 0 8px;
+  border: 1px solid color-mix(in oklab, var(--whelm-vivid) 30%, var(--hairline));
   border-radius: 999px;
-  background: var(--bg-elevated);
-  color: var(--ink-muted);
+  background: color-mix(in oklab, var(--whelm-vivid) 7%, var(--bg-elevated));
+  color: var(--ink);
   font-size: 13px;
   cursor: pointer;
 }
-.howto:hover { color: var(--ink); border-color: var(--ink-muted); }
+.howto:hover {
+  border-color: var(--whelm-vivid);
+  background: color-mix(in oklab, var(--whelm-vivid) 13%, var(--bg-elevated));
+}
 .howto:focus-visible {
   outline: 2px solid var(--whelm-vivid);
   outline-offset: 2px;
+}
+.howtoMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--whelm-vivid);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
 }
 .barTitle {
   font-family: var(--font-serif);
