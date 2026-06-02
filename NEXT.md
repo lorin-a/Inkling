@@ -152,9 +152,53 @@ blocks first.**
 
 ---
 
-## Session log — 2026-06-02 · recognition loop + colour authorship *(most recent; read first)*
+## Session log — 2026-06-02 (late) · the full model + the type spoke *(most recent; read first)*
 
 ### ⏸ END-OF-SESSION STATUS — START HERE NEXT TIME
+
+**Read `VISION.md` first — it is now the canonical source of truth** (the recognition
+loop, the five personas, and §15 "the full model": recognition = the reusable engine
+of intuition-curation, run per dimension, feeding a playground canvas that is the home;
+brand is summoned far downstream; the atom is a tagged reference; the well is a
+cross-project searchable library; the universal "pull" gesture is crop + tag; two board
+kinds — workshop affinity vs curated collage). The `project_product_direction` memory
+carries the hard rules (cultivate-don't-supply, no silent narrowing, you stay the
+author). **Everything is committed AND pushed** to `origin/phase-6c-playground`.
+
+**Shipped this session (after the recognition-loop polish below):**
+- **The /recognize standard** — design pass (blurred image backdrop, anchored empty
+  state, board+focused react "whole field you drive", reflection in your own words,
+  persistence across navigation, onboarding tour with clamped tooltips, copy de-fluffed
+  to American/no-Pin-assumption, Maybe-moves-forward, eyedropper-to-pick-colors). This
+  is the **reference standard** every other room must match.
+- **The type spoke (`/type`)** — recognition generalised to a 2nd dimension. Reshaped
+  (after Lorin's review) into a **curated exploration board, her Figma workflow in-app**:
+  one "your words" field re-typesets the whole board live; **expressive vibe chips**
+  (Adobe pattern, each set in a face that embodies it) browse the real catalog by feel;
+  **import paths** — vibe-browse (novice, no collection) + "search & add any font by
+  name" (bring favorites); Keep → collection → "Add to your board" lands faces as live
+  specimens tagged `type` on the same moodboard. `lib/addTypeToBoard.js`,
+  `rankPairings()` in `fontPairings.js`. Killed the bogus "suits your colours" claim.
+
+**↳ NEXT — type spoke depth, then more dimensions / the pull gesture:**
+- Type rough edges (Lorin's eye, pick by her steer): **title/subhead/body roles** (judge
+  a real lockup — her "see it in context" instinct) · **upload your own fonts** (gated:
+  needs sign-in/Blob) · richer **mood vibe-tags** (curated lists beyond classification) ·
+  **finalist "in context"** depth (lockup + in-use links out to Typewolf/Fonts-In-Use) ·
+  make the **moodboard itself** re-copy its type blocks (the true exploration space).
+- Then: the **crop-and-tag "pull" gesture** ("this part, and it's about ___" — generalises
+  input the way the type spoke generalised output) and the **workshop-board templates**
+  (affinity sections). And the **/brand redesign** to match the recognize/canvas calm
+  (the long-flagged "thin Brand studio" — overcrowded; queued in VISION §13/§14).
+- Studied references (VISION notes): Typewolf (decide in context), Fontpair (curated >
+  exhaustive; clipper), Adobe Fonts (expressive tags + image-to-type search). The
+  browser-extension clipper + image-search are strong future bridges.
+
+---
+
+## Session log — 2026-06-02 · recognition loop + colour authorship
+
+### ⏸ END-OF-SESSION STATUS (earlier) — superseded by the session above
 
 Built the **first recognition-loop slices on `/recognize`** and dogfooded them with
 Lorin live. The reframe's load-bearing claim **held**: reacting (YES / Sure / Maybe /
