@@ -213,11 +213,27 @@ branching · browser-extension clipper.
 
 ---
 
-## 9. Build plan (phased — thin vertical first, deepen later)
+## 9. Build plan (phased — one spine, many lenses)
 
-The way we get stuck is deepening one node into an island. So: **build a thin,
-connected vertical end-to-end before deepening any node, and build the
-collaboration-ready data model from day one.**
+**We are not building for one persona.** All five share one substrate (Section 7);
+they differ only in framing and scaffolding. So the personas are **lenses on one
+spine**, not separate products. The two traps to avoid: building a narrow product for
+one persona, and building abstract “platform-for-everyone” infra validated by no one.
+
+The discipline that avoids both: **build the shared spine, but validate it through one
+concrete, dogfoodable path end-to-end.** Then the build order is forced by the
+*dependency graph*, not by persona preference:
+
+- The spine is **solo at its core** (one person reacting + reflecting).
+- **Collaboration** (Nadia, Priya) is multi-participant *added on top* — impossible
+  without the solo reaction model first.
+- **Per-persona leaves** (Maya’s brief, Sam’s scaffolding/why, the curated-resource
+  lens) are configuration on shared data, added once the spine is proven.
+
+So: **build the spine collab-ready and lens-ready from day one**, dogfood it on Whelm
+(Lorin’s own case = highest-signal), and every persona afterward is *wiring on a
+proven substrate*, not a rebuild. The rule still holds: **a thin connected vertical
+end-to-end before deepening any node.**
 
 - **Phase 0 — Connect the island (now, small).** Wire the existing triage → a
   *direction* (a moodboard from the yeses + gathered colours) → Brand, via the
