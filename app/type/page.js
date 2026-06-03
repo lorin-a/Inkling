@@ -497,7 +497,14 @@ function CollectedBar({ kept, shownName, added, adding, error, onAdd, onRemove }
 // Import path: search both free libraries by name and add favorites you already
 // know it, paste a hosted URL, or (with sign-in) upload your own. Replaces the
 // cramped toolbar search with one intentional home for everything you bring.
+const BYO_TABS = [
+  { key: "search", label: "Search by name" },
+  { key: "url", label: "Paste a URL" },
+  { key: "upload", label: "Upload" },
+];
+
 function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
+  const [tab, setTab] = useState("search");
   const [q, setQ] = useState("");
   const [google, setGoogle] = useState([]);
   const [urlName, setUrlName] = useState("");
@@ -545,20 +552,38 @@ function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
       {results.map((f) => (
         <FontLoader key={`${f.source}:${f.family}`} fonts={{ title: f }} />
       ))}
-      <div className={t.byoInner}>
-        <section className={t.byoCol}>
-          <h3 className={t.byoTitle}>Search by name</h3>
-          <p className={t.byoHelp}>Know the face? Find it in Google Fonts or Fontshare.</p>
-          <div className={t.byoField}>
+      <div className={t.byoHead}>
+        <div className={t.byoTabs} role="tablist" aria-label="Bring your own type">
+          {BYO_TABS.map((tb) => (
+            <button
+              key={tb.key}
+              type="button"
+              role="tab"
+              aria-selected={tab === tb.key}
+              className={t.byoTab}
+              data-on={tab === tb.key ? "true" : undefined}
+              onClick={() => setTab(tb.key)}
+            >
+              {tb.label}
+            </button>
+          ))}
+        </div>
+        <button type="button" className={t.byoClose} onClick={onClose} aria-label="Close">×</button>
+      </div>
+
+      <div className={t.byoBody}>
+        {tab === "search" && (
+          <>
             <input
               className={t.byoInput}
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="e.g. Söhne, Satoshi, Fraunces…"
+              placeholder="Search Google Fonts and Fontshare by name…"
               spellCheck={false}
+              autoFocus
               aria-label="Search both free libraries by name"
             />
-            {results.length > 0 && (
+            {results.length > 0 ? (
               <ul className={t.byoResults}>
                 {results.map((f) => {
                   const item = faceItem(f);
@@ -574,47 +599,48 @@ function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
                   );
                 })}
               </ul>
+            ) : (
+              <p className={t.byoHint}>Already know the face? Type its name to find it in either library.</p>
             )}
+          </>
+        )}
+
+        {tab === "url" && (
+          <>
+            <div className={t.byoUrlRow}>
+              <input
+                className={`${t.byoInput} ${t.byoUrlName}`}
+                value={urlName}
+                onChange={(e) => { setUrlName(e.target.value); setUrlErr(null); }}
+                placeholder="Family name"
+                spellCheck={false}
+                autoFocus
+                aria-label="Family name for the font at this URL"
+              />
+              <input
+                className={`${t.byoInput} ${t.byoUrlSrc}`}
+                value={urlSrc}
+                onChange={(e) => { setUrlSrc(e.target.value); setUrlErr(null); }}
+                placeholder="https://… link or file"
+                spellCheck={false}
+                aria-label="Font URL"
+              />
+              <button type="button" className={t.byoAdd} onClick={addByUrl}>Add</button>
+            </div>
+            <p className={t.byoHint}>
+              {urlErr || "A foundry’s CSS embed link or a direct .woff2/.otf. Loads live. Enter the exact family name."}
+            </p>
+          </>
+        )}
+
+        {tab === "upload" && (
+          <div className={t.byoUploadRow}>
+            <button type="button" className={t.byoUpload} disabled title="Sign in to upload your own font files">
+              Sign in to upload
+            </button>
+            <p className={t.byoHint}>Bring licensed .woff2, .otf, or .ttf files from your computer. Saved to your account once you sign in.</p>
           </div>
-        </section>
-
-        <section className={t.byoCol}>
-          <h3 className={t.byoTitle}>Add by URL</h3>
-          <p className={t.byoHelp}>
-            Paste a hosted font&rsquo;s link: the CSS embed link a foundry gives you, or a
-            direct .woff2 / .otf file. We load it live, nothing to upload. Type the exact
-            family name so it renders.
-          </p>
-          <input
-            className={t.byoInput}
-            value={urlName}
-            onChange={(e) => { setUrlName(e.target.value); setUrlErr(null); }}
-            placeholder="Family name (e.g. Söhne)"
-            spellCheck={false}
-            aria-label="Family name for the font at this URL"
-          />
-          <input
-            className={t.byoInput}
-            value={urlSrc}
-            onChange={(e) => { setUrlSrc(e.target.value); setUrlErr(null); }}
-            placeholder="https://… (a .css embed link or a .woff2 file)"
-            spellCheck={false}
-            aria-label="Font URL"
-          />
-          {urlErr && <p className={t.byoErr}>{urlErr}</p>}
-          <button type="button" className={t.byoAdd} onClick={addByUrl}>Add this font</button>
-        </section>
-
-        <section className={t.byoCol}>
-          <h3 className={t.byoTitle}>Upload a file</h3>
-          <p className={t.byoHelp}>
-            Bring a licensed .woff2, .otf, or .ttf from your computer. Comes with sign-in,
-            so your files have somewhere to live.
-          </p>
-          <button type="button" className={t.byoUpload} disabled title="Sign in to upload your own font files">
-            Sign in to upload
-          </button>
-        </section>
+        )}
       </div>
     </div>
   );

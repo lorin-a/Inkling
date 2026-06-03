@@ -620,77 +620,120 @@
 }
 .byoToggle:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 2px; }
 
+/* One job in focus: a segmented panel that shows a single path at a time, so
+   it's balanced whichever you pick and never a wall of three paragraphs. */
 .byo {
   max-width: 1200px;
-  margin: 16px auto 0;
-  padding: 22px 24px;
+  margin: 14px auto 0;
+  padding: 16px 20px 20px;
   background: var(--bg-elevated);
   border: 1px solid var(--hairline);
   border-radius: 16px;
 }
-.byoInner {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 28px;
+.byoHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
 }
-.byoCol { min-width: 0; }
-.byoTitle {
-  margin: 0 0 4px;
-  font-family: var(--font-serif);
-  font-size: 16px;
-  letter-spacing: -0.01em;
-  color: var(--ink);
+.byoTabs {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--bg);
 }
-.byoHelp {
-  margin: 0 0 12px;
-  font-size: 13px;
-  line-height: 1.5;
+.byoTab {
+  min-height: 34px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
   color: var(--ink-muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out);
 }
-.byoField { position: relative; }
+.byoTab:hover { color: var(--ink); }
+.byoTab[data-on="true"] {
+  background: var(--bg-elevated);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(20, 12, 28, 0.1);
+}
+.byoTab:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 2px; }
+.byoClose {
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.byoClose:hover { color: var(--ink); background: var(--bg); }
+.byoClose:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 2px; }
+
+/* The active path lives in a calm, comfortably-sized body — not stretched. */
+.byoBody { max-width: 680px; }
 .byoInput {
   width: 100%;
-  height: 42px;
-  margin-bottom: 8px;
-  padding: 0 12px;
+  height: 44px;
+  padding: 0 14px;
   border: 1px solid var(--hairline);
   border-radius: 10px;
   background: var(--bg);
   color: var(--ink);
-  font-size: 14px;
+  font-size: 15px;
 }
 .byoInput:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 1px; }
+.byoHint {
+  margin: 10px 2px 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
 .byoResults {
   list-style: none;
-  margin: 4px 0 0;
+  margin: 10px 0 0;
   padding: 0;
-  max-height: 280px;
+  max-height: 300px;
   overflow-y: auto;
 }
 .byoResult {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 2px;
+  gap: 10px;
+  padding: 7px 2px;
+  border-bottom: 1px solid var(--hairline);
 }
+.byoResult:last-child { border-bottom: none; }
 .byoResultName {
   flex: 1;
   min-width: 0;
-  font-size: 20px;
+  font-size: 22px;
   line-height: 1.1;
   color: var(--ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.byoErr {
-  margin: 0 0 8px;
-  font-size: 12px;
-  color: #b3261e;
+
+/* Add-by-URL: name + link + Add on one line (wraps on narrow). */
+.byoUrlRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
+.byoUrlName { flex: 1 1 160px; min-width: 0; }
+.byoUrlSrc { flex: 2 1 260px; min-width: 0; }
 .byoAdd {
-  min-height: 42px;
-  padding: 0 18px;
+  flex: none;
+  min-height: 44px;
+  padding: 0 20px;
   border: none;
   border-radius: 10px;
   background: var(--whelm-vivid);
@@ -702,9 +745,12 @@
 }
 .byoAdd:hover { filter: brightness(1.06); }
 .byoAdd:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 2px; }
+
+.byoUploadRow { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .byoUpload {
-  min-height: 42px;
-  padding: 0 18px;
+  flex: none;
+  min-height: 44px;
+  padding: 0 20px;
   border: 1px dashed var(--hairline);
   border-radius: 10px;
   background: var(--bg);
@@ -712,7 +758,9 @@
   font-size: 14px;
   cursor: default;
 }
+.byoUploadRow .byoHint { margin: 0; flex: 1; min-width: 200px; }
 
 @media (max-width: 640px) {
   .byoToggle { margin-left: 0; }
+  .byoTabs { flex-wrap: wrap; }
 }
