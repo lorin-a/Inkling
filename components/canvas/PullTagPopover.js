@@ -14,8 +14,10 @@ import styles from "./canvas.module.css";
  * Dimension is required (the "about"); tags are optional and the user's own.
  */
 export default function PullTagPopover({ draft, onConfirm, onCancel }) {
-  const [dimension, setDimension] = useState("");
-  const [tags, setTags] = useState([]);
+  // Color / type drafts arrive with their dimension already known — pre-select it
+  // (and echo it as a starter tag); an image crop opens with none chosen.
+  const [dimension, setDimension] = useState(draft?.dimension || "");
+  const [tags, setTags] = useState(draft?.dimension ? [draft.dimension] : []);
   const [draftTag, setDraftTag] = useState("");
   const firstRef = useRef(null);
 

@@ -11,7 +11,7 @@ import BoardBar from "../../components/canvas/BoardBar";
 import PinTray from "../../components/canvas/PinTray";
 import WellTray from "../../components/canvas/WellTray";
 import PullTagPopover from "../../components/canvas/PullTagPopover";
-import { atomToBlock, atomFromImageBlock, atomFromPin } from "../../lib/atoms";
+import { atomToBlock, atomFromImageBlock, atomFromPin, atomFromColor, atomFromType } from "../../lib/atoms";
 import AddBlocks from "../../components/canvas/AddBlocks";
 import { SWATCH_STYLES, nextIn, fontKey } from "../../components/canvas/blockOptions";
 import { useBoards } from "../../lib/useBoards";
@@ -270,10 +270,16 @@ export default function MoodboardPage() {
     setSelectedId(block.id);
   }, [blocks, setBlocks]);
 
-  // Pull a part of a board image (its live crop becomes the atom's visual).
+  // Pull a board block into the well — image keeps its live crop; swatch becomes
+  // a color atom; text becomes a type atom. The dimension is pre-set for color /
+  // type (it's obvious) and left open for an image crop.
   const pullFromBlock = useCallback((blockId) => {
     const b = blocks.find((x) => x.id === blockId);
-    if (b?.type === "image") setPullDraft(atomFromImageBlock(b, { projectId: null }));
+    if (!b) return;
+    const p = b.payload || {};
+    if (b.type === "image") setPullDraft(atomFromImageBlock(b, { projectId: null }));
+    else if (b.type === "swatch") setPullDraft(atomFromColor({ hex: p.hex, name: p.name }, { projectId: null }));
+    else if (b.type === "text") setPullDraft(atomFromType({ text: p.text, font: p.font, size: p.size }, { projectId: null }));
   }, [blocks]);
 
   // Pull a whole pin from the tray — preload to capture its true aspect.

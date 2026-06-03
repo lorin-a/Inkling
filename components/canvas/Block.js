@@ -58,6 +58,15 @@ function StyleIcon() {
     </svg>
   );
 }
+// An arrow dropping into a tray — "pull this into your well."
+function PullIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <path d="M7.5 1.5v6.5M5 6l2.5 2.5L10 6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M2.5 10v2.5h10V10" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 function FillIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
@@ -329,6 +338,9 @@ export default function Block({
             )}
             {block.type === "shape" && (
               <button type="button" className={`${styles.toolBtn} ${fillOpen ? styles.toolBtnOn : ""}`} onClick={() => setFillOpen((v) => !v)} title="Fill colour" aria-label="Change fill colour" aria-expanded={fillOpen}><FillIcon /></button>
+            )}
+            {onPull && (block.type === "swatch" || block.type === "text") && (
+              <button type="button" className={styles.toolBtn} onClick={onPull} title="Pull to your well" aria-label="Pull to your well"><PullIcon /></button>
             )}
             {canLayer && (
               <>

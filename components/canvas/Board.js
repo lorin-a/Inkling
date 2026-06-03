@@ -106,7 +106,7 @@ export default function Board({
             onFill={(hex) => onSetFill(block.id, hex)}
             onFinish={(finish) => onSetFinish(block.id, finish)}
             onApplyFinishAll={onApplyFinishAll}
-            onPull={block.type === "image" && onPull ? () => onPull(block.id) : undefined}
+            onPull={onPull && (block.type === "image" || block.type === "swatch" || block.type === "text") ? () => onPull(block.id) : undefined}
           >
             {block.type === "image" && (
               <ImageBlock payload={block.payload} frameW={block.w} frameH={block.h} blockId={block.id} />
