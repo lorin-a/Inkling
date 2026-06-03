@@ -128,7 +128,7 @@ export default function Submit({ kind, trigger, className, defaultCategory = "fo
                     </label>
                     <label className={styles.field}>
                       <span className={styles.label}>Category</span>
-                      <select name="category" defaultValue={defaultCategory} className={styles.input}>
+                      <select name="category" defaultValue={defaultCategory} className={`${styles.input} ${styles.select}`}>
                         {RESOURCE_CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
                       </select>
                     </label>
@@ -141,7 +141,7 @@ export default function Submit({ kind, trigger, className, defaultCategory = "fo
                   <>
                     <label className={styles.field}>
                       <span className={styles.label}>Topic</span>
-                      <select ref={firstFieldRef} name="topic" defaultValue="feature" className={styles.input}>
+                      <select ref={firstFieldRef} name="topic" defaultValue="feature" className={`${styles.input} ${styles.select}`}>
                         {FEEDBACK_TOPICS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
                       </select>
                     </label>

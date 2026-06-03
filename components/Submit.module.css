@@ -40,8 +40,11 @@
 .title {
   font-family: var(--font-serif);
   font-size: 24px;
+  /* h2 defaults to 700; Fraunces at 700 + SOFT reads chunky. A medium weight with
+     crisp (SOFT 0) terminals at the right optical size is refined, not cartoonish. */
+  font-weight: 500;
   letter-spacing: -0.01em;
-  font-variation-settings: "SOFT" 50, "WONK" 0;
+  font-variation-settings: "opsz" 28, "SOFT" 0, "WONK" 0;
 }
 .sub { font-size: 14px; line-height: 1.5; color: var(--ink-muted); margin-top: -6px; }
 
@@ -60,6 +63,19 @@
 }
 .input:focus-visible, .textarea:focus-visible { outline: none; border-color: var(--ink); }
 .textarea { resize: vertical; line-height: 1.5; }
+
+/* Native select arrows render inconsistently and sit off-centre; replace with a
+   custom chevron pinned to the vertical centre. */
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3.5 5.25 7 8.75l3.5-3.5' stroke='%236b6b6b' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px 14px;
+}
 
 /* Honeypot — kept in the DOM for bots, hidden from people + AT. */
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
