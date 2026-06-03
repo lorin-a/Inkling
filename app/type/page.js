@@ -29,8 +29,15 @@ const STYLES = [
   { key: "mono", label: "Monospace", font: "Space Mono", base: "sans" },
 ];
 
-const faceItem = (family) => ({ kind: "face", family });
-const keyOf = (it) => (it.kind === "pair" ? `pair:${it.display}|${it.text}` : `face:${it.family}`);
+// A face carries its source (google | fontshare) and, for Fontshare, the slug
+// the CSS API needs. Accepts a bare family string too (legacy / convenience).
+const faceItem = (f) => {
+  const o = typeof f === "string" ? { family: f } : f;
+  return { kind: "face", family: o.family, source: o.source || "google", ...(o.slug ? { slug: o.slug } : {}) };
+};
+const keyOf = (it) =>
+  it.kind === "pair" ? `pair:${it.display}|${it.text}` : `face:${it.source || "google"}:${it.family}`;
+const SOURCE_LABEL = { google: "Google Fonts", fontshare: "Fontshare" };
 
 export default function TypePage() {
   const { project } = useProject();
@@ -42,6 +49,7 @@ export default function TypePage() {
   const [loadingStyle, setLoadingStyle] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [palette, setPalette] = useState([]);
+  const [fontshare, setFontshare] = useState([]); // full Fontshare catalog (face objects)
   const [kept, setKept] = useState([]); // items: face | pair
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
@@ -103,6 +111,15 @@ export default function TypePage() {
       .catch(() => {});
   }, []);
 
+  // The second free library: Fontshare (free for commercial use, the modern
+  // grotesks Google doesn't carry). Fetched once, filtered by style client-side.
+  useEffect(() => {
+    fetch("/api/fonts/fontshare")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setFontshare(d?.families || []))
+      .catch(() => {});
+  }, []);
+
   // Fill the board with real faces of the chosen style (cached + paginated).
   useEffect(() => {
     if (mode !== "single" || styleData[style]) return;
@@ -114,7 +131,12 @@ export default function TypePage() {
         if (cancelled || !d) return;
         setStyleData((prev) => ({
           ...prev,
-          [style]: { families: (d.families || []).map((f) => f.family), total: d.total, page: 0, hasMore: d.hasMore },
+          [style]: {
+            families: (d.families || []).map((f) => ({ family: f.family, source: "google" })),
+            total: d.total,
+            page: 0,
+            hasMore: d.hasMore,
+          },
         }));
       })
       .catch(() => {})
@@ -123,8 +145,13 @@ export default function TypePage() {
   }, [style, styleData, mode]);
 
   const cur = styleData[style];
-  const faces = cur?.families || [];
+  const googleFaces = cur?.families || [];
   const styleLabel = STYLES.find((s) => s.key === style)?.label || "";
+
+  // Fontshare matches for this style lead the board (the quality addition), then
+  // Google's popular faces. Both labelled — you always know what you're seeing.
+  const fontshareFaces = useMemo(() => fontshare.filter((f) => f.style === style), [fontshare, style]);
+  const browseFaces = useMemo(() => [...fontshareFaces, ...googleFaces], [fontshareFaces, googleFaces]);
 
   const loadMore = useCallback(() => {
     if (!cur?.hasMore || loadingMore) return;
@@ -138,7 +165,7 @@ export default function TypePage() {
           ...prev,
           [style]: {
             ...prev[style],
-            families: [...prev[style].families, ...(d.families || []).map((f) => f.family)],
+            families: [...prev[style].families, ...(d.families || []).map((f) => ({ family: f.family, source: "google" }))],
             page: next,
             hasMore: d.hasMore,
           },
@@ -152,15 +179,24 @@ export default function TypePage() {
   const pairings = useMemo(() => rankPairings({ palette }), [palette]);
 
   // Load every face on screen, plus your kept set and the chip exemplars, so the
-  // whole board renders live in your words.
-  const loadFamilies = useMemo(() => {
-    const s = new Set();
-    if (mode === "single") faces.forEach((f) => s.add(f));
-    else pairings.forEach((p) => { s.add(p.display); s.add(p.text); });
-    kept.forEach((it) => (it.kind === "pair" ? (s.add(it.display), s.add(it.text)) : s.add(it.family)));
-    STYLES.forEach((v) => s.add(v.font));
-    return [...s];
-  }, [mode, faces, pairings, kept]);
+  // whole board renders live in your words. Each entry is a font object so a
+  // Fontshare face loads from its slug, not Google's CSS.
+  const loadFonts = useMemo(() => {
+    const map = new Map();
+    const add = (fo) => {
+      if (!fo?.family) return;
+      const k = `${fo.source || "google"}:${fo.family}`;
+      if (!map.has(k)) map.set(k, { family: fo.family, source: fo.source || "google", ...(fo.slug ? { slug: fo.slug } : {}) });
+    };
+    if (mode === "single") browseFaces.forEach(add);
+    else pairings.forEach((p) => { add({ family: p.display }); add({ family: p.text }); });
+    kept.forEach((it) =>
+      it.kind === "pair"
+        ? (add({ family: it.display }), add({ family: it.text }))
+        : add(it));
+    STYLES.forEach((v) => add({ family: v.font }));
+    return [...map.entries()];
+  }, [mode, browseFaces, pairings, kept]);
 
   const keptKeys = useMemo(() => new Set(kept.map(keyOf)), [kept]);
   const isKept = useCallback((it) => keptKeys.has(keyOf(it)), [keptKeys]);
@@ -186,8 +222,8 @@ export default function TypePage() {
 
   return (
     <div className={styles.page}>
-      {loadFamilies.map((f) => (
-        <FontLoader key={f} fonts={{ title: { family: f, source: "google" } }} />
+      {loadFonts.map(([k, fo]) => (
+        <FontLoader key={k} fonts={{ title: fo }} />
       ))}
 
       <header className={styles.bar}>
@@ -198,8 +234,9 @@ export default function TypePage() {
       </header>
 
       <p className={styles.lede}>
-        Browse the full Google Fonts library (1,900+ free typefaces), set in your own
-        words. Keep the ones that fit; they collect on the right and land on your board.
+        Browse two free libraries (Google Fonts and Fontshare, 2,000+ typefaces), set
+        in your own words. Keep the ones that fit; they collect on the right and land
+        on your board.
       </p>
 
       {/* The copy you’re testing — change it once, the whole board re-typesets. */}
@@ -257,31 +294,36 @@ export default function TypePage() {
       )}
 
       {/* Bring favorites you already know by name, whichever mode you're in. */}
-      <SearchAdd shownName={shownName} isKept={isKept} onKeep={toggleKeep} />
+      <SearchAdd shownName={shownName} isKept={isKept} onKeep={toggleKeep} fontshare={fontshare} />
 
       <div className={styles.layout}>
         <section className={styles.reactCol} aria-label="Typefaces">
           {mode === "single" ? (
-            loadingStyle && faces.length === 0 ? (
+            loadingStyle && browseFaces.length === 0 ? (
               <div className={styles.cardEmpty}>Loading type…</div>
             ) : (
               <>
                 <div className={t.gridMeta}>
-                  Showing {faces.length}{cur?.total ? ` of ${cur.total}` : ""} {styleLabel.toLowerCase()} faces
+                  Showing {fontshareFaces.length} Fontshare and {googleFaces.length}
+                  {cur?.total ? ` of ${cur.total}` : ""} Google {styleLabel.toLowerCase()} faces
                 </div>
                 <div className={t.grid}>
-                  {faces.map((fam) => {
-                    const item = faceItem(fam);
+                  {browseFaces.map((face) => {
+                    const item = faceItem(face);
                     const on = isKept(item);
-                    const stack = fontStack({ family: fam }, STYLES.find((s) => s.key === style)?.base || "serif");
+                    const base = face.source === "fontshare" ? "sans" : STYLES.find((s) => s.key === style)?.base || "serif";
+                    const stack = fontStack({ family: face.family }, base);
                     return (
-                      <div key={fam} className={t.gridCard} data-kept={on ? "true" : undefined}>
+                      <div key={keyOf(item)} className={t.gridCard} data-kept={on ? "true" : undefined}>
                         <div className={t.gridSpecimen}>
                           <span className={t.specName} style={{ fontFamily: stack }}>{shownName}</span>
                           {shownSub && <span className={t.specSub} style={{ fontFamily: stack }}>{shownSub}</span>}
                         </div>
                         <div className={t.gridFoot}>
-                          <span className={t.gridName}>{fam}</span>
+                          <span className={t.gridName}>
+                            {face.family}
+                            {face.source === "fontshare" && <span className={t.sourceTag}>Fontshare</span>}
+                          </span>
                           <button type="button" className={t.keepBtn} data-on={on ? "true" : undefined} onClick={() => toggleKeep(item)} aria-pressed={on}>
                             {on ? "✓ Kept" : "Keep"}
                           </button>
@@ -292,7 +334,7 @@ export default function TypePage() {
                 </div>
                 {cur?.hasMore && (
                   <button type="button" className={t.showMore} onClick={loadMore} disabled={loadingMore}>
-                    {loadingMore ? "Loading…" : `Show more ${styleLabel.toLowerCase()} faces`}
+                    {loadingMore ? "Loading…" : `Show more Google ${styleLabel.toLowerCase()} faces`}
                   </button>
                 )}
               </>
@@ -419,10 +461,10 @@ function TypeSources() {
       <div className={t.sourcesHead}>
         <h2 className={t.sourcesTitle}>Bring type from anywhere</h2>
         <p className={t.sourcesIntro}>
-          Everything above is the full Google Fonts library, free to use. For the rest
-          of the type world, these are the foundries worth knowing. Browse one, then add
-          a face by name above, drop its URL into your library, or upload your own (with
-          sign-in).
+          Everything above is browseable live and free: Google Fonts and Fontshare (the
+          modern grotesks free for commercial use). For the rest of the type world, these
+          are the foundries worth knowing. Browse one, then add a face by name above, drop
+          its URL into your library, or upload your own (with sign-in).
         </p>
       </div>
       {foundries.length > 0 && (
@@ -446,22 +488,23 @@ function TypeSources() {
   );
 }
 
-// Import path: search the catalog by name and add favorites you already know — for
-// anyone who arrives with a list, not a blank slate. (Upload-your-own is next.)
-function SearchAdd({ shownName, isKept, onKeep }) {
+// Import path: search both free libraries by name and add favorites you already
+// know — for anyone who arrives with a list, not a blank slate. Fontshare matches
+// (filtered locally) lead, then Google. (Upload-your-own is next.)
+function SearchAdd({ shownName, isKept, onKeep, fontshare = [] }) {
   const [q, setQ] = useState("");
-  const [results, setResults] = useState([]);
+  const [google, setGoogle] = useState([]);
 
   useEffect(() => {
     if (q.trim().length < 2) {
-      setResults([]);
+      setGoogle([]);
       return;
     }
     const ctl = new AbortController();
     const id = setTimeout(() => {
       fetch(`/api/fonts/google?q=${encodeURIComponent(q)}&limit=8&page=0`, { signal: ctl.signal })
         .then((r) => (r.ok ? r.json() : null))
-        .then((d) => setResults((d?.families || []).map((f) => f.family)))
+        .then((d) => setGoogle((d?.families || []).map((f) => ({ family: f.family, source: "google" }))))
         .catch(() => {});
     }, 200);
     return () => {
@@ -470,10 +513,14 @@ function SearchAdd({ shownName, isKept, onKeep }) {
     };
   }, [q]);
 
+  const query = q.trim().toLowerCase();
+  const fsMatches = query.length >= 2 ? fontshare.filter((f) => f.family.toLowerCase().includes(query)).slice(0, 6) : [];
+  const results = [...fsMatches, ...google];
+
   return (
     <div className={t.importBar}>
-      {results.map((fam) => (
-        <FontLoader key={fam} fonts={{ title: { family: fam, source: "google" } }} />
+      {results.map((f) => (
+        <FontLoader key={`${f.source}:${f.family}`} fonts={{ title: f }} />
       ))}
       <span className={t.importLabel}>Already have a favorite?</span>
       <div className={t.importField}>
@@ -481,21 +528,24 @@ function SearchAdd({ shownName, isKept, onKeep }) {
           className={t.importInput}
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Add any Google font by name…"
+          placeholder="Add any font by name (Google or Fontshare)…"
           spellCheck={false}
-          aria-label="Search the catalog to add a font by name"
+          aria-label="Search both free libraries to add a font by name"
         />
         {results.length > 0 && (
           <ul className={t.importResults}>
-            {results.map((fam) => {
-              const item = faceItem(fam);
+            {results.map((f) => {
+              const item = faceItem(f);
               const on = isKept(item);
               return (
-                <li key={fam} className={t.importResult}>
-                  <span className={t.importSpecimen} style={{ fontFamily: fontStack({ family: fam }, "serif") }}>
+                <li key={`${f.source}:${f.family}`} className={t.importResult}>
+                  <span className={t.importSpecimen} style={{ fontFamily: fontStack({ family: f.family }, "serif") }}>
                     {shownName}
                   </span>
-                  <span className={t.importName}>{fam}</span>
+                  <span className={t.importName}>
+                    {f.family}
+                    {f.source === "fontshare" && <span className={t.sourceTag}>Fontshare</span>}
+                  </span>
                   <button type="button" className={t.keepBtn} data-on={on ? "true" : undefined} onClick={() => onKeep(item)} aria-pressed={on}>
                     {on ? "✓ Kept" : "Keep"}
                   </button>

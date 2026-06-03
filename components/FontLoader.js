@@ -9,10 +9,11 @@ import { useEffect, useMemo } from "react";
  * fonts shape:
  *   { title?, subhead?, body? }
  * Each slot:
- *   { family: string, source: "google" | "upload" | "url", url?: string }
- *   - google: family name only; we build the CSS link
- *   - upload: family + url (path to the uploaded file in /projects/{slug}/fonts/)
- *   - url:    family + url (a CSS stylesheet URL — Fontshare, Adobe, etc.)
+ *   { family: string, source: "google" | "fontshare" | "upload" | "url", url?: string, slug?: string }
+ *   - google:    family name only; we build the CSS link
+ *   - fontshare: family + slug; we build the Fontshare CSS API link
+ *   - upload:    family + url (path to the uploaded file in /projects/{slug}/fonts/)
+ *   - url:       family + url (a CSS stylesheet URL — Adobe, etc.)
  */
 export default function FontLoader({ fonts }) {
   const slots = useMemo(() => {
@@ -31,6 +32,14 @@ export default function FontLoader({ fonts }) {
         const key = `google:${s.family}`;
         if (!out.has(key)) {
           const href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(s.family).replace(/%20/g, "+")}:ital,wght@0,400;0,700;1,400&display=swap`;
+          out.set(key, { kind: "link", id: key, href });
+        }
+      } else if (s.source === "fontshare" && s.slug) {
+        const key = `fontshare:${s.slug}`;
+        if (!out.has(key)) {
+          // Weightless request loads the family's full weight set (incl. variable
+          // axes) without risking a 404 on a weight a face doesn't ship.
+          const href = `https://api.fontshare.com/v2/css?f[]=${encodeURIComponent(s.slug)}&display=swap`;
           out.set(key, { kind: "link", id: key, href });
         }
       } else if (s.source === "url" && s.url) {

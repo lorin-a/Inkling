@@ -271,6 +271,21 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+/* Marks the second library so you always know what you're looking at. */
+.sourceTag {
+  flex: none;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--whelm-vivid);
+  border: 1px solid color-mix(in oklab, var(--whelm-vivid) 35%, var(--hairline));
+  border-radius: 4px;
+  padding: 1px 5px;
 }
 .keepBtn {
   flex: none;
