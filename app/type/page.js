@@ -320,7 +320,7 @@ export default function TypePage() {
                       <div className={t.gridFoot}>
                         <span className={t.gridName}>
                           {face.family}
-                          {face.source === "fontshare" && <span className={t.sourceTag}>Fontshare</span>}
+                          <span className={t.sourceTag} data-src={face.source}>{face.source === "fontshare" ? "Fontshare" : "Google"}</span>
                         </span>
                         <button type="button" className={t.keepBtn} data-on={on ? "true" : undefined} onClick={() => toggleKeep(item)} aria-pressed={on}>
                           {on ? "✓ Kept" : "Keep"}
@@ -526,7 +526,7 @@ function SearchAdd({ shownName, isKept, onKeep, fontshare = [] }) {
                   </span>
                   <span className={t.importName}>
                     {f.family}
-                    {f.source === "fontshare" && <span className={t.sourceTag}>Fontshare</span>}
+                    <span className={t.sourceTag} data-src={f.source}>{f.source === "fontshare" ? "Fontshare" : "Google"}</span>
                   </span>
                   <button type="button" className={t.keepBtn} data-on={on ? "true" : undefined} onClick={() => onKeep(item)} aria-pressed={on}>
                     {on ? "✓ Kept" : "Keep"}

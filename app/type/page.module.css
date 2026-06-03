@@ -307,16 +307,21 @@
   gap: 6px;
   min-width: 0;
 }
-/* Marks the second library so you always know what you're looking at. */
+/* Every card names its source, so nothing reads as an unexplained exception.
+   Google (the bulk) is quiet; Fontshare gets the accent as the notable library. */
 .sourceTag {
   flex: none;
   font-size: 10px;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: var(--whelm-vivid);
-  border: 1px solid color-mix(in oklab, var(--whelm-vivid) 35%, var(--hairline));
+  color: var(--ink-muted);
+  border: 1px solid var(--hairline);
   border-radius: 4px;
   padding: 1px 5px;
+}
+.sourceTag[data-src="fontshare"] {
+  color: var(--whelm-vivid);
+  border-color: color-mix(in oklab, var(--whelm-vivid) 35%, var(--hairline));
 }
 .keepBtn {
   flex: none;
