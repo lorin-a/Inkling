@@ -525,7 +525,7 @@ function CollectedBar({ kept, shownName, added, adding, error, onAdd, onRemove }
 // cramped toolbar search with one intentional home for everything you bring.
 const BYO_TABS = [
   { key: "search", label: "Search by name" },
-  { key: "url", label: "Paste a URL" },
+  { key: "url", label: "Paste a link" },
   { key: "upload", label: "Upload" },
 ];
 
@@ -576,7 +576,7 @@ function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
     const { url, family } = parseFontUrl(urlSrc);
     const name = urlName.trim() || family || "";
     if (!url) {
-      setUrlMsg({ kind: "err", text: "Paste a font’s CSS link, its <link> / @import embed code, or a direct .woff2 / .otf file." });
+      setUrlMsg({ kind: "err", text: "Paste a font link or a foundry’s embed code (a <link> or @import)." });
       return;
     }
     if (!name) {
@@ -679,10 +679,10 @@ function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
                 className={`${t.byoInput} ${t.byoUrlSrc}`}
                 value={urlSrc}
                 onChange={(e) => onUrlChange(e.target.value)}
-                placeholder="Paste a font link or embed code (<link> / @import)"
+                placeholder="Font link, or a foundry’s embed code"
                 spellCheck={false}
                 autoFocus
-                aria-label="Font URL or embed code"
+                aria-label="Font link or embed code"
               />
               <input
                 className={`${t.byoInput} ${t.byoUrlName}`}
@@ -695,7 +695,7 @@ function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
               <button type="button" className={t.byoAdd} onClick={addByUrl}>Add</button>
             </div>
             <p className={t.byoHint} data-kind={urlMsg?.kind}>
-              {urlMsg?.text || "Paste a Google Fonts embed link, a foundry’s CSS link, or a direct .woff2 / .otf. We fill the family name when we can."}
+              {urlMsg?.text || "Paste a foundry’s embed code or a font link (Google Fonts, Adobe, or a direct .woff2). We fill the family name when we can."}
             </p>
           </>
         )}

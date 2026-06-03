@@ -42,9 +42,10 @@
   border-radius: 12px;
   background: var(--bg-elevated);
   color: var(--ink);
-  font-family: var(--font-serif);
-  font-size: 22px;
-  letter-spacing: -0.01em;
+  /* Neutral on purpose — you're entering words here; the styling lives in the
+     specimens, not the field. */
+  font-family: var(--font-sans);
+  font-size: 19px;
 }
 .copyInput:focus-visible {
   outline: 2px solid var(--whelm-vivid);
