@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
+import SpokeNav from "../../components/SpokeNav";
 import FontLoader, { fontStack } from "../../components/FontLoader";
 import { apiFetch } from "../../lib/api/client";
 import Board from "../../components/canvas/Board";
@@ -264,6 +265,7 @@ export default function MoodboardPage() {
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
         <ProjectSwitcher />
         <div className={styles.barTitle}>Moodboard</div>
+        <SpokeNav />
       </header>
 
       {loading ? (

@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useProject } from "../../lib/useProject";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
+import SpokeNav from "../../components/SpokeNav";
+import Submit from "../../components/Submit";
 import FontLoader, { fontStack } from "../../components/FontLoader";
 import { apiFetch } from "../../lib/api/client";
 import { addTypeToBoard } from "../../lib/addTypeToBoard";
@@ -192,6 +194,7 @@ export default function TypePage() {
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
         <ProjectSwitcher />
         <div className={styles.barTitle}>Type</div>
+        <SpokeNav />
       </header>
 
       <p className={styles.lede}>
@@ -390,7 +393,56 @@ export default function TypePage() {
           </div>
         </aside>
       </div>
+
+      <TypeSources />
     </div>
+  );
+}
+
+// Where the type comes from, and how to reach further. The in-app library is
+// Google Fonts (live, free); everything else is a foundry you link out to and
+// bring in by name, a URL into your library, or (with sign-in) an upload. Lorin's
+// review: name the source, and make the foundries + resource library reachable
+// right here, not buried.
+function TypeSources() {
+  const [foundries, setFoundries] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/fonts/foundries")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setFoundries(d?.foundries || []))
+      .catch(() => {});
+  }, []);
+
+  return (
+    <section className={t.sources} aria-label="Bring type from anywhere">
+      <div className={t.sourcesHead}>
+        <h2 className={t.sourcesTitle}>Bring type from anywhere</h2>
+        <p className={t.sourcesIntro}>
+          Everything above is the full Google Fonts library, free to use. For the rest
+          of the type world, these are the foundries worth knowing. Browse one, then add
+          a face by name above, drop its URL into your library, or upload your own (with
+          sign-in).
+        </p>
+      </div>
+      {foundries.length > 0 && (
+        <ul className={t.foundryList}>
+          {foundries.map((f) => (
+            <li key={f.url}>
+              <a className={t.foundryChip} href={f.url} target="_blank" rel="noopener noreferrer">
+                <span className={t.foundryName}>{f.name}</span>
+                {f.tier && <span className={t.foundryTier} data-tier={f.tier}>{f.tier}</span>}
+                <span className={t.foundryArrow} aria-hidden="true">↗</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className={t.sourcesActions}>
+        <Submit kind="resource" defaultCategory="foundries" trigger="Suggest a foundry" className={t.sourcesSubmit} />
+        <Link href="/resources" className={t.sourcesLink}>Open the resource library →</Link>
+      </div>
+    </section>
   );
 }
 

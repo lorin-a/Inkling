@@ -22,7 +22,6 @@
 }
 .back:hover { color: var(--ink); }
 .howto {
-  margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 7px;

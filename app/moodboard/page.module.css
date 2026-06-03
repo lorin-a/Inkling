@@ -29,7 +29,6 @@
 
 .barTitle {
   font-family: var(--font-serif);
-  margin-left: auto;
   font-size: 22px;
   font-variation-settings: "SOFT" 50, "WONK" 0;
   letter-spacing: -0.01em;

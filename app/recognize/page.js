@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { apiFetch } from "../../lib/api/client";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
+import SpokeNav from "../../components/SpokeNav";
 import PinColourEditor from "../../components/PinColourEditor";
 import Onboarding from "../../components/Onboarding";
 import { REACTIONS, buildProfile, candidateColours } from "../../lib/recognition";
@@ -293,6 +294,7 @@ export default function RecognizePage() {
           How it works
         </button>
         <div className={styles.barTitle}>Recognize</div>
+        <SpokeNav />
       </header>
 
       <p className={styles.lede}>

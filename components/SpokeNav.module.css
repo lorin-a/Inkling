@@ -1,0 +1,32 @@
+/* The persistent dimension + canvas nav, sat to the right of the header bar. */
+.nav {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--bg);
+}
+.link {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-size: 13px;
+  text-decoration: none;
+  transition: background var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out);
+}
+.link:hover { color: var(--ink); }
+.link[data-active="true"] {
+  background: var(--bg-elevated);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(20, 12, 28, 0.1);
+}
+.link:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: 2px;
+}
