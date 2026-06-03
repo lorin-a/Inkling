@@ -152,9 +152,64 @@ blocks first.**
 
 ---
 
-## Session log — 2026-06-03 · type-spoke depth + a full /type UX overhaul *(most recent; read first)*
+## Session log — 2026-06-03 (later) · the atom + well + pull spine *(most recent; read first)*
 
 ### ⏸ END-OF-SESSION STATUS — START HERE NEXT TIME
+
+**The architecture turn.** After the type-surface polish (entry below), Lorin asked
+for "the best, most efficient way to build the rest." Answer: build the ONE shared
+substrate the remaining §16 features reduce to, then they become configuration. That
+substrate is two primitives — the **tagged-reference atom + a cross-project well**, and
+the **crop-and-tag "pull" gesture**. Planned (approved, `~/.claude/plans/smooth-wibbling-crane.md`)
+and **built end-to-end this session**, dogfoodable on Whelm. **5 commits
+(`6b48531` → `d8099f4`) on `phase-6c-playground`; pushed through `e3374a3` only — the
+5 atom/well/pull commits are LOCAL (ask before pushing).** Build green, browser-verified.
+
+**Shipped — the spine: pull → atom → well → board:**
+1. **The atom** (`lib/atoms.js`) — one normalized record for every pulled reference
+   (image crop / color / type): id, kind, dimension, tags[], visual, source. NOT a new
+   block type — `atomToBlock` makes a dropped atom an ordinary block (image→image with
+   crop, color→swatch, type→text). Builders return drafts; the store owns id+timestamps.
+   `lib/canvasDimensions.js` = the 7-dimension vocab. `croppedThumb` in `crop.js`.
+2. **The well store** — USER-scoped (cross-project, the one deliberate departure), all 3
+   backends: `migrations/010_atoms.sql`, `lib/db/atoms.js`, `lib/atomsStore.js` (a single
+   top-level `data/atoms-well.json`), `localStore` atoms fns, `client.js` router,
+   `/api/atoms` (+ `[id]`). project_id/pin_id are provenance only. Stable id = collab-ready.
+3. **WellTray** — the right tray is now a tabbed source (Pins · Well); the Well lists atoms
+   with kind-specific thumbs + dimension label + source, an **additive counted dimension
+   filter** (All · per-slug, no silent narrowing), and click-to-drop onto the board.
+4. **The pull gesture** — `PullTagPopover` (a centered "this part, and it's about ___"
+   picker: 7-dimension radio + free tags), reachable two ways: a **"Pull part"** button +
+   `P` key in the crop bar (board), and a one-tap **"Pull"** on a tray pin. Saves to the
+   well and opens it.
+
+**File map:** `lib/atoms.js`, `lib/canvasDimensions.js`, `lib/atomsStore.js`,
+`lib/db/atoms.js`, `migrations/010_atoms.sql`, `app/api/atoms/route.js` + `[id]`,
+`components/canvas/{WellTray,PullTagPopover}.js`, edits to `crop.js`, `Block.js`,
+`Board.js`, `PinTray.js`, `canvas.module.css`, `lib/storage/localStore.js`,
+`lib/api/client.js`, `lib/projectRegistry.js`, `app/moodboard/page.js`.
+
+**Known limits / debt:**
+- Color/type **producers** not wired yet (slice 6, "later/config"): the eyedropper →
+  `atomFromColor` and the type spoke → `atomFromType` constructors exist but aren't
+  hooked to their UIs. Image pull is the proven path.
+- DB (authed) path needs `node scripts/migrate.mjs` (incl. **010**) before parity;
+  signed-out file + localStorage verified.
+- `atomId` is a soft link (drop = copy; re-cropping a board block diverges). Fine for v1.
+- Eyedropper stays same-origin-only (pixel read); image pull uses a CSS transform (no
+  taint), so cross-origin crops are fine.
+
+**↳ NEXT (the leaves are now configuration on the spine):** workshop-board templates +
+curated-collage copy (§16D) · more dimensions via the same pull (§16E) · wire the
+color/type producers (slice 6) · async collaboration on atoms (§16F, the stable id is
+ready) · the /brand redesign (§16G). Plus the standing **full-site visual QA pass**
+(batched, below) and **upload** (sign-in/Blob). Ask before pushing the 5 spine commits.
+
+---
+
+## Session log — 2026-06-03 · type-spoke depth + a full /type UX overhaul
+
+### ⏸ END-OF-SESSION STATUS (earlier 2026-06-03)
 
 **Read `VISION.md` first** (canonical: §15 the full model, §16 roadmap). Hard rules in
 the `project_product_direction` memory (cultivate-don't-supply · no silent narrowing ·
