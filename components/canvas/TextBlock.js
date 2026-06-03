@@ -14,6 +14,8 @@ export default function TextBlock({ payload, selected, onChange }) {
   const text = payload?.text || "";
   const color = payload?.color || "var(--ink)";
   const fontFamily = resolveFontFamily(payload?.font);
+  const caption = payload?.caption || ""; // provenance for type specimens (family · source)
+  const size = payload?.size; // px; type specimens land large, not at the 16px default
   const [editing, setEditing] = useState(!text); // a new (empty) block edits immediately
   const ref = useRef(null);
 
@@ -36,7 +38,7 @@ export default function TextBlock({ payload, selected, onChange }) {
         ref={ref}
         data-noselect
         className={styles.textArea}
-        style={{ color, fontFamily }}
+        style={{ color, fontFamily, fontSize: size ? `${size}px` : undefined }}
         defaultValue={text}
         placeholder="Type something…"
         onBlur={(e) => { onChange({ text: e.target.value }); setEditing(false); }}
@@ -51,10 +53,16 @@ export default function TextBlock({ payload, selected, onChange }) {
   return (
     <div
       className={styles.textView}
-      style={{ color, fontFamily }}
+      style={{ color }}
       onDoubleClick={(e) => { e.stopPropagation(); setEditing(true); }}
     >
-      {text || <span className={styles.textPlaceholder}>Double-click to edit</span>}
+      <div
+        className={styles.textBody}
+        style={{ fontFamily, fontSize: size ? `${size}px` : undefined }}
+      >
+        {text || <span className={styles.textPlaceholder}>Double-click to edit</span>}
+      </div>
+      {caption && <div className={styles.textCaption}>{caption}</div>}
     </div>
   );
 }

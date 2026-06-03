@@ -867,6 +867,25 @@ a.credit:hover {
   overflow-wrap: anywhere;
 }
 
+/* A specimen stacks its sample above a small provenance caption. */
+.textView {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.textBody {
+  flex: 1;
+  min-height: 0;
+}
+.textCaption {
+  flex: none;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: var(--ink-muted);
+}
+
 .textArea {
   border: none;
   background: transparent;
