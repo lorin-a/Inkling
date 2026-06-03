@@ -696,6 +696,9 @@
   line-height: 1.5;
   color: var(--ink-muted);
 }
+.byoHint[data-kind="err"],
+.byoHint[data-kind="warn"] { color: #b3261e; }
+.byoHint[data-kind="ok"] { color: #2f7d32; }
 .byoResults {
   list-style: none;
   margin: 10px 0 0;

@@ -41,6 +41,32 @@ const faceItem = (f) => {
 };
 const keyOf = (it) =>
   it.kind === "pair" ? `pair:${it.display}|${it.text}` : `face:${it.source || "google"}:${it.family}`;
+
+// Pull a usable font URL out of whatever someone pastes — a bare link, a full
+// <link href="…"> embed tag, or an @import. When it's a Google Fonts link we can
+// also read the family name off it, so they don't have to type it.
+function parseFontUrl(raw) {
+  let s = (raw || "").trim();
+  const link = s.match(/href=["']([^"']+)["']/i);
+  if (link) s = link[1];
+  else {
+    const imp = s.match(/@import\s+(?:url\()?["']?([^"')\s]+)/i);
+    if (imp) s = imp[1];
+  }
+  s = s.trim();
+  if (!/^https?:\/\//i.test(s)) return { url: null, family: null };
+  let family = null;
+  try {
+    const u = new URL(s);
+    if (/(^|\.)fonts\.googleapis\.com$/.test(u.hostname)) {
+      const fam = u.searchParams.get("family"); // URLSearchParams turns + into space
+      if (fam) family = fam.split(":")[0].trim();
+    }
+  } catch {
+    /* not a parseable URL */
+  }
+  return { url: s, family };
+}
 const SOURCE_LABEL = { google: "Google Fonts", fontshare: "Fontshare" };
 
 export default function TypePage() {
@@ -509,7 +535,8 @@ function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
   const [google, setGoogle] = useState([]);
   const [urlName, setUrlName] = useState("");
   const [urlSrc, setUrlSrc] = useState("");
-  const [urlErr, setUrlErr] = useState(null);
+  const [urlMsg, setUrlMsg] = useState(null); // { kind: err|pending|ok|warn, text }
+  const alive = useRef(true);
 
   // Esc closes the panel.
   useEffect(() => {
@@ -517,6 +544,7 @@ function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
+  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
 
   // Search both catalogs by name (Google over the network, Fontshare locally).
   useEffect(() => {
@@ -535,16 +563,55 @@ function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
   const fsMatches = query.length >= 2 ? fontshare.filter((f) => f.family.toLowerCase().includes(query)).slice(0, 6) : [];
   const results = [...fsMatches, ...google];
 
-  function addByUrl() {
-    const name = urlName.trim();
-    const url = urlSrc.trim();
-    if (!name || !url) { setUrlErr("Enter both a family name and a URL."); return; }
-    if (!/^https?:\/\//i.test(url)) { setUrlErr("That doesn't look like a URL (it should start with https)."); return; }
-    // A direct font file becomes an @font-face (upload source); anything else is
-    // treated as a CSS stylesheet link (url source) — a foundry's embed link.
+  // Reading the link as it's typed/pasted lets us fill the family name from a
+  // Google link, so there's one less thing to get exactly right.
+  function onUrlChange(v) {
+    setUrlSrc(v);
+    setUrlMsg(null);
+    const { family } = parseFontUrl(v);
+    if (family && !urlName.trim()) setUrlName(family);
+  }
+
+  async function addByUrl() {
+    const { url, family } = parseFontUrl(urlSrc);
+    const name = urlName.trim() || family || "";
+    if (!url) {
+      setUrlMsg({ kind: "err", text: "Paste a font’s CSS link, its <link> / @import embed code, or a direct .woff2 / .otf file." });
+      return;
+    }
+    if (!name) {
+      setUrlMsg({ kind: "err", text: "Add the family name the foundry lists, so the face can render." });
+      return;
+    }
     const isFile = /\.(woff2?|otf|ttf)(\?|$)/i.test(url);
     onKeep({ kind: "face", family: name, source: isFile ? "upload" : "url", url });
-    setUrlName(""); setUrlSrc(""); setUrlErr(null);
+    setUrlMsg({ kind: "pending", text: `Adding ${name}…` });
+    const target = name;
+    setUrlName(""); setUrlSrc("");
+    // Confirm it actually rendered — the only way to catch a link that's really a
+    // web page (no font in it) or a family name that doesn't match the file.
+    setTimeout(async () => {
+      // A real load registers a FontFace under this family. document.fonts.check()
+      // can't tell that apart from an unknown family (it assumes a fallback), so we
+      // look for an actually-loaded FontFace whose family matches.
+      const want = target.replace(/['"]/g, "").toLowerCase();
+      let ok = false;
+      try {
+        for (let i = 0; i < 5 && !ok; i++) {
+          try { await document.fonts.load(`24px "${target}"`); } catch { /* nothing matched */ }
+          document.fonts.forEach((ff) => {
+            if (ff.status === "loaded" && ff.family.replace(/['"]/g, "").toLowerCase() === want) ok = true;
+          });
+          if (!ok) await new Promise((r) => setTimeout(r, 400));
+        }
+      } catch { ok = false; }
+      if (!alive.current) return;
+      setUrlMsg(
+        ok
+          ? { kind: "ok", text: `✓ Added ${target}. Find it in your collection at the bottom.` }
+          : { kind: "warn", text: `Added ${target}, but it isn’t rendering. That link looks like a web page, not the font itself. Paste the foundry’s CSS embed link or a direct .woff2 / .otf, and check the family name.` }
+      );
+    }, 300);
   }
 
   return (
@@ -609,26 +676,26 @@ function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
           <>
             <div className={t.byoUrlRow}>
               <input
-                className={`${t.byoInput} ${t.byoUrlName}`}
-                value={urlName}
-                onChange={(e) => { setUrlName(e.target.value); setUrlErr(null); }}
-                placeholder="Family name"
-                spellCheck={false}
-                autoFocus
-                aria-label="Family name for the font at this URL"
-              />
-              <input
                 className={`${t.byoInput} ${t.byoUrlSrc}`}
                 value={urlSrc}
-                onChange={(e) => { setUrlSrc(e.target.value); setUrlErr(null); }}
-                placeholder="https://… link or file"
+                onChange={(e) => onUrlChange(e.target.value)}
+                placeholder="Paste a font link or embed code (<link> / @import)"
                 spellCheck={false}
-                aria-label="Font URL"
+                autoFocus
+                aria-label="Font URL or embed code"
+              />
+              <input
+                className={`${t.byoInput} ${t.byoUrlName}`}
+                value={urlName}
+                onChange={(e) => { setUrlName(e.target.value); setUrlMsg(null); }}
+                placeholder="Family name"
+                spellCheck={false}
+                aria-label="Family name for the font at this URL"
               />
               <button type="button" className={t.byoAdd} onClick={addByUrl}>Add</button>
             </div>
-            <p className={t.byoHint}>
-              {urlErr || "A foundry’s CSS embed link or a direct .woff2/.otf. Loads live. Enter the exact family name."}
+            <p className={t.byoHint} data-kind={urlMsg?.kind}>
+              {urlMsg?.text || "Paste a Google Fonts embed link, a foundry’s CSS link, or a direct .woff2 / .otf. We fill the family name when we can."}
             </p>
           </>
         )}
