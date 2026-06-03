@@ -190,9 +190,10 @@ and **built end-to-end this session**, dogfoodable on Whelm. **5 commits
 `lib/api/client.js`, `lib/projectRegistry.js`, `app/moodboard/page.js`.
 
 **Known limits / debt:**
-- Color/type **producers** not wired yet (slice 6, "later/config"): the eyedropper →
-  `atomFromColor` and the type spoke → `atomFromType` constructors exist but aren't
-  hooked to their UIs. Image pull is the proven path.
+- Color/type **producers wired** (slice 6, `28895b0`): swatch + text/type board blocks
+  have a Pull action → `atomFromColor` / `atomFromType`, so the spokes feed the well via
+  spoke → board → pull → well. (A direct "save to well" on `/recognize` and `/type`
+  themselves is still a nicety, not built.) A new-user clean run-through passed end to end.
 - DB (authed) path needs `node scripts/migrate.mjs` (incl. **010**) before parity;
   signed-out file + localStorage verified.
 - `atomId` is a soft link (drop = copy; re-cropping a board block diverges). Fine for v1.
