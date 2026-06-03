@@ -152,7 +152,71 @@ blocks first.**
 
 ---
 
-## Session log — 2026-06-02 (late) · the full model + the type spoke *(most recent; read first)*
+## Session log — 2026-06-03 · type-spoke depth + a full /type UX overhaul *(most recent; read first)*
+
+### ⏸ END-OF-SESSION STATUS — START HERE NEXT TIME
+
+**Read `VISION.md` first** (canonical: §15 the full model, §16 roadmap). Hard rules in
+the `project_product_direction` memory (cultivate-don't-supply · no silent narrowing ·
+you stay the author). This session deepened and then UX-overhauled the **type spoke**,
+driven by Lorin's live review. **11 commits on `phase-6c-playground`, LOCAL ONLY (not
+pushed — Lorin's call).** Working tree clean, `npm run build` green, browser-verified.
+
+**Shipped this session (commits `5135846` → `812c856`, newest last):**
+1. **Clean type atom on the board** — a kept face lands as ONE specimen (your word in the
+   face) with `family · source` as a caption *inside* the block; killed the bogus second
+   "family-name" box. A pairing lands as a flush name+subhead lockup. `TextBlock` gained
+   `caption` + `size`; fixed the "specimens render tiny" debt.
+2. **Name + Subhead lockup + Pairings** — two copy fields re-typeset the whole board;
+   each card is a real lockup, not one word. **One-typeface / Pairings** modes (pairings
+   ranked by your gathered palette via `rankPairings`). Real type-classification chip
+   names. Source named in copy. **Show more** so the full catalog in a style is reachable
+   (no silent 28-cap).
+3. **Type sources panel + `SpokeNav`** — a persistent `Color · Type · Board` nav in every
+   spoke + the canvas header (`components/SpokeNav.js`), so you can always get back.
+4. **Fontshare as a 2nd free, live library** — `/api/fonts/fontshare` (cached, normalized
+   to our style facets); `FontLoader` gained a `fontshare` source (loads by slug);
+   one-typeface browse merges Fontshare (leading, labelled) with Google, honest two-source
+   counts. Pairings stay Google-only.
+5. **Every card names its source** — Google quiet, Fontshare accent (no unexplained tags).
+6. **`/type` rebuilt browse-and-collect** (was borrowing recognize's react/direction
+   shell): a "your words" hero → a sticky browse toolbar → a full-width 3-col specimen
+   grid → a **sticky "collected" bar** along the bottom (the cart frees the width for
+   comparison). Responsive + reduced-motion safe.
+7. **"Bring your own" = a segmented panel** (`Search by name · Paste a link · Upload`),
+   one job in focus — replaced the cramped toolbar search and the 3-paragraph wall.
+8. **Script → Handwriting** — honest label (Google's single bucket lumps cursive + casual
+   hand; can't split without mislabeling).
+9. **Add-by-URL made forgiving + honest** — accepts a bare link, a `<link>`/@import embed
+   snippet (extracts the href), or a direct file; auto-fills the family from Google links;
+   **verifies the face actually rendered** (looks for a loaded `FontFace` — `document.fonts.check`
+   can't tell a real load from an unknown family) and *warns* on a web-page/mismatch instead
+   of silently "succeeding." Upload stays sign-in-gated.
+10. **Neutral input type** (the words fields were serif; styling belongs in the specimens)
+    + "Paste a link" wording (URL vs embed code = both; embed code is a link in a tag).
+
+**File map:** `app/type/page.js` + `page.module.css` (the overhaul); `app/api/fonts/fontshare/route.js`;
+`components/FontLoader.js` (fontshare source); `components/SpokeNav.js` + `.module.css`;
+`components/canvas/TextBlock.js` + `canvas.module.css` (caption/size); `lib/addTypeToBoard.js`;
+headers on `/recognize` + `/moodboard` gained `SpokeNav` (and shed a competing `margin-left:auto`).
+
+**Known limits / debt (don't lose these):**
+- Add-by-URL works for Google embed links + CORS-friendly hosts; a foundry that blocks
+  cross-origin loading still won't render (now *warns* instead of failing silently). The
+  robust path for arbitrary licensed fonts is **upload** (sign-in/Blob, still gated).
+- Pairings are Google-only (the curated `PAIRINGS` set) — Fontshare grotesks aren't paired yet.
+- Dead CSS left in `app/type/page.module.css` (the old recognize-shell classes: `keptList`,
+  `importBar`, etc.) — harmless, sweep on the next pass.
+- Mobile: the collected bar hides its chips under ~640px (count + CTA only); grid → 1 col.
+
+**↳ NEXT (Lorin to pick, VISION §16):** the **crop-and-tag "pull" gesture** (§16B — "this
+part, and it's about ___", generalises *input* the way type generalised output) **or** the
+**/brand redesign** to match the recognize/type calm (§16G — the long-flagged overcrowded
+"thin Brand studio"). **Push when Lorin asks.**
+
+---
+
+## Session log — 2026-06-02 (late) · the full model + the type spoke
 
 ### ⏸ END-OF-SESSION STATUS — START HERE NEXT TIME
 
