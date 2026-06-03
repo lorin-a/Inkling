@@ -1,19 +1,29 @@
-/* The copy bar — set name + subhead in your own words, choose how to browse. */
-.copyBar {
-  max-width: 1080px;
-  margin: 18px auto 0;
+/* One concise line of intent, left-aligned with the content. */
+.intro {
+  text-wrap: pretty;
+  max-width: 1200px;
+  margin: 20px auto 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+/* The lens — your words. Set once, every specimen re-typesets. The hero control. */
+.words {
+  max-width: 1200px;
+  margin: 16px auto 0;
   display: flex;
   align-items: flex-end;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 16px;
 }
 .copyField {
   display: flex;
   flex-direction: column;
   gap: 6px;
   flex: 1;
-  min-width: 200px;
-  max-width: 320px;
+  min-width: 240px;
+  max-width: 440px;
 }
 .copyLabel {
   font-size: 13px;
@@ -26,14 +36,15 @@
 }
 .copyInput {
   width: 100%;
-  height: 44px;
-  padding: 0 14px;
+  height: 52px;
+  padding: 0 16px;
   border: 1px solid var(--hairline);
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--bg-elevated);
   color: var(--ink);
   font-family: var(--font-serif);
-  font-size: 18px;
+  font-size: 22px;
+  letter-spacing: -0.01em;
 }
 .copyInput:focus-visible {
   outline: 2px solid var(--whelm-vivid);
@@ -44,7 +55,6 @@
 .modeToggle {
   display: flex;
   gap: 2px;
-  margin-left: auto;
   padding: 3px;
   border: 1px solid var(--hairline);
   border-radius: 999px;
@@ -72,10 +82,25 @@
   outline-offset: 2px;
 }
 
-/* The type-style row sits below the copy bar in one-typeface mode. */
-.styleRow {
-  max-width: 1080px;
-  margin: 14px auto 0;
+/* The browse toolbar — mode, style filter, search — sticks to the top so it
+   stays with you while you scan a long board. */
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  margin: 20px -24px 0;
+  padding: 10px 24px;
+  background: color-mix(in oklab, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(140%) blur(8px);
+  border-bottom: 1px solid var(--hairline);
+}
+.toolbarInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 .vibes {
   display: flex;
@@ -105,13 +130,12 @@
   outline-offset: 2px;
 }
 
-/* Import path — bring favorites you already know by name. */
+/* Import path — bring favorites you already know by name. Compact, sits at the
+   right of the browse toolbar. */
 .importBar {
-  max-width: 1080px;
-  margin: 12px auto 0;
+  margin-left: auto;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   gap: 10px;
 }
 .importLabel {
@@ -120,9 +144,8 @@
 }
 .importField {
   position: relative;
-  flex: 1;
-  min-width: 240px;
-  max-width: 420px;
+  width: 240px;
+  max-width: 100%;
 }
 .importInput {
   width: 100%;
@@ -142,8 +165,8 @@
   position: absolute;
   z-index: 10;
   top: calc(100% + 6px);
-  left: 0;
   right: 0;
+  width: min(360px, 84vw);
   margin: 0;
   padding: 6px;
   list-style: none;
@@ -183,19 +206,27 @@
   color: var(--ink-muted);
 }
 
+/* The specimen board owns the full width — the more faces side by side, the
+   better the comparison. (The collection lives in the sticky bar below, not a
+   rail that steals this space.) */
+.board {
+  max-width: 1200px;
+  margin: 20px auto 0;
+}
+
 /* A quiet count above the board — never a silent cap; the full set is reachable. */
 .gridMeta {
   font-size: 13px;
   color: var(--ink-muted);
-  margin: 0 0 12px;
-  max-width: 60ch;
+  margin: 0 0 14px;
+  max-width: 70ch;
 }
 
-/* The board — every face of the style, set in your words, side by side to compare. */
+/* Every face of the style, set in your words, side by side to compare. */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
 }
 .gridCard {
   display: flex;
@@ -216,11 +247,11 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: 4px;
-  padding: 22px 18px;
-  min-height: 104px;
-  font-size: clamp(26px, 3vw, 38px);
-  line-height: 1.05;
+  gap: 6px;
+  padding: 30px 24px;
+  min-height: 148px;
+  font-size: clamp(32px, 3.2vw, 46px);
+  line-height: 1.04;
   color: var(--ink);
   word-break: break-word;
   overflow: hidden;
@@ -443,4 +474,121 @@
   outline: 2px solid var(--whelm-vivid);
   outline-offset: 2px;
   border-radius: 2px;
+}
+
+/* ============================================================== collected bar */
+/* The collection as a sticky tray — fills as you keep faces, holds the one move
+   forward, and leaves the whole width free for the board above. */
+.collected {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--hairline);
+  box-shadow: 0 -8px 28px rgba(20, 12, 28, 0.1);
+}
+.collectedInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 68px;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.collectedCount {
+  flex: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.collectedChips {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  list-style: none;
+  margin: 0;
+  padding: 2px 0;
+}
+.chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+  padding: 0 4px 0 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--bg);
+}
+.chipFace {
+  max-width: 130px;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chipRemove {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+.chipRemove:hover { color: var(--ink); background: var(--bg-elevated); }
+.chipRemove:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 1px; }
+.collectedError {
+  flex: none;
+  font-size: 13px;
+  color: var(--ink);
+}
+.collectedDone {
+  flex: 1;
+  margin: 0;
+  font-size: 15px;
+  color: var(--ink);
+}
+.collectedCta {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 12px;
+  background: var(--whelm-vivid);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter var(--motion-fast) var(--ease-out);
+}
+.collectedCta:hover { filter: brightness(1.06); }
+.collectedCta:disabled { opacity: 0.6; cursor: default; }
+.collectedCta:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 2px; }
+
+/* Keep the footer clear of the sticky collection bar. */
+.sources { margin-bottom: 0; padding-bottom: 96px; }
+
+@media (max-width: 640px) {
+  .collectedChips { display: none; } /* on a phone, count + CTA is enough */
+  .gridSpecimen { font-size: clamp(30px, 8vw, 42px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collectedCta, .modeBtn, .gridCard, .vibe { transition: none; }
 }

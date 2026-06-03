@@ -233,14 +233,13 @@ export default function TypePage() {
         <SpokeNav />
       </header>
 
-      <p className={styles.lede}>
-        Browse two free libraries (Google Fonts and Fontshare, 2,000+ typefaces), set
-        in your own words. Keep the ones that fit; they collect on the right and land
-        on your board.
+      <p className={t.intro}>
+        Type your name and a subhead, then browse two free libraries (Google Fonts and
+        Fontshare) and keep the faces that feel right.
       </p>
 
-      {/* The copy you’re testing — change it once, the whole board re-typesets. */}
-      <div className={t.copyBar}>
+      {/* The lens — your words. Change them once and every specimen re-typesets. */}
+      <div className={t.words}>
         <div className={t.copyField}>
           <label className={t.copyLabel} htmlFor="type-name">Brand name</label>
           <input
@@ -263,101 +262,66 @@ export default function TypePage() {
             spellCheck={false}
           />
         </div>
-        <div className={t.modeToggle} role="group" aria-label="How to browse">
-          <button type="button" className={t.modeBtn} data-on={mode === "single" ? "true" : undefined} onClick={() => setMode("single")}>
-            One typeface
-          </button>
-          <button type="button" className={t.modeBtn} data-on={mode === "pairings" ? "true" : undefined} onClick={() => setMode("pairings")}>
-            Pairings
-          </button>
+      </div>
+
+      {/* How you explore — sticky, so it stays with you while you scan the board. */}
+      <div className={t.toolbar}>
+        <div className={t.toolbarInner}>
+          <div className={t.modeToggle} role="group" aria-label="How to browse">
+            <button type="button" className={t.modeBtn} data-on={mode === "single" ? "true" : undefined} onClick={() => setMode("single")}>
+              One typeface
+            </button>
+            <button type="button" className={t.modeBtn} data-on={mode === "pairings" ? "true" : undefined} onClick={() => setMode("pairings")}>
+              Pairings
+            </button>
+          </div>
+          {mode === "single" && (
+            <div className={t.vibes} role="group" aria-label="Browse by type style">
+              {STYLES.map((v) => (
+                <button
+                  key={v.key}
+                  type="button"
+                  className={t.vibe}
+                  data-on={style === v.key ? "true" : undefined}
+                  onClick={() => setStyle(v.key)}
+                  style={{ fontFamily: fontStack({ family: v.font }, v.base) }}
+                >
+                  {v.label}
+                </button>
+              ))}
+            </div>
+          )}
+          <SearchAdd shownName={shownName} isKept={isKept} onKeep={toggleKeep} fontshare={fontshare} />
         </div>
       </div>
 
-      {/* In one-typeface mode, narrow by real type classification. */}
-      {mode === "single" && (
-        <div className={t.styleRow}>
-          <div className={t.vibes} role="group" aria-label="Browse by type style">
-            {STYLES.map((v) => (
-              <button
-                key={v.key}
-                type="button"
-                className={t.vibe}
-                data-on={style === v.key ? "true" : undefined}
-                onClick={() => setStyle(v.key)}
-                style={{ fontFamily: fontStack({ family: v.font }, v.base) }}
-              >
-                {v.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Bring favorites you already know by name, whichever mode you're in. */}
-      <SearchAdd shownName={shownName} isKept={isKept} onKeep={toggleKeep} fontshare={fontshare} />
-
-      <div className={styles.layout}>
-        <section className={styles.reactCol} aria-label="Typefaces">
-          {mode === "single" ? (
-            loadingStyle && browseFaces.length === 0 ? (
-              <div className={styles.cardEmpty}>Loading type…</div>
-            ) : (
-              <>
-                <div className={t.gridMeta}>
-                  Showing {fontshareFaces.length} Fontshare and {googleFaces.length}
-                  {cur?.total ? ` of ${cur.total}` : ""} Google {styleLabel.toLowerCase()} faces
-                </div>
-                <div className={t.grid}>
-                  {browseFaces.map((face) => {
-                    const item = faceItem(face);
-                    const on = isKept(item);
-                    const base = face.source === "fontshare" ? "sans" : STYLES.find((s) => s.key === style)?.base || "serif";
-                    const stack = fontStack({ family: face.family }, base);
-                    return (
-                      <div key={keyOf(item)} className={t.gridCard} data-kept={on ? "true" : undefined}>
-                        <div className={t.gridSpecimen}>
-                          <span className={t.specName} style={{ fontFamily: stack }}>{shownName}</span>
-                          {shownSub && <span className={t.specSub} style={{ fontFamily: stack }}>{shownSub}</span>}
-                        </div>
-                        <div className={t.gridFoot}>
-                          <span className={t.gridName}>
-                            {face.family}
-                            {face.source === "fontshare" && <span className={t.sourceTag}>Fontshare</span>}
-                          </span>
-                          <button type="button" className={t.keepBtn} data-on={on ? "true" : undefined} onClick={() => toggleKeep(item)} aria-pressed={on}>
-                            {on ? "✓ Kept" : "Keep"}
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                {cur?.hasMore && (
-                  <button type="button" className={t.showMore} onClick={loadMore} disabled={loadingMore}>
-                    {loadingMore ? "Loading…" : `Show more Google ${styleLabel.toLowerCase()} faces`}
-                  </button>
-                )}
-              </>
-            )
+      <main className={t.board} aria-label="Typefaces">
+        {mode === "single" ? (
+          loadingStyle && browseFaces.length === 0 ? (
+            <div className={styles.cardEmpty}>Loading type…</div>
           ) : (
             <>
-              <div className={t.gridMeta}>
-                {pairings.length} curated pairings, ordered to suit your colors. Each sets your name and subhead in two faces that work together.
-              </div>
+              <p className={t.gridMeta}>
+                Showing {fontshareFaces.length} Fontshare and {googleFaces.length}
+                {cur?.total ? ` of ${cur.total}` : ""} Google {styleLabel.toLowerCase()} faces
+              </p>
               <div className={t.grid}>
-                {pairings.map((p) => {
-                  const item = { kind: "pair", display: p.display, text: p.text };
+                {browseFaces.map((face) => {
+                  const item = faceItem(face);
                   const on = isKept(item);
+                  const base = face.source === "fontshare" ? "sans" : STYLES.find((s) => s.key === style)?.base || "serif";
+                  const stack = fontStack({ family: face.family }, base);
                   return (
-                    <div key={p.id} className={t.gridCard} data-kept={on ? "true" : undefined}>
+                    <div key={keyOf(item)} className={t.gridCard} data-kept={on ? "true" : undefined}>
                       <div className={t.gridSpecimen}>
-                        <span className={t.specName} style={{ fontFamily: fontStack({ family: p.display }, "serif") }}>{shownName}</span>
-                        <span className={t.specSub} style={{ fontFamily: fontStack({ family: p.text }, "sans") }}>
-                          {shownSub || "Add a subhead above to set it"}
-                        </span>
+                        <span className={t.specName} style={{ fontFamily: stack }}>{shownName}</span>
+                        {shownSub && <span className={t.specSub} style={{ fontFamily: stack }}>{shownSub}</span>}
                       </div>
                       <div className={t.gridFoot}>
-                        <span className={t.gridName}>{p.display} + {p.text}{p.source ? ` · via ${p.source}` : ""}</span>
+                        <span className={t.gridName}>
+                          {face.family}
+                          {face.source === "fontshare" && <span className={t.sourceTag}>Fontshare</span>}
+                        </span>
                         <button type="button" className={t.keepBtn} data-on={on ? "true" : undefined} onClick={() => toggleKeep(item)} aria-pressed={on}>
                           {on ? "✓ Kept" : "Keep"}
                         </button>
@@ -366,77 +330,55 @@ export default function TypePage() {
                   );
                 })}
               </div>
+              {cur?.hasMore && (
+                <button type="button" className={t.showMore} onClick={loadMore} disabled={loadingMore}>
+                  {loadingMore ? "Loading…" : `Show more Google ${styleLabel.toLowerCase()} faces`}
+                </button>
+              )}
             </>
-          )}
-        </section>
-
-        <aside className={styles.directionCol} aria-label="Your type">
-          <div className={styles.direction}>
-            <h2 className={styles.directionH}>
-              Your type <span className={t.count}>{kept.length}</span>
-            </h2>
-            {kept.length === 0 ? (
-              <p className={styles.directionHint}>
-                Browse a style or a pairing, set it in your words, and <strong>Keep</strong> the
-                faces that feel right. They collect here.
-              </p>
-            ) : (
-              <>
-                <ul className={t.keptList}>
-                  {kept.map((it) => (
-                    <li key={keyOf(it)} className={t.keptItem}>
-                      {it.kind === "pair" ? (
-                        <span className={t.keptSpecimen}>
-                          <span className={t.specName} style={{ fontFamily: fontStack({ family: it.display }, "serif") }}>{shownName}</span>
-                          <span className={t.specSub} style={{ fontFamily: fontStack({ family: it.text }, "sans") }}>{shownSub || "Your subhead"}</span>
-                        </span>
-                      ) : (
-                        <span className={t.keptSpecimen}>
-                          <span className={t.specName} style={{ fontFamily: fontStack({ family: it.family }, "serif") }}>{shownName}</span>
-                          {shownSub && <span className={t.specSub} style={{ fontFamily: fontStack({ family: it.family }, "serif") }}>{shownSub}</span>}
-                        </span>
-                      )}
-                      <span className={t.keptRow}>
-                        <span className={t.keptName}>
-                          {it.kind === "pair" ? `${it.display} + ${it.text}` : it.family}
-                        </span>
-                        <button type="button" className={t.keptRemove} onClick={() => toggleKeep(it)} aria-label={`Remove ${it.kind === "pair" ? `${it.display} and ${it.text}` : it.family}`}>
-                          ×
-                        </button>
+          )
+        ) : (
+          <>
+            <p className={t.gridMeta}>
+              {pairings.length} curated pairings, ordered to suit your colors. Each sets your name and subhead in two faces that work together.
+            </p>
+            <div className={t.grid}>
+              {pairings.map((p) => {
+                const item = { kind: "pair", display: p.display, text: p.text };
+                const on = isKept(item);
+                return (
+                  <div key={p.id} className={t.gridCard} data-kept={on ? "true" : undefined}>
+                    <div className={t.gridSpecimen}>
+                      <span className={t.specName} style={{ fontFamily: fontStack({ family: p.display }, "serif") }}>{shownName}</span>
+                      <span className={t.specSub} style={{ fontFamily: fontStack({ family: p.text }, "sans") }}>
+                        {shownSub || "Add a subhead above to set it"}
                       </span>
-                    </li>
-                  ))}
-                </ul>
-
-                {added ? (
-                  <div className={styles.directionSaved}>
-                    <p className={styles.directionSavedTitle}>
-                      ✓ Added <strong>{kept.length}</strong> to your board
-                    </p>
-                    <div className={styles.directionActions}>
-                      <Link href="/moodboard" className={styles.directionPrimary}>
-                        Open your board →
-                      </Link>
+                    </div>
+                    <div className={t.gridFoot}>
+                      <span className={t.gridName}>{p.display} + {p.text}{p.source ? ` · via ${p.source}` : ""}</span>
+                      <button type="button" className={t.keepBtn} data-on={on ? "true" : undefined} onClick={() => toggleKeep(item)} aria-pressed={on}>
+                        {on ? "✓ Kept" : "Keep"}
+                      </button>
                     </div>
                   </div>
-                ) : (
-                  <>
-                    <button type="button" className={styles.makeDirection} onClick={addToBoard} disabled={adding}>
-                      {adding ? "Adding…" : `Add ${kept.length} to your board`}
-                    </button>
-                    <p className={styles.reflectHint}>
-                      Drops your kept type onto the same board as your colors, as live specimens.
-                    </p>
-                  </>
-                )}
-                {error && <p className={styles.directionError}>{error}</p>}
-              </>
-            )}
-          </div>
-        </aside>
-      </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </main>
 
       <TypeSources />
+
+      <CollectedBar
+        kept={kept}
+        shownName={shownName}
+        added={added}
+        adding={adding}
+        error={error}
+        onAdd={addToBoard}
+        onRemove={toggleKeep}
+      />
     </div>
   );
 }
@@ -488,6 +430,47 @@ function TypeSources() {
   );
 }
 
+// The collection, as a sticky tray along the bottom — it fills as you keep faces
+// (accumulation you can feel) and holds the one move forward, so the whole width
+// stays free for comparing specimens. Absent until you've kept something.
+function CollectedBar({ kept, shownName, added, adding, error, onAdd, onRemove }) {
+  if (kept.length === 0 && !added) return null;
+  return (
+    <div className={t.collected} role="region" aria-label="Your collected type">
+      <div className={t.collectedInner}>
+        {added ? (
+          <>
+            <p className={t.collectedDone}>✓ Added <strong>{kept.length}</strong> to your board</p>
+            <Link href="/moodboard" className={t.collectedCta}>Open your board →</Link>
+          </>
+        ) : (
+          <>
+            <span className={t.collectedCount}>{kept.length} kept</span>
+            <ul className={t.collectedChips}>
+              {kept.map((it) => {
+                const face = it.kind === "pair" ? it.display : it.family;
+                const label = it.kind === "pair" ? `${it.display} and ${it.text}` : it.family;
+                return (
+                  <li key={keyOf(it)} className={t.chip}>
+                    <span className={t.chipFace} style={{ fontFamily: fontStack({ family: face }, "serif") }} title={it.kind === "pair" ? `${it.display} + ${it.text}` : it.family}>
+                      {shownName}
+                    </span>
+                    <button type="button" className={t.chipRemove} onClick={() => onRemove(it)} aria-label={`Remove ${label}`}>×</button>
+                  </li>
+                );
+              })}
+            </ul>
+            {error && <span className={t.collectedError}>{error}</span>}
+            <button type="button" className={t.collectedCta} onClick={onAdd} disabled={adding}>
+              {adding ? "Adding…" : `Add ${kept.length} to your board`}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // Import path: search both free libraries by name and add favorites you already
 // know — for anyone who arrives with a list, not a blank slate. Fontshare matches
 // (filtered locally) lead, then Google. (Upload-your-own is next.)
@@ -522,7 +505,6 @@ function SearchAdd({ shownName, isKept, onKeep, fontshare = [] }) {
       {results.map((f) => (
         <FontLoader key={`${f.source}:${f.family}`} fonts={{ title: f }} />
       ))}
-      <span className={t.importLabel}>Already have a favorite?</span>
       <div className={t.importField}>
         <input
           className={t.importInput}
