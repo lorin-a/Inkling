@@ -200,6 +200,15 @@ pushed — Lorin's call).** Working tree clean, `npm run build` green, browser-v
 `components/canvas/TextBlock.js` + `canvas.module.css` (caption/size); `lib/addTypeToBoard.js`;
 headers on `/recognize` + `/moodboard` gained `SpokeNav` (and shed a competing `margin-left:auto`).
 
+**★ STANDING — full-site visual QA pass (batched, do AFTER the architecture).**
+Sweep every page for misaligned / wrong-sized / illegible chrome and fix them in ONE
+dedicated pass, not piecemeal mid-build. Lorin's explicit call (2026-06-03): *don't get
+caught up in these details before the architecture is built — keep me accountable to that.*
+Known instances logged: the **ProjectSwitcher "Your Brand" caret is illegibly tiny**;
+(fixed 2026-06-03: Submit-modal select chevron alignment + the cartoonish heading weight).
+The app-wide heading treatment (Fraunces 700 + SOFT) reads chunky to Lorin — revisit
+weight globally in the same pass (it's currently an intentional brand choice, so confirm).
+
 **Known limits / debt (don't lose these):**
 - Add-by-URL works for Google embed links + CORS-friendly hosts; a foundry that blocks
   cross-origin loading still won't render (now *warns* instead of failing silently). The
