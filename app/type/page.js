@@ -525,7 +525,7 @@ function CollectedBar({ kept, shownName, added, adding, error, onAdd, onRemove }
 // cramped toolbar search with one intentional home for everything you bring.
 const BYO_TABS = [
   { key: "search", label: "Search by name" },
-  { key: "url", label: "Paste a link" },
+  { key: "url", label: "Paste embed code" },
   { key: "upload", label: "Upload" },
 ];
 
@@ -576,7 +576,7 @@ function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
     const { url, family } = parseFontUrl(urlSrc);
     const name = urlName.trim() || family || "";
     if (!url) {
-      setUrlMsg({ kind: "err", text: "Paste a font link or a foundry’s embed code (a <link> or @import)." });
+      setUrlMsg({ kind: "err", text: "Paste embed code (a <link> or @import), or a direct font link." });
       return;
     }
     if (!name) {
@@ -609,7 +609,7 @@ function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
       setUrlMsg(
         ok
           ? { kind: "ok", text: `✓ Added ${target}. Find it in your collection at the bottom.` }
-          : { kind: "warn", text: `Added ${target}, but it isn’t rendering. That link looks like a web page, not the font itself. Paste the foundry’s CSS embed link or a direct .woff2 / .otf, and check the family name.` }
+          : { kind: "warn", text: `Added ${target}, but it isn’t rendering. That link looks like a web page, not the font itself. For a font you downloaded from a foundry, use Upload. Otherwise paste the embed code, and check the family name.` }
       );
     }, 300);
   }
@@ -679,10 +679,10 @@ function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
                 className={`${t.byoInput} ${t.byoUrlSrc}`}
                 value={urlSrc}
                 onChange={(e) => onUrlChange(e.target.value)}
-                placeholder="Font link, or a foundry’s embed code"
+                placeholder="Paste embed code (Adobe, Google, a foundry)"
                 spellCheck={false}
                 autoFocus
-                aria-label="Font link or embed code"
+                aria-label="Embed code or font link"
               />
               <input
                 className={`${t.byoInput} ${t.byoUrlName}`}
@@ -695,7 +695,7 @@ function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
               <button type="button" className={t.byoAdd} onClick={addByUrl}>Add</button>
             </div>
             <p className={t.byoHint} data-kind={urlMsg?.kind}>
-              {urlMsg?.text || "Paste a foundry’s embed code or a font link (Google Fonts, Adobe, or a direct .woff2). We fill the family name when we can."}
+              {urlMsg?.text || "The embed code from Adobe Fonts, Google Fonts, or a foundry (a direct font link works too). We fill the family name when we can. For a downloaded font file, use Upload."}
             </p>
           </>
         )}
