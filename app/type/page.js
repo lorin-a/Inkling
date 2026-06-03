@@ -25,15 +25,19 @@ const STYLES = [
   { key: "sans", label: "Sans serif", font: "Inter", base: "sans" },
   { key: "slab", label: "Slab serif", font: "Zilla Slab", base: "serif" },
   { key: "display", label: "Display", font: "Anton", base: "sans" },
-  { key: "handwriting", label: "Script", font: "Caveat", base: "serif" },
+  { key: "handwriting", label: "Handwriting", font: "Caveat", base: "serif" },
   { key: "mono", label: "Monospace", font: "Space Mono", base: "sans" },
 ];
 
-// A face carries its source (google | fontshare) and, for Fontshare, the slug
-// the CSS API needs. Accepts a bare family string too (legacy / convenience).
+// A face carries its source: google | fontshare (catalog, with a slug for
+// Fontshare), or url | upload for one you bring (with its url). Accepts a bare
+// family string too (legacy / convenience).
 const faceItem = (f) => {
   const o = typeof f === "string" ? { family: f } : f;
-  return { kind: "face", family: o.family, source: o.source || "google", ...(o.slug ? { slug: o.slug } : {}) };
+  const out = { kind: "face", family: o.family, source: o.source || "google" };
+  if (o.slug) out.slug = o.slug;
+  if (o.url) out.url = o.url;
+  return out;
 };
 const keyOf = (it) =>
   it.kind === "pair" ? `pair:${it.display}|${it.text}` : `face:${it.source || "google"}:${it.family}`;
@@ -44,6 +48,7 @@ export default function TypePage() {
   const [name, setName] = useState("");
   const [subhead, setSubhead] = useState("");
   const [mode, setMode] = useState("single"); // single | pairings
+  const [byoOpen, setByoOpen] = useState(false); // "bring your own" panel
   const [style, setStyle] = useState("serif");
   const [styleData, setStyleData] = useState({}); // key → { families, total, page, hasMore }
   const [loadingStyle, setLoadingStyle] = useState(false);
@@ -186,7 +191,7 @@ export default function TypePage() {
     const add = (fo) => {
       if (!fo?.family) return;
       const k = `${fo.source || "google"}:${fo.family}`;
-      if (!map.has(k)) map.set(k, { family: fo.family, source: fo.source || "google", ...(fo.slug ? { slug: fo.slug } : {}) });
+      if (!map.has(k)) map.set(k, { family: fo.family, source: fo.source || "google", ...(fo.slug ? { slug: fo.slug } : {}), ...(fo.url ? { url: fo.url } : {}) });
     };
     if (mode === "single") browseFaces.forEach(add);
     else pairings.forEach((p) => { add({ family: p.display }); add({ family: p.text }); });
@@ -291,9 +296,27 @@ export default function TypePage() {
               ))}
             </div>
           )}
-          <SearchAdd shownName={shownName} isKept={isKept} onKeep={toggleKeep} fontshare={fontshare} />
+          <button
+            type="button"
+            className={t.byoToggle}
+            data-on={byoOpen ? "true" : undefined}
+            onClick={() => setByoOpen((v) => !v)}
+            aria-expanded={byoOpen}
+          >
+            + Bring your own
+          </button>
         </div>
       </div>
+
+      {byoOpen && (
+        <BringYourOwn
+          shownName={shownName}
+          isKept={isKept}
+          onKeep={toggleKeep}
+          fontshare={fontshare}
+          onClose={() => setByoOpen(false)}
+        />
+      )}
 
       <main className={t.board} aria-label="Typefaces">
         {mode === "single" ? (
@@ -405,8 +428,8 @@ function TypeSources() {
         <p className={t.sourcesIntro}>
           Everything above is browseable live and free: Google Fonts and Fontshare (the
           modern grotesks free for commercial use). For the rest of the type world, these
-          are the foundries worth knowing. Browse one, then add a face by name above, drop
-          its URL into your library, or upload your own (with sign-in).
+          are the foundries worth knowing. Browse one, then pull a face in with
+          <strong> Bring your own</strong> at the top (by name, by URL, or upload).
         </p>
       </div>
       {foundries.length > 0 && (
@@ -472,17 +495,25 @@ function CollectedBar({ kept, shownName, added, adding, error, onAdd, onRemove }
 }
 
 // Import path: search both free libraries by name and add favorites you already
-// know — for anyone who arrives with a list, not a blank slate. Fontshare matches
-// (filtered locally) lead, then Google. (Upload-your-own is next.)
-function SearchAdd({ shownName, isKept, onKeep, fontshare = [] }) {
+// know it, paste a hosted URL, or (with sign-in) upload your own. Replaces the
+// cramped toolbar search with one intentional home for everything you bring.
+function BringYourOwn({ shownName, isKept, onKeep, fontshare = [], onClose }) {
   const [q, setQ] = useState("");
   const [google, setGoogle] = useState([]);
+  const [urlName, setUrlName] = useState("");
+  const [urlSrc, setUrlSrc] = useState("");
+  const [urlErr, setUrlErr] = useState(null);
 
+  // Esc closes the panel.
   useEffect(() => {
-    if (q.trim().length < 2) {
-      setGoogle([]);
-      return;
-    }
+    const onKey = (e) => { if (e.key === "Escape") onClose?.(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  // Search both catalogs by name (Google over the network, Fontshare locally).
+  useEffect(() => {
+    if (q.trim().length < 2) { setGoogle([]); return; }
     const ctl = new AbortController();
     const id = setTimeout(() => {
       fetch(`/api/fonts/google?q=${encodeURIComponent(q)}&limit=8&page=0`, { signal: ctl.signal })
@@ -490,52 +521,100 @@ function SearchAdd({ shownName, isKept, onKeep, fontshare = [] }) {
         .then((d) => setGoogle((d?.families || []).map((f) => ({ family: f.family, source: "google" }))))
         .catch(() => {});
     }, 200);
-    return () => {
-      clearTimeout(id);
-      ctl.abort();
-    };
+    return () => { clearTimeout(id); ctl.abort(); };
   }, [q]);
 
   const query = q.trim().toLowerCase();
   const fsMatches = query.length >= 2 ? fontshare.filter((f) => f.family.toLowerCase().includes(query)).slice(0, 6) : [];
   const results = [...fsMatches, ...google];
 
+  function addByUrl() {
+    const name = urlName.trim();
+    const url = urlSrc.trim();
+    if (!name || !url) { setUrlErr("Enter both a family name and a URL."); return; }
+    if (!/^https?:\/\//i.test(url)) { setUrlErr("That doesn't look like a URL (it should start with https)."); return; }
+    // A direct font file becomes an @font-face (upload source); anything else is
+    // treated as a CSS stylesheet link (url source) — a foundry's embed link.
+    const isFile = /\.(woff2?|otf|ttf)(\?|$)/i.test(url);
+    onKeep({ kind: "face", family: name, source: isFile ? "upload" : "url", url });
+    setUrlName(""); setUrlSrc(""); setUrlErr(null);
+  }
+
   return (
-    <div className={t.importBar}>
+    <div className={t.byo} role="region" aria-label="Bring your own type">
       {results.map((f) => (
         <FontLoader key={`${f.source}:${f.family}`} fonts={{ title: f }} />
       ))}
-      <div className={t.importField}>
-        <input
-          className={t.importInput}
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Add any font by name (Google or Fontshare)…"
-          spellCheck={false}
-          aria-label="Search both free libraries to add a font by name"
-        />
-        {results.length > 0 && (
-          <ul className={t.importResults}>
-            {results.map((f) => {
-              const item = faceItem(f);
-              const on = isKept(item);
-              return (
-                <li key={`${f.source}:${f.family}`} className={t.importResult}>
-                  <span className={t.importSpecimen} style={{ fontFamily: fontStack({ family: f.family }, "serif") }}>
-                    {shownName}
-                  </span>
-                  <span className={t.importName}>
-                    {f.family}
-                    <span className={t.sourceTag} data-src={f.source}>{f.source === "fontshare" ? "Fontshare" : "Google"}</span>
-                  </span>
-                  <button type="button" className={t.keepBtn} data-on={on ? "true" : undefined} onClick={() => onKeep(item)} aria-pressed={on}>
-                    {on ? "✓ Kept" : "Keep"}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
+      <div className={t.byoInner}>
+        <section className={t.byoCol}>
+          <h3 className={t.byoTitle}>Search by name</h3>
+          <p className={t.byoHelp}>Know the face? Find it in Google Fonts or Fontshare.</p>
+          <div className={t.byoField}>
+            <input
+              className={t.byoInput}
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="e.g. Söhne, Satoshi, Fraunces…"
+              spellCheck={false}
+              aria-label="Search both free libraries by name"
+            />
+            {results.length > 0 && (
+              <ul className={t.byoResults}>
+                {results.map((f) => {
+                  const item = faceItem(f);
+                  const on = isKept(item);
+                  return (
+                    <li key={`${f.source}:${f.family}`} className={t.byoResult}>
+                      <span className={t.byoResultName} style={{ fontFamily: fontStack({ family: f.family }, "serif") }}>{f.family}</span>
+                      <span className={t.sourceTag} data-src={f.source}>{f.source === "fontshare" ? "Fontshare" : "Google"}</span>
+                      <button type="button" className={t.keepBtn} data-on={on ? "true" : undefined} onClick={() => onKeep(item)} aria-pressed={on}>
+                        {on ? "✓ Kept" : "Keep"}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </section>
+
+        <section className={t.byoCol}>
+          <h3 className={t.byoTitle}>Add by URL</h3>
+          <p className={t.byoHelp}>
+            Paste a hosted font&rsquo;s link: the CSS embed link a foundry gives you, or a
+            direct .woff2 / .otf file. We load it live, nothing to upload. Type the exact
+            family name so it renders.
+          </p>
+          <input
+            className={t.byoInput}
+            value={urlName}
+            onChange={(e) => { setUrlName(e.target.value); setUrlErr(null); }}
+            placeholder="Family name (e.g. Söhne)"
+            spellCheck={false}
+            aria-label="Family name for the font at this URL"
+          />
+          <input
+            className={t.byoInput}
+            value={urlSrc}
+            onChange={(e) => { setUrlSrc(e.target.value); setUrlErr(null); }}
+            placeholder="https://… (a .css embed link or a .woff2 file)"
+            spellCheck={false}
+            aria-label="Font URL"
+          />
+          {urlErr && <p className={t.byoErr}>{urlErr}</p>}
+          <button type="button" className={t.byoAdd} onClick={addByUrl}>Add this font</button>
+        </section>
+
+        <section className={t.byoCol}>
+          <h3 className={t.byoTitle}>Upload a file</h3>
+          <p className={t.byoHelp}>
+            Bring a licensed .woff2, .otf, or .ttf from your computer. Comes with sign-in,
+            so your files have somewhere to live.
+          </p>
+          <button type="button" className={t.byoUpload} disabled title="Sign in to upload your own font files">
+            Sign in to upload
+          </button>
+        </section>
       </div>
     </div>
   );
