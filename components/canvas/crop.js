@@ -47,3 +47,25 @@ export function clampFocal(fx, fy, frameW, frameH, ratio, zoom = 1) {
 export const ZOOM_MIN = 1;
 export const ZOOM_MAX = 4;
 export const clampZoom = (z) => clamp(z || 1, ZOOM_MIN, ZOOM_MAX);
+
+/**
+ * Render a cropped sub-region as a fixed-size thumbnail — same frame-vs-image
+ * model as ImageBlock, but for an arbitrary thumb box (the well, previews).
+ * Returns inline-style objects: `wrap` clips the box, `img` is positioned inside
+ * it by the same `cropLayout` math, so a thumbnail shows exactly the region the
+ * user framed. No pixel read, so cross-origin images are fine.
+ */
+export function croppedThumb(thumbW, thumbH, ratio, fx = 0.5, fy = 0.5, zoom = 1) {
+  const box = cropLayout(thumbW, thumbH, ratio, fx, fy, zoom);
+  return {
+    wrap: { position: "relative", width: thumbW, height: thumbH, overflow: "hidden" },
+    img: {
+      position: "absolute",
+      left: box.left,
+      top: box.top,
+      width: box.width,
+      height: box.height,
+      maxWidth: "none",
+    },
+  };
+}
