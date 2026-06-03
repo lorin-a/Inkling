@@ -10,7 +10,8 @@ import Board from "../../components/canvas/Board";
 import BoardBar from "../../components/canvas/BoardBar";
 import PinTray from "../../components/canvas/PinTray";
 import WellTray from "../../components/canvas/WellTray";
-import { atomToBlock } from "../../lib/atoms";
+import PullTagPopover from "../../components/canvas/PullTagPopover";
+import { atomToBlock, atomFromImageBlock, atomFromPin } from "../../lib/atoms";
 import AddBlocks from "../../components/canvas/AddBlocks";
 import { SWATCH_STYLES, nextIn, fontKey } from "../../components/canvas/blockOptions";
 import { useBoards } from "../../lib/useBoards";
@@ -67,6 +68,7 @@ export default function MoodboardPage() {
   const [trayOpen, setTrayOpen] = useState(true);
   const [traySource, setTraySource] = useState("pins"); // pins | well
   const [wellVersion, setWellVersion] = useState(0); // bump to reload the well after a pull
+  const [pullDraft, setPullDraft] = useState(null); // a draft atom awaiting dimension + tags
   const [projectFonts, setProjectFonts] = useState({}); // { title, subhead, body } font values
 
   // The project's chosen brand fonts, offered as quick picks on text blocks.
@@ -268,6 +270,43 @@ export default function MoodboardPage() {
     setSelectedId(block.id);
   }, [blocks, setBlocks]);
 
+  // Pull a part of a board image (its live crop becomes the atom's visual).
+  const pullFromBlock = useCallback((blockId) => {
+    const b = blocks.find((x) => x.id === blockId);
+    if (b?.type === "image") setPullDraft(atomFromImageBlock(b, { projectId: null }));
+  }, [blocks]);
+
+  // Pull a whole pin from the tray — preload to capture its true aspect.
+  const pullFromPin = useCallback((pin) => {
+    const src = pin.imageDisplay || pin.thumbnail236 || pin.imageOriginal;
+    if (!src) return;
+    const open = (ratio) => setPullDraft(atomFromPin(pin, { projectId: null, ratio }));
+    const img = new Image();
+    img.onload = () => open(img.naturalWidth / img.naturalHeight);
+    img.onerror = () => open(1);
+    img.src = src;
+  }, []);
+
+  // Commit the pull: stamp the chosen dimension + tags, save to the well, and
+  // surface it (open the Well so the new reference is visible).
+  const confirmPull = useCallback(async (dimension, tags) => {
+    if (!pullDraft) return;
+    const atom = { ...pullDraft, dimension, tags };
+    setPullDraft(null);
+    try {
+      await apiFetch("/api/atoms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ atom }),
+      });
+      setWellVersion((v) => v + 1);
+      setTraySource("well");
+      setTrayOpen(true);
+    } catch {
+      /* a failed save leaves the board untouched; the user can retry */
+    }
+  }, [pullDraft]);
+
   return (
     <div className={styles.page}>
       <FontLoader fonts={projectFonts} />
@@ -316,6 +355,7 @@ export default function MoodboardPage() {
               onSetFill={setFill}
               onSetFinish={setFinish}
               onApplyFinishAll={applyFinishAll}
+              onPull={pullFromBlock}
               projectFonts={projectFontQuick}
               background={active?.background || null}
               empty={blocks.length === 0}
@@ -332,6 +372,7 @@ export default function MoodboardPage() {
                 usedPinIds={usedPinIds}
                 source={traySource}
                 onSource={setTraySource}
+                onPullPin={pullFromPin}
               />
             )}
             {trayOpen && traySource === "well" && (
@@ -345,6 +386,10 @@ export default function MoodboardPage() {
             )}
           </div>
         </>
+      )}
+
+      {pullDraft && (
+        <PullTagPopover draft={pullDraft} onConfirm={confirmPull} onCancel={() => setPullDraft(null)} />
       )}
     </div>
   );

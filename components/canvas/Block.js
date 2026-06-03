@@ -97,6 +97,7 @@ export default function Block({
   onFill,
   onFinish,
   onApplyFinishAll,
+  onPull,
   children,
 }) {
   const rootRef = useRef(null);
@@ -252,6 +253,13 @@ export default function Block({
           onEnterCrop();
         }
         break;
+      case "p":
+      case "P":
+        if (cropping && onPull) {
+          e.preventDefault();
+          onPull();
+        }
+        break;
       case "]":
         e.preventDefault();
         onForward();
@@ -297,6 +305,9 @@ export default function Block({
             aria-label="Zoom"
             title="Zoom"
           />
+          {onPull && (
+            <button type="button" className={styles.cropPull} onClick={onPull} title="Pull this part to your well (P)">Pull part</button>
+          )}
           <button type="button" className={styles.cropDone} onClick={onExitCrop}>Done</button>
         </div>
       )}

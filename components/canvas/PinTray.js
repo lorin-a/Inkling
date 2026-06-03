@@ -17,7 +17,7 @@ import styles from "./canvas.module.css";
  * Pins already on the board read as "added" — a quiet check, not a lockout
  * (the same reference can appear twice if you want it twice).
  */
-export default function PinTray({ open, onToggle, onAdd, usedPinIds, source = "pins", onSource }) {
+export default function PinTray({ open, onToggle, onAdd, usedPinIds, source = "pins", onSource, onPullPin }) {
   const [pins, setPins] = useState(null);
 
   useEffect(() => {
@@ -70,23 +70,29 @@ export default function PinTray({ open, onToggle, onAdd, usedPinIds, source = "p
           pins.map((pin) => {
             const used = usedPinIds.has(pin.pinId);
             return (
-              <button
-                key={pin.pinId}
-                type="button"
-                className={styles.trayPin}
-                onClick={() => onAdd(pin)}
-                title={used ? "Already on this board — click to add again" : "Add to board"}
-              >
-                <img
-                  className={styles.trayThumb}
-                  src={pin.thumbnail236 || pin.imageDisplay || pin.imageOriginal}
-                  alt={pin.title || pin.alt || "Pin"}
-                  loading="lazy"
-                  draggable={false}
-                />
-                {used && <span className={styles.trayUsed} aria-hidden="true">✓</span>}
-                {pin.sourceDomain && <span className={styles.trayDomain}>{pin.sourceDomain}</span>}
-              </button>
+              <div key={pin.pinId} className={styles.trayPinWrap}>
+                <button
+                  type="button"
+                  className={styles.trayPin}
+                  onClick={() => onAdd(pin)}
+                  title={used ? "Already on this board — click to add again" : "Add to board"}
+                >
+                  <img
+                    className={styles.trayThumb}
+                    src={pin.thumbnail236 || pin.imageDisplay || pin.imageOriginal}
+                    alt={pin.title || pin.alt || "Pin"}
+                    loading="lazy"
+                    draggable={false}
+                  />
+                  {used && <span className={styles.trayUsed} aria-hidden="true">✓</span>}
+                  {pin.sourceDomain && <span className={styles.trayDomain}>{pin.sourceDomain}</span>}
+                </button>
+                {onPullPin && (
+                  <button type="button" className={styles.trayPull} onClick={() => onPullPin(pin)} title="Pull to your well">
+                    Pull
+                  </button>
+                )}
+              </div>
             );
           })
         )}

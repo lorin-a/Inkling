@@ -1250,3 +1250,173 @@ a.credit:hover {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ============================================================== pull gesture */
+.cropPull {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--whelm-vivid);
+  background: color-mix(in oklab, var(--whelm-vivid) 12%, var(--bg-elevated));
+  border: 1px solid color-mix(in oklab, var(--whelm-vivid) 35%, var(--hairline));
+  padding: 5px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.cropPull:hover { background: color-mix(in oklab, var(--whelm-vivid) 20%, var(--bg-elevated)); }
+
+/* Pin "Pull" — a sibling overlay (not nested in the Add button). */
+.trayPinWrap {
+  position: relative;
+  break-inside: avoid;
+}
+.trayPull {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  font-size: 11px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--whelm-vivid);
+  padding: 4px 9px;
+  border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  transition: opacity var(--motion-fast) var(--ease-out);
+}
+.trayPinWrap:hover .trayPull,
+.trayPull:focus-visible { opacity: 1; }
+.trayPull:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+
+/* The pull tag picker — a centered dialog (serves crop + tray entry points). */
+.pullScrim {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  background: rgba(20, 12, 28, 0.4);
+  backdrop-filter: blur(2px);
+  padding: 24px;
+}
+.pullCard {
+  width: min(440px, 100%);
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  padding: 18px 20px 20px;
+  box-shadow: 0 24px 60px rgba(20, 12, 28, 0.28);
+}
+.pullPreview {
+  width: 100%;
+  height: 120px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--hairline);
+  margin-bottom: 14px;
+}
+.pullTitle {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 500;
+  font-variation-settings: "opsz" 24, "SOFT" 0, "WONK" 0;
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+  color: var(--ink);
+}
+.pullDims {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pullDim {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  cursor: pointer;
+}
+.pullDim:hover { border-color: var(--ink-muted); }
+.pullDim[data-on="true"] {
+  border-color: var(--whelm-vivid);
+  background: color-mix(in oklab, var(--whelm-vivid) 14%, var(--bg-elevated));
+}
+.pullDim:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 2px; }
+.pullTagLabel {
+  display: block;
+  margin: 16px 0 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.pullOpt { font-weight: 400; color: var(--ink-muted); }
+.pullTagInput {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+}
+.pullTagInput:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 1px; }
+.pullChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.pullChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px 3px 10px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--ink);
+}
+.pullChipX {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: var(--ink-muted);
+  font-size: 15px;
+  line-height: 1;
+}
+.pullChipX:hover { color: var(--ink); background: var(--bg); }
+.pullActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+.pullCancel {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-size: 14px;
+}
+.pullCancel:hover { color: var(--ink); }
+.pullAdd {
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  background: var(--whelm-vivid);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter var(--motion-fast) var(--ease-out);
+}
+.pullAdd:hover { filter: brightness(1.06); }
+.pullAdd:disabled { opacity: 0.5; cursor: default; }
+.pullAdd:focus-visible, .pullCancel:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 2px; }
