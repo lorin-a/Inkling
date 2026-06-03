@@ -17,7 +17,7 @@ import styles from "./canvas.module.css";
  * Pins already on the board read as "added" — a quiet check, not a lockout
  * (the same reference can appear twice if you want it twice).
  */
-export default function PinTray({ open, onToggle, onAdd, usedPinIds }) {
+export default function PinTray({ open, onToggle, onAdd, usedPinIds, source = "pins", onSource }) {
   const [pins, setPins] = useState(null);
 
   useEffect(() => {
@@ -39,9 +39,9 @@ export default function PinTray({ open, onToggle, onAdd, usedPinIds }) {
 
   if (!open) {
     return (
-      <button type="button" className={styles.trayHandle} onClick={onToggle} title="Show pins">
+      <button type="button" className={styles.trayHandle} onClick={onToggle} title="Show sources">
         <span className={styles.trayHandleIcon} aria-hidden="true">▤</span>
-        Pins
+        Sources
       </button>
     );
   }
@@ -49,16 +49,17 @@ export default function PinTray({ open, onToggle, onAdd, usedPinIds }) {
   return (
     <aside className={styles.tray} aria-label="Library pins">
       <header className={styles.trayHead}>
-        <div>
-          <h2 className={styles.trayTitle}>Pins</h2>
-          <p className={styles.traySub}>
-            {pins == null ? "Loading…" : `${pins.length} in this project`}
-          </p>
+        <div className={styles.traySwitch} role="tablist" aria-label="Source">
+          <button type="button" role="tab" aria-selected={source === "pins"} className={styles.traySwitchBtn} data-on="true">Pins</button>
+          <button type="button" role="tab" aria-selected={source === "well"} className={styles.traySwitchBtn} onClick={() => onSource?.("well")}>Well</button>
         </div>
-        <button type="button" className={styles.trayClose} onClick={onToggle} aria-label="Hide pins">
+        <button type="button" className={styles.trayClose} onClick={onToggle} aria-label="Hide sources">
           ✕
         </button>
       </header>
+      <p className={styles.traySub} style={{ padding: "0 16px 8px" }}>
+        {pins == null ? "Loading…" : `${pins.length} pins in this project`}
+      </p>
 
       <div className={styles.trayGrid}>
         {pins == null ? (

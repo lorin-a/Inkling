@@ -9,6 +9,8 @@ import { apiFetch } from "../../lib/api/client";
 import Board from "../../components/canvas/Board";
 import BoardBar from "../../components/canvas/BoardBar";
 import PinTray from "../../components/canvas/PinTray";
+import WellTray from "../../components/canvas/WellTray";
+import { atomToBlock } from "../../lib/atoms";
 import AddBlocks from "../../components/canvas/AddBlocks";
 import { SWATCH_STYLES, nextIn, fontKey } from "../../components/canvas/blockOptions";
 import { useBoards } from "../../lib/useBoards";
@@ -63,6 +65,8 @@ export default function MoodboardPage() {
   const [selectedId, setSelectedId] = useState(null);
   const [croppingId, setCroppingId] = useState(null);
   const [trayOpen, setTrayOpen] = useState(true);
+  const [traySource, setTraySource] = useState("pins"); // pins | well
+  const [wellVersion, setWellVersion] = useState(0); // bump to reload the well after a pull
   const [projectFonts, setProjectFonts] = useState({}); // { title, subhead, body } font values
 
   // The project's chosen brand fonts, offered as quick picks on text blocks.
@@ -255,6 +259,15 @@ export default function MoodboardPage() {
     img.src = src;
   }, [setBlocks]);
 
+  // Drop a well atom onto the board — it instantiates as an ordinary block
+  // (image / swatch / text) carrying its crop, source, and the user's tags.
+  const addAtomToBoard = useCallback((atom) => {
+    if (!atom) return;
+    const block = atomToBlock(atom, { ...placement(blocks), baseWidth: BASE_WIDTH });
+    setBlocks((bs) => [...bs, block]);
+    setSelectedId(block.id);
+  }, [blocks, setBlocks]);
+
   return (
     <div className={styles.page}>
       <FontLoader fonts={projectFonts} />
@@ -308,12 +321,28 @@ export default function MoodboardPage() {
               empty={blocks.length === 0}
             />
             <AddBlocks onAddText={addText} onAddSwatch={addSwatch} onAddShape={addShape} />
-            <PinTray
-              open={trayOpen}
-              onToggle={() => setTrayOpen((v) => !v)}
-              onAdd={addPin}
-              usedPinIds={usedPinIds}
-            />
+            {!trayOpen && (
+              <PinTray open={false} onToggle={() => setTrayOpen(true)} onAdd={addPin} usedPinIds={usedPinIds} />
+            )}
+            {trayOpen && traySource === "pins" && (
+              <PinTray
+                open
+                onToggle={() => setTrayOpen(false)}
+                onAdd={addPin}
+                usedPinIds={usedPinIds}
+                source={traySource}
+                onSource={setTraySource}
+              />
+            )}
+            {trayOpen && traySource === "well" && (
+              <WellTray
+                source={traySource}
+                onSource={setTraySource}
+                onClose={() => setTrayOpen(false)}
+                onAddAtom={addAtomToBoard}
+                version={wellVersion}
+              />
+            )}
           </div>
         </>
       )}

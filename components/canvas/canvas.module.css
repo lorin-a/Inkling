@@ -1140,3 +1140,113 @@ a.credit:hover {
     transition: none;
   }
 }
+
+/* ============================================================== source tray: Pins / Well */
+.traySwitch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--bg);
+}
+.traySwitchBtn {
+  min-height: 32px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+.traySwitchBtn:hover { color: var(--ink); }
+.traySwitchBtn[data-on="true"] {
+  background: var(--bg-elevated);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(20, 12, 28, 0.1);
+}
+.traySwitchBtn:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 2px; }
+
+/* The well's additive dimension filter — counts shown, nothing hidden. */
+.wellFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 16px 10px;
+}
+.wellChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--ink-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+.wellChip:hover { color: var(--ink); border-color: var(--ink-muted); }
+.wellChip[data-on="true"] {
+  border-color: var(--whelm-vivid);
+  background: color-mix(in oklab, var(--whelm-vivid) 12%, var(--bg-elevated));
+  color: var(--ink);
+}
+.wellChip:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 2px; }
+.wellChipN { font-variant-numeric: tabular-nums; opacity: 0.7; }
+
+/* Atom thumbs inside the tray grid (reusing .trayPin chrome). */
+.wellDim {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  z-index: 1;
+  padding: 2px 7px;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(20, 12, 28, 0.66);
+  backdrop-filter: blur(3px);
+  border-radius: 999px;
+}
+.wellImgBox {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--bg);
+}
+.wellImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.wellSwatch {
+  display: grid;
+  place-items: end start;
+  width: 100%;
+  height: 96px;
+  padding: 8px;
+}
+.wellSwatchHex {
+  font-size: 11px;
+  color: #fff;
+  background: rgba(20, 12, 28, 0.5);
+  padding: 2px 6px;
+  border-radius: 999px;
+  backdrop-filter: blur(3px);
+}
+.wellType {
+  display: block;
+  padding: 18px 14px;
+  font-size: 30px;
+  line-height: 1.05;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
