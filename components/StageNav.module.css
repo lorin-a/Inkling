@@ -1,0 +1,98 @@
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.sep {
+  margin: 0 4px;
+  font-size: 15px;
+  color: var(--ink-muted);
+  opacity: 0.45;
+}
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
+  padding: 5px 10px;
+  border-radius: 8px;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+
+.stage:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.stage:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.sub {
+  font-size: 10px;
+  letter-spacing: 0.01em;
+  color: var(--ink-muted);
+  min-height: 13px; /* reserve the line so rows align even when blank */
+}
+
+/* Stages you haven't reached yet recede, so "you are here" reads first. */
+.upcoming {
+  opacity: 0.45;
+}
+
+.active {
+  background: rgba(177, 104, 239, 0.1);
+}
+
+.active .label {
+  color: var(--whelm-vivid);
+}
+
+.active .sub {
+  color: var(--whelm-vivid);
+}
+
+/* The two ways to gather, shown only while in the Gather stage. */
+.subnav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 14px;
+  padding-left: 14px;
+  border-left: 1px solid var(--hairline);
+}
+
+.subLink {
+  font-size: 13px;
+  color: var(--ink-muted);
+  transition: color var(--motion-fast) var(--ease-out);
+}
+
+.subLink:hover {
+  color: var(--ink);
+}
+
+.subLink[aria-current="page"] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .subLink {
+    transition: none;
+  }
+}

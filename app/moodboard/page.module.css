@@ -9,12 +9,29 @@
 .bar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 24px;
-  padding: 20px 32px;
+  padding: 14px 32px;
   border-bottom: 1px solid var(--hairline);
   background: var(--bg-elevated);
   flex-shrink: 0;
   z-index: 20;
+}
+
+/* Wordmark + the process stepper, together, as the primary nav. */
+.barLeft {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  min-width: 0;
+}
+
+/* Project + account, pushed to the right. */
+.barRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
 }
 
 .back {
@@ -48,4 +65,125 @@
   position: relative;
   display: flex;
   min-height: 0;
+}
+
+/* Comment-mode banner — floats top-centre over the board so it's obvious you're
+   placing, and where. */
+.commentBanner {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 90;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--whelm-vivid);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 6px 20px rgba(177, 104, 239, 0.4);
+  pointer-events: none;
+}
+
+.commentBannerEsc {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.85;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* ---- carve mode (split view) ---- */
+.carveWork {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.carveHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+}
+
+.carveTitleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.carveTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.carveHint {
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.carveName {
+  margin-left: auto;
+  min-width: 220px;
+  padding: 9px 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.carveName:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: -1px;
+}
+
+.carveCancel {
+  min-height: 40px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.carveCancel:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--ink);
+}
+
+.carveDone {
+  min-height: 40px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--whelm-vivid);
+  padding: 8px 18px;
+  border-radius: 8px;
+}
+
+.carveDone:hover {
+  filter: brightness(1.06);
+}
+
+.carveSplit {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.carveTarget {
+  flex: 1;
+  min-width: 0;
+  display: flex;
 }

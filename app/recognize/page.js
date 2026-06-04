@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { apiFetch } from "../../lib/api/client";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
-import SpokeNav from "../../components/SpokeNav";
+import StageNav from "../../components/StageNav";
 import PinColourEditor from "../../components/PinColourEditor";
 import Onboarding from "../../components/Onboarding";
 import { REACTIONS, buildProfile, candidateColours } from "../../lib/recognition";
@@ -237,7 +238,10 @@ export default function RecognizePage() {
     }
   }, [pins]);
 
-  // Turn what resonated into a direction — a real moodboard that feeds Brand.
+  const router = useRouter();
+
+  // Turn what resonated into your master board — everything you gathered, sorted into
+  // zones — then go see it (the "moved to the board and it was organized for me" moment).
   const makeDirection = useCallback(async () => {
     if (!profile.likedPins.length || creating) return;
     setCreating(true);
@@ -250,12 +254,13 @@ export default function RecognizePage() {
         reflectionNo: reflectNo,
       });
       setDirection(board);
+      router.push("/moodboard");
     } catch (e) {
       setDirectionError(e?.message || "Could not save the direction.");
     } finally {
       setCreating(false);
     }
-  }, [profile.likedPins, pool, reflectYes, reflectNo, creating]);
+  }, [profile.likedPins, pool, reflectYes, reflectNo, creating, router]);
 
   // First visit, once the board is on screen: run the tour. Remembered after.
   useEffect(() => {
@@ -282,19 +287,22 @@ export default function RecognizePage() {
   return (
     <div className={styles.page}>
       <header className={styles.bar}>
-        <Link href="/" className={styles.back}>← Moodbuilder</Link>
-        <ProjectSwitcher />
-        <button
-          type="button"
-          className={styles.howto}
-          onClick={() => setTour(true)}
-          aria-label="How it works: replay the intro"
-        >
-          <span className={styles.howtoMark} aria-hidden="true">?</span>
-          How it works
-        </button>
-        <div className={styles.barTitle}>Recognize</div>
-        <SpokeNav />
+        <div className={styles.barLeft}>
+          <Link href="/" className={styles.back}>← Moodbuilder</Link>
+          <StageNav />
+        </div>
+        <div className={styles.barRight}>
+          <ProjectSwitcher />
+          <button
+            type="button"
+            className={styles.howto}
+            onClick={() => setTour(true)}
+            aria-label="How it works: replay the intro"
+          >
+            <span className={styles.howtoMark} aria-hidden="true">?</span>
+            How it works
+          </button>
+        </div>
       </header>
 
       <p className={styles.lede}>

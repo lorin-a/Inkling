@@ -35,6 +35,8 @@ export async function PUT(request, { params }) {
   const patch = {};
   if (typeof body?.name === "string") patch.name = body.name;
   if (Array.isArray(body?.blocks)) patch.blocks = body.blocks;
+  if (Array.isArray(body?.sections)) patch.sections = body.sections;
+  if (Array.isArray(body?.comments)) patch.comments = body.comments;
   if (body && Object.prototype.hasOwnProperty.call(body, "background")) patch.background = body.background;
 
   const { userId } = await getRequestContext();

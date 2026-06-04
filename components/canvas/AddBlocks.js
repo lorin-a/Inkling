@@ -7,10 +7,11 @@ import styles from "./canvas.module.css";
 /**
  * The "add" cluster, floating top-left of the board. The PinTray covers adding
  * images; this adds the other block types — text, color swatches (from the
- * project's own palette), and shapes (rectangle / line).
+ * project's own palette), shapes (rectangle / line), and a hand-made section
+ * (curation already auto-sorts the board into zones; this is for framing your own).
  */
-export default function AddBlocks({ onAddText, onAddSwatch, onAddShape }) {
-  const [open, setOpen] = useState(null); // "swatch" | "shape" | null
+export default function AddBlocks({ onAddText, onAddSwatch, onAddShape, onAddSection, onToggleComment, commenting, onOpenLibrary, libraryOpen }) {
+  const [open, setOpen] = useState(null); // "swatch" | "shape" | "section" | null
   const rootRef = useRef(null);
 
   useEffect(() => {
@@ -71,6 +72,40 @@ export default function AddBlocks({ onAddText, onAddSwatch, onAddShape }) {
           </div>
         )}
       </div>
+
+      {/* One-tap: curation already auto-sorts into zones, so this is just for when you
+          want to frame a cluster of your own by hand. */}
+      <button type="button" className={styles.addBtn} onClick={onAddSection}>
+        <span className={styles.addGlyph} aria-hidden="true">▦</span> Section
+      </button>
+
+      <span className={styles.addDivider} aria-hidden="true" />
+
+      {/* A mode: toggle on, then click the board to drop a comment pin. */}
+      <button
+        type="button"
+        className={`${styles.addBtn} ${commenting ? styles.addBtnOn : ""}`}
+        onClick={onToggleComment}
+        aria-pressed={!!commenting}
+        title="Drop comment pins on the board"
+      >
+        <span className={styles.addGlyph} aria-hidden="true">💬</span> Comment
+      </button>
+
+      <span className={styles.addDivider} aria-hidden="true" />
+
+      {/* The library (pins + well) is summoned, not docked — the canvas is the figure.
+          Hidden while the panel is open (it has its own close). */}
+      {!libraryOpen && (
+        <button
+          type="button"
+          className={styles.addBtn}
+          onClick={onOpenLibrary}
+          title="Add pins and saved references from your library"
+        >
+          <span className={styles.addGlyph} aria-hidden="true">＋</span> Add more
+        </button>
+      )}
     </div>
   );
 }

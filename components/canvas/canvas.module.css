@@ -4,9 +4,10 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 10px 24px;
+  padding: 8px 24px;
   border-bottom: 1px solid var(--hairline);
-  background: var(--bg-elevated);
+  /* Recessed (plain surface, not elevated) so it reads as subordinate to the header. */
+  background: var(--bg);
   flex-shrink: 0;
   z-index: 15;
 }
@@ -153,6 +154,106 @@
   gap: 6px;
 }
 
+/* Comments history — a dropdown of every comment on the board, open or resolved. */
+.commentsControl {
+  position: relative;
+}
+
+.commentsButton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: color var(--motion-fast) var(--ease-out), background var(--motion-fast) var(--ease-out);
+}
+
+.commentsButton:hover {
+  color: var(--ink);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.commentsCount {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--whelm-vivid);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.commentsList {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 300px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 6px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.commentsItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: 8px;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+
+.commentsItem:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.commentsItemNum {
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50% 50% 50% 3px;
+  background: var(--whelm-vivid);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.commentsItemText {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.commentsItemResolved .commentsItemNum {
+  background: var(--ink-muted);
+}
+
+.commentsItemResolved .commentsItemText {
+  color: var(--ink-muted);
+}
+
 .saveState {
   font-size: 12px;
   color: var(--ink-muted);
@@ -183,6 +284,10 @@
   flex: 1;
   min-width: 0;
   overflow: auto;
+  /* Own stacking context so the board's z-orders (blocks, zone tabs, crop bar)
+     stay contained — a zone tab can rise above blocks without ever punching
+     through the tray or the add cluster, which live outside this scroller. */
+  isolation: isolate;
   /* A pinboard, not a void: a faint dot grid reads as a surface you pin onto. */
   background-color: var(--bg);
   background-image: radial-gradient(rgba(0, 0, 0, 0.055) 1px, transparent 1px);
@@ -219,6 +324,29 @@
   font-size: 14px;
   line-height: 1.55;
   color: var(--ink-muted);
+}
+
+/* The hint is pointer-transparent so it never blocks the canvas, but the call to
+   action must stay clickable. */
+.emptyLink {
+  display: inline-block;
+  margin-top: 16px;
+  pointer-events: auto;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--whelm-vivid);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+
+.emptyLink:hover {
+  border-bottom-color: var(--whelm-vivid);
+}
+
+.emptyLink:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 /* ============================================================== block */
@@ -697,6 +825,470 @@ a.credit:hover {
 .handle_sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
 .handle_w  { top: 50%; left: -6px; margin-top: -5.5px; cursor: ew-resize; }
 
+/* ============================================ sections (workshop affinity zones) */
+
+/* A zone's frame renders BELOW the blocks (no positive z; blocks paint at z 1+),
+   so references inside it stay fully usable and read true — the faint tint never
+   dims them. Its title tab + handles, by contrast, rise ABOVE blocks (see their
+   own z-index) so a zone's name, count, and the captured "why" stay readable
+   even when a reference sits on the zone's corner. */
+.section {
+  position: absolute;
+  border: 1.5px dashed var(--hairline);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.022);
+  cursor: default;
+  touch-action: none;
+  transition: border-color var(--motion-fast) var(--ease-out),
+    background var(--motion-fast) var(--ease-out);
+}
+
+.section:hover {
+  border-color: var(--ink-muted);
+}
+
+.section:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.sectionSelected,
+.sectionSelected:hover {
+  border-color: var(--whelm-vivid);
+  border-style: solid;
+  background: rgba(177, 104, 239, 0.05);
+}
+
+/* The title tab floats just above the frame (a folder-tab) and is the move
+   handle — drag it to reposition the zone. */
+.sectionTab {
+  position: absolute;
+  bottom: 100%;
+  left: -1.5px;
+  margin-bottom: 6px;
+  max-width: calc(100% + 3px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: grab;
+  z-index: 50; /* above blocks (z 1..n) so the label / count / note stay readable */
+}
+
+.sectionTab:active {
+  cursor: grabbing;
+}
+
+.sectionTabHead {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  padding: 5px 7px 5px 10px;
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  max-width: 100%;
+}
+
+.sectionName {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: text;
+  transition: color var(--motion-fast) var(--ease-out);
+}
+
+.sectionName:hover {
+  color: var(--whelm-vivid);
+}
+
+.sectionNameInput {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  width: 168px;
+  padding: 2px 6px;
+  border: 1px solid var(--whelm-vivid);
+  border-radius: 5px;
+  background: var(--bg);
+}
+
+.sectionCount {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--ink-muted);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.sectionDelete {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--ink-muted);
+  transition: background var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
+}
+
+.sectionDelete:hover {
+  background: rgba(180, 35, 42, 0.1);
+  color: #b4232a;
+}
+
+/* The reflective prompt — the captured "why" that turns a pile into a
+   direction. Editable when the zone is selected, a quiet line when not. */
+.sectionNote {
+  width: 264px;
+  max-width: 58vw;
+  padding: 6px 9px;
+  border-radius: 7px;
+  border: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  font-size: 12px;
+  color: var(--ink);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+.sectionNote::placeholder {
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+.sectionNoteStatic {
+  max-width: 264px;
+  padding: 2px 4px;
+  font-size: 12px;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+
+.sectionHandle {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--whelm-vivid);
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+  z-index: 51; /* above blocks so a selected zone stays resizable over its contents */
+}
+
+/* ----- the "Section" add menu (AddBlocks) ----- */
+
+.sectionMenu {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  width: 244px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+}
+
+.sectionMenuItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  text-align: left;
+  min-height: 44px;
+  padding: 8px 11px;
+  border-radius: 8px;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+
+.sectionMenuItem:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.sectionMenuTitle {
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.sectionMenuHint {
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+/* ============================================ comment pins (annotation) */
+
+/* Comment-mode cursor: a speech bubble with a +, so it reads as "add a comment
+   here," not a generic crosshair. Hotspot at the bubble's tail tip. */
+.surfaceCommenting,
+.commentLayer {
+  cursor: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='26'%20height='26'%3E%3Cpath%20d='M3%203h20v14h-12l-5%205v-5H3z'%20fill='%23b168ef'%20stroke='%23ffffff'%20stroke-width='1.5'/%3E%3Cpath%20d='M13%207v7M9.5%2010.5h7'%20stroke='%23ffffff'%20stroke-width='1.8'%20stroke-linecap='round'/%3E%3C/svg%3E") 6 22, crosshair;
+}
+
+/* A transparent layer over the entire board while in comment mode: it catches the
+   click so a pin can land ON a reference, not only on empty canvas. */
+.commentLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+}
+
+/* Active state for a toolbar toggle (the Comment mode button). */
+.addBtnOn,
+.addBtnOn:hover {
+  background: var(--whelm-vivid);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(177, 104, 239, 0.4);
+}
+
+.addBtnOn .addGlyph {
+  color: #fff;
+}
+
+/* A numbered pin, centred on its (x, y), floating above blocks and zone tabs. */
+.commentPin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50% 50% 50% 3px;
+  background: var(--whelm-vivid);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  cursor: grab;
+  touch-action: none;
+  transition: transform var(--motion-fast) var(--ease-out),
+    box-shadow var(--motion-fast) var(--ease-out);
+}
+
+.commentPin:hover {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.commentPin:active {
+  cursor: grabbing;
+}
+
+.commentPin:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.commentPinOpen {
+  z-index: 70;
+  box-shadow: 0 0 0 3px var(--bg-elevated), 0 0 0 5px var(--whelm-vivid), 0 4px 12px rgba(0, 0, 0, 0.28);
+}
+
+.commentResolved {
+  background: var(--ink-muted);
+  opacity: 0.7;
+}
+
+.commentNumber {
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* The thread popover — opens from the pin. */
+.commentPop {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 10px);
+  width: 268px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+  cursor: default;
+}
+
+.commentThread {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.commentEmpty {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink-muted);
+}
+
+.commentMsg {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.commentAuthor {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.commentText {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+.commentInput {
+  width: 100%;
+  resize: vertical;
+  min-height: 52px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--hairline);
+  background: var(--bg);
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.commentInput:focus-visible {
+  outline: 2px solid var(--whelm-vivid);
+  outline-offset: -1px;
+}
+
+.commentActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.commentResolveBtn,
+.commentDeleteBtn {
+  font-size: 12px;
+  padding: 6px 9px;
+  border-radius: 7px;
+  color: var(--ink-muted);
+  transition: background var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out);
+}
+
+.commentResolveBtn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--ink);
+}
+
+.commentDeleteBtn:hover {
+  background: rgba(180, 35, 42, 0.1);
+  color: #b4232a;
+}
+
+.commentPost {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 7px;
+  background: var(--whelm-vivid);
+  color: #fff;
+  transition: filter var(--motion-fast) var(--ease-out);
+}
+
+.commentPost:hover {
+  filter: brightness(1.06);
+}
+
+.commentPost:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ============================================ carve mode (split view) */
+
+/* The board-bar entry button. */
+.carveStart {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--whelm-vivid);
+  padding: 6px 12px;
+  border-radius: 7px;
+  border: 1px solid var(--hairline);
+  transition: border-color var(--motion-fast) var(--ease-out), background var(--motion-fast) var(--ease-out);
+}
+
+.carveStart:hover {
+  border-color: var(--whelm-vivid);
+  background: rgba(177, 104, 239, 0.06);
+}
+
+/* Left pane: the scaled, read-only, draggable everything board. */
+.carveSource {
+  width: 42%;
+  flex-shrink: 0;
+  overflow: auto;
+  border-right: 1px solid var(--hairline);
+  background-color: var(--bg);
+  background-image: radial-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+  padding: 16px;
+}
+
+.carveSourceEmpty {
+  font-size: 14px;
+  color: var(--ink-muted);
+  padding: 24px 8px;
+}
+
+.carveSourceInner {
+  position: relative;
+}
+
+.carveScaled {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+}
+
+.carveItem {
+  position: absolute;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: grab;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.06);
+  transition: box-shadow var(--motion-fast) var(--ease-out);
+}
+
+.carveItem:hover {
+  box-shadow: 0 0 0 2px var(--whelm-vivid), 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.carveItem:active {
+  cursor: grabbing;
+}
+
 /* ============================================================== pin tray */
 
 .tray {
@@ -999,6 +1591,15 @@ a.credit:hover {
   font-weight: 600;
 }
 
+/* Groups the cluster by intent: add | annotate | library. */
+.addDivider {
+  width: 1px;
+  align-self: center;
+  height: 24px;
+  margin: 0 2px;
+  background: var(--hairline);
+}
+
 .swatchPicker {
   position: absolute;
   top: 48px;
@@ -1136,7 +1737,20 @@ a.credit:hover {
   .newBoard,
   .finishChip,
   .finishInk,
-  .finishApplyAll {
+  .finishApplyAll,
+  .section,
+  .sectionName,
+  .sectionDelete,
+  .sectionMenuItem,
+  .emptyLink,
+  .commentPin,
+  .commentResolveBtn,
+  .commentDeleteBtn,
+  .commentPost,
+  .commentsButton,
+  .commentsItem,
+  .carveStart,
+  .carveItem {
     transition: none;
   }
 }

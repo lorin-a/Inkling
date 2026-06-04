@@ -1,3 +1,38 @@
+/* — Header — mirrors the other tool pages: meta left, the stage stepper centred. */
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 60px;
+  border-bottom: 1px solid var(--hairline);
+  padding: 0 24px;
+}
+
+.barLeft {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  min-width: 0;
+}
+
+.barRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.back {
+  font-size: 14px;
+  color: var(--ink-muted);
+  transition: color var(--motion-fast) var(--ease-out);
+}
+
+.back:hover {
+  color: var(--ink);
+}
+
 /* One concise line of intent, left-aligned with the content. */
 .intro {
   text-wrap: pretty;

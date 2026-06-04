@@ -21,12 +21,16 @@ export default function BoardBar({
   onDelete,
   onSetBackground,
   saving,
+  comments = [],
+  onOpenComment,
 }) {
   const [editingId, setEditingId] = useState(null);
   const [draft, setDraft] = useState("");
   const [bgOpen, setBgOpen] = useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(false);
   const inputRef = useRef(null);
   const bgRef = useRef(null);
+  const commentsRef = useRef(null);
 
   useEffect(() => {
     if (!bgOpen) return;
@@ -39,6 +43,24 @@ export default function BoardBar({
       window.removeEventListener("keydown", onKey);
     };
   }, [bgOpen]);
+
+  useEffect(() => {
+    if (!commentsOpen) return;
+    const onDown = (e) => { if (commentsRef.current && !commentsRef.current.contains(e.target)) setCommentsOpen(false); };
+    const onKey = (e) => { if (e.key === "Escape") setCommentsOpen(false); };
+    window.addEventListener("mousedown", onDown);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("mousedown", onDown);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [commentsOpen]);
+
+  // First line of a comment's thread, for the history list.
+  const commentSummary = (c) => {
+    const first = (c.messages || [])[0];
+    return first?.text?.trim() || "Empty note";
+  };
 
   useEffect(() => {
     if (editingId && inputRef.current) {
@@ -105,6 +127,37 @@ export default function BoardBar({
       </div>
 
       <div className={styles.boardBarRight}>
+        {comments.length > 0 && (
+          <div className={styles.commentsControl} ref={commentsRef}>
+            <button
+              type="button"
+              className={styles.commentsButton}
+              onClick={() => setCommentsOpen((v) => !v)}
+              aria-haspopup="menu"
+              aria-expanded={commentsOpen}
+              title="All comments on this board"
+            >
+              <span aria-hidden="true">💬</span> Comments
+              <span className={styles.commentsCount}>{comments.length}</span>
+            </button>
+            {commentsOpen && (
+              <div className={styles.commentsList} role="menu" aria-label="Comments on this board">
+                {comments.map((c, i) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    role="menuitem"
+                    className={`${styles.commentsItem} ${c.resolved ? styles.commentsItemResolved : ""}`}
+                    onClick={() => { onOpenComment?.(c.id); setCommentsOpen(false); }}
+                  >
+                    <span className={styles.commentsItemNum} aria-hidden="true">{c.resolved ? "✓" : i + 1}</span>
+                    <span className={styles.commentsItemText}>{commentSummary(c)}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         <div className={styles.bgControl} ref={bgRef}>
           <button
             type="button"

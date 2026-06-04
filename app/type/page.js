@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useProject } from "../../lib/useProject";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
-import SpokeNav from "../../components/SpokeNav";
+import StageNav from "../../components/StageNav";
 import Submit from "../../components/Submit";
 import FontLoader, { fontStack } from "../../components/FontLoader";
 import { apiFetch } from "../../lib/api/client";
@@ -258,10 +258,13 @@ export default function TypePage() {
       ))}
 
       <header className={styles.bar}>
-        <Link href="/" className={styles.back}>← Moodbuilder</Link>
-        <ProjectSwitcher />
-        <div className={styles.barTitle}>Type</div>
-        <SpokeNav />
+        <div className={styles.barLeft}>
+          <Link href="/" className={styles.back}>← Moodbuilder</Link>
+          <StageNav />
+        </div>
+        <div className={styles.barRight}>
+          <ProjectSwitcher />
+        </div>
       </header>
 
       <p className={t.intro}>
