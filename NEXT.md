@@ -152,7 +152,66 @@ blocks first.**
 
 ---
 
-## Session log — 2026-06-03 (later) · the atom + well + pull spine *(most recent; read first)*
+## Session log — 2026-06-03 (strategy) · scope locked + the plan forward *(most recent; read first)*
+
+### ⏸ END-OF-SESSION STATUS — START HERE NEXT TIME
+
+A strategy / mentoring session (TPM + product + UX lenses). No new code beyond the
+morning's slices — **everything is committed AND pushed** (`origin/phase-6c-playground`).
+The governing decisions are in memory `project_product_direction` (the **★★ SCOPE
+DECISION** + jobs-to-be-done + public/remote/backend + Figma-export blocks). Read that
+first; it reframes the five-persona / SaaS framing in the rest of this file.
+
+**The model, now resolved:**
+- **For Lorin first; public eventually, with login.** "For me" governs *priorities*
+  (build her jobs, validate by her own use on real projects) — NOT the architecture. Keep
+  multi-tenant auth/DB; others sign in later. She's a designer → build the powerful craft
+  tool, don't simplify for novices.
+- **Clients are remote → deploy it, with share links + async reactions** (the dormant
+  votes/sessions schema: invite → react/comment → reveal). Live co-edit is later/bigger.
+- **Positioning: the PRE-FIGMA starting point** — the fog→direction layer upstream of
+  Figma that hands off to it. The seam is **export a board → a real editable Figma file.**
+- **Her three core jobs:** (1) pins → playable, color-extracted, source-linked *(built)*;
+  (2) one place for her resource links *(GAP — `/resources` is a public directory, not her
+  private bookmark store)*; (3) shuffle self-curated color+font combos *(works; Brand needs
+  the calm redesign)*. Emergent: co-playing with a client who can't articulate her vision.
+
+**The plan to pull from (recommended sequence):**
+1. **Figma export spike** — board → real editable Figma file via the Figma MCP (images
+   uploaded, swatches as fills, text as layers, positions kept). Validates the pre-Figma
+   thesis; low risk. **Figma is connected as Lorin (full seat). AWAITING HER "GO"** (it
+   creates a file in her team). Use the `/figma-generate-design` (or `/figma-use`) skill
+   first — mandatory before `use_figma`.
+2. **Stabilize + deploy cycle** (load-bearing for remote client use): retire the legacy
+   **file backend**; **verify the authed DB path end-to-end** (run `node scripts/migrate.mjs`
+   incl. 010, real sign-in — it's now her path AND the public path); **deploy** (Vercel);
+   automatic **backups + export-my-data**; a thin **test spine** (pure logic: recognition,
+   atoms, colorTheory/composePalette, store round-trips).
+3. **Her private resource bundle** (job 2 gap): add-your-own-link + a personal view
+   (later: a browser clipper / inspiration inbox).
+4. **Stage 2 — workshop boards** (organize / sort / play); serves solo mapping + client
+   co-play. Her flow, her words: intuition → board → organize/sort/play/collaborate →
+   cohesive moodboard options → brand studio (book *and/or* a living library).
+5. **Remote client async-share + react** on a direction (the collaboration payoff).
+6. **/brand redesign + export as first-class** (Figma / PNG / brand book / client
+   "show your work" doc).
+
+**Open questions to clarify next time:**
+- Green-light the Figma spike? (and: is one-click in-app export wanted later → a Figma
+  plugin, separate project.)
+- Scope cut: which legacy rooms do you actually use — gradients / print / decide / old
+  home? Retire the rest.
+- Client react surface: what does the client react to — the whole board, or a few curated
+  options? Named or anonymous? (define when building step 5.)
+- Deploy specifics (domain, env) — settle during the stabilize cycle.
+- The flow language (your 4 stages) stays *not locked* until the boards are built and felt.
+
+**Standing items (don't lose):** the batched **full-site visual QA pass** (caret, heading
+weight, etc. — after architecture); **upload-your-own** (sign-in/Blob) for type + textures.
+
+---
+
+## Session log — 2026-06-03 (later) · the atom + well + pull spine
 
 ### ⏸ END-OF-SESSION STATUS — START HERE NEXT TIME
 

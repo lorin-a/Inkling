@@ -4,6 +4,17 @@
 with NEXT.md (session log / next moves) and the `project_product_direction` memory.
 Last shaped 2026-06-02 with Lorin.*
 
+> **★★ SCOPE REFRAME (2026-06-03) — read this before the personas below.** This is
+> **Lorin's personal tool first** (her projects + remote client work + her resource
+> bundle), **published with login so others can use it later** — not a SaaS chasing
+> strangers. So: build for a *designer's* fluency (don't simplify for non-designers);
+> validate by Lorin's own real use, not external testing; keep multi-tenant auth/DB but
+> don't over-invest in growth/scale. The five personas below collapse mostly to **Theo**
+> (her, solo) + **Nadia** (her facilitating *remote* clients). Positioning: the
+> **pre-Figma** direction layer (export → Figma is the seam). Full detail + the forward
+> plan: memory `project_product_direction` (★★ SCOPE DECISION) and NEXT.md
+> (2026-06-03 strategy log).
+
 ---
 
 ## 1. What it is (the soul)
