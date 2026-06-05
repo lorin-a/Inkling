@@ -152,7 +152,43 @@ blocks first.**
 
 ---
 
-## Session log — 2026-06-03 (strategy) · scope locked + the plan forward *(most recent; read first)*
+## Session log — 2026-06-04 · the workshop board, comment pins, the named flow *(most recent; read first)*
+
+Branch `phase-6c-playground`, commit `f01fbe5` — **committed locally, NOT pushed**;
+migrations `011_moodboard_sections` + `012_moodboard_comments` **not yet run on the DB**.
+Build green; dogfooded signed-out (localStorage). Full rationale in memory
+`project_product_direction` (the 2026-06-04 ★ entries). Headline: the canvas became the
+**workshop layer between curation and brand**.
+
+**Shipped:**
+- **Curation → master board, auto-sorted.** Finishing /recognize (+ /type) lands every
+  selection on one board, organized into **Color / Imagery / Type** zones — the "organized
+  for me" relief, not a blank canvas. (`lib/makeDirection.js` merges onto the master;
+  `lib/addTypeToBoard.js` fills the Type zone; `lib/boardZones.js` shared helpers.) Affinity
+  zones are the AUTO-sort landing; manual "add a section" is secondary, the affinity-starter retired.
+- **Comment pins** (`components/canvas/CommentPin.js`): drop anywhere incl. on items (they
+  attach + ride with the block), threads, resolve, history in the board bar; share-ready shape.
+- **Narrow / carve split view** (`components/canvas/CarveSource.js`): drag from the everything
+  board → a copy on a new direction board; master untouched.
+- **Undo/redo** (Cmd+Z, gesture-coalesced) in `lib/useBoards.js`.
+- **Wayfinding:** `StageNav` stepper (Gather · Organize · Narrow · Compose) replaced the flat
+  Color/Type/Board nav; header reworked (wordmark + stepper left / account right; redundant
+  page titles dropped; upcoming stages dimmed); toolbar grouped by intent; library tray
+  demoted to a summoned "Add more"; board bar recessed.
+- Persistence: sections + comments across all 3 backends + `/api/moodboards/[id]` (migrations 011, 012).
+
+**↳ NEXT (pick one):**
+1. **Make Compose real** *(lean):* add `StageNav` to `/brand` + reconnect the dangling
+   `lib/extractBoardMaterials.js` so a narrowed direction feeds the Brand shuffle (closes the loop).
+2. **Stabilize + deploy:** run migrations 011/012, verify the authed DB path end-to-end, deploy + share links.
+3. **Carve a11y + polish:** keyboard select-and-send (carve is pointer-only); "already pulled" markers on the master.
+
+**Still open (Lorin):** which legacy rooms to retire (gradients/print/decide/old home); what a
+client reacts to when shared (whole board vs curated options; named vs anonymous).
+
+---
+
+## Session log — 2026-06-03 (strategy) · scope locked + the plan forward
 
 ### ⏸ END-OF-SESSION STATUS — START HERE NEXT TIME
 
