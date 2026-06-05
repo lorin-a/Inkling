@@ -106,6 +106,21 @@ export default function BrandPreview({ palette, variant = "dark", project, roles
   }
   const textTitle = editable ? "Click to recolor · double-click to edit" : (onPickRole ? "Click to recolor" : undefined);
 
+  // Guided empty states. An unstarted direction has no identity yet (seed
+  // inspiration, never identity), so each blank field shows a prompt to fill it
+  // rather than placeholder content that reads as "from nowhere." While editing,
+  // the field is empty so the user types into a clean slot, not over the prompt.
+  const promptFor = { wordmark: "Name your brand", tagline: "Add a tagline", body: "Say what it is" };
+  const fieldContent = (field) => {
+    if (editing === field) return p[field];
+    if (p[field]) return p[field];
+    return editable ? <span className={styles.prompt}>{promptFor[field]}</span> : null;
+  };
+  // Decorative repeats (italic wordmark, small initials) only appear once there's
+  // a real wordmark — no stray dots floating over a blank canvas.
+  const showWordmark = !!p.wordmark || editing === "wordmark";
+  const initialChar = p.initial || (p.wordmark ? p.wordmark[0] : "");
+
   const fontVars = buildFontVars(p.fonts);
   const texture = p.textures?.[variant] || null;
 
@@ -143,33 +158,38 @@ export default function BrandPreview({ palette, variant = "dark", project, roles
           onDoubleClick={textDouble("wordmark")}
           title={textTitle}
           {...editProps("wordmark")}
-        >{p.wordmark}</span><span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }} title={onPickRole ? "Click to recolor accent" : undefined}>{p.period}</span>
+        >{fieldContent("wordmark")}</span>{showWordmark && (<span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }} title={onPickRole ? "Click to recolor accent" : undefined}>{p.period}</span>)}
       </p>
-      {/* italic wordmark */}
-      <p
-        className={cls(styles.wordmarkItalic)}
-        style={{ left: 135, top: 423, color: roles.muted }}
-        onClick={pick("muted")}
-        title={onPickRole ? "Click to recolor subtext" : undefined}
-      >
-        {p.wordmark}<span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }}>{p.period}</span>
-      </p>
-      {/* small initial italic */}
-      <p
-        className={cls(styles.smallW)}
-        style={{ left: 1228, top: 236, color: roles.ink }}
-        onClick={pick("ink")}
-      >
-        {p.initial}<span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }}>{p.period}</span>
-      </p>
-      {/* small initial roman */}
-      <p
-        className={cls(styles.smallWRoman)}
-        style={{ left: 1484, top: 236, color: roles.muted }}
-        onClick={pick("muted")}
-      >
-        {p.initial}<span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }}>{p.period}</span>
-      </p>
+      {/* italic wordmark — decorative repeat, only once there's a wordmark */}
+      {p.wordmark && (
+        <p
+          className={cls(styles.wordmarkItalic)}
+          style={{ left: 135, top: 423, color: roles.muted }}
+          onClick={pick("muted")}
+          title={onPickRole ? "Click to recolor subtext" : undefined}
+        >
+          {p.wordmark}<span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }}>{p.period}</span>
+        </p>
+      )}
+      {/* small initials — derived from the wordmark, shown only once it exists */}
+      {initialChar && (
+        <p
+          className={cls(styles.smallW)}
+          style={{ left: 1228, top: 236, color: roles.ink }}
+          onClick={pick("ink")}
+        >
+          {initialChar}<span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }}>{p.period}</span>
+        </p>
+      )}
+      {initialChar && (
+        <p
+          className={cls(styles.smallWRoman)}
+          style={{ left: 1484, top: 236, color: roles.muted }}
+          onClick={pick("muted")}
+        >
+          {initialChar}<span className={cls(styles.periodSpan)} onClick={pick("accent")} style={{ color: roles.accent }}>{p.period}</span>
+        </p>
+      )}
       {/* tagline + body flow as a stack so a long tagline pushes the body
           down instead of overlapping it (handles any tagline length) */}
       <div className={styles.textBlock} style={{ left: 142, top: 676, width: 976 }}>
@@ -181,7 +201,7 @@ export default function BrandPreview({ palette, variant = "dark", project, roles
           title={textTitle}
           {...editProps("tagline")}
         >
-          {p.tagline}
+          {fieldContent("tagline")}
         </p>
         <p
           className={cls(styles.body)}
@@ -191,7 +211,7 @@ export default function BrandPreview({ palette, variant = "dark", project, roles
           title={textTitle}
           {...editProps("body")}
         >
-          {p.body}
+          {fieldContent("body")}
         </p>
       </div>
       {/* swatch row */}

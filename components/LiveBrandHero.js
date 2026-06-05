@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { composePalette } from "../lib/composePalette";
 import { derivePreviewRoles } from "../lib/derivePreviewRoles";
-import { SAMPLE_PALETTE, SAMPLE_PROJECT } from "../lib/sampleStudio";
+import { SAMPLE_PALETTE, HERO_PROJECT } from "../lib/sampleStudio";
 import styles from "./LiveBrandHero.module.css";
 
 /**
@@ -68,7 +68,7 @@ export default function LiveBrandHero() {
   // Dark variant: the composition engine’s strongest showing (dark bg, vivid
   // accent that reliably clears contrast) and the more striking hero.
   const roles = derivePreviewRoles(palette, "dark", { sourceKind: "composed" });
-  const p = SAMPLE_PROJECT;
+  const p = HERO_PROJECT;
 
   return (
     <figure

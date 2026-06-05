@@ -80,3 +80,13 @@
   border-radius: 6px;
 }
 
+/* Empty-state prompt: a fillable blank, not real content. Faint, with a dashed
+   underline that reads as "type here," in the field's own color so it sits in
+   the composition. */
+.prompt {
+  opacity: 0.38;
+  text-decoration: underline dashed;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.22em;
+}
+
