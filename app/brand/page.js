@@ -18,6 +18,7 @@ import TexturePanel from "../../components/TexturePanel";
 import PresetsPanel from "../../components/PresetsPanel";
 import FontLoader from "../../components/FontLoader";
 import PathFooter from "../../components/PathFooter";
+import StageNav from "../../components/StageNav";
 import styles from "./page.module.css";
 
 export default function BrandPage() {
@@ -215,6 +216,7 @@ export default function BrandPage() {
       <FontLoader fonts={project.fonts} />
       <header className={styles.bar}>
         <Link href="/" className={styles.back}>← Moodbuilder</Link>
+        <StageNav />
         <ProjectSwitcher />
         <button
           type="button"
