@@ -1,0 +1,239 @@
+.page {
+  min-height: 100vh;
+  background:
+    radial-gradient(120% 80% at 50% -10%, #f3ede3 0%, #ece4d7 55%, #e6ddcd 100%);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 28px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.spikeTag {
+  font-family: var(--font-noto, sans-serif);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #8a5a2b;
+  border: 1px solid rgba(138, 90, 43, 0.4);
+  border-radius: 100px;
+  padding: 3px 10px;
+}
+
+.barNote {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.reset {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--ink);
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 100px;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.5);
+  transition: background 160ms ease;
+}
+.reset:hover {
+  background: #fff;
+}
+
+.work {
+  flex: 1;
+  display: flex;
+  gap: 36px;
+  padding: 28px;
+  align-items: flex-start;
+}
+
+.zoneLabel {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-noto, sans-serif);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+  margin: 0 0 12px 4px;
+}
+
+.count {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  color: #8a5a2b;
+}
+
+/* ---- THE PILE — free, tilted, overlapping ---------------------------------- */
+.pileWrap {
+  flex: 0 0 auto;
+}
+
+.pile {
+  position: relative;
+  /* overflow visible so a card stays drawn while dragged toward the board */
+  overflow: visible;
+}
+
+.slot {
+  position: absolute;
+  animation: spillIn 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.slot:hover {
+  z-index: 900;
+}
+
+.card {
+  position: relative;
+  background: #fffdf9;
+  padding: 9px;
+  border-radius: 5px;
+  cursor: grab;
+  box-shadow:
+    0 1px 2px rgba(40, 30, 15, 0.14),
+    0 10px 22px rgba(40, 30, 15, 0.16);
+  transform: rotate(var(--tilt));
+  transition:
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 260ms ease;
+  touch-action: none;
+}
+.card:hover {
+  transform: rotate(0deg) translateY(-8px) scale(1.045);
+  box-shadow:
+    0 2px 4px rgba(40, 30, 15, 0.16),
+    0 22px 44px rgba(40, 30, 15, 0.26);
+}
+
+.dragging .card,
+.dragging .card:hover {
+  cursor: grabbing;
+  transform: rotate(0deg) scale(1.06);
+  box-shadow:
+    0 4px 8px rgba(40, 30, 15, 0.2),
+    0 30px 60px rgba(40, 30, 15, 0.32);
+  transition: none;
+}
+
+.img {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 2px;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Riso-ish grain on each card for the tangible, printed feel. */
+.grain {
+  position: absolute;
+  inset: 9px;
+  border-radius: 2px;
+  pointer-events: none;
+  opacity: 0.1;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---- THE BOARD — calm, ordered --------------------------------------------- */
+.boardWrap {
+  flex: 1 1 0;
+  min-width: 320px;
+}
+
+.board {
+  position: relative;
+  min-height: 560px;
+  background: #fffdf9;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.boardEmpty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--ink-muted);
+  opacity: 0.7;
+  padding: 0 32px;
+  text-align: center;
+}
+
+.boardGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-content: flex-start;
+}
+
+.placed {
+  margin: 0;
+  width: 152px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(40, 30, 15, 0.16);
+  animation: land 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.placedImg {
+  display: block;
+  width: 100%;
+  height: 152px;
+  object-fit: cover;
+  user-select: none;
+}
+
+/* The spill: cards tumble in with a slight overshoot, staggered. */
+@keyframes spillIn {
+  0% {
+    opacity: 0;
+    transform: translateY(36px) scale(0.9);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.012);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* The relief: a pulled card snaps flat and settles into the order. */
+@keyframes land {
+  0% {
+    opacity: 0.5;
+    transform: scale(1.1) rotate(-3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot,
+  .placed {
+    animation: none;
+  }
+  .card {
+    transition: none;
+  }
+}
