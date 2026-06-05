@@ -19,6 +19,7 @@ import PresetsPanel from "../../components/PresetsPanel";
 import FontLoader from "../../components/FontLoader";
 import PathFooter from "../../components/PathFooter";
 import StageNav from "../../components/StageNav";
+import DirectionCard from "../../components/DirectionCard";
 import styles from "./page.module.css";
 
 export default function BrandPage() {
@@ -44,6 +45,7 @@ export default function BrandPage() {
     starredPool,
     boardPool,
     boardName,
+    activeBoard,
     boards,
     boardId,
     setBoardId,
@@ -105,6 +107,30 @@ export default function BrandPage() {
   const [roleOverrides, setRoleOverrides] = useState({ dark: {}, light: {} });
   // Which variant the Roles panel is editing right now.
   const [activeVariant, setActiveVariant] = useState("dark");
+  // The "why" — your words about this direction, the heart of the artifact.
+  // Persisted per-direction in localStorage for this slice; a real per-board
+  // field (across the 3 backends + a migration) is the follow-up.
+  const [why, setWhy] = useState("");
+  const whyKey = boardId ? `moodbuilder.direction.why.${boardId}` : null;
+  useEffect(() => {
+    if (!whyKey) { setWhy(""); return; }
+    try { setWhy(localStorage.getItem(whyKey) || ""); } catch { setWhy(""); }
+  }, [whyKey]);
+  const saveWhy = useCallback((text) => {
+    setWhy(text);
+    if (!whyKey) return;
+    try {
+      if (text) localStorage.setItem(whyKey, text);
+      else localStorage.removeItem(whyKey);
+    } catch {}
+  }, [whyKey]);
+
+  // What's in the direction so far — the fill readout that guides the next move.
+  const pieceCount = Array.isArray(activeBoard?.blocks)
+    ? activeBoard.blocks.filter((b) => b?.type === "image").length
+    : 0;
+  const hasType = !!(project.fonts && (project.fonts.title || project.fonts.body));
+
   const moodboardEmpty = poolKey === "moodboard" && moodboardPool.length === 0;
   const starredEmpty = poolKey === "starred" && starredPool.length === 0;
   const boardEmpty = poolKey === "board" && boardPool.length === 0;
@@ -382,6 +408,16 @@ export default function BrandPage() {
 
       <main className={styles.main}>
         <aside className={styles.rail}>
+          <DirectionCard
+            name={boardName}
+            why={why}
+            onWhy={saveWhy}
+            boardName={boardName}
+            colorCount={palette.length}
+            pieceCount={pieceCount}
+            hasType={hasType}
+          />
+
           <div className={styles.railHeader}>
             <h2 className={styles.railTitle}>Palette</h2>
             <p className={styles.railHint}>Click any slot to lock or replace. Tap a swatch from the pool to apply.</p>
@@ -541,12 +577,6 @@ export default function BrandPage() {
         </aside>
 
         <section className={styles.canvas}>
-          {authed === false && (
-            <div className={styles.sampleTag}>
-              <span aria-hidden="true">✦</span>
-              <span><strong>Sample brand.</strong> Placeholder name and colors. Rename, recolor, or import a board to make it yours.</span>
-            </div>
-          )}
           <p className={styles.canvasHint}>
             <strong>Tip:</strong> click any element to recolor it. Double-click the wordmark, tagline, or body to edit the text.
           </p>

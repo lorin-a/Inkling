@@ -1,7 +1,7 @@
 .nav {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 0;
 }
 
 .item {
@@ -10,24 +10,25 @@
 }
 
 .sep {
-  margin: 0 4px;
-  font-size: 15px;
+  margin: 0 7px;
+  font-size: 12px;
   color: var(--ink-muted);
-  opacity: 0.45;
+  opacity: 0.3;
 }
 
+/* No filled box — the stepper reads as quiet text. "You are here" is carried by
+   the accent pin + a confident ink label, not a highlighted chip. */
 .stage {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1.15;
-  padding: 5px 10px;
-  border-radius: 8px;
-  transition: background var(--motion-fast) var(--ease-out);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 4px;
+  border-radius: 6px;
+  transition: color var(--motion-fast) var(--ease-out);
 }
 
-.stage:hover {
-  background: rgba(0, 0, 0, 0.04);
+.stage:hover .label {
+  color: var(--ink);
 }
 
 .stage:focus-visible {
@@ -37,40 +38,49 @@
 
 .label {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink-muted);
+  transition: color var(--motion-fast) var(--ease-out);
 }
 
+/* The stage's purpose, shown only for the active stage as a quiet inline caption
+   ("react & pull"). Reads as an annotation, not a competing label. */
 .sub {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.01em;
   color: var(--ink-muted);
-  min-height: 13px; /* reserve the line so rows align even when blank */
+  opacity: 0.75;
 }
 
-/* Stages you haven't reached yet recede, so "you are here" reads first. */
-.upcoming {
-  opacity: 0.45;
-}
-
-.active {
-  background: rgba(177, 104, 239, 0.1);
+/* Stages you haven't reached yet recede further, so "you are here" reads first. */
+.upcoming .label {
+  opacity: 0.5;
 }
 
 .active .label {
-  color: var(--whelm-vivid);
+  color: var(--ink);
+  font-weight: 600;
 }
 
-.active .sub {
-  color: var(--whelm-vivid);
+/* The accent pin: a precise 5px dot, the single brand touch that marks the
+   current stage. Replaces the old lavender fill. */
+.active .label::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--whelm-vivid);
+  vertical-align: middle;
 }
 
 /* The two ways to gather, shown only while in the Gather stage. */
 .subnav {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin-left: 14px;
+  gap: 10px;
+  margin-left: 12px;
   padding-left: 14px;
   border-left: 1px solid var(--hairline);
 }

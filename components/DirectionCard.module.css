@@ -1,0 +1,170 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.eyebrow {
+  font-family: var(--font-noto);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+/* The name reads as the heading of the whole stage — it's the direction you
+   carved, so it should feel like the title of the work, not a form field. */
+.name {
+  font-family: var(--font-fraunces, var(--font-noto));
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--ink);
+  text-align: left;
+  border-radius: 6px;
+  margin: 0 -4px;
+  padding: 0 4px;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+
+.name:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.nameInput {
+  font-family: var(--font-fraunces, var(--font-noto));
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--ink);
+  border: none;
+  border-bottom: 2px solid var(--whelm-vivid);
+  background: transparent;
+  padding: 0 0 2px;
+  width: 100%;
+}
+
+.nameInput:focus {
+  outline: none;
+}
+
+/* The why — your words. Quiet and a touch literary so it reads as a thought,
+   not a label. It's the heart of the direction. */
+.why {
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--ink);
+  text-align: left;
+  border-radius: 6px;
+  margin: 0 -4px;
+  padding: 2px 4px;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+
+.why:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.whyPrompt {
+  align-self: flex-start;
+  font-size: 13px;
+  color: var(--whelm-vivid);
+  padding: 2px 0;
+  transition: opacity var(--motion-fast) var(--ease-out);
+}
+
+.whyPrompt:hover {
+  opacity: 0.7;
+}
+
+.whyInput {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ink);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: var(--bg);
+  padding: 8px 10px;
+  width: 100%;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.whyInput:focus {
+  outline: none;
+  border-color: var(--whelm-vivid);
+}
+
+/* What's in it — the fill readout. Filled pin = already yours; hollow = what's
+   left. This list IS the "where do I go next" guidance. */
+.list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 10px 56px 1fr;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  align-self: center;
+}
+
+.filled .dot {
+  background: var(--whelm-vivid);
+}
+
+.empty .dot {
+  border: 1.5px solid var(--ink-muted);
+  opacity: 0.5;
+}
+
+.rowLabel {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.rowValue {
+  color: var(--ink-muted);
+}
+
+.empty .rowValue {
+  font-style: italic;
+}
+
+.fromLink {
+  color: var(--ink-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--hairline);
+}
+
+.fromLink:hover {
+  color: var(--ink);
+  text-decoration-color: var(--whelm-vivid);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .name,
+  .why,
+  .whyPrompt {
+    transition: none;
+  }
+}
