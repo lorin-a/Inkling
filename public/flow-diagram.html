@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Moodbuilder — flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --warm-ink: #6f4620;
+    --warm-muted: #8a6a45;
+    --vivid: #b168ef;
+    --serif: "Fraunces", Georgia, serif;
+    --sans: "Noto Sans", system-ui, sans-serif;
+    --green: #5c8a3a;
+    --amber: #bb8a2f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background: linear-gradient(102deg, #f0e7d8 0%, #efe7d9 26%, #f4efe6 52%, #fafafa 78%, #fafafa 100%);
+    padding: 56px 64px 48px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Header */
+  .head { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; }
+  .wordmark { font-family: var(--serif); font-size: 42px; font-weight: 500; letter-spacing: -0.02em; }
+  .wordmark .dot { color: var(--vivid); }
+  .claim { max-width: 720px; text-align: right; }
+  .claim .q { font-family: var(--serif); font-style: italic; font-size: 20px; line-height: 1.4; color: var(--ink); }
+  .claim .sub { font-size: 13px; color: var(--muted); margin-top: 6px; letter-spacing: 0.01em; }
+
+  /* Emotional arc */
+  .arc {
+    margin: 34px 0 4px;
+    display: flex; align-items: center; justify-content: center; gap: 22px;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+  }
+  .arc .a1 { color: var(--warm-ink); }
+  .arc .a2 { color: #8a5f8f; }
+  .arc .a3 { color: var(--muted); }
+  .arc .sep { color: #c7b9a6; font-size: 16px; letter-spacing: 0; }
+
+  /* Phase bands (the three nouns) */
+  .phases { display: grid; grid-template-columns: 2fr 1fr 2fr; gap: 28px; margin: 30px 0 14px; }
+  .phase { text-align: center; }
+  .phase .bar { height: 6px; border-radius: 6px; margin-bottom: 12px; }
+  .phase.p1 .bar { background: linear-gradient(90deg, #d8c4a4, #cdb693); }
+  .phase.p2 .bar { background: linear-gradient(90deg, #c7a7b6, #b98fae); }
+  .phase.p3 .bar { background: linear-gradient(90deg, #b9c3d0, #aab7c9); }
+  .phase .name { font-family: var(--serif); font-size: 23px; font-weight: 600; letter-spacing: 0.01em; }
+  .phase .gloss { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  /* The flow */
+  .flow { flex: 1; display: flex; align-items: center; gap: 0; margin-top: 6px; }
+  .card {
+    flex: 1; min-height: 248px; background: #fffdf9; border: 1px solid rgba(80,55,20,0.16); border-radius: 12px;
+    padding: 24px 22px 22px; display: flex; flex-direction: column; position: relative;
+    box-shadow: 0 1px 2px rgba(50,34,14,0.10), 0 14px 30px rgba(50,34,14,0.11);
+  }
+  /* mess on the left (tilted, warm), order on the right (square, cool) */
+  .c1 { transform: rotate(-1.4deg); }
+  .c2 { transform: rotate(0.9deg); }
+  .c4, .c5 { background: #ffffff; border-color: rgba(0,0,0,0.10); box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 10px 22px rgba(0,0,0,0.06); }
+  .verb { font-family: var(--serif); font-size: 27px; font-weight: 600; letter-spacing: -0.01em; }
+  .role { font-size: 13px; font-weight: 600; color: var(--vivid); margin-top: 2px; letter-spacing: 0.02em; }
+  .c1 .role, .c2 .role, .c3 .role { color: #a9622e; }
+  .detail { font-size: 13.5px; line-height: 1.5; color: #44413c; margin-top: 12px; }
+  .status { margin-top: auto; padding-top: 18px; display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
+  .status .pip { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+  .v .pip { background: var(--green); } .v { color: #4d7430; }
+  .b .pip { background: var(--amber); } .b { color: #8a6420; }
+  .d .pip { background: #9aa0a6; }
+
+  .arrow { flex: 0 0 46px; display: flex; align-items: center; justify-content: center; color: #b9a98f; font-size: 24px; }
+  .c4 ~ .arrow, .arrow.cool { color: #c2c6cc; }
+
+  /* return loop */
+  .loop {
+    margin-top: 20px; display: flex; align-items: center; gap: 14px;
+    color: var(--warm-muted); font-size: 13px;
+  }
+  .loop .line { flex: 1; height: 0; border-top: 2px dashed #cdbBa0; border-top-color: #cdbba0; position: relative; }
+  .loop .tip { color: var(--warm-ink); font-size: 18px; }
+  .loop .lbl { font-style: italic; font-family: var(--serif); white-space: nowrap; }
+
+  /* footer */
+  .foot { margin-top: 22px; display: flex; align-items: center; justify-content: space-between; }
+  .legend { display: flex; gap: 20px; font-size: 12px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .legend .pip { width: 9px; height: 9px; border-radius: 50%; }
+  .spine { font-family: var(--serif); font-size: 16px; color: var(--ink); letter-spacing: 0.01em; }
+  .spine b { font-weight: 600; }
+  .spine .s { color: #b9a98f; padding: 0 6px; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <div class="wordmark">Moodbuilder<span class="dot">.</span></div>
+    <div class="claim">
+      <div class="q">“I don’t need the machine to tell me my taste. I need tools to extract my taste from inspiration.”</div>
+      <div class="sub">A brand-direction tool. The fog-resolving layer upstream of Figma. Recognition, not articulation. You stay the author.</div>
+    </div>
+  </div>
+
+  <div class="arc">
+    <span class="a1">Overwhelm</span><span class="sep">→</span>
+    <span class="a2">Relief</span><span class="sep">→</span>
+    <span class="a3">Tangible</span>
+  </div>
+
+  <div class="phases">
+    <div class="phase p1"><div class="bar"></div><div class="name">Inspiration</div><div class="gloss">everything you brought in · the well, always open</div></div>
+    <div class="phase p2"><div class="bar"></div><div class="name">Direction</div><div class="gloss">a curated few · the protagonist artifact</div></div>
+    <div class="phase p3"><div class="bar"></div><div class="name">Brand</div><div class="gloss">the made identity · ready to show</div></div>
+  </div>
+
+  <div class="flow">
+    <div class="card c1">
+      <div class="verb">Gather</div>
+      <div class="role">react &amp; pull</div>
+      <div class="detail">React to your pins. The colors of what you keep collect. Say the “why” in your own words.</div>
+      <div class="status v"><span class="pip"></span>Validated</div>
+    </div>
+    <div class="arrow">→</div>
+
+    <div class="card c2">
+      <div class="verb">Organize</div>
+      <div class="role">mess ⇄ tidy</div>
+      <div class="detail">Rifle the tactile pile, pull cards onto your board. Flip between free collage and neat lanes. Your arrangement is never lost.</div>
+      <div class="status b"><span class="pip"></span>To build</div>
+    </div>
+    <div class="arrow">→</div>
+
+    <div class="card c3">
+      <div class="verb">Narrow</div>
+      <div class="role">pull directions</div>
+      <div class="detail">Pull a few coherent directions out of everything. Each one a candidate identity you can compare.</div>
+      <div class="status b"><span class="pip"></span>To build</div>
+    </div>
+    <div class="arrow cool">→</div>
+
+    <div class="card c4">
+      <div class="verb">Compose</div>
+      <div class="role">direction → brand</div>
+      <div class="detail">Watch it become a brand: live previews, shuffle, click to recolor, set type, check legibility. Compare and share.</div>
+      <div class="status b"><span class="pip"></span>Simplify</div>
+    </div>
+    <div class="arrow cool">→</div>
+
+    <div class="card c5">
+      <div class="verb">Deliver</div>
+      <div class="role">make it real</div>
+      <div class="detail">A brand book, design tokens for Figma, a share link that keeps provenance. Something to show a team or client.</div>
+      <div class="status d"><span class="pip"></span>Downstream</div>
+    </div>
+  </div>
+
+  <div class="loop">
+    <span class="tip">◀</span>
+    <span class="line"></span>
+    <span class="lbl">the well stays open · always go back &nbsp;(a funnel, not a tunnel)</span>
+    <span class="line"></span>
+  </div>
+
+  <div class="foot">
+    <div class="legend">
+      <span><span class="pip" style="background:#5c8a3a"></span>Validated</span>
+      <span><span class="pip" style="background:#bb8a2f"></span>To build / simplify</span>
+      <span><span class="pip" style="background:#9aa0a6"></span>Downstream</span>
+    </div>
+    <div class="spine"><b>Inspiration</b><span class="s">→</span><b>Direction</b><span class="s">→</span><b>Brand</b></div>
+  </div>
+</body>
+</html>
