@@ -17,7 +17,6 @@ import TypePanel from "../../components/TypePanel";
 import TexturePanel from "../../components/TexturePanel";
 import PresetsPanel from "../../components/PresetsPanel";
 import FontLoader from "../../components/FontLoader";
-import PathFooter from "../../components/PathFooter";
 import StageNav from "../../components/StageNav";
 import DirectionCard from "../../components/DirectionCard";
 import styles from "./page.module.css";
@@ -592,7 +591,6 @@ export default function BrandPage() {
         </section>
       </main>
 
-      <PathFooter />
 
       {pickerPos && (
         <FloatingRolePicker

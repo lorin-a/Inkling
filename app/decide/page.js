@@ -9,7 +9,6 @@ import { colorName } from "../../lib/nameThatColor";
 import BrandPreview from "../../components/BrandPreview";
 import FontLoader from "../../components/FontLoader";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
-import PathFooter from "../../components/PathFooter";
 import styles from "./page.module.css";
 
 const MAX_COMPARE = 5;
@@ -175,7 +174,6 @@ export default function DecidePage() {
         </>
       )}
 
-      <PathFooter />
     </div>
   );
 }

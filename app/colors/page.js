@@ -9,7 +9,6 @@ import { apiFetch } from "../../lib/api/client";
 import { colorName } from "../../lib/nameThatColor";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import MiniBrandPreview from "../../components/MiniBrandPreview";
-import PathFooter from "../../components/PathFooter";
 import styles from "./page.module.css";
 
 export default function ColorsPage() {
@@ -292,7 +291,6 @@ export default function ColorsPage() {
         )}
       </section>
 
-      <PathFooter />
 
       <div className={styles.readout} aria-live="polite">
         {hovered ? (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import StageNav from "../../components/StageNav";
@@ -8,11 +8,9 @@ import FontLoader, { fontStack } from "../../components/FontLoader";
 import { apiFetch } from "../../lib/api/client";
 import Board from "../../components/canvas/Board";
 import BoardBar from "../../components/canvas/BoardBar";
-import PinTray from "../../components/canvas/PinTray";
-import WellTray from "../../components/canvas/WellTray";
+import Pile from "../../components/canvas/Pile";
 import CarveSource from "../../components/canvas/CarveSource";
-import PullTagPopover from "../../components/canvas/PullTagPopover";
-import { atomToBlock, atomFromImageBlock, atomFromPin, atomFromColor, atomFromType } from "../../lib/atoms";
+import DirectionCard from "../../components/DirectionCard";
 import AddBlocks from "../../components/canvas/AddBlocks";
 import { SWATCH_STYLES, nextIn, fontKey } from "../../components/canvas/blockOptions";
 import { useBoards } from "../../lib/useBoards";
@@ -92,10 +90,11 @@ export default function MoodboardPage() {
   const [croppingId, setCroppingId] = useState(null);
   const [carving, setCarving] = useState(false);       // split-screen carve mode
   const [carveSourceId, setCarveSourceId] = useState(null); // the "everything" board on the left
-  const [trayOpen, setTrayOpen] = useState(false); // library is summoned, not docked — the canvas is the figure
-  const [traySource, setTraySource] = useState("pins"); // pins | well
-  const [wellVersion, setWellVersion] = useState(0); // bump to reload the well after a pull
-  const [pullDraft, setPullDraft] = useState(null); // a draft atom awaiting dimension + tags
+  const [pileOpen, setPileOpen] = useState(false); // the tactile pile of your imported pins (the Gather surface)
+  const surfaceRef = useRef(null); // the board's inner surface node, so the pile can hit-test drops
+  const autoOpenedPile = useRef(false); // open the pile once on entry to an empty board, then leave it to the user
+  const [dirOpen, setDirOpen] = useState(false); // the Direction artifact, docked + collapsible on the board
+  const [why, setWhy] = useState(""); // your words about this direction — the SAME per-board key Compose reads
   const [projectFonts, setProjectFonts] = useState({}); // { title, subhead, body } font values
 
   // The project's chosen brand fonts, offered as quick picks on text blocks.
@@ -132,6 +131,32 @@ export default function MoodboardPage() {
   const blocks = active?.blocks || [];
   const sections = active?.sections || [];
   const comments = active?.comments || [];
+
+  // Entering an empty board IS the Gather moment — spill the pile open so there's
+  // something to pull from. Only once: after that the pile is yours to open/close.
+  useEffect(() => {
+    if (loading || autoOpenedPile.current) return;
+    autoOpenedPile.current = true;
+    if (!blocks.some((b) => b.type === "image")) setPileOpen(true);
+  }, [loading, blocks]);
+
+  // The Direction's "why" — your words about this board. Stored under the SAME
+  // per-board key Compose reads/writes, so the artifact fills once and travels.
+  const whyKey = activeId ? `moodbuilder.direction.why.${activeId}` : null;
+  useEffect(() => {
+    if (!whyKey) { setWhy(""); return; }
+    try { setWhy(localStorage.getItem(whyKey) || ""); } catch { setWhy(""); }
+  }, [whyKey]);
+  const saveWhy = useCallback((text) => {
+    setWhy(text);
+    if (!whyKey) return;
+    try { if (text) localStorage.setItem(whyKey, text); else localStorage.removeItem(whyKey); } catch { /* storage off */ }
+  }, [whyKey]);
+
+  // The fill readout, computed from what's actually on this board.
+  const dirColorCount = useMemo(() => blocks.filter((b) => b.type === "swatch").length, [blocks]);
+  const dirPieceCount = useMemo(() => blocks.filter((b) => b.type === "image").length, [blocks]);
+  const dirHasType = useMemo(() => blocks.some((b) => b.type === "text"), [blocks]);
 
   // Brand fonts as { label, value, stack } for the typeface popover.
   const projectFontQuick = useMemo(() => {
@@ -281,7 +306,10 @@ export default function MoodboardPage() {
   // Drop a library pin onto the board. We preload the image to size the block
   // to its real aspect ratio, so the first thing you see isn't a cropped
   // square — references read true, then you resize from there.
-  const addPin = useCallback((pin) => {
+  // `at` (optional) is a board-local drop point from the pile: the reference
+  // lands where you let go, snapping flat into clean board material. Without it
+  // (a click, or the library grid) the block joins the gentle cascade.
+  const addPin = useCallback((pin, at = null) => {
     const src = pin.imageDisplay || pin.thumbnail236 || pin.imageOriginal;
     if (!src) return;
     const id = `bk_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
@@ -299,11 +327,15 @@ export default function MoodboardPage() {
       setBlocks((bs) => {
         const n = bs.length;
         const maxZ = bs.reduce((m, b) => Math.max(m, b.z || 0), 0);
+        // Drop where you let go, biased so the cursor lands near the block's
+        // upper-middle (not its corner); otherwise cascade.
+        const x = at ? Math.max(8, Math.round(at.x - w / 2)) : 48 + (n % 7) * CASCADE;
+        const y = at ? Math.max(8, Math.round(at.y - 28)) : 48 + (n % 7) * CASCADE;
         const block = {
           id,
           type: "image",
-          x: 48 + (n % 7) * CASCADE,
-          y: 48 + (n % 7) * CASCADE,
+          x,
+          y,
           w,
           h,
           z: maxZ + 1,
@@ -321,57 +353,10 @@ export default function MoodboardPage() {
     img.src = src;
   }, [setBlocks]);
 
-  // Drop a well atom onto the board — it instantiates as an ordinary block
-  // (image / swatch / text) carrying its crop, source, and the user's tags.
-  const addAtomToBoard = useCallback((atom) => {
-    if (!atom) return;
-    const block = atomToBlock(atom, { ...placement(blocks), baseWidth: BASE_WIDTH });
-    setBlocks((bs) => [...bs, block]);
-    setSelectedId(block.id);
-  }, [blocks, setBlocks]);
-
-  // Pull a board block into the well — image keeps its live crop; swatch becomes
-  // a color atom; text becomes a type atom. The dimension is pre-set for color /
-  // type (it's obvious) and left open for an image crop.
-  const pullFromBlock = useCallback((blockId) => {
-    const b = blocks.find((x) => x.id === blockId);
-    if (!b) return;
-    const p = b.payload || {};
-    if (b.type === "image") setPullDraft(atomFromImageBlock(b, { projectId: null }));
-    else if (b.type === "swatch") setPullDraft(atomFromColor({ hex: p.hex, name: p.name }, { projectId: null }));
-    else if (b.type === "text") setPullDraft(atomFromType({ text: p.text, font: p.font, size: p.size }, { projectId: null }));
-  }, [blocks]);
-
-  // Pull a whole pin from the tray — preload to capture its true aspect.
-  const pullFromPin = useCallback((pin) => {
-    const src = pin.imageDisplay || pin.thumbnail236 || pin.imageOriginal;
-    if (!src) return;
-    const open = (ratio) => setPullDraft(atomFromPin(pin, { projectId: null, ratio }));
-    const img = new Image();
-    img.onload = () => open(img.naturalWidth / img.naturalHeight);
-    img.onerror = () => open(1);
-    img.src = src;
-  }, []);
-
-  // Commit the pull: stamp the chosen dimension + tags, save to the well, and
-  // surface it (open the Well so the new reference is visible).
-  const confirmPull = useCallback(async (dimension, tags) => {
-    if (!pullDraft) return;
-    const atom = { ...pullDraft, dimension, tags };
-    setPullDraft(null);
-    try {
-      await apiFetch("/api/atoms", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ atom }),
-      });
-      setWellVersion((v) => v + 1);
-      setTraySource("well");
-      setTrayOpen(true);
-    } catch {
-      /* a failed save leaves the board untouched; the user can retry */
-    }
-  }, [pullDraft]);
+  // NOTE: the cross-project "well" (atoms store) is shelved as of 2026-06-09 (one
+  // clean concept: your inspiration). WellTray / PullTagPopover / lib/atoms and the
+  // /api/atoms route remain on disk, unwired, so it's reversible. The board→well
+  // "pull" gesture is off too (onPull no longer passed to Board).
 
   // ---- Affinity sections (the workshop layer) ------------------------------
   // Membership is computed by position (see Board), so these handlers only ever
@@ -519,7 +504,6 @@ export default function MoodboardPage() {
       onSetFill={setFill}
       onSetFinish={setFinish}
       onApplyFinishAll={applyFinishAll}
-      onPull={pullFromBlock}
       projectFonts={projectFontQuick}
       background={active?.background || null}
       empty={blocks.length === 0}
@@ -539,6 +523,8 @@ export default function MoodboardPage() {
       onMoveComment={moveComment}
       onDeleteComment={deleteComment}
       onDropBlock={carving ? dropCopyToBoard : undefined}
+      surfaceRef={surfaceRef}
+      onPull={undefined}
     />
   );
 
@@ -579,43 +565,68 @@ export default function MoodboardPage() {
               />
 
               <div className={styles.work}>
-                {commenting && (
-                  <div className={styles.commentBanner} role="status">
-                    Click anywhere on the board to drop a comment
-                    <span className={styles.commentBannerEsc}>Esc to cancel</span>
-                  </div>
-                )}
-                {boardEl}
-                <AddBlocks
-                  onAddText={addText}
-                  onAddSwatch={addSwatch}
-                  onAddShape={addShape}
-                  onAddSection={addSection}
-                  onToggleComment={toggleComment}
-                  commenting={commenting}
-                  onOpenLibrary={() => setTrayOpen(true)}
-                  libraryOpen={trayOpen}
-                />
-                {trayOpen && traySource === "pins" && (
-                  <PinTray
-                    open
-                    onToggle={() => setTrayOpen(false)}
-                    onAdd={addPin}
+                {pileOpen && (
+                  <Pile
+                    surfaceRef={surfaceRef}
                     usedPinIds={usedPinIds}
-                    source={traySource}
-                    onSource={setTraySource}
-                    onPullPin={pullFromPin}
+                    onPullToBoard={addPin}
+                    onClose={() => setPileOpen(false)}
                   />
                 )}
-                {trayOpen && traySource === "well" && (
-                  <WellTray
-                    source={traySource}
-                    onSource={setTraySource}
-                    onClose={() => setTrayOpen(false)}
-                    onAddAtom={addAtomToBoard}
-                    version={wellVersion}
+                <div className={styles.boardArea}>
+                  {commenting && (
+                    <div className={styles.commentBanner} role="status">
+                      Click anywhere on the board to drop a comment
+                      <span className={styles.commentBannerEsc}>Esc to cancel</span>
+                    </div>
+                  )}
+                  {boardEl}
+                  <AddBlocks
+                    onAddText={addText}
+                    onAddSwatch={addSwatch}
+                    onAddShape={addShape}
+                    onAddSection={addSection}
+                    onToggleComment={toggleComment}
+                    commenting={commenting}
+                    onOpenLibrary={() => setPileOpen(true)}
+                    libraryOpen={pileOpen}
                   />
-                )}
+
+                  {/* The Direction travels here: the same artifact you see on Compose,
+                      docked top-right, collapsed to a chip so the canvas stays the figure. */}
+                  <div className={styles.directionDock}>
+                    {dirOpen ? (
+                      <div className={styles.directionPanel}>
+                        <button
+                          type="button"
+                          className={styles.directionCollapse}
+                          onClick={() => setDirOpen(false)}
+                          aria-label="Collapse the direction"
+                        >▸</button>
+                        <DirectionCard
+                          name={active?.name}
+                          onRename={(n) => n && renameBoard(activeId, n)}
+                          why={why}
+                          onWhy={saveWhy}
+                          boardName={active?.name}
+                          colorCount={dirColorCount}
+                          pieceCount={dirPieceCount}
+                          hasType={dirHasType}
+                        />
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className={styles.directionPill}
+                        onClick={() => setDirOpen(true)}
+                        title="Your direction — name, why, and what's in it so far"
+                      >
+                        <span className={styles.directionPillDot} aria-hidden="true">◆</span>
+                        {active?.name || "Your direction"}
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
             </>
           ) : (
@@ -642,10 +653,6 @@ export default function MoodboardPage() {
             </div>
           )}
         </>
-      )}
-
-      {pullDraft && (
-        <PullTagPopover draft={pullDraft} onConfirm={confirmPull} onCancel={() => setPullDraft(null)} />
       )}
     </div>
   );

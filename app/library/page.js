@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
-import PathFooter from "../../components/PathFooter";
 import { apiFetch, isAuthed } from "../../lib/api/client";
 import { useAuthed } from "../../lib/api/useAuthed";
 import { extractMissingLocal } from "../../lib/storage/localImport";
@@ -445,7 +444,6 @@ export default function LibraryPage() {
         </div>
       )}
 
-      <PathFooter />
 
       {activePin && (
         <PinDetail

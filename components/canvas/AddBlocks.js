@@ -5,10 +5,11 @@ import ColorPicker from "./ColorPicker";
 import styles from "./canvas.module.css";
 
 /**
- * The "add" cluster, floating top-left of the board. The PinTray covers adding
- * images; this adds the other block types — text, color swatches (from the
- * project's own palette), shapes (rectangle / line), and a hand-made section
- * (curation already auto-sorts the board into zones; this is for framing your own).
+ * The "add" cluster, floating top-left of the board. The pile (your inspiration)
+ * covers adding images; this adds the other block types — text, color swatches
+ * (from the project's own palette), shapes (rectangle / line), and a hand-made
+ * section (curation already auto-sorts the board into zones; this is for framing
+ * your own). The last button reopens your inspiration to pull more from.
  */
 export default function AddBlocks({ onAddText, onAddSwatch, onAddShape, onAddSection, onToggleComment, commenting, onOpenLibrary, libraryOpen }) {
   const [open, setOpen] = useState(null); // "swatch" | "shape" | "section" | null
@@ -94,16 +95,16 @@ export default function AddBlocks({ onAddText, onAddSwatch, onAddShape, onAddSec
 
       <span className={styles.addDivider} aria-hidden="true" />
 
-      {/* The library (pins + well) is summoned, not docked — the canvas is the figure.
-          Hidden while the panel is open (it has its own close). */}
+      {/* Your inspiration (the pile) is summoned, not docked — the canvas is the
+          figure. Hidden while the pile is open (it has its own close). */}
       {!libraryOpen && (
         <button
           type="button"
           className={styles.addBtn}
           onClick={onOpenLibrary}
-          title="Add pins and saved references from your library"
+          title="Open your inspiration — the pile of pins to pull onto the board"
         >
-          <span className={styles.addGlyph} aria-hidden="true">＋</span> Add more
+          <span className={styles.addGlyph} aria-hidden="true">＋</span> Inspiration
         </button>
       )}
     </div>

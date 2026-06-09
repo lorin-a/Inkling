@@ -1,0 +1,180 @@
+/* THE PILE — the divergent texture: warm paper, hand-tossed, tactile. It sits
+   against the calm dot-grid board so mess → order reads spatially: this side is
+   the well you rifle; the board is where it resolves into clean material. */
+
+.pile {
+  flex: 0 0 432px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid var(--hairline);
+  background:
+    radial-gradient(120% 70% at 50% -10%, #f4eee4 0%, #ece4d6 60%, #e7ddcc 100%);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px 10px;
+  flex-shrink: 0;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #5c3a18;
+}
+
+.close {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #8a5a2b;
+  font-size: 13px;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+.close:hover { background: rgba(120, 84, 40, 0.1); }
+.close:focus-visible { outline: 2px solid #8a5a2b; outline-offset: 2px; }
+
+.sub {
+  flex-shrink: 0;
+  padding: 0 20px 12px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #7a5a35;
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 4px 20px 28px;
+}
+
+.empty {
+  font-size: 13px;
+  font-style: italic;
+  color: #8a6a45;
+  padding: 24px 4px;
+  line-height: 1.5;
+}
+
+/* The tossed field: cards are absolutely placed within a bounded, scrollable canvas. */
+.pileCanvas {
+  position: relative;
+  width: 392px;
+}
+
+.slot {
+  position: absolute;
+  display: block;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: grab;
+  animation: spillIn 600ms var(--ease-out) both;
+}
+.slot:hover { z-index: 800 !important; }
+.slot:active { cursor: grabbing; }
+.slot:focus-visible { outline: none; }
+.slot:focus-visible .card {
+  outline: 2px solid #8a5a2b;
+  outline-offset: 3px;
+}
+
+.card {
+  position: relative;
+  display: block;
+  background: #fffdf9;
+  padding: 8px;
+  border-radius: 4px;
+  transform: rotate(var(--tilt));
+  box-shadow:
+    0 1px 2px rgba(50, 34, 14, 0.16),
+    0 9px 20px rgba(50, 34, 14, 0.16);
+  transition:
+    transform 240ms var(--ease-out),
+    box-shadow 240ms var(--ease-out);
+}
+.slot:hover .card,
+.slot:focus-visible .card {
+  transform: rotate(0deg) translateY(-6px) scale(1.04);
+  box-shadow:
+    0 2px 5px rgba(50, 34, 14, 0.18),
+    0 20px 40px rgba(50, 34, 14, 0.26);
+}
+
+.img {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 2px;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Riso-ish grain for the printed, tactile feel. */
+.grain {
+  position: absolute;
+  inset: 8px;
+  border-radius: 2px;
+  pointer-events: none;
+  opacity: 0.1;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Already on the board: present but quieted, with a check. Nothing disappears —
+   you can always pull it again. */
+.used .card {
+  filter: saturate(0.55);
+  opacity: 0.62;
+}
+.check {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #5c8a3a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+/* The card in hand: lifted out of the pile, flat, riding free toward the board. */
+.ghost {
+  position: fixed;
+  z-index: 9999;
+  padding: 8px;
+  background: #fffdf9;
+  border-radius: 4px;
+  pointer-events: none;
+  transform: scale(1.05);
+  box-shadow:
+    0 4px 10px rgba(50, 34, 14, 0.22),
+    0 30px 60px rgba(50, 34, 14, 0.32);
+}
+
+/* The spill: cards tumble in with a slight overshoot, staggered. */
+@keyframes spillIn {
+  0% { opacity: 0; transform: translateY(34px) scale(0.9); }
+  70% { opacity: 1; transform: translateY(-5px) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot { animation: none; }
+  .card { transition: none; }
+  .ghost { transform: none; }
+}

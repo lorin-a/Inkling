@@ -5,7 +5,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { apiFetch } from "../lib/api/client";
 import { resetToSample } from "../lib/storage/localStore";
-import { STEPS } from "../lib/steps";
+import { STAGES } from "../components/StageNav";
 import LiveBrandHero from "../components/LiveBrandHero";
 import Submit from "../components/Submit";
 
@@ -229,17 +229,17 @@ export default function Home() {
           </p>
         </header>
         <ol className={styles.pathGrid}>
-          {STEPS.map((step) => (
-            <li key={step.href}>
-              <Link href={step.href} className={styles.stepCard}>
+          {STAGES.map((stage, i) => (
+            <li key={stage.key}>
+              <Link href={stage.href} className={styles.stepCard}>
                 <span className={styles.stepHead}>
                   <span className={styles.stepEyebrow}>
-                    <span className={styles.stepNum}>{step.n}</span>
-                    <span className={styles.stepVerb}>{step.verb}</span>
+                    <span className={styles.stepNum}>{i + 1}</span>
+                    <span className={styles.stepVerb}>{stage.sub}</span>
                   </span>
-                  <span className={styles.stepTitle}>{step.title}</span>
+                  <span className={styles.stepTitle}>{stage.label}</span>
                 </span>
-                <span className={styles.cardBody}>{step.body}</span>
+                <span className={styles.cardBody}>{stage.blurb}</span>
                 <span className={styles.stepArrow} aria-hidden="true">→</span>
               </Link>
             </li>

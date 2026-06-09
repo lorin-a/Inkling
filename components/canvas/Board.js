@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import Link from "next/link";
 import Block from "./Block";
 import ImageBlock from "./ImageBlock";
@@ -73,8 +73,16 @@ export default function Board({
   onMoveComment,
   onDeleteComment,
   onDropBlock,
+  surfaceRef: externalSurfaceRef,
 }) {
-  const surfaceRef = useRef(null);
+  const internalRef = useRef(null);
+  // The page hands down a ref so the Pile can hit-test this surface on drop and
+  // read scroll-aware coordinates. Mirror the node into both refs.
+  const surfaceRef = internalRef;
+  const setSurfaceRef = useCallback((node) => {
+    internalRef.current = node;
+    if (externalSurfaceRef) externalSurfaceRef.current = node;
+  }, [externalSurfaceRef]);
 
   // Accept a piece dragged from the carve-mode source pane → drop a copy here.
   function onSurfaceDragOver(e) {
@@ -124,7 +132,7 @@ export default function Board({
       style={background ? { backgroundColor: background } : undefined}
     >
       <div
-        ref={surfaceRef}
+        ref={setSurfaceRef}
         className={`${styles.surface} ${commenting ? styles.surfaceCommenting : ""}`}
         onPointerDown={onSurfacePointerDown}
         onDragOver={onSurfaceDragOver}

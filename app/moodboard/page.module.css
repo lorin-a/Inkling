@@ -59,13 +59,76 @@
   font-size: 15px;
 }
 
-/* The board + the pins tray, side by side, filling the rest of the viewport. */
+/* The pile + the board, side by side, filling the rest of the viewport. */
 .work {
   flex: 1;
   position: relative;
   display: flex;
   min-height: 0;
 }
+
+/* The board and its floating controls (add cluster, comment banner, trays). Its
+   own positioning context so those anchor to the board, not to the pile beside it. */
+.boardArea {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  min-height: 0;
+}
+
+/* The Direction artifact, docked top-right of the board — collapsed to a chip so
+   the canvas stays the figure, expanded to the same card you see on Compose. */
+.directionDock {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 14;
+}
+
+.directionPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  font-size: 14px;
+  color: var(--ink);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  transition: box-shadow var(--motion-fast) var(--ease-out);
+}
+.directionPill:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14); }
+.directionPill:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 2px; }
+.directionPillDot { color: var(--whelm-vivid); font-size: 11px; }
+
+.directionPanel {
+  position: relative;
+  width: 300px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+  padding: 18px 18px 6px;
+}
+.directionCollapse {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: var(--ink-muted);
+  font-size: 13px;
+  display: grid;
+  place-items: center;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+.directionCollapse:hover { background: rgba(0, 0, 0, 0.05); }
+.directionCollapse:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 2px; }
 
 /* Comment-mode banner — floats top-centre over the board so it's obvious you're
    placing, and where. */

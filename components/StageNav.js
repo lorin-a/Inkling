@@ -14,11 +14,14 @@ import styles from "./StageNav.module.css";
  * board, so on the board it runs `onNarrow` (start carve), and from elsewhere it routes
  * to the board first. Gather holds the two ways to gather (Color, Type) as sub-steps.
  */
-const STAGES = [
-  { key: "gather", label: "Gather", sub: "react & pull", href: "/recognize", match: ["/recognize", "/type"] },
-  { key: "organize", label: "Organize", sub: "sort & play", href: "/moodboard", match: ["/moodboard"] },
-  { key: "narrow", label: "Narrow", sub: "pull directions", narrow: true },
-  { key: "compose", label: "Compose", sub: "make the brand", href: "/brand", match: ["/brand"] },
+// The one source of truth for the process. StageNav renders it as the in-app
+// stepper; the home page renders it as the entry grid — so there is exactly one
+// definition of the flow, and no second navigation can drift from it.
+export const STAGES = [
+  { key: "gather", label: "Gather", sub: "react & pull", href: "/recognize", match: ["/recognize", "/type"], blurb: "React to your inspiration and pull what resonates." },
+  { key: "organize", label: "Organize", sub: "sort & play", href: "/moodboard", match: ["/moodboard"], blurb: "Arrange it on your board; the mess resolves into order." },
+  { key: "narrow", label: "Narrow", sub: "pull directions", narrow: true, href: "/moodboard", blurb: "Pull a few directions out of everything." },
+  { key: "compose", label: "Compose", sub: "make the brand", href: "/brand", match: ["/brand"], blurb: "Shuffle a direction into a brand you can see and share." },
 ];
 
 export default function StageNav({ onNarrow, carving }) {
