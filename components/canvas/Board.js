@@ -64,6 +64,7 @@ export default function Board({
   onDeleteSection,
   onRenameSection,
   onNoteSection,
+  onAddToZone,
   comments = [],
   commenting,
   selectedCommentId,
@@ -164,6 +165,7 @@ export default function Board({
             onDelete={() => onDeleteSection?.(section.id)}
             onRename={(name) => onRenameSection?.(section.id, name)}
             onNote={(note) => onNoteSection?.(section.id, note)}
+            onAddToZone={onAddToZone}
           />
         ))}
 

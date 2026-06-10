@@ -100,6 +100,8 @@ export default function MoodboardPage() {
   const [dirOpen, setDirOpen] = useState(false); // the Direction artifact, docked + collapsible on the board
   const [why, setWhy] = useState(""); // your words about this direction — the SAME per-board key Compose reads
   const [addingColor, setAddingColor] = useState(false); // the focused color gather, summoned onto the canvas
+  const [flash, setFlash] = useState(null); // a brief on-canvas note (e.g. a dimension that isn't built yet)
+  const seededBoard = useRef(null); // ensure the dimension containers once per board
   const [projectFonts, setProjectFonts] = useState({}); // { title, subhead, body } font values
 
   // The project's chosen brand fonts, offered as quick picks on text blocks.
@@ -199,6 +201,43 @@ export default function MoodboardPage() {
     if (words) saveWhy(words);
     setAddingColor(false);
   }, [sections, blocks, setSections, setBlocks, saveWhy]);
+
+  // "+ add {dimension}" on a container launches that dimension's focused tool.
+  const addToZone = useCallback((slug) => {
+    if (slug === "color") setAddingColor(true);
+    else if (slug === "imagery") setPileOpen(true);
+    else if (slug === "type") {
+      setFlash("Type is the next brick — react to type pairings on your palette, coming soon.");
+      setTimeout(() => setFlash(null), 3400);
+    }
+  }, []);
+
+  // The canvas-as-home structure: every board carries the three dimension containers
+  // (Color · Imagery · Type). Seed any missing ones once, in a row to the right of
+  // existing content, so the model is legible — empty ones show their "+ add" launcher.
+  useEffect(() => {
+    if (loading || carving || !activeId || seededBoard.current === activeId) return;
+    seededBoard.current = activeId;
+    const have = new Set((sections || []).map((s) => (s.name || "").toLowerCase()));
+    const missing = ["color", "imagery", "type"].filter((n) => !have.has(n));
+    if (!missing.length) return;
+    const PAD = 48, ZTOP = 128, GAP = 48;
+    const W = { color: 298, imagery: 664, type: 380 };
+    const H = { color: 180, imagery: 320, type: 260 };
+    let nextX = sections.length ? sections.reduce((m, s) => Math.max(m, (s.x || 0) + (s.w || 0)), 0) + GAP : PAD;
+    const add = [];
+    for (const slug of ["color", "imagery", "type"]) {
+      if (have.has(slug)) continue;
+      add.push({
+        id: `sc_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}${add.length}`,
+        name: slug.charAt(0).toUpperCase() + slug.slice(1),
+        note: "",
+        x: nextX, y: ZTOP, w: W[slug], h: H[slug],
+      });
+      nextX += W[slug] + GAP;
+    }
+    if (add.length) setSections((ss) => [...ss, ...add]);
+  }, [loading, carving, activeId, sections, setSections]);
 
   // Brand fonts as { label, value, stack } for the typeface popover.
   const projectFontQuick = useMemo(() => {
@@ -556,6 +595,7 @@ export default function MoodboardPage() {
       onDeleteSection={deleteSection}
       onRenameSection={renameSection}
       onNoteSection={noteSection}
+      onAddToZone={addToZone}
       comments={comments}
       commenting={commenting}
       selectedCommentId={selectedCommentId}
@@ -621,6 +661,9 @@ export default function MoodboardPage() {
                       Click anywhere on the board to drop a comment
                       <span className={styles.commentBannerEsc}>Esc to cancel</span>
                     </div>
+                  )}
+                  {flash && (
+                    <div className={styles.commentBanner} role="status">{flash}</div>
                   )}
                   {boardEl}
                   <AddBlocks

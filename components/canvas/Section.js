@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { DIMENSIONS } from "../../lib/canvasDimensions";
+import { DIMENSIONS, isDimension, dimensionLabel } from "../../lib/canvasDimensions";
 import styles from "./canvas.module.css";
 
 /**
@@ -48,6 +48,7 @@ export default function Section({
   onDelete,
   onRename,
   onNote,
+  onAddToZone,
 }) {
   const rootRef = useRef(null);
   const nameRef = useRef(null);
@@ -147,6 +148,10 @@ export default function Section({
 
   const accent = section.accent || null;
   const note = section.note || "";
+  // An empty dimension zone (Color / Imagery / Type) invites you to fill it — the
+  // "+ on the container" that launches the focused tool for that dimension.
+  const dimSlug = isDimension((section.name || "").toLowerCase()) ? (section.name || "").toLowerCase() : null;
+  const showAdd = count === 0 && dimSlug && onAddToZone;
 
   return (
     <div
@@ -230,6 +235,19 @@ export default function Section({
           <p className={styles.sectionNoteStatic}>{note}</p>
         ) : null}
       </div>
+
+      {showAdd && (
+        <button
+          type="button"
+          data-noselect
+          className={styles.zoneAdd}
+          onClick={(e) => { e.stopPropagation(); onAddToZone(dimSlug); }}
+          title={`Add ${dimensionLabel(dimSlug).toLowerCase()} by reacting to your inspiration`}
+        >
+          <span className={styles.zoneAddPlus} aria-hidden="true">+</span>
+          add {dimensionLabel(dimSlug).toLowerCase()}
+        </button>
+      )}
 
       {selected &&
         HANDLES.map((dir) => (

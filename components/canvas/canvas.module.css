@@ -847,6 +847,31 @@ a.credit:hover {
   border-color: var(--ink-muted);
 }
 
+/* The "+ add {dimension}" launcher inside an empty dimension zone — the canvas
+   inviting you to fill it. Centered, calm; it opens the focused tool for that zone. */
+.zoneAdd {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 9px 18px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+  transition: box-shadow var(--motion-fast) var(--ease-out), transform var(--motion-fast) var(--ease-out);
+}
+.zoneAdd:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14); transform: translate(-50%, -50%) translateY(-2px); }
+.zoneAdd:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 2px; }
+.zoneAddPlus { color: var(--whelm-vivid); font-size: 18px; line-height: 1; font-weight: 400; }
+
 .section:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 3px;
