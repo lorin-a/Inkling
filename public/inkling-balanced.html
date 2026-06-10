@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Inkling — the balance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Noto+Sans:wght@400;500;600;700;800&family=Caveat:wght@600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f4eee4; --card:#fffdf8; --ink:#231d16; --muted:#8c8173;
+    --line:rgba(60,42,20,.12); --line-soft:rgba(60,42,20,.07);
+    --rose:#a85f6b; --rose-soft:#efe1e2; --peri:#6361a0; --peri-soft:#e7e6ee;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif; --hand:"Caveat",cursive;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:1500px;height:980px;font-family:var(--sans);color:var(--ink);overflow:hidden;
+    background:var(--paper);padding:0 0 0}
+  .grain{position:fixed;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:220px 220px}
+
+  /* sharp top bar — Swiss confidence */
+  .bar{display:flex;align-items:center;justify-content:space-between;padding:26px 64px;border-bottom:2px solid var(--ink)}
+  .wm{font-family:var(--serif);font-size:30px;font-weight:600;letter-spacing:-.02em}
+  .wm .d{color:var(--rose)}
+  .nav{display:flex;align-items:center;gap:30px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+  .nav span{color:var(--muted)}
+  .nav .cta{background:var(--peri);color:#fff;padding:10px 18px;border-radius:7px;letter-spacing:.08em}
+
+  .hero{display:grid;grid-template-columns:1.05fr 1fr;gap:30px;padding:54px 64px 0;align-items:center}
+
+  /* left — bold type + one handmade mark */
+  .eyebrow{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+    color:#fff;background:var(--rose);padding:7px 13px;border-radius:6px}
+  h1{font-family:var(--serif);font-weight:500;font-size:84px;line-height:.98;letter-spacing:-.03em;margin:22px 0 0;
+    font-variation-settings:"SOFT" 30}
+  .mark{position:relative;display:inline-block;white-space:nowrap}
+  .mark .circle{position:absolute;left:-12px;top:-8px;width:calc(100% + 26px);height:calc(100% + 18px);pointer-events:none}
+  .sub{font-size:18px;line-height:1.55;color:#48413a;max-width:470px;margin-top:26px;font-weight:400}
+  .ctas{display:flex;align-items:center;gap:24px;margin-top:32px}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-size:15px;font-weight:700;color:#fff;
+    background:var(--peri);padding:15px 26px;border-radius:8px}
+  .link{font-size:15px;font-weight:700;color:var(--rose);border-bottom:2px solid var(--rose);padding-bottom:2px}
+  .steps{display:flex;gap:34px;margin-top:48px}
+  .step{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+  .step .n{width:8px;height:8px;border-radius:50%;background:var(--rose)}
+  .step.two .n{background:var(--peri)} .step.three .n{background:#7c9a6f}
+  .step span{color:var(--muted)}
+
+  /* right — risograph duotone hero, printed in rose + periwinkle */
+  .stage{position:relative;height:560px}
+  .blob{position:absolute;left:-30px;top:30px;width:430px;height:430px;background:var(--peri-soft);
+    border-radius:46% 54% 58% 42% / 52% 44% 56% 48%;transform:rotate(-8deg)}
+  .blob2{position:absolute;right:10px;bottom:0;width:200px;height:200px;background:var(--rose-soft);
+    border-radius:54% 46% 40% 60% / 48% 56% 44% 52%}
+  .riso{position:absolute;left:60px;top:30px;width:360px;height:460px;border-radius:6px;overflow:hidden;
+    box-shadow:0 8px 22px rgba(40,30,15,.16),0 30px 60px rgba(40,30,15,.2)}
+  .riso img{display:block;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.12) brightness(1.06)}
+  .riso::before{content:"";position:absolute;inset:0;background:#a85f6b;mix-blend-mode:multiply}
+  .riso::after{content:"";position:absolute;inset:0;background:#9b99c8;mix-blend-mode:screen}
+  .risoGrain{position:absolute;left:60px;top:30px;width:360px;height:460px;border-radius:6px;pointer-events:none;
+    opacity:.5;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");background-size:160px 160px}
+  .tape{position:absolute;left:150px;top:14px;width:120px;height:30px;background:rgba(99,97,160,.34);transform:rotate(-5deg);z-index:5}
+  .cap{position:absolute;left:64px;top:500px;font-family:var(--hand);font-size:23px;color:var(--ink);transform:rotate(-2deg);z-index:5}
+  .swatches{position:absolute;right:0;top:90px;display:flex;flex-direction:column;gap:9px}
+  .swatches .sw{width:46px;height:46px;border-radius:9px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+  .swatches .lab{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;writing-mode:vertical-rl;height:40px}
+
+  .foot{position:absolute;bottom:26px;left:64px;font-family:var(--hand);font-size:18px;color:var(--muted)}
+  .balance{position:absolute;bottom:26px;right:64px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .balance b{color:var(--rose)} .balance i{color:var(--peri);font-style:normal}
+</style>
+</head>
+<body>
+  <div class="grain"></div>
+
+  <div class="bar">
+    <div class="wm">inkling<span class="d">.</span></div>
+    <div class="nav"><span>Gather</span><span>Play</span><span>Build</span><span class="cta">Open the studio</span></div>
+  </div>
+
+  <div class="hero">
+    <div class="left">
+      <span class="eyebrow">Find your direction</span>
+      <h1>You know it<br>when you
+        <span class="mark">see&nbsp;it<svg class="circle" viewBox="0 0 220 80" fill="none" preserveAspectRatio="none">
+          <path d="M30 16 C 80 2, 175 4, 205 26 C 220 40, 200 64, 150 72 C 90 80, 18 72, 9 48 C 3 30, 18 18, 40 14"
+            stroke="#a85f6b" stroke-width="3" stroke-linecap="round"/></svg></span>.
+      </h1>
+      <p class="sub">Inkling pulls a brand direction out of everything you’ve saved — and keeps you the author the whole way.</p>
+      <div class="ctas">
+        <span class="btn">Start gathering →</span>
+        <span class="link">Import your pins</span>
+      </div>
+      <div class="steps">
+        <span class="step one"><span class="n"></span>Gather <span>· react &amp; pull</span></span>
+        <span class="step two"><span class="n"></span>Play <span>· arrange</span></span>
+        <span class="step three"><span class="n"></span>Build <span>· ship it</span></span>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="blob"></div>
+      <div class="blob2"></div>
+      <div class="riso"><img src="/sample/1039135314045106233.jpg" alt=""></div>
+      <div class="risoGrain"></div>
+      <span class="tape"></span>
+      <span class="cap">coastal · your yes</span>
+      <div class="swatches">
+        <span class="lab">inks</span>
+        <span class="sw" style="background:#a85f6b"></span>
+        <span class="sw" style="background:#6361a0"></span>
+        <span class="sw" style="background:#7c9a6f"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">printed in your own inks — rose over periwinkle</div>
+  <div class="balance"><b>warm + handmade</b> &nbsp;×&nbsp; <i>bold + sure</i></div>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Inkling — the studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f4eee4; --paper2:#efe7d9; --card:#fffdf8; --ink:#251f18; --muted:#8c8173;
+    --line:rgba(60,42,20,.11); --line-soft:rgba(60,42,20,.06);
+    --rose:#a07079; --peri:#75748f;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:1500px;height:960px;font-family:var(--sans);color:var(--ink);overflow:hidden;background:var(--paper)}
+  .grain{position:fixed;inset:0;pointer-events:none;opacity:.04;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:220px 220px}
+
+  /* whisper-quiet chrome */
+  .bar{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--line)}
+  .wm{font-family:var(--serif);font-size:23px;font-weight:600;letter-spacing:-.02em}
+  .wm .d{color:var(--rose)}
+  .stages{display:flex;gap:26px;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .stages .on{color:var(--ink)}
+  .stages .on::after{content:"";display:block;height:2px;background:var(--rose);border-radius:2px;margin-top:5px}
+  .barR{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--muted)}
+  .chip{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--rose);
+    border:1px solid var(--line);border-radius:100px;padding:4px 11px}
+
+  .work{display:grid;grid-template-columns:1fr 300px;height:calc(960px - 61px)}
+
+  /* the board — the ART is the hero. chrome is just labels + air. */
+  .board{padding:30px 36px;overflow:hidden}
+  .zlabel{font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin:0 0 14px 2px}
+  .zlabel .n{color:var(--rose);margin-left:7px}
+
+  .imagery{columns:3;column-gap:16px}
+  .imagery figure{break-inside:avoid;margin:0 0 16px;border-radius:8px;overflow:hidden;background:var(--card);
+    box-shadow:0 1px 2px rgba(40,30,15,.10),0 12px 26px rgba(40,30,15,.10)}
+  .imagery img{display:block;width:100%;object-fit:cover}
+
+  .lower{display:grid;grid-template-columns:1.3fr 1fr;gap:34px;margin-top:26px}
+  .swgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+  .swgrid span{aspect-ratio:1;border-radius:7px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.05)}
+  .typebox{background:var(--card);border:1px solid var(--line-soft);border-radius:10px;padding:20px 22px;box-shadow:0 1px 2px rgba(40,30,15,.07)}
+  .typebox .big{font-family:var(--serif);font-size:38px;line-height:1;letter-spacing:-.02em}
+  .typebox .small{font-size:14px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .typebox .small b{color:var(--ink);font-weight:600}
+
+  /* the direction rail — quiet, confident, one accent */
+  .rail{border-left:1px solid var(--line);padding:30px 26px;background:linear-gradient(180deg,rgba(255,253,248,.5),rgba(255,253,248,0))}
+  .rlabel{font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+  .name{font-family:var(--serif);font-size:34px;font-weight:500;letter-spacing:-.02em;margin-top:8px}
+  .why{font-family:var(--serif);font-style:italic;font-size:16px;line-height:1.45;color:#5d564c;margin-top:12px}
+  .railpal{display:flex;gap:7px;margin-top:22px}
+  .railpal span{width:34px;height:34px;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.05)}
+  .fill{margin-top:26px;border-top:1px solid var(--line-soft);padding-top:18px;display:flex;flex-direction:column;gap:12px}
+  .frow{display:flex;align-items:center;gap:10px;font-size:13px}
+  .frow .dot{width:8px;height:8px;border-radius:50%;background:var(--rose)}
+  .frow .dot.todo{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)}
+  .frow .k{color:var(--muted)}
+  .frow b{font-weight:600}
+  .frow .todo+span{color:var(--muted)}
+</style>
+</head>
+<body>
+  <div class="grain"></div>
+
+  <div class="bar">
+    <div class="wm">inkling<span class="d">.</span></div>
+    <div class="stages"><span>Gather</span><span class="on">Organize</span><span>Build</span></div>
+    <div class="barR"><span class="chip">Sample</span><span>Coastal direction</span></div>
+  </div>
+
+  <div class="work">
+    <div class="board">
+      <p class="zlabel">Imagery <span class="n">12</span></p>
+      <div class="imagery">
+        <figure><img src="/sample/1039135314045106233.jpg" alt="" style="height:300px"></figure>
+        <figure><img src="/sample/1039135314045106197.jpg" alt="" style="height:230px"></figure>
+        <figure><img src="/sample/1039135314045106132.jpg" alt="" style="height:268px"></figure>
+        <figure><img src="/sample/1039135314045106159.jpg" alt="" style="height:210px"></figure>
+        <figure><img src="/sample/1039135314045106233.jpg" alt="" style="height:200px"></figure>
+        <figure><img src="/sample/1039135314045106132.jpg" alt="" style="height:182px"></figure>
+      </div>
+
+      <div class="lower">
+        <div>
+          <p class="zlabel">Color <span class="n">18</span></p>
+          <div class="swgrid">
+            <span style="background:#d5e0ed"></span><span style="background:#9cbcd9"></span><span style="background:#bc9e90"></span>
+            <span style="background:#94495d"></span><span style="background:#5c3f30"></span><span style="background:#2d2418"></span>
+            <span style="background:#7c9a6f"></span><span style="background:#a07079"></span><span style="background:#75748f"></span>
+            <span style="background:#cdbfa9"></span><span style="background:#6f8a63"></span><span style="background:#8a8958"></span>
+          </div>
+        </div>
+        <div>
+          <p class="zlabel">Type <span class="n">2</span></p>
+          <div class="typebox">
+            <div class="big">Coastline</div>
+            <div class="small"><b>Fraunces</b> · display<br><b>Noto Sans</b> · text</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="rail">
+      <p class="rlabel">Your direction</p>
+      <div class="name">Coastal<span style="color:var(--rose)">.</span></div>
+      <p class="why">“Quiet, sun-faded, coastal. Muted greens and dusty rose, nothing too sharp.”</p>
+      <div class="railpal">
+        <span style="background:#94495d"></span><span style="background:#9cbcd9"></span>
+        <span style="background:#bc9e90"></span><span style="background:#5c3f30"></span>
+      </div>
+      <div class="fill">
+        <div class="frow"><span class="dot"></span><span class="k">Palette</span><b style="margin-left:auto">18 colors</b></div>
+        <div class="frow"><span class="dot"></span><span class="k">Imagery</span><b style="margin-left:auto">12 pulled</b></div>
+        <div class="frow"><span class="dot"></span><span class="k">Type</span><b style="margin-left:auto">chosen</b></div>
+        <div class="frow"><span class="dot todo"></span><span class="k">Mark</span><span style="margin-left:auto">add one</span></div>
+      </div>
+    </aside>
+  </div>
+</body>
+</html>
