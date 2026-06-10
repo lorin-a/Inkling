@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { apiFetch } from "../lib/api/client";
 import { resetToSample } from "../lib/storage/localStore";
 import Submit from "../components/Submit";

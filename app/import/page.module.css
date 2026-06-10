@@ -319,6 +319,13 @@
 }
 .arenaRow .commitBtn { align-self: auto; }
 
+/* New-user intro + the source-crediting fields. */
+.intro { margin-bottom: 28px; max-width: 660px; }
+.introH { font-family: var(--font-serif); font-size: 40px; font-weight: 500; letter-spacing: -0.025em; }
+.introP { font-size: 15.5px; line-height: 1.6; color: var(--ink-muted); margin-top: 12px; }
+.fieldLabel { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+.optional { font-family: var(--font-sans); text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink-faint); }
+
 .commitBtn:disabled {
   opacity: 0.45;
   cursor: default;

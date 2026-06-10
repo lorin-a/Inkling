@@ -6,16 +6,115 @@ import { BOOKMARKLET_HREF } from "../../lib/pinterestBookmarklet";
 import { isAuthed } from "../../lib/api/client";
 import { commitLocalImport, extractMissingLocal } from "../../lib/storage/localImport";
 import { fetchArenaChannel } from "../../lib/sources/arena";
+import * as local from "../../lib/storage/localStore";
 import ProjectSwitcher from "../../components/ProjectSwitcher";
 import styles from "./page.module.css";
 
+const newPinId = () => `up_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+const looksLikeUrl = (s) => /^https?:\/\//i.test((s || "").trim());
+const domainOf = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return null; } };
+
+// A pasted "source" can be a name ("a friend's studio") or a link. Split it into the
+// fields a pin carries, so credit is always preserved and clickable when it's a URL.
+function sourceFields(raw) {
+  const s = (raw || "").trim();
+  if (!s) return { sourceUrl: null, sourceDomain: null, pinner: null };
+  if (looksLikeUrl(s)) return { sourceUrl: s, sourceDomain: domainOf(s), pinner: domainOf(s) };
+  return { sourceUrl: null, sourceDomain: s, pinner: s };
+}
+
+// Downscale an uploaded image so a handful of screenshots fit in localStorage
+// (signed-out). Returns a data URL. Keeps aspect; longest side <= MAX.
+function fileToScaledDataUrl(file, MAX = 1280) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Could not read that file."));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("Could not load that image."));
+      img.onload = () => {
+        const scale = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+        const w = Math.round(img.naturalWidth * scale);
+        const h = Math.round(img.naturalHeight * scale);
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", 0.82));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function ImportPage() {
   const dragRef = useRef(null);
-  const [source, setSource] = useState("pinterest"); // "pinterest" | "arena"
+  const [source, setSource] = useState("pinterest"); // pinterest | upload | link | arena
   const [copied, setCopied] = useState(false);
   const [importStatus, setImportStatus] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [arenaInput, setArenaInput] = useState("");
+  const [uploadSource, setUploadSource] = useState(""); // a name or a link, credited on every upload
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkSource, setLinkSource] = useState("");
+
+  // Upload images (screenshots, scans, your own photos). Signed out: downscale +
+  // store locally with their source. Signed in: through the account upload.
+  async function uploadImages(fileList) {
+    const files = Array.from(fileList || []).filter((f) => f?.type?.startsWith("image/"));
+    if (!files.length) return;
+    setUploading(true);
+    setImportStatus({ kind: "committing" });
+    try {
+      const authed = await isAuthed();
+      if (authed) {
+        const form = new FormData();
+        for (const f of files) form.append("files", f);
+        const res = await fetch("/api/library/upload", { method: "POST", body: form });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `Upload failed (${res.status})`);
+        setImportStatus({ kind: "done", added: data.added ?? files.length, updated: 0, librarySize: data.librarySize, boardName: "your uploads", local: false });
+      } else {
+        const src = sourceFields(uploadSource);
+        const pins = [];
+        for (const f of files) {
+          const dataUrl = await fileToScaledDataUrl(f);
+          pins.push({ pinId: newPinId(), imageOriginal: dataUrl, imageDisplay: dataUrl, thumbnail236: dataUrl, title: f.name.replace(/\.[^.]+$/, ""), alt: f.name, ...src });
+        }
+        let merged;
+        try { merged = local.mergePins(pins, { boardName: "Uploads", importedAt: new Date().toISOString() }); }
+        catch { throw new Error("Your browser ran out of room for uploaded images. Sign in to store them in your account, or add fewer at a time."); }
+        extractMissingLocal({ concurrency: 2 }).catch(() => {});
+        setImportStatus({ kind: "done", added: merged.added, updated: merged.updated, librarySize: merged.total, boardName: "your uploads", local: true });
+      }
+    } catch (e) {
+      setImportStatus({ kind: "error", message: e.message });
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  // Add a single image by URL, crediting where it came from.
+  async function addByLink() {
+    const url = linkUrl.trim();
+    if (!looksLikeUrl(url)) { setImportStatus({ kind: "error", message: "Paste a direct image link (it should start with http)." }); return; }
+    setImportStatus({ kind: "committing" });
+    try {
+      const authed = await isAuthed();
+      if (authed) {
+        setImportStatus({ kind: "error", message: "Add-by-link for accounts is coming. It works in the sample studio now — sign out to try it." });
+        return;
+      }
+      const src = sourceFields(linkSource.trim() || url);
+      const pin = { pinId: newPinId(), imageOriginal: url, imageDisplay: url, thumbnail236: url, title: domainOf(url) || "Link", alt: "", ...src };
+      const merged = local.mergePins([pin], { boardName: "Links", importedAt: new Date().toISOString() });
+      extractMissingLocal({ concurrency: 2 }).catch(() => {});
+      setLinkUrl(""); setLinkSource("");
+      setImportStatus({ kind: "done", added: merged.added, updated: merged.updated, librarySize: merged.total, boardName: "your links", local: true });
+    } catch (e) {
+      setImportStatus({ kind: "error", message: e.message });
+    }
+  }
 
   function switchSource(next) {
     setSource(next);
@@ -149,26 +248,113 @@ export default function ImportPage() {
       </header>
 
       <main className={styles.main}>
-        <div className={styles.sourceTabs} role="tablist" aria-label="Inspiration source">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={source === "pinterest"}
-            className={`${styles.sourceTab} ${source === "pinterest" ? styles.sourceTabActive : ""}`}
-            onClick={() => switchSource("pinterest")}
-          >
-            Pinterest
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={source === "arena"}
-            className={`${styles.sourceTab} ${source === "arena" ? styles.sourceTabActive : ""}`}
-            onClick={() => switchSource("arena")}
-          >
-            Are.na
-          </button>
+        <div className={styles.intro}>
+          <h1 className={styles.introH}>Bring your inspiration in.</h1>
+          <p className={styles.introP}>
+            New here? Start anywhere below. Connect a Pinterest or Are.na board, upload your
+            own screenshots, or paste a link. Every reference keeps a line home to its source —
+            so you stay the author, and the makers keep their credit.
+          </p>
         </div>
+
+        <div className={styles.sourceTabs} role="tablist" aria-label="Inspiration source">
+          {[
+            ["pinterest", "Pinterest board"],
+            ["upload", "Upload screenshots"],
+            ["link", "Paste a link"],
+            ["arena", "Are.na"],
+          ].map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              role="tab"
+              aria-selected={source === key}
+              className={`${styles.sourceTab} ${source === key ? styles.sourceTabActive : ""}`}
+              onClick={() => switchSource(key)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {source === "upload" && (
+          <section className={styles.arenaPanel}>
+            <h2 className={styles.stepTitle}>Upload your own</h2>
+            <p className={styles.stepText}>
+              Screenshots, scans, photos — anything not on Pinterest. They’re yours to use, and they
+              stay in this browser (sign in to keep them on your account). Palettes extract automatically.
+            </p>
+            <label className={styles.fieldLabel}>Where’s it from? <span className={styles.optional}>(optional — a name, or paste a link to credit the source)</span></label>
+            <input
+              type="text"
+              className={styles.arenaInput}
+              placeholder="e.g. my own photo · or https://source.com/page"
+              value={uploadSource}
+              onChange={(e) => setUploadSource(e.target.value)}
+              aria-label="Source for these uploads"
+              style={{ marginBottom: 12 }}
+            />
+            <label
+              className={`${styles.dropZone} ${uploading ? styles.dropZoneBusy : ""}`}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => { e.preventDefault(); uploadImages(e.dataTransfer?.files); }}
+            >
+              <input type="file" accept="image/*" multiple hidden onChange={(e) => uploadImages(e.target.files)} disabled={uploading} />
+              <span className={styles.dropZoneLabel}>{uploading ? "Adding your images…" : "Drop images here, or click to choose"}</span>
+            </label>
+            {importStatus?.kind === "error" && <p className={styles.error}>{importStatus.message}</p>}
+            {importStatus?.kind === "done" && (
+              <div className={styles.done}>
+                <strong>{importStatus.added} added{importStatus.boardName ? ` to ${importStatus.boardName}` : ""}.</strong>{" "}
+                Library now holds {importStatus.librarySize} pins.{" "}
+                <Link href="/library" className={styles.inlineLink}>Open library →</Link>
+                <p className={styles.stepHint}>Palettes are extracting in the background.</p>
+              </div>
+            )}
+          </section>
+        )}
+
+        {source === "link" && (
+          <section className={styles.arenaPanel}>
+            <h2 className={styles.stepTitle}>Paste a link</h2>
+            <p className={styles.stepText}>
+              A direct image link from anywhere on the web. The source is kept and stays clickable — credit, preserved.
+            </p>
+            <label className={styles.fieldLabel}>Image link</label>
+            <input
+              type="text"
+              className={styles.arenaInput}
+              placeholder="https://…/image.jpg"
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") addByLink(); }}
+              aria-label="Image link"
+              style={{ marginBottom: 12 }}
+            />
+            <label className={styles.fieldLabel}>Source <span className={styles.optional}>(optional — name it, or paste the page it came from)</span></label>
+            <div className={styles.arenaRow}>
+              <input
+                type="text"
+                className={styles.arenaInput}
+                placeholder="e.g. @maker on Instagram · or https://source.com/post"
+                value={linkSource}
+                onChange={(e) => setLinkSource(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") addByLink(); }}
+                aria-label="Source for this link"
+              />
+              <button type="button" className={styles.commitBtn} onClick={addByLink} disabled={!linkUrl.trim() || importStatus?.kind === "committing"}>
+                {importStatus?.kind === "committing" ? "Adding…" : "Add"}
+              </button>
+            </div>
+            {importStatus?.kind === "error" && <p className={styles.error}>{importStatus.message}</p>}
+            {importStatus?.kind === "done" && (
+              <div className={styles.done}>
+                <strong>Added.</strong> Library now holds {importStatus.librarySize} pins.{" "}
+                <Link href="/library" className={styles.inlineLink}>Open library →</Link>
+              </div>
+            )}
+          </section>
+        )}
 
         {source === "arena" && (
           <section className={styles.arenaPanel}>
@@ -226,6 +412,9 @@ export default function ImportPage() {
         )}
 
         {source === "pinterest" && (<>
+        <p className={styles.stepHint} style={{ marginBottom: 8 }}>
+          No board yet? <a href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" className={styles.inlineLink}>Make one on Pinterest →</a> Save a handful of pins that feel like you, then come back here for the four steps.
+        </p>
         <section className={styles.step}>
           <span className={styles.stepNum}>1</span>
           <div className={styles.stepBody}>
