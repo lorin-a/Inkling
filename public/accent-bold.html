@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Inkling — the spark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700&family=Noto+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f4eee4; --card:#fffdf8; --ink:#211b14; --muted:#857a6c;
+    --line:rgba(50,36,18,.14); --line-soft:rgba(50,36,18,.07);
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:1500px;font-family:var(--sans);color:var(--ink);
+    background:radial-gradient(120% 60% at 50% -10%,#fbf7ef,rgba(251,247,239,0) 50%),var(--paper);padding:56px 72px 64px}
+  .grain{position:fixed;inset:0;pointer-events:none;opacity:.045;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:220px 220px}
+  .tag{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .lede{font-family:var(--serif);font-size:29px;line-height:1.34;letter-spacing:-.01em;margin-top:16px;max-width:920px}
+  .lede .q{color:var(--muted);font-style:italic;font-size:17px;display:block;margin-top:9px}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:26px;margin-top:42px}
+  .card{position:relative;background:var(--card);border:1px solid var(--line-soft);border-radius:20px;padding:30px 34px 26px;
+    box-shadow:0 1px 2px rgba(40,28,12,.08),0 16px 36px rgba(40,28,12,.08)}
+  .card.lead{border-color:var(--ac);box-shadow:0 0 0 1.5px var(--ac),0 20px 44px rgba(40,28,12,.12)}
+  .badge{position:absolute;top:22px;right:24px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ac)}
+  .top{display:flex;align-items:center;gap:12px}
+  .dot{width:13px;height:13px;border-radius:50%;background:var(--ac)}
+  .nm{font-size:13px;font-weight:700}
+  .hex{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;margin-left:auto}
+  .wm{font-family:var(--serif);font-weight:600;font-size:80px;line-height:1;letter-spacing:-.03em;margin:22px 0 2px}
+  .wm .d{color:var(--ac)}
+  .uses{display:flex;align-items:center;gap:20px;margin-top:20px;flex-wrap:wrap}
+  .btn{font-size:14px;font-weight:700;color:var(--btext);background:var(--ac);padding:11px 20px;border-radius:9px}
+  .eyebrow{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--ac)}
+  .chip{width:38px;height:38px;border-radius:9px;background:#cdbfa9;box-shadow:0 0 0 2px var(--ac),0 0 0 3px var(--card)}
+  .swrow{display:flex;gap:8px;margin-top:24px}
+  .swrow span{height:30px;flex:1;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.05)}
+  .note{font-size:13px;color:var(--muted);line-height:1.5;margin-top:16px}
+  .foot{margin-top:40px;font-size:13px;color:var(--muted);font-style:italic;font-family:var(--serif)}
+  .foot b{color:var(--ink);font-style:normal;font-family:var(--sans);font-weight:700}
+</style>
+</head>
+<body>
+  <div class="grain"></div>
+  <div class="tag">Inkling · the spark</div>
+  <div class="lede">Not a comfort color — a jolt of instinct. Electric, but used in tiny doses against the calm paper.
+    <span class="q">A spark of genius reads brilliant when it’s small and sure. Loud when it’s everywhere. So: small.</span>
+  </div>
+
+  <div class="grid">
+    <!-- Ultramarine -->
+    <div class="card lead" style="--ac:#2a40e8;--btext:#fff">
+      <span class="badge">my lead</span>
+      <div class="top"><span class="dot"></span><span class="nm">Ultramarine</span><span class="hex">#2A40E8</span></div>
+      <div class="wm">inkling<span class="d">.</span></div>
+      <div class="uses"><span class="btn">Start →</span><span class="eyebrow">Gather</span><span class="chip"></span></div>
+      <div class="swrow"><span style="background:#f4eee4"></span><span style="background:#211b14"></span><span style="background:#2a40e8"></span></div>
+      <div class="note">The artist’s blue — ultramarine, the most expensive pigment in history. Confident, intelligent, unmistakably creative. Sings against warm cream. Nobody’s mom owns this blue.</div>
+    </div>
+
+    <!-- Ultraviolet -->
+    <div class="card" style="--ac:#6a2ee6;--btext:#fff">
+      <div class="top"><span class="dot"></span><span class="nm">Ultraviolet</span><span class="hex">#6A2EE6</span></div>
+      <div class="wm">inkling<span class="d">.</span></div>
+      <div class="uses"><span class="btn">Start →</span><span class="eyebrow">Gather</span><span class="chip"></span></div>
+      <div class="swrow"><span style="background:#f4eee4"></span><span style="background:#211b14"></span><span style="background:#6a2ee6"></span></div>
+      <div class="note">Instinct made visible — the third-eye, sixth-sense color, straight off your word list. Electric and rich, not the soft lavender you rejected. Imaginative, a little mystic.</div>
+    </div>
+
+    <!-- Acid -->
+    <div class="card" style="--ac:#b6cc00;--btext:#211b14">
+      <div class="top"><span class="dot"></span><span class="nm">Acid</span><span class="hex">#B6CC00</span></div>
+      <div class="wm">inkling<span class="d">.</span></div>
+      <div class="uses"><span class="btn">Start →</span><span class="eyebrow">Gather</span><span class="chip"></span></div>
+      <div class="swrow"><span style="background:#f4eee4"></span><span style="background:#211b14"></span><span style="background:#b6cc00"></span></div>
+      <div class="note">Risograph chartreuse — the most unexpected, most “alert.” Pure creative voltage. The boldest of the four; thrilling in a 2px line, a lot if it ever spreads.</div>
+    </div>
+
+    <!-- Tangerine -->
+    <div class="card" style="--ac:#ff5a1f;--btext:#fff">
+      <div class="top"><span class="dot"></span><span class="nm">Tangerine</span><span class="hex">#FF5A1F</span></div>
+      <div class="wm">inkling<span class="d">.</span></div>
+      <div class="uses"><span class="btn">Start →</span><span class="eyebrow">Gather</span><span class="chip"></span></div>
+      <div class="swrow"><span style="background:#f4eee4"></span><span style="background:#211b14"></span><span style="background:#ff5a1f"></span></div>
+      <div class="note">Warm voltage — energetic, optimistic, a creative live-wire. Pops hot off the paper without the aggression of a true red. The most extroverted choice.</div>
+    </div>
+  </div>
+
+  <div class="foot">My vote: <b>Ultramarine</b> — it’s the one that says “a trained, confident eye,” which is the whole brand. <b>Ultraviolet</b> is the close second if you want *instinct* over *intelligence*. Pick the spark and it becomes a single token everywhere.</div>
+</body>
+</html>

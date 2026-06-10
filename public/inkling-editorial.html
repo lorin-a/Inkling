@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Inkling — structured</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700&family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Sans+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f3ecdf; --ink:#1c1810; --muted:#8a7f70; --faint:#b6ab99;
+    --rule:#2a2419; --rule-soft:rgba(40,32,18,.18);
+    --spark:#2a40e8;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif; --mono:"Noto Sans Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:1500px;height:960px;font-family:var(--sans);color:var(--ink);overflow:hidden;background:var(--paper)}
+
+  /* top: a flush masthead, one hard rule */
+  .mast{display:flex;align-items:center;justify-content:space-between;padding:24px 52px;border-bottom:1.5px solid var(--rule)}
+  .wm{font-family:var(--serif);font-size:27px;font-weight:600;letter-spacing:-.02em}
+  .wm .d{color:var(--spark)}
+  .nav{display:flex;align-items:stretch;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .nav a{padding:0 18px;display:flex;align-items:center;border-left:1px solid var(--rule-soft)}
+  .nav a.act{color:var(--ink)}
+  .nav a:last-child{padding-left:18px;color:var(--ink)}
+
+  /* the structural grid */
+  .grid{display:grid;grid-template-columns:1.02fr 1.1fr;height:calc(960px - 67px)}
+  .col{padding:48px 52px;display:flex;flex-direction:column}
+  .col.r{border-left:1.5px solid var(--rule);padding:0}
+
+  .eyebrow{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .eyebrow .sq{width:9px;height:9px;background:var(--spark)}
+  h1{font-family:var(--serif);font-weight:600;font-size:82px;line-height:.96;letter-spacing:-.035em;margin:26px 0 0}
+  h1 .sp{color:var(--spark)}
+  .sub{font-size:17px;line-height:1.55;color:#403a30;max-width:400px;margin-top:24px;font-weight:500}
+
+  /* an index, not a button row — editorial structure */
+  .index{margin-top:40px;border-top:1px solid var(--rule)}
+  .ix{display:grid;grid-template-columns:46px 1fr auto;align-items:baseline;gap:18px;padding:15px 2px;border-bottom:1px solid var(--rule-soft)}
+  .ix .no{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--faint)}
+  .ix.on .no{color:var(--spark)}
+  .ix .lb{font-family:var(--serif);font-size:23px;font-weight:500;letter-spacing:-.01em}
+  .ix .ds{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .ix.on .ds{color:var(--ink)}
+
+  .cta{margin-top:auto;display:flex;align-items:center;gap:22px}
+  .go{display:inline-flex;align-items:center;gap:12px;font-size:14px;font-weight:700;letter-spacing:.04em;color:var(--paper);background:var(--ink);padding:15px 24px}
+  .go .a{color:var(--spark)}
+  .also{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+
+  /* right: a true-color art grid, flush, gallery-like, sharp */
+  .art{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1.25fr 1fr auto;height:100%}
+  .cell{position:relative;overflow:hidden;border-right:1.5px solid var(--rule);border-bottom:1.5px solid var(--rule)}
+  .cell:nth-child(2n){border-right:none}
+  .cell img{width:100%;height:100%;object-fit:cover;display:block}
+  .cell .t{position:absolute;left:10px;top:9px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;
+    color:#fff;background:rgba(20,16,8,.55);padding:3px 7px;backdrop-filter:blur(3px)}
+  .pulled{grid-column:1 / -1;display:flex;align-items:center;gap:0;border-bottom:none}
+  .pulled .lbl{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:0 16px;border-right:1.5px solid var(--rule);align-self:stretch;display:flex;align-items:center}
+  .pulled .sw{flex:1;height:46px;border-right:1px solid rgba(255,255,255,.25)}
+</style>
+</head>
+<body>
+  <div class="mast">
+    <div class="wm">inkling<span class="d">.</span></div>
+    <nav class="nav"><a class="act">Gather</a><a>Play</a><a>Build</a><a>Open the studio →</a></nav>
+  </div>
+
+  <div class="grid">
+    <div class="col">
+      <div class="eyebrow"><span class="sq"></span>Inkling — a studio for trusting your eye</div>
+      <h1>You know it<br>when you <span class="sp">see it.</span></h1>
+      <p class="sub">Inkling pulls a brand direction out of everything you’ve saved, and keeps you the author the whole way.</p>
+
+      <div class="index">
+        <div class="ix on"><span class="no">01</span><span class="lb">Gather</span><span class="ds">React &amp; pull</span></div>
+        <div class="ix"><span class="no">02</span><span class="lb">Play</span><span class="ds">Arrange &amp; carve</span></div>
+        <div class="ix"><span class="no">03</span><span class="lb">Build</span><span class="ds">Ship the brand</span></div>
+      </div>
+
+      <div class="cta">
+        <span class="go">Start gathering <span class="a">→</span></span>
+        <span class="also">Import your pins</span>
+      </div>
+    </div>
+
+    <div class="col r">
+      <div class="art">
+        <div class="cell"><img src="/sample/1039135314045106233.jpg" alt=""><span class="t">01 / Coast</span></div>
+        <div class="cell"><img src="/sample/1039135314045106132.jpg" alt=""><span class="t">02 / Still</span></div>
+        <div class="cell"><img src="/sample/1039135314045106197.jpg" alt=""><span class="t">03 / Field</span></div>
+        <div class="cell"><img src="/sample/1039135314045106159.jpg" alt=""><span class="t">04 / Stone</span></div>
+        <div class="cell pulled">
+          <span class="lbl">Pulled</span>
+          <span class="sw" style="background:#94495d"></span>
+          <span class="sw" style="background:#9cbcd9"></span>
+          <span class="sw" style="background:#bc9e90"></span>
+          <span class="sw" style="background:#5c3f30"></span>
+          <span class="sw" style="background:#6f8a63"></span>
+          <span class="sw" style="background:#2a40e8"></span>
+          <span class="sw" style="background:#1c1810;border-right:none"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

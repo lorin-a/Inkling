@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Inkling — illustrated</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700&family=Noto+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f4eee4; --card:#fffdf8; --ink:#211b14; --muted:#857a6c;
+    --line:rgba(50,36,18,.14); --line-soft:rgba(50,36,18,.07);
+    --rose:#b1495f; --peri:#5b59a0; --sage:#6f8a63; --sky:#9cbcd9; --sand:#d8c4a4;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:1500px;height:960px;font-family:var(--sans);color:var(--ink);overflow:hidden;background:var(--paper)}
+  .grain{position:fixed;inset:0;pointer-events:none;opacity:.045;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:220px 220px}
+
+  .bar{display:flex;align-items:center;justify-content:space-between;padding:22px 56px;border-bottom:1.5px solid var(--ink)}
+  .wm{font-family:var(--serif);font-size:29px;font-weight:700;letter-spacing:-.025em}
+  .wm .d{color:var(--rose)}
+  .nav{display:flex;align-items:center;gap:28px;font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+  .nav .cta{background:var(--ink);color:#fff;padding:11px 18px;border-radius:8px;letter-spacing:.08em}
+
+  .hero{display:grid;grid-template-columns:1fr 1.12fr;gap:36px;padding:58px 56px 0;align-items:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--rose)}
+  .eyebrow .b2{width:26px;height:2.5px;background:var(--rose);border-radius:2px}
+  h1{font-family:var(--serif);font-weight:600;font-size:90px;line-height:.94;letter-spacing:-.035em;margin:18px 0 0;color:var(--ink)}
+  .mark{position:relative;display:inline-block;color:var(--rose)}
+  .mark svg{position:absolute;left:-14px;top:-8px;width:calc(100% + 28px);height:calc(100% + 18px)}
+  .sub{font-size:18.5px;line-height:1.5;color:#403a32;max-width:430px;margin-top:26px;font-weight:500}
+  .ctas{display:flex;align-items:center;gap:26px;margin-top:32px}
+  .btn{display:inline-flex;align-items:center;gap:10px;font-size:15.5px;font-weight:700;color:#fff;background:var(--rose);padding:16px 28px;border-radius:10px;box-shadow:0 10px 26px rgba(177,73,95,.32)}
+  .link{font-size:15px;font-weight:700;color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:2px}
+
+  /* the illustrated reference → palette device */
+  .stage{position:relative;height:600px}
+  .refcard{position:absolute;background:var(--card);border:1px solid var(--line-soft);border-radius:14px;padding:14px;
+    box-shadow:0 3px 8px rgba(40,28,12,.12),0 26px 54px rgba(40,28,12,.16)}
+  .drawing{border-radius:9px;overflow:hidden;display:block}
+  .pal{display:flex;gap:6px;margin-top:12px;padding:0 2px}
+  .pal span{flex:1;height:20px;border-radius:5px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+  .clabel{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:10px 2px 0}
+
+  .c1{left:120px;top:30px;width:340px}
+  .c2{left:30px;top:330px;width:215px;z-index:2}
+  .c3{left:430px;top:300px;width:200px;z-index:3}
+
+  /* a confident hand-drawn "pull" arrow from drawing to palette */
+  .pullnote{position:absolute;left:478px;top:120px;font-family:var(--serif);font-style:italic;font-size:15px;color:var(--muted);transform:rotate(4deg)}
+
+  .footrule{position:absolute;left:56px;right:56px;bottom:30px;display:flex;align-items:center;justify-content:space-between;border-top:1.5px solid var(--ink);padding-top:14px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .footrule b{color:var(--ink)}
+</style>
+</head>
+<body>
+  <div class="grain"></div>
+  <div class="bar">
+    <div class="wm">inkling<span class="d">.</span></div>
+    <div class="nav"><span>Gather</span><span>Play</span><span>Build</span><span class="cta">Open the studio →</span></div>
+  </div>
+
+  <div class="hero">
+    <div class="left">
+      <span class="eyebrow"><span class="b2"></span>Find your direction</span>
+      <h1>You know it<br>when you
+        <span class="mark">see&nbsp;it<svg viewBox="0 0 220 80" fill="none" preserveAspectRatio="none"><path d="M30 16 C 80 2, 175 4, 205 26 C 220 40, 200 64, 150 72 C 90 80, 18 72, 9 48 C 3 30, 18 18, 40 14" stroke="#b1495f" stroke-width="3.4" stroke-linecap="round"/></svg></span>.
+      </h1>
+      <p class="sub">Inkling pulls a brand direction out of everything you’ve saved — and keeps you the author the whole way.</p>
+      <div class="ctas"><span class="btn">Start gathering →</span><span class="link">Import your pins</span></div>
+    </div>
+
+    <div class="stage">
+      <!-- Reference 1: a coastal landscape, drawn -->
+      <div class="refcard c1">
+        <svg class="drawing" width="312" height="220" viewBox="0 0 312 220">
+          <rect width="312" height="220" fill="#f3ece0"/>
+          <circle cx="232" cy="62" r="30" fill="#e7b9b0"/>
+          <path d="M0 150 C 70 120, 150 138, 312 110 L 312 220 L 0 220 Z" fill="#9cbcd9" fill-opacity="0.5"/>
+          <path d="M0 150 C 70 120, 150 138, 312 110" stroke="#211b14" stroke-width="2" fill="none"/>
+          <path d="M0 178 C 90 160, 180 186, 312 158 L 312 220 L 0 220 Z" fill="#6f8a63" fill-opacity="0.55"/>
+          <path d="M0 178 C 90 160, 180 186, 312 158" stroke="#211b14" stroke-width="2" fill="none"/>
+          <path d="M40 120 q 8 -10 16 0 M64 116 q 8 -10 16 0" stroke="#211b14" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        </svg>
+        <div class="pal"><span style="background:#9cbcd9"></span><span style="background:#e7b9b0"></span><span style="background:#6f8a63"></span><span style="background:#d8c4a4"></span><span style="background:#211b14"></span></div>
+        <p class="clabel">Coastal</p>
+      </div>
+
+      <!-- Reference 2: a botanical sprig -->
+      <div class="refcard c2">
+        <svg class="drawing" width="187" height="170" viewBox="0 0 187 170">
+          <rect width="187" height="170" fill="#eef0e8"/>
+          <path d="M94 158 C 94 110, 92 70, 96 30" stroke="#3c4a36" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          <path d="M95 120 C 70 112, 58 96, 56 80 C 78 86, 90 100, 95 120 Z" fill="#9bb083" stroke="#3c4a36" stroke-width="1.6"/>
+          <path d="M95 98 C 120 92, 134 76, 138 60 C 114 64, 100 80, 95 98 Z" fill="#9bb083" stroke="#3c4a36" stroke-width="1.6"/>
+          <path d="M95 74 C 76 68, 66 54, 64 40 C 84 46, 92 58, 95 74 Z" fill="#bcc9a8" stroke="#3c4a36" stroke-width="1.6"/>
+          <circle cx="96" cy="26" r="8" fill="#b1495f"/>
+        </svg>
+        <div class="pal"><span style="background:#9bb083"></span><span style="background:#3c4a36"></span><span style="background:#b1495f"></span></div>
+        <p class="clabel">Botanical</p>
+      </div>
+
+      <!-- Reference 3: an abstract arch / still -->
+      <div class="refcard c3">
+        <svg class="drawing" width="172" height="160" viewBox="0 0 172 160">
+          <rect width="172" height="160" fill="#f1e7e1"/>
+          <path d="M44 140 L 44 70 a 42 42 0 0 1 84 0 L 128 140" fill="#cdb7c0" stroke="#211b14" stroke-width="2"/>
+          <circle cx="86" cy="78" r="20" fill="#d8c4a4" stroke="#211b14" stroke-width="1.6"/>
+          <path d="M44 140 L 128 140" stroke="#211b14" stroke-width="2"/>
+        </svg>
+        <div class="pal"><span style="background:#cdb7c0"></span><span style="background:#d8c4a4"></span><span style="background:#5b59a0"></span></div>
+        <p class="clabel">Still</p>
+      </div>
+
+      <span class="pullnote">↳ the palette, pulled</span>
+    </div>
+  </div>
+
+  <div class="footrule"><span><b>Inkling</b> · a studio for trusting your eye</span><span>est. 2026</span></div>
+</body>
+</html>

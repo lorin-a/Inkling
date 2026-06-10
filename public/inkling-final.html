@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Inkling — the lock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Noto+Sans:wght@500;600;700;800&family=Noto+Sans+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f3ecdf; --ink:#1c1810; --muted:#8a7f70; --faint:#b6ab99;
+    --rule:#2a2419; --rule-soft:rgba(40,32,18,.18);
+    --uv:#6a2ee6; --pop:#f0531f;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",sans-serif; --mono:"Noto Sans Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:1500px;height:960px;font-family:var(--sans);color:var(--ink);overflow:hidden;background:var(--paper)}
+  .mast{display:flex;align-items:center;justify-content:space-between;padding:22px 52px;border-bottom:1.5px solid var(--rule)}
+  .ml{display:flex;align-items:baseline;gap:18px}
+  .wm{font-family:var(--serif);font-size:27px;font-weight:600;letter-spacing:-.02em}
+  .wm .d{color:var(--uv)}
+  .ed{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .nav{display:flex;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .nav a{padding:0 18px;display:flex;align-items:center;border-left:1px solid var(--rule-soft)}
+  .nav a:last-child{color:var(--ink)}
+
+  .grid{display:grid;grid-template-columns:1fr 1.12fr;height:calc(960px - 65px)}
+  .col{padding:46px 52px;display:flex;flex-direction:column}
+  .col.r{border-left:1.5px solid var(--rule);padding:0}
+
+  .eyebrow{display:flex;align-items:center;gap:11px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .eyebrow .sq{width:9px;height:9px;background:var(--uv)}
+  .eyebrow .tag{margin-left:auto;color:var(--pop);border:1px solid var(--pop);padding:2px 7px;letter-spacing:.1em}
+  h1{font-family:var(--serif);font-weight:500;font-size:80px;line-height:.97;letter-spacing:-.035em;margin:24px 0 0}
+  h1 .it{font-style:italic;font-weight:400;color:var(--uv)}
+  .sub{font-size:17px;line-height:1.55;color:#403a30;max-width:400px;margin-top:22px;font-weight:500}
+
+  .index{margin-top:36px;border-top:1px solid var(--rule)}
+  .ix{display:grid;grid-template-columns:44px 1fr auto;align-items:baseline;gap:16px;padding:14px 2px;border-bottom:1px solid var(--rule-soft)}
+  .ix .no{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--faint)}
+  .ix.on .no{color:var(--uv)}
+  .ix .lb{font-family:var(--serif);font-size:22px;font-weight:500}
+  .ix .ds{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .ix.on .ds{color:var(--ink)}
+
+  .cta{margin-top:auto;display:flex;align-items:center;gap:22px}
+  .go{display:inline-flex;align-items:center;gap:12px;font-size:14px;font-weight:700;letter-spacing:.04em;color:var(--paper);background:var(--ink);padding:15px 24px}
+  .go .a{color:var(--pop)}
+  .also{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+
+  /* right: two specimen plates, art the hero */
+  .plate{position:relative;border-bottom:1.5px solid var(--rule);overflow:hidden}
+  .pimg{height:280px;overflow:hidden;border-bottom:1.5px solid var(--rule)}
+  .pimg img{width:100%;height:100%;object-fit:cover;display:block}
+  .pno{position:absolute;left:14px;top:12px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;color:#fff;mix-blend-mode:difference}
+  .pbar{display:flex}
+  .pbar .pal{flex:1;display:flex;height:44px}
+  .pbar .pal span{flex:1;border-right:1px solid rgba(255,255,255,.22)}
+  .pbar .cap{display:flex;flex-direction:column;justify-content:center;padding:0 18px;border-left:1.5px solid var(--rule);min-width:172px}
+  .pbar .cap .nm{font-family:var(--serif);font-size:17px;font-weight:500}
+  .pbar .cap .ct{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+</style>
+</head>
+<body>
+  <div class="mast">
+    <div class="ml"><span class="wm">inkling<span class="d">.</span></span><span class="ed">No. 01 · Est. 2026</span></div>
+    <nav class="nav"><a>Gather</a><a>Play</a><a>Build</a><a>Open the studio →</a></nav>
+  </div>
+
+  <div class="grid">
+    <div class="col">
+      <div class="eyebrow"><span class="sq"></span>A studio for trusting your eye<span class="tag">New</span></div>
+      <h1>You know it<br>when you <span class="it">see it.</span></h1>
+      <p class="sub">Inkling pulls a brand direction out of everything you’ve saved, and keeps you the author the whole way.</p>
+
+      <div class="index">
+        <div class="ix on"><span class="no">01</span><span class="lb">Gather</span><span class="ds">React &amp; pull</span></div>
+        <div class="ix"><span class="no">02</span><span class="lb">Play</span><span class="ds">Arrange &amp; carve</span></div>
+        <div class="ix"><span class="no">03</span><span class="lb">Build</span><span class="ds">Ship the brand</span></div>
+      </div>
+
+      <div class="cta">
+        <span class="go">Start gathering <span class="a">→</span></span>
+        <span class="also">Import your pins</span>
+      </div>
+    </div>
+
+    <div class="col r">
+      <div class="plate">
+        <div class="pimg"><img src="/sample/1039135314045106233.jpg" alt=""><span class="pno">PLATE 01</span></div>
+        <div class="pbar">
+          <div class="pal"><span style="background:#b0476a"></span><span style="background:#e0a24a"></span><span style="background:#6f8a63"></span><span style="background:#d8c4a4"></span><span style="background:#2d2418"></span></div>
+          <div class="cap"><span class="nm">Coastal field</span><span class="ct">5 inks pulled</span></div>
+        </div>
+      </div>
+      <div class="plate">
+        <div class="pimg"><img src="/sample/1039135314045106132.jpg" alt=""><span class="pno">PLATE 02</span></div>
+        <div class="pbar">
+          <div class="pal"><span style="background:#9cbcd9"></span><span style="background:#5a7d6f"></span><span style="background:#b89a6a"></span><span style="background:#2f3a36"></span><span style="background:#6a2ee6"></span></div>
+          <div class="cap"><span class="nm">Still water</span><span class="ct">5 inks pulled</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
