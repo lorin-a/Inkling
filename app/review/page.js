@@ -18,7 +18,7 @@ export default async function ReviewPage() {
   return (
     <div className={styles.page}>
       <header className={styles.bar}>
-        <Link href="/" className={styles.back}>← Moodbuilder</Link>
+        <Link href="/" className={styles.back}>← inkling.</Link>
         <div className={styles.barTitle}>Review</div>
       </header>
       <main className={styles.main}>

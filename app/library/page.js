@@ -208,7 +208,7 @@ export default function LibraryPage() {
     return (
       <div className={styles.page}>
         <header className={styles.bar}>
-          <Link href="/" className={styles.back}>← Moodbuilder</Link>
+          <Link href="/" className={styles.back}>← inkling.</Link>
         </header>
         <p className={styles.error}>{error}</p>
       </div>
@@ -219,7 +219,7 @@ export default function LibraryPage() {
     return (
       <div className={styles.page}>
         <header className={styles.bar}>
-          <Link href="/" className={styles.back}>← Moodbuilder</Link>
+          <Link href="/" className={styles.back}>← inkling.</Link>
         </header>
         <p className={styles.empty}>Loading library…</p>
       </div>
@@ -254,7 +254,7 @@ export default function LibraryPage() {
     <div className={styles.page}>
       <header className={styles.bar}>
         <div className={styles.barTop}>
-        <Link href="/" className={styles.back}>← Moodbuilder</Link>
+        <Link href="/" className={styles.back}>← inkling.</Link>
         <ProjectSwitcher />
         <div className={styles.barTitle}>Library</div>
         <div className={styles.barMeta}>

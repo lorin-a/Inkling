@@ -259,7 +259,7 @@ export default function TypePage() {
 
       <header className={styles.bar}>
         <div className={styles.barLeft}>
-          <Link href="/" className={styles.back}>← Moodbuilder</Link>
+          <Link href="/" className={styles.back}>← inkling.</Link>
           <StageNav />
         </div>
         <div className={styles.barRight}>

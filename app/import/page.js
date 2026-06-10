@@ -143,7 +143,7 @@ export default function ImportPage() {
   return (
     <div className={styles.page}>
       <header className={styles.bar}>
-        <Link href="/" className={styles.back}>← Moodbuilder</Link>
+        <Link href="/" className={styles.back}>← inkling.</Link>
         <ProjectSwitcher />
         <div className={styles.barTitle}>Import</div>
       </header>

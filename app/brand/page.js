@@ -240,7 +240,7 @@ export default function BrandPage() {
     <div className={styles.page}>
       <FontLoader fonts={project.fonts} />
       <header className={styles.bar}>
-        <Link href="/" className={styles.back}>← Moodbuilder</Link>
+        <Link href="/" className={styles.back}>← inkling.</Link>
         <StageNav />
         <ProjectSwitcher />
         <button

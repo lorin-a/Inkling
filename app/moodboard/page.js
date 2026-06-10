@@ -621,7 +621,7 @@ export default function MoodboardPage() {
       ))}
       <header className={styles.bar}>
         <div className={styles.barLeft}>
-          <Link href="/" className={styles.back}>← Moodbuilder</Link>
+          <Link href="/" className={styles.back}>← inkling.</Link>
           <StageNav onNarrow={startCarve} carving={carving} />
         </div>
         <div className={styles.barRight}>

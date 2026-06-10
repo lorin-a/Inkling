@@ -75,7 +75,7 @@ export default function GradientsPage() {
   return (
     <div className={styles.page}>
       <header className={styles.bar}>
-        <Link href="/" className={styles.back}>← Moodbuilder</Link>
+        <Link href="/" className={styles.back}>← inkling.</Link>
         <ProjectSwitcher />
         <div className={styles.barTitle}>Gradients</div>
         <button type="button" className={styles.copyBtn} onClick={copyCss}>

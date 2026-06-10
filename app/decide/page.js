@@ -105,7 +105,7 @@ export default function DecidePage() {
       <FontLoader fonts={unionFonts} />
 
       <header className={styles.bar}>
-        <Link href="/" className={styles.back}>← Moodbuilder</Link>
+        <Link href="/" className={styles.back}>← inkling.</Link>
         <ProjectSwitcher />
         <div className={styles.barTitle}>Decide</div>
         <div className={styles.variantToggle} role="tablist" aria-label="Variant">

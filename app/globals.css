@@ -19,29 +19,35 @@
   --whelm-vivid: #b168ef;
   --whelm-deep: #49325d;
 
-  /* ── Moodbuilder's own skin (it used to wear Whelm's chrome; now it has a
-     personality: warm paper, warm ink, a confident violet, real depth and grain.
-     Warm where you gather and play; it crisps up toward the Build deliverable). ── */
-  --bg: #f4eee4;            /* warm paper */
-  --bg-warm: #efe7d9;       /* deeper paper, the divergent half */
-  --bg-elevated: #fffdf8;   /* warm white card */
-  --ink: #251f18;           /* warm near-black */
-  --ink-muted: #8c8173;     /* warm gray */
-  --hairline: rgba(60, 42, 20, 0.12);
-  --hairline-soft: rgba(60, 42, 20, 0.07);
+  /* ── INKLING — the brand, at the foundation. Warm paper + ink, an editorial
+     mono for the system, and a two-colour spark: ultraviolet (instinct) +
+     tangerine (the warm pop). Structure and restraint over softness. ── */
+  --font-mono: "Noto Sans Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-  /* Signature accent (kept the violet, but it now sings against warm paper). */
-  --accent: #a259e6;
-  --accent-soft: #f0e2ff;
-  --whelm-vivid: #a259e6;
+  --bg: #f3ecdf;            /* warm paper */
+  --bg-warm: #efe7d9;       /* deeper paper */
+  --bg-elevated: #fffdf8;   /* warm white */
+  --ink: #1c1810;           /* warm near-black */
+  --ink-muted: #8a7f70;     /* warm gray */
+  --ink-faint: #b6ab99;     /* faint — index numbers, ghosts */
+  --hairline: rgba(40, 32, 18, 0.16);
+  --hairline-soft: rgba(40, 32, 18, 0.08);
+  --rule: #2a2419;          /* the hard editorial rule */
 
-  /* Craft tokens — one source for the product's depth, edges, and texture. */
-  --radius-sm: 8px;
-  --radius: 14px;
-  --radius-lg: 22px;
-  --elev-1: 0 1px 2px rgba(54, 38, 16, 0.10), 0 8px 20px rgba(54, 38, 16, 0.08);
-  --elev-2: 0 3px 8px rgba(54, 38, 16, 0.12), 0 22px 48px rgba(54, 38, 16, 0.14);
-  --elev-float: 0 6px 16px rgba(54, 38, 16, 0.16), 0 36px 70px rgba(54, 38, 16, 0.22);
+  /* The spark — used surgically (a dot, one word, an active marker, an arrow). */
+  --accent: #6a2ee6;        /* ultraviolet, the primary spark */
+  --accent-soft: #ede4ff;
+  --pop: #f0531f;           /* tangerine, the warm pop */
+  --pop-soft: #ffe2d6;
+  --whelm-vivid: #6a2ee6;   /* alias: every old reference now reads ultraviolet */
+
+  /* Edges + depth: sharp and editorial, not soft-and-rounded. */
+  --radius-sm: 4px;
+  --radius: 7px;
+  --radius-lg: 12px;
+  --elev-1: 0 1px 2px rgba(40, 28, 12, 0.10), 0 8px 20px rgba(40, 28, 12, 0.08);
+  --elev-2: 0 3px 8px rgba(40, 28, 12, 0.12), 0 22px 48px rgba(40, 28, 12, 0.14);
+  --elev-float: 0 6px 16px rgba(40, 28, 12, 0.16), 0 36px 70px rgba(40, 28, 12, 0.22);
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 
   --motion-fast: 180ms;

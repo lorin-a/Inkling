@@ -5,21 +5,33 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { apiFetch } from "../lib/api/client";
 import { resetToSample } from "../lib/storage/localStore";
-import { STAGES } from "../components/StageNav";
-import LiveBrandHero from "../components/LiveBrandHero";
 import Submit from "../components/Submit";
-
-// [LORIN] Paste your Buy Me a Coffee URL here once the account exists
-// (e.g. "https://buymeacoffee.com/yourname"). Empty string hides the link.
-const COFFEE_URL = "";
 import styles from "./page.module.css";
+
+// [LORIN] Buy Me a Coffee URL once it exists; empty hides the link.
+const COFFEE_URL = "";
+
+// Specimen plates for the hero — sample references shown like catalogue plates,
+// each with the palette it yields (the product's whole mechanic, made visible).
+// NOTE: swap for owned illustration before any public marketing (see brand memory).
+const PLATES = [
+  { src: "/sample/1039135314045106233.jpg", no: "01", name: "Coastal field", inks: ["#b0476a", "#e0a24a", "#6f8a63", "#d8c4a4", "#2d2418"] },
+  { src: "/sample/1039135314045106132.jpg", no: "02", name: "Still water", inks: ["#9cbcd9", "#5a7d6f", "#b89a6a", "#2f3a36", "#6a2ee6"] },
+];
+
+// The three moves — the spine, in the brand's language.
+const MOVES = [
+  { no: "01", label: "Gather", href: "/recognize", blurb: "React to everything you’ve saved. Pull the colours, type, and images that ring true — your taste, gathered." },
+  { no: "02", label: "Play", href: "/moodboard", blurb: "Arrange it on your board. Play, annotate, and carve a few clear directions out of the overwhelm." },
+  { no: "03", label: "Build", href: "/brand", blurb: "Shuffle a direction into a brand — a palette, a wordmark, a book, an export. Yours to ship." },
+];
 
 export default function Home() {
   const [projects, setProjects] = useState(null);
   const [activeSlug, setActiveSlug] = useState(null);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState(null);
-  const [session, setSession] = useState(null); // { user: { email, name, image } } | null
+  const [session, setSession] = useState(null);
 
   async function refresh() {
     try {
@@ -38,10 +50,6 @@ export default function Home() {
 
   useEffect(() => { refresh(); }, []);
 
-  // Selecting a project sets the context the path below acts on — it does
-  // NOT navigate. You choose which project you’re inside here, then walk its
-  // steps in the path. (The hero’s "Open the studio" button is the express
-  // way straight in.)
   async function selectProject(slug) {
     if (slug === activeSlug) return;
     try {
@@ -51,9 +59,7 @@ export default function Home() {
         body: JSON.stringify({ slug }),
       });
       setActiveSlug(slug);
-    } catch (e) {
-      setError(e.message);
-    }
+    } catch (e) { setError(e.message); }
   }
 
   async function createProject(name) {
@@ -68,68 +74,62 @@ export default function Home() {
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
       await refresh();
       setCreating(false);
-    } catch (e) {
-      setError(e.message);
-    }
+    } catch (e) { setError(e.message); }
   }
 
   const activeProject = projects?.find((p) => p.slug === activeSlug);
-
   const signedIn = !!session?.user;
   const isEmptyAuthedAccount = signedIn && projects !== null && projects.length === 0;
 
   return (
-    <main className={styles.main}>
-      {signedIn && (
-        <div className={styles.authBar}>
-          <span className={styles.authBarLabel}>
-            Signed in as <strong>{session.user.email || session.user.name}</strong>
-          </span>
-          <button
-            type="button"
-            className={styles.signOutBtn}
-            onClick={() => signOut({ callbackUrl: "/login" })}
-          >
-            Sign out
-          </button>
+    <main className={styles.page}>
+      <span className={styles.grain} aria-hidden="true" />
+
+      {/* ── masthead ───────────────────────────────────────────── */}
+      <header className={styles.mast}>
+        <div className={styles.mastL}>
+          <span className={styles.wm}>inkling<span className={styles.dot}>.</span></span>
+          <span className={styles.ed}>No.&nbsp;01 · Est.&nbsp;2026</span>
         </div>
-      )}
+        <nav className={styles.mastNav} aria-label="Primary">
+          <a href="#how">How it works</a>
+          <Link href="/resources">Resources</Link>
+          {signedIn ? (
+            <button type="button" className={styles.mastAuth} onClick={() => signOut({ callbackUrl: "/login" })}>Sign out</button>
+          ) : (
+            <Link href="/login" className={styles.mastAuth}>Sign in →</Link>
+          )}
+        </nav>
+      </header>
 
       {!signedIn && (
-        <div className={styles.playgroundBanner} role="status">
-          <span className={styles.bannerIcon} aria-hidden="true">✦</span>
-          <span className={styles.bannerText}>
-            <strong className={styles.bannerLead}>You&rsquo;re in a sample studio.</strong>{" "}
-            <span className={styles.bannerSub}>Everything you change saves to this browser only.</span>
-          </span>
-          <span className={styles.playgroundActions}>
-            <button
-              type="button"
-              className={styles.bannerReset}
-              onClick={() => {
-                if (confirm("Reset the sample studio? This clears every change you’ve made in this browser.")) {
-                  resetToSample();
-                  window.location.reload();
-                }
-              }}
-            >
-              Reset sample
-            </button>
-            <Link href="/login" className={styles.bannerPrimary}>
-              Sign in to save across devices
-            </Link>
-          </span>
+        <div className={styles.banner} role="status">
+          <span className={styles.bannerK}>Sample studio</span>
+          <span className={styles.bannerT}>Everything you change saves to this browser only.</span>
+          <button
+            type="button"
+            className={styles.bannerReset}
+            onClick={() => {
+              if (confirm("Reset the sample studio? This clears every change you’ve made in this browser.")) {
+                resetToSample();
+                window.location.reload();
+              }
+            }}
+          >
+            Reset
+          </button>
+          <Link href="/login" className={styles.bannerCta}>Sign in to keep it →</Link>
         </div>
       )}
 
+      {/* ── hero ───────────────────────────────────────────────── */}
       <section className={styles.hero}>
-        <div className={styles.heroText}>
-          <p className={styles.eyebrow}>Moodbuilder</p>
-          <h1 className={styles.title}>A studio for assembling and shuffling brand moods.</h1>
-          <p className={styles.heroSub}>
-            An all-in-one platform for importing inspiration, extracting colors,
-            previewing typefaces, textures, and more. Combining top designer
-            resources into one library.
+        <div className={styles.heroL}>
+          <p className={styles.eyebrow}><span className={styles.sq} aria-hidden="true" />A studio for trusting your eye<span className={styles.tag}>New</span></p>
+          <h1 className={styles.h1}>You know it<br />when you <span className={styles.it}>see it.</span></h1>
+          <p className={styles.lede}>
+            Inkling turns everything you’ve saved — your colours, your type, your taste — into a brand
+            direction. You stay the author, start to finish.
           </p>
           <HeroActions
             signedIn={signedIn}
@@ -138,28 +138,65 @@ export default function Home() {
             onNewProject={() => setCreating(true)}
           />
         </div>
-        <LiveBrandHero />
+
+        <div className={styles.heroR}>
+          {PLATES.map((p) => (
+            <figure key={p.no} className={styles.plate}>
+              <div className={styles.plateImg}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={p.src} alt="" />
+                <span className={styles.plateNo}>PLATE {p.no}</span>
+              </div>
+              <div className={styles.plateBar}>
+                <div className={styles.pal} aria-hidden="true">
+                  {p.inks.map((h, i) => <span key={i} style={{ background: h }} />)}
+                </div>
+                <div className={styles.plateCap}>
+                  <span className={styles.pcn}>{p.name}</span>
+                  <span className={styles.pci}>{p.inks.length} inks pulled</span>
+                </div>
+              </div>
+            </figure>
+          ))}
+        </div>
       </section>
 
-      <section className={styles.projectSection}>
-        <header className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>
-            {signedIn && !isEmptyAuthedAccount ? "Choose a project" : "Your project"}
-          </h2>
-          <p className={styles.sectionHint}>
-            {!signedIn ? (
-              <>This is a sample to play with. Rename it, paste your own colors, or import a Pinterest board. It all saves to this browser. Sign in when you want to keep your work and start more projects.</>
-            ) : isEmptyAuthedAccount ? (
-              <>Welcome. Start a new brand project below to begin &mdash; every project keeps its own palette, pins, uploads, brand text, and saved set.</>
-            ) : (
-              <>Pick the project you want to work in. Each one keeps its own palette, pins, uploads, brand text, and saved set; the steps below act on whichever you select.</>
-            )}
-          </p>
-        </header>
+      {/* ── how it works — the spine ───────────────────────────── */}
+      <section className={styles.how} id="how">
+        <div className={styles.sectionHead}>
+          <span className={styles.sectionK}>The work — 01 / 03</span>
+          <h2 className={styles.sectionH}>Three moves, one studio.</h2>
+        </div>
+        <ol className={styles.index}>
+          {MOVES.map((m) => (
+            <li key={m.no}>
+              <Link href={m.href} className={styles.ix}>
+                <span className={styles.ixNo}>{m.no}</span>
+                <span className={styles.ixLb}>{m.label}</span>
+                <span className={styles.ixDs}>{m.blurb}</span>
+                <span className={styles.ixArr} aria-hidden="true">→</span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      </section>
 
-        <div className={styles.projectGrid}>
+      {/* ── your project ───────────────────────────────────────── */}
+      <section className={styles.projects}>
+        <div className={styles.sectionHead}>
+          <span className={styles.sectionK}>{signedIn && !isEmptyAuthedAccount ? "Your projects" : "Your studio"}</span>
+          <h2 className={styles.sectionH}>
+            {!signedIn
+              ? "A sample to play with."
+              : isEmptyAuthedAccount
+                ? "Start your first direction."
+                : "Pick a direction to work in."}
+          </h2>
+        </div>
+
+        <div className={styles.projGrid}>
           {projects === null ? (
-            <p className={styles.loadingText}>Loading projects…</p>
+            <p className={styles.loading}>Loading…</p>
           ) : (
             <>
               {projects.map((p) => {
@@ -168,47 +205,35 @@ export default function Home() {
                   <button
                     key={p.slug}
                     type="button"
-                    className={`${styles.projectCard} ${isActive ? styles.projectCardActive : ""}`}
+                    className={`${styles.projCard} ${isActive ? styles.projCardOn : ""}`}
                     onClick={() => selectProject(p.slug)}
                     aria-pressed={isActive}
                   >
                     {p.swatches?.length > 0 && (
-                      <span className={styles.projectSwatches} aria-hidden="true">
-                        {p.swatches.slice(0, 5).map((hex, i) => (
-                          <span key={`${hex}-${i}`} style={{ background: hex }} />
-                        ))}
+                      <span className={styles.projSwatches} aria-hidden="true">
+                        {p.swatches.slice(0, 6).map((hex, i) => <span key={`${hex}-${i}`} style={{ background: hex }} />)}
                       </span>
                     )}
-                    <span className={styles.projectName}>
+                    <span className={styles.projName}>
                       {p.wordmark || p.name || p.slug}
-                      {!signedIn && <span className={styles.sampleTag}>Sample</span>}
+                      {!signedIn && <span className={styles.projTag}>Sample</span>}
                     </span>
-                    <span className={styles.projectFoot}>
-                      <span className={styles.projectMeta}>
-                        {p.pins != null ? `${p.pins} pins` : "—"}
-                      </span>
-                      {isActive ? (
-                        <span className={styles.projectSelected}>● Selected</span>
-                      ) : (
-                        <span className={styles.projectSelect} aria-hidden="true">Select →</span>
-                      )}
+                    <span className={styles.projFoot}>
+                      <span className={styles.projMeta}>{p.pins != null ? `${p.pins} pins` : "—"}</span>
+                      <span className={styles.projSel}>{isActive ? "● Selected" : "Select →"}</span>
                     </span>
                   </button>
                 );
               })}
               {signedIn ? (
-                <button
-                  type="button"
-                  className={styles.newProjectCard}
-                  onClick={() => setCreating(true)}
-                >
-                  <span className={styles.plus}>+</span>
-                  <span>Start a new brand project</span>
+                <button type="button" className={styles.projNew} onClick={() => setCreating(true)}>
+                  <span className={styles.projNewPlus}>+</span>
+                  <span>Start a new direction</span>
                 </button>
               ) : (
-                <Link href="/login" className={styles.newProjectCard}>
-                  <span className={styles.plus}>+</span>
-                  <span>Sign in to start more projects</span>
+                <Link href="/login" className={styles.projNew}>
+                  <span className={styles.projNewPlus}>+</span>
+                  <span>Sign in to start more</span>
                 </Link>
               )}
             </>
@@ -217,134 +242,51 @@ export default function Home() {
         {error && <p className={styles.error}>{error}</p>}
       </section>
 
-      <section className={styles.pathSection}>
-        <header className={styles.pathHeader}>
-          <h2 className={styles.sectionTitle}>The path</h2>
-          <p className={styles.sectionHint}>
-            {activeProject ? (
-              <>Each step works on the project you selected above, <strong>{activeProject.name}</strong>. Jump in anywhere; the order is a guide, not a gate.</>
-            ) : (
-              <>Each step works on the project you selected above. Jump in anywhere; the order is a guide, not a gate.</>
-            )}
-          </p>
-        </header>
-        <ol className={styles.pathGrid}>
-          {STAGES.map((stage, i) => (
-            <li key={stage.key}>
-              <Link href={stage.href} className={styles.stepCard}>
-                <span className={styles.stepHead}>
-                  <span className={styles.stepEyebrow}>
-                    <span className={styles.stepNum}>{i + 1}</span>
-                    <span className={styles.stepVerb}>{stage.sub}</span>
-                  </span>
-                  <span className={styles.stepTitle}>{stage.label}</span>
-                </span>
-                <span className={styles.cardBody}>{stage.blurb}</span>
-                <span className={styles.stepArrow} aria-hidden="true">→</span>
-              </Link>
-            </li>
-          ))}
-        </ol>
-      </section>
-
+      {/* ── colophon ───────────────────────────────────────────── */}
       <footer className={styles.colophon}>
-        {/* [LORIN TO WRITE] — one line in your voice: who you are and why
-            Moodbuilder exists. Keep it short. Replace the bracketed text. */}
-        <p className={styles.colophonLead}>[LORIN TO WRITE: a one-line note in your voice. Who you are, why this exists.]</p>
-        <p className={styles.colophonMeta}>
-          A personal project by Lorin Anderberg, built with Next.js, Neon, and Claude Code.
-          Free to use for now. © 2026 Lorin Anderberg, all rights reserved (not open source).
-        </p>
-        <p className={styles.colophonLinks}>
-          <Link href="/resources" className={styles.colophonLink}>Resources &mdash; foundries, color tools, inspiration, accessibility</Link>
-          <span className={styles.colophonDot} aria-hidden="true">·</span>
-          <Submit kind="feedback" className={styles.colophonLink} trigger="Send feedback" />
-        </p>
-        {COFFEE_URL ? (
-          <a className={styles.coffee} href={COFFEE_URL} target="_blank" rel="noopener noreferrer">
-            Buy me a coffee
-          </a>
-        ) : (
-          // Placeholder until the Buy Me a Coffee account exists — set COFFEE_URL above.
-          <span className={styles.coffee} data-placeholder="true" aria-hidden="true">Buy me a coffee</span>
-        )}
+        <div className={styles.colTop}>
+          <span className={styles.wm}>inkling<span className={styles.dot}>.</span></span>
+          {/* [LORIN TO WRITE] one line in your voice: who you are, why this exists. */}
+          <p className={styles.colLead}>[LORIN TO WRITE: one line, your voice — who you are, why Inkling exists.]</p>
+        </div>
+        <div className={styles.colMeta}>
+          <span>A project by Lorin Anderberg · Free for now · © 2026, all rights reserved.</span>
+          <span className={styles.colLinks}>
+            <Link href="/resources" className={styles.colLink}>Resources</Link>
+            <span aria-hidden="true">·</span>
+            <Submit kind="feedback" className={styles.colLink} trigger="Send feedback" />
+            {COFFEE_URL && (<><span aria-hidden="true">·</span><a className={styles.colLink} href={COFFEE_URL} target="_blank" rel="noopener noreferrer">Buy me a coffee</a></>)}
+          </span>
+        </div>
       </footer>
 
-      {creating && (
-        <NewProjectModal
-          onClose={() => setCreating(false)}
-          onCreate={createProject}
-          error={error}
-        />
-      )}
+      {creating && <NewProjectModal onClose={() => setCreating(false)} onCreate={createProject} error={error} />}
     </main>
   );
 }
 
-/**
- * The single "Start here" action plus quiet side-doors for people who
- * arrive mid-stream (already have colors, already have a board). One
- * dominant button; the rest are text links so the hierarchy is obvious.
- */
 function HeroActions({ signedIn, isEmptyAuthedAccount, activeProject, onNewProject }) {
-  let primary;
-  let sideDoors;
-  let prompt;
-
+  let primary, doors;
   if (isEmptyAuthedAccount) {
-    primary = { label: "Start a project", onClick: onNewProject };
-    sideDoors = [{ label: "Or import a Pinterest board", href: "/import" }];
+    primary = { label: "Start a direction", onClick: onNewProject };
+    doors = [{ label: "Import a Pinterest board", href: "/import" }];
   } else if (signedIn) {
-    primary = {
-      label: activeProject ? `Open ${activeProject.name}` : "Open the studio",
-      href: "/brand",
-    };
-    sideDoors = [
-      { label: "Browse your library", href: "/library" },
-      { label: "Import a board", href: "/import" },
-    ];
+    primary = { label: activeProject ? `Open ${activeProject.name}` : "Open the studio", href: "/brand" };
+    doors = [{ label: "Your library", href: "/library" }, { label: "Import a board", href: "/import" }];
   } else {
-    primary = { label: "Open the sample studio", href: "/brand" };
-    sideDoors = [
-      { label: "Import inspiration", href: "/import" },
-      { label: "Start from colors", href: "/colors" },
-    ];
-    prompt = "Already have a starting point?";
+    primary = { label: "Open the studio", href: "/brand" };
+    doors = [{ label: "Import inspiration", href: "/import" }, { label: "Start from colours", href: "/colors" }];
   }
-
   return (
-    <div className={styles.heroCtas}>
+    <div className={styles.cta}>
       {primary.href ? (
-        <Link href={primary.href} className={styles.heroPrimary}>
-          {primary.label}
-          <span className={styles.heroArrow} aria-hidden="true">→</span>
-        </Link>
+        <Link href={primary.href} className={styles.go}>{primary.label} <span className={styles.goArr} aria-hidden="true">→</span></Link>
       ) : (
-        <button type="button" className={styles.heroPrimary} onClick={primary.onClick}>
-          {primary.label}
-          <span className={styles.heroArrow} aria-hidden="true">→</span>
-        </button>
+        <button type="button" className={styles.go} onClick={primary.onClick}>{primary.label} <span className={styles.goArr} aria-hidden="true">→</span></button>
       )}
-      {prompt ? (
-        <div className={styles.startPrompt}>
-          <span className={styles.startPromptLabel}>{prompt}</span>
-          <ul className={styles.doorChips}>
-            {sideDoors.map((d) => (
-              <li key={d.href}>
-                <Link href={d.href} className={styles.doorChip}>{d.label}</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <ul className={styles.sideDoors}>
-          {sideDoors.map((d) => (
-            <li key={d.href}>
-              <Link href={d.href} className={styles.sideDoor}>{d.label}</Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul className={styles.doors}>
+        {doors.map((d) => <li key={d.href}><Link href={d.href} className={styles.door}>{d.label}</Link></li>)}
+      </ul>
     </div>
   );
 }
@@ -363,37 +305,25 @@ function NewProjectModal({ onClose, onCreate, error }) {
     e.preventDefault();
     if (!name.trim()) return;
     setSubmitting(true);
-    try {
-      await onCreate(name.trim());
-    } finally {
-      setSubmitting(false);
-    }
+    try { await onCreate(name.trim()); } finally { setSubmitting(false); }
   }
 
   return (
-    <div className={styles.modalBackdrop} onClick={onClose}>
+    <div className={styles.modalBack} onClick={onClose}>
       <form className={styles.modal} onClick={(e) => e.stopPropagation()} onSubmit={submit}>
-        <button type="button" className={styles.modalClose} onClick={onClose} aria-label="Close">×</button>
-        <h2 className={styles.modalTitle}>New project</h2>
-        <p className={styles.modalHint}>Empty workspace. Add a Pinterest board or upload images and the project’s own brand world starts to take shape. Palettes extract on their own as pins land.</p>
+        <button type="button" className={styles.modalX} onClick={onClose} aria-label="Close">×</button>
+        <span className={styles.sectionK}>New direction</span>
+        <h2 className={styles.modalH}>Name it.</h2>
+        <p className={styles.modalHint}>An empty studio. Add a board or upload images and its world starts to take shape; palettes pull on their own.</p>
         <label className={styles.field}>
           <span className={styles.fieldLabel}>Project name</span>
-          <input
-            className={styles.input}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Sage Lab, March mood, etc."
-            autoFocus
-            maxLength={80}
-          />
-          <span className={styles.fieldHint}>Slug will be auto-derived: <code>{slugify(name) || "—"}</code></span>
+          <input className={styles.input} value={name} onChange={(e) => setName(e.target.value)} placeholder="Sage Lab, March mood…" autoFocus maxLength={80} />
+          <span className={styles.fieldHint}>Slug: <code>{slugify(name) || "—"}</code></span>
         </label>
         {error && <p className={styles.error}>{error}</p>}
         <div className={styles.modalActions}>
-          <button type="button" className={styles.linkBtn} onClick={onClose}>Cancel</button>
-          <button type="submit" className={styles.primaryBtn} disabled={!name.trim() || submitting}>
-            {submitting ? "Creating…" : "Create project"}
-          </button>
+          <button type="button" className={styles.modalCancel} onClick={onClose}>Cancel</button>
+          <button type="submit" className={styles.go} disabled={!name.trim() || submitting}>{submitting ? "Creating…" : "Create →"}</button>
         </div>
       </form>
     </div>
@@ -401,9 +331,5 @@ function NewProjectModal({ onClose, onCreate, error }) {
 }
 
 function slugify(s) {
-  return String(s || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 48);
+  return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 48);
 }

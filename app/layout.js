@@ -16,7 +16,7 @@ const notoSans = Noto_Sans({
 });
 
 export const metadata = {
-  title: "Moodbuilder",
+  title: "Inkling",
   description: "Studio for assembling brand moods — color, type, marks, gradients, image.",
 };
 
