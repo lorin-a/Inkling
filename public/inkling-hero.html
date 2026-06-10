@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Inkling — front door</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Noto+Sans:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f4eee4; --paper2:#efe7d9; --card:#fffdf8; --ink:#251f18; --muted:#8c8173;
+    --line:rgba(60,42,20,.12); --line-soft:rgba(60,42,20,.07);
+    --rose:#a07079; --rose-soft:#efe1e2; --peri:#75748f; --peri-soft:#e7e6ee; --sage:#6f8a63;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif; --hand:"Caveat",cursive;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:1500px;height:960px;font-family:var(--sans);color:var(--ink);overflow:hidden;
+    background:radial-gradient(120% 70% at 18% -10%,#fbf7ef,rgba(251,247,239,0) 55%),var(--paper);
+    padding:36px 64px}
+  .grain{position:fixed;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:220px 220px}
+
+  /* top bar */
+  .bar{display:flex;align-items:baseline;justify-content:space-between}
+  .wm{font-family:var(--serif);font-size:34px;font-weight:500;letter-spacing:-.02em}
+  .wm .d{color:var(--rose)}
+  .nav{font-size:13px;color:var(--muted);display:flex;gap:26px}
+  .nav b{color:var(--ink);font-weight:500}
+
+  .hero{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px;align-items:center}
+
+  /* left */
+  .eyebrow{font-family:var(--hand);font-size:24px;color:var(--rose);transform:rotate(-2deg);display:inline-block}
+  h1{font-family:var(--serif);font-weight:400;font-size:78px;line-height:1.02;letter-spacing:-.025em;margin:8px 0 0;
+    font-variation-settings:"SOFT" 40,"WONK" 0}
+  .mark{position:relative;display:inline-block;white-space:nowrap}
+  .mark .circle{position:absolute;left:-14px;top:-10px;width:calc(100% + 28px);height:calc(100% + 22px);pointer-events:none}
+  .sub{font-size:17.5px;line-height:1.6;color:#4a443b;max-width:480px;margin-top:28px}
+  .dir{font-family:var(--hand);font-size:19px;color:var(--peri);margin-top:8px}
+  .ctas{display:flex;align-items:center;gap:22px;margin-top:30px}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-size:15px;font-weight:600;color:#fff;
+    background:var(--rose);padding:13px 24px;border-radius:100px;box-shadow:0 8px 22px rgba(160,112,121,.32)}
+  .link{font-size:15px;font-weight:600;color:var(--peri);border-bottom:1.5px solid var(--peri);padding-bottom:2px}
+
+  .tabs{display:flex;gap:0;margin-top:46px}
+  .tab{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+    background:var(--paper2);border:1px solid var(--line-soft);border-bottom:none;
+    padding:9px 22px 11px;border-radius:9px 9px 0 0;margin-right:-1px;position:relative}
+  .tab.on{color:var(--ink);background:var(--card);box-shadow:0 -3px 10px rgba(54,38,16,.05)}
+  .tab.on::after{content:"";position:absolute;left:14px;right:14px;bottom:6px;height:2px;border-radius:2px;background:var(--rose)}
+  .tabline{height:1px;background:var(--line);margin-top:-1px}
+
+  /* right — the collage */
+  .collage{position:relative;height:620px}
+  .pol{position:absolute;background:#fffdf8;padding:12px 12px 38px;border-radius:3px;
+    box-shadow:0 2px 6px rgba(40,30,15,.16),0 18px 40px rgba(40,30,15,.18)}
+  .pol img{display:block;width:100%;height:100%;object-fit:cover;border-radius:1px}
+  .pol .cap{position:absolute;left:0;right:0;bottom:10px;text-align:center;font-family:var(--hand);font-size:19px;color:#6a604f}
+  .p1{width:240px;left:40px;top:24px;transform:rotate(-5deg)}
+  .p1 img{height:300px}
+  .p2{width:218px;left:300px;top:120px;transform:rotate(4deg);z-index:3}
+  .p2 img{height:270px}
+  .p3{width:200px;left:120px;top:330px;transform:rotate(2.5deg);z-index:2}
+  .p3 img{height:248px}
+  .tape{position:absolute;width:96px;height:30px;background:rgba(160,112,121,.34);
+    box-shadow:0 1px 2px rgba(0,0,0,.06);backdrop-filter:saturate(1.1)}
+  .tape.b{background:rgba(117,116,143,.32)}
+  .t1{left:120px;top:8px;transform:rotate(-7deg)}
+  .t2{left:368px;top:104px;transform:rotate(6deg)}
+  .t3{left:160px;top:316px;transform:rotate(-3deg)}
+
+  /* a handwritten note + arrow */
+  .note{position:absolute;right:0;top:6px;width:206px;font-family:var(--hand);font-size:21px;color:var(--ink);
+    line-height:1.25;transform:rotate(2deg);text-align:left}
+  .note .u{color:var(--rose)}
+  .palette{position:absolute;right:6px;bottom:40px;display:flex;gap:7px;align-items:flex-end;transform:rotate(-1.5deg)}
+  .palette .sw{width:34px;height:34px;border-radius:7px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06),0 2px 5px rgba(0,0,0,.1)}
+  .palette .lab{font-family:var(--hand);font-size:17px;color:var(--muted);margin-bottom:6px;margin-right:4px}
+
+  .foot{position:absolute;left:64px;bottom:30px;font-family:var(--hand);font-size:18px;color:var(--muted)}
+</style>
+</head>
+<body>
+  <div class="grain"></div>
+
+  <div class="bar">
+    <div class="wm">inkling<span class="d">.</span></div>
+    <div class="nav"><span>Gather</span><span>Play</span><span>Build</span><b>Open the studio →</b></div>
+  </div>
+
+  <div class="hero">
+    <div class="left">
+      <span class="eyebrow">a studio for finding your direction</span>
+      <h1>You know it<br>when you
+        <span class="mark">see&nbsp;it
+          <svg class="circle" viewBox="0 0 220 80" fill="none" preserveAspectRatio="none">
+            <path d="M30 16 C 80 2, 175 4, 205 26 C 220 40, 200 64, 150 72 C 90 80, 18 72, 9 48 C 3 30, 18 18, 40 14"
+              stroke="#a07079" stroke-width="2.4" stroke-linecap="round"/>
+          </svg>
+        </span>.
+      </h1>
+      <p class="sub">Inkling pulls a brand direction out of everything you’ve saved — your colors, your type, your taste — and keeps you the author the whole way.</p>
+      <p class="dir">— working voice, yours to finalize</p>
+      <div class="ctas">
+        <span class="btn">Start gathering →</span>
+        <span class="link">Already have pins? Import them</span>
+      </div>
+      <div class="tabs">
+        <span class="tab on">Gather</span>
+        <span class="tab">Play</span>
+        <span class="tab">Build</span>
+      </div>
+      <div class="tabline"></div>
+    </div>
+
+    <div class="collage">
+      <div class="pol p1"><img src="/sample/1039135314045106233.jpg" alt=""><span class="cap">coastal</span></div>
+      <div class="pol p2"><img src="/sample/1039135314045106132.jpg" alt=""><span class="cap">still water</span></div>
+      <div class="pol p3"><img src="/sample/1039135314045106197.jpg" alt=""><span class="cap">a feeling</span></div>
+      <span class="tape t1"></span>
+      <span class="tape b t2"></span>
+      <span class="tape t3"></span>
+
+      <div class="note">two hundred saves,<br>and a brand <span class="u">hiding</span><br>somewhere in there</div>
+      <div class="palette">
+        <span class="lab">pulled →</span>
+        <span class="sw" style="background:#a07079"></span>
+        <span class="sw" style="background:#75748f"></span>
+        <span class="sw" style="background:#6f8a63"></span>
+        <span class="sw" style="background:#bc9e90"></span>
+        <span class="sw" style="background:#251f18"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">inkling · est. 2026 · made for trusting your eye</div>
+</body>
+</html>
