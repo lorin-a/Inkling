@@ -82,8 +82,9 @@
 .door { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-muted); text-decoration: underline; text-underline-offset: 3px; transition: color var(--motion-fast) var(--ease-out); }
 .door:hover { color: var(--accent); }
 
-/* hero specimen plates */
-.heroR { display: flex; flex-direction: column; gap: 0; border: 1.5px solid var(--rule); }
+/* hero — the living brand */
+.heroR { display: flex; flex-direction: column; justify-content: center; }
+/* (legacy specimen-plate styles below are unused now) */
 .plate:not(:last-child) { border-bottom: 1.5px solid var(--rule); }
 .plateImg { position: relative; height: 232px; overflow: hidden; }
 .plateImg img { width: 100%; height: 100%; object-fit: cover; display: block; }

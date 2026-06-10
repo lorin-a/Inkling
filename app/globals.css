@@ -24,9 +24,9 @@
      tangerine (the warm pop). Structure and restraint over softness. ── */
   --font-mono: "Noto Sans Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-  --bg: #f3ecdf;            /* warm paper */
-  --bg-warm: #efe7d9;       /* deeper paper */
-  --bg-elevated: #fffdf8;   /* warm white */
+  --bg: #f9f4ec;            /* warm paper — light, creamy, inspiring (not khaki) */
+  --bg-warm: #f4ede1;       /* a touch deeper, still light + warm */
+  --bg-elevated: #fffefa;   /* warm white */
   --ink: #1c1810;           /* warm near-black */
   --ink-muted: #8a7f70;     /* warm gray */
   --ink-faint: #b6ab99;     /* faint — index numbers, ghosts */

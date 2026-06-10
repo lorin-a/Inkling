@@ -1,23 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
+import gsap from "gsap";
 import { apiFetch } from "../lib/api/client";
 import { resetToSample } from "../lib/storage/localStore";
 import Submit from "../components/Submit";
+import BrandShuffle from "../components/BrandShuffle";
 import styles from "./page.module.css";
 
 // [LORIN] Buy Me a Coffee URL once it exists; empty hides the link.
 const COFFEE_URL = "";
-
-// Specimen plates for the hero — sample references shown like catalogue plates,
-// each with the palette it yields (the product's whole mechanic, made visible).
-// NOTE: swap for owned illustration before any public marketing (see brand memory).
-const PLATES = [
-  { src: "/sample/1039135314045106233.jpg", no: "01", name: "Coastal field", inks: ["#b0476a", "#e0a24a", "#6f8a63", "#d8c4a4", "#2d2418"] },
-  { src: "/sample/1039135314045106132.jpg", no: "02", name: "Still water", inks: ["#9cbcd9", "#5a7d6f", "#b89a6a", "#2f3a36", "#6a2ee6"] },
-];
 
 // The three moves — the spine, in the brand's language.
 const MOVES = [
@@ -49,6 +43,17 @@ export default function Home() {
   }
 
   useEffect(() => { refresh(); }, []);
+
+  // Hero entrance — the words rise in, then the brand card composes itself (its own
+  // GSAP). The page should feel like it's being made, not loaded.
+  const heroLeftRef = useRef(null);
+  useEffect(() => {
+    if (!heroLeftRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.from(heroLeftRef.current.children, { y: 22, opacity: 0, duration: 0.7, stagger: 0.09, ease: "power3.out" });
+    }, heroLeftRef);
+    return () => ctx.revert();
+  }, []);
 
   async function selectProject(slug) {
     if (slug === activeSlug) return;
@@ -124,12 +129,12 @@ export default function Home() {
 
       {/* ── hero ───────────────────────────────────────────────── */}
       <section className={styles.hero}>
-        <div className={styles.heroL}>
+        <div className={styles.heroL} ref={heroLeftRef}>
           <p className={styles.eyebrow}><span className={styles.sq} aria-hidden="true" />A studio for trusting your eye<span className={styles.tag}>New</span></p>
           <h1 className={styles.h1}>You know it<br />when you <span className={styles.it}>see it.</span></h1>
           <p className={styles.lede}>
             Inkling turns everything you’ve saved — your colours, your type, your taste — into a brand
-            direction. You stay the author, start to finish.
+            you can ship. You stay the author, start to finish.
           </p>
           <HeroActions
             signedIn={signedIn}
@@ -140,24 +145,7 @@ export default function Home() {
         </div>
 
         <div className={styles.heroR}>
-          {PLATES.map((p) => (
-            <figure key={p.no} className={styles.plate}>
-              <div className={styles.plateImg}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.src} alt="" />
-                <span className={styles.plateNo}>PLATE {p.no}</span>
-              </div>
-              <div className={styles.plateBar}>
-                <div className={styles.pal} aria-hidden="true">
-                  {p.inks.map((h, i) => <span key={i} style={{ background: h }} />)}
-                </div>
-                <div className={styles.plateCap}>
-                  <span className={styles.pcn}>{p.name}</span>
-                  <span className={styles.pci}>{p.inks.length} inks pulled</span>
-                </div>
-              </div>
-            </figure>
-          ))}
+          <BrandShuffle name="Coastline" tagline="where the tide turns" />
         </div>
       </section>
 
