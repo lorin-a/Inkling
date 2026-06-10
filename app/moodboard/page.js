@@ -11,6 +11,10 @@ import BoardBar from "../../components/canvas/BoardBar";
 import Pile from "../../components/canvas/Pile";
 import CarveSource from "../../components/canvas/CarveSource";
 import DirectionCard from "../../components/DirectionCard";
+import ColorGather from "../../components/ColorGather";
+import { centerInside } from "../../lib/boardZones";
+import { colorName } from "../../lib/nameThatColor";
+import { dedupe } from "../../lib/palettePool";
 import AddBlocks from "../../components/canvas/AddBlocks";
 import { SWATCH_STYLES, nextIn, fontKey } from "../../components/canvas/blockOptions";
 import { useBoards } from "../../lib/useBoards";
@@ -95,6 +99,7 @@ export default function MoodboardPage() {
   const autoOpenedPile = useRef(false); // open the pile once on entry to an empty board, then leave it to the user
   const [dirOpen, setDirOpen] = useState(false); // the Direction artifact, docked + collapsible on the board
   const [why, setWhy] = useState(""); // your words about this direction — the SAME per-board key Compose reads
+  const [addingColor, setAddingColor] = useState(false); // the focused color gather, summoned onto the canvas
   const [projectFonts, setProjectFonts] = useState({}); // { title, subhead, body } font values
 
   // The project's chosen brand fonts, offered as quick picks on text blocks.
@@ -157,6 +162,43 @@ export default function MoodboardPage() {
   const dirColorCount = useMemo(() => blocks.filter((b) => b.type === "swatch").length, [blocks]);
   const dirPieceCount = useMemo(() => blocks.filter((b) => b.type === "image").length, [blocks]);
   const dirHasType = useMemo(() => blocks.some((b) => b.type === "text"), [blocks]);
+
+  // The "+ Color" loop: the gathered palette settles into this board's Color zone
+  // (created if missing), and your words become the Direction's why. Same intent as
+  // makeDirection's auto-sort, but board-local and through useBoards (one save path).
+  const landColors = useCallback(({ colors, why: words }) => {
+    const isHex = (s) => typeof s === "string" && /^#[0-9a-fA-F]{6}$/.test(s);
+    const SW = 58, SGAP = 10, COLS = 4, ZP = 18, PAD = 48, ZTOP = 128;
+    const have = new Set(blocks.filter((b) => b.type === "swatch" && isHex(b.payload?.hex)).map((b) => b.payload.hex.toLowerCase()));
+    const fresh = dedupe((colors || []).filter(isHex)).filter((h) => !have.has(h.toLowerCase()));
+    if (fresh.length) {
+      let zone = sections.find((s) => (s.name || "").toLowerCase() === "color");
+      const zoneId = zone?.id || `sc_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+      if (!zone) {
+        zone = { id: zoneId, name: "Color", note: "", x: PAD, y: ZTOP, w: 2 * ZP + COLS * SW + (COLS - 1) * SGAP, h: 180 };
+        setSections((ss) => [...ss, zone]);
+      }
+      const startCount = blocks.filter((b) => b.type === "swatch" && centerInside(zone, b)).length;
+      const maxZ = blocks.reduce((m, b) => Math.max(m, b.z || 0), 0);
+      const added = fresh.map((hex, k) => {
+        const i = startCount + k, col = i % COLS, row = Math.floor(i / COLS);
+        return {
+          id: `bk_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}${k}`,
+          type: "swatch",
+          x: zone.x + ZP + col * (SW + SGAP),
+          y: zone.y + ZP + row * (SW + SGAP),
+          w: SW, h: SW, z: maxZ + 1 + k,
+          payload: { hex, name: colorName(hex).name, style: "plain" },
+        };
+      });
+      setBlocks((bs) => [...bs, ...added]);
+      const rows = Math.ceil((startCount + fresh.length) / COLS);
+      const grownH = Math.max(zone.h || 180, 2 * ZP + rows * SW + (rows - 1) * SGAP);
+      setSections((ss) => ss.map((s) => (s.id === zoneId ? { ...s, h: grownH } : s)));
+    }
+    if (words) saveWhy(words);
+    setAddingColor(false);
+  }, [sections, blocks, setSections, setBlocks, saveWhy]);
 
   // Brand fonts as { label, value, stack } for the typeface popover.
   const projectFontQuick = useMemo(() => {
@@ -582,6 +624,7 @@ export default function MoodboardPage() {
                   )}
                   {boardEl}
                   <AddBlocks
+                    onAddColor={() => setAddingColor(true)}
                     onAddText={addText}
                     onAddSwatch={addSwatch}
                     onAddShape={addShape}
@@ -653,6 +696,26 @@ export default function MoodboardPage() {
             </div>
           )}
         </>
+      )}
+
+      {/* The "+ Color" loop: summon the real, sophisticated gather as a focused mode
+          over the board; on done the curated palette settles into the Color zone and
+          your words land on the Direction card. Simplicity at home, depth on demand. */}
+      {addingColor && (
+        <div className={styles.colorOverlay} role="dialog" aria-label="Gather color">
+          <header className={styles.colorOverlayBar}>
+            <span className={styles.colorOverlayTitle}>Gather color</span>
+            <button type="button" className={styles.colorOverlayClose} onClick={() => setAddingColor(false)} aria-label="Back to the board">✕</button>
+          </header>
+          <div className={styles.colorOverlayBody}>
+            <ColorGather
+              lede="React to your inspiration. The colors you keep gather on the right, then settle into your board."
+              ctaLabel="Add to your board"
+              ctaHint="The colors you kept land in your Color zone; your words become the direction’s why."
+              onComplete={landColors}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

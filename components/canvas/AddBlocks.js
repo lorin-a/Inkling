@@ -11,7 +11,7 @@ import styles from "./canvas.module.css";
  * section (curation already auto-sorts the board into zones; this is for framing
  * your own). The last button reopens your inspiration to pull more from.
  */
-export default function AddBlocks({ onAddText, onAddSwatch, onAddShape, onAddSection, onToggleComment, commenting, onOpenLibrary, libraryOpen }) {
+export default function AddBlocks({ onAddColor, onAddText, onAddSwatch, onAddShape, onAddSection, onToggleComment, commenting, onOpenLibrary, libraryOpen }) {
   const [open, setOpen] = useState(null); // "swatch" | "shape" | "section" | null
   const rootRef = useRef(null);
 
@@ -31,6 +31,12 @@ export default function AddBlocks({ onAddText, onAddSwatch, onAddShape, onAddSec
 
   return (
     <div className={styles.addCluster} ref={rootRef}>
+      {/* Gather color by reacting to your inspiration — the real recognition tool,
+          summoned onto the canvas. (A Swatch, below, is one color added by hand.) */}
+      <button type="button" className={styles.addBtn} onClick={onAddColor} title="Gather colors by reacting to your inspiration">
+        <span className={styles.addGlyph} aria-hidden="true">◴</span> Color
+      </button>
+
       <button type="button" className={styles.addBtn} onClick={onAddText}>
         <span className={styles.addGlyph} aria-hidden="true">T</span> Text
       </button>

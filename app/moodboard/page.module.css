@@ -130,6 +130,41 @@
 .directionCollapse:hover { background: rgba(0, 0, 0, 0.05); }
 .directionCollapse:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 2px; }
 
+/* The "+ Color" gather, summoned as a focused mode over the board. */
+.colorOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  animation: colorOverlayIn 260ms var(--ease-out) both;
+}
+@keyframes colorOverlayIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.colorOverlayBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+}
+.colorOverlayTitle { font-family: var(--font-serif); font-size: 20px; letter-spacing: -0.01em; }
+.colorOverlayClose {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--ink-muted);
+  font-size: 15px;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+.colorOverlayClose:hover { background: rgba(0, 0, 0, 0.05); }
+.colorOverlayClose:focus-visible { outline: 2px solid var(--whelm-vivid); outline-offset: 2px; }
+.colorOverlayBody { flex: 1; min-height: 0; overflow: auto; }
+
 /* Comment-mode banner — floats top-centre over the board so it's obvious you're
    placing, and where. */
 .commentBanner {
