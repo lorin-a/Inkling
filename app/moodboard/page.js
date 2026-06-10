@@ -218,6 +218,9 @@ export default function MoodboardPage() {
   useEffect(() => {
     if (loading || carving || !activeId || seededBoard.current === activeId) return;
     seededBoard.current = activeId;
+    // Only scaffold an EMPTY board with the dimension containers. A board that already
+    // holds a collage is the figure — never drop empty boxes over someone's work.
+    if (blocks.length) return;
     const have = new Set((sections || []).map((s) => (s.name || "").toLowerCase()));
     const missing = ["color", "imagery", "type"].filter((n) => !have.has(n));
     if (!missing.length) return;
