@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Inkling — brand pitch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f4eee4; --paper-deep:#efe7d9; --card:#fffdf8;
+    --ink:#251f18; --muted:#8c8173; --line:rgba(60,42,20,.12); --line-soft:rgba(60,42,20,.07);
+    --accent:#a259e6; --accent-soft:#f0e2ff; --clay:#c8744a;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    width:1600px; font-family:var(--sans); color:var(--ink);
+    background:
+      radial-gradient(120% 60% at 50% -10%, #fbf7ef 0%, rgba(251,247,239,0) 50%),
+      var(--paper);
+    padding:64px 96px 80px;
+  }
+  .grain{position:fixed;inset:0;pointer-events:none;opacity:.04;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px 200px}
+
+  .tag{font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .tag b{color:var(--accent)}
+
+  /* hero */
+  .hero{margin-top:34px;display:flex;align-items:flex-end;justify-content:space-between;gap:60px;
+    padding-bottom:44px;border-bottom:1px solid var(--line)}
+  .wordmark{font-family:var(--serif);font-weight:400;font-size:168px;line-height:.86;letter-spacing:-.03em;
+    font-variation-settings:"SOFT" 40,"WONK" 0}
+  .wordmark .dot{color:var(--accent)}
+  .heroR{max-width:520px;text-align:right;padding-bottom:14px}
+  .heroR .pron{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--muted)}
+  .heroR .line{font-family:var(--serif);font-size:30px;line-height:1.32;margin-top:14px;letter-spacing:-.01em}
+  .heroR .dir{font-size:12px;color:var(--muted);margin-top:12px;font-style:italic;font-family:var(--serif)}
+
+  .grid{display:grid;grid-template-columns:1.15fr 1fr;gap:56px;margin-top:48px}
+  .h{font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+  .why p{font-family:var(--serif);font-size:23px;line-height:1.5;color:#3a342c}
+  .why p b{font-weight:600;color:var(--ink)}
+  .why .sub{font-family:var(--sans);font-size:14.5px;line-height:1.6;color:var(--muted);margin-top:18px}
+
+  /* voice */
+  .voice .prin{display:flex;flex-direction:column;gap:13px}
+  .voice .row{display:flex;gap:13px;align-items:flex-start;font-size:15px;line-height:1.45}
+  .voice .row .k{flex:0 0 auto;width:9px;height:9px;border-radius:50%;background:var(--accent);margin-top:6px}
+  .voice .row b{font-weight:600}
+  .voice .row span{color:var(--muted)}
+  .ba{margin-top:26px;border-top:1px solid var(--line-soft);padding-top:20px;display:flex;flex-direction:column;gap:16px}
+  .ba .item{display:flex;gap:14px;align-items:flex-start}
+  .ba .lab{flex:0 0 64px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:4px}
+  .ba .old{font-size:14.5px;color:#a79c8c;text-decoration:line-through;text-decoration-color:rgba(0,0,0,.18)}
+  .ba .new{font-family:var(--serif);font-size:20px;line-height:1.4;color:var(--ink)}
+  .ba .new .d{font-size:11px;color:var(--muted);font-style:italic;letter-spacing:0}
+
+  /* palette + type row */
+  .row2{display:grid;grid-template-columns:1.15fr 1fr;gap:56px;margin-top:52px;padding-top:44px;border-top:1px solid var(--line)}
+  .sw{display:flex;gap:14px}
+  .swatch{flex:1}
+  .swatch .chip{height:96px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.05)}
+  .swatch .nm{font-size:12.5px;font-weight:600;margin-top:10px}
+  .swatch .hex{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .type .big{font-family:var(--serif);font-size:60px;line-height:1;letter-spacing:-.02em;font-variation-settings:"SOFT" 50}
+  .type .big .it{font-style:italic;font-weight:300;color:var(--accent)}
+  .type .meta{font-size:13px;color:var(--muted);margin-top:14px;line-height:1.6}
+  .type .sans{font-size:15px;margin-top:6px}
+
+  /* alternates */
+  .alts{margin-top:52px;padding-top:40px;border-top:1px solid var(--line)}
+  .altrow{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:18px}
+  .alt{background:var(--card);border:1px solid var(--line-soft);border-radius:16px;padding:24px 26px;box-shadow:0 1px 2px rgba(54,38,16,.08),0 14px 30px rgba(54,38,16,.07)}
+  .alt.lead{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 18px 40px rgba(54,38,16,.12)}
+  .alt .nm{font-family:var(--serif);font-size:34px;letter-spacing:-.02em}
+  .alt .nm .dot{color:var(--accent)}
+  .alt .badge{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-left:8px;vertical-align:middle}
+  .alt .desc{font-size:13.5px;line-height:1.5;color:var(--muted);margin-top:10px}
+
+  .foot{margin-top:48px;font-size:12.5px;color:var(--muted);font-style:italic;font-family:var(--serif)}
+</style>
+</head>
+<body>
+  <div class="grain"></div>
+
+  <div class="tag">Moodbuilder → the brand <b>· a pitch</b></div>
+
+  <div class="hero">
+    <div class="wordmark">inkling<span class="dot">.</span></div>
+    <div class="heroR">
+      <div class="pron">/ˈiNGk-liNG/ &nbsp;·&nbsp; noun</div>
+      <div class="line">A slight knowing. The pull you feel toward something before you can say why.</div>
+      <div class="dir">working tagline, yours to finalize: “Know it when you see it.”</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="why">
+      <div class="h">Why it’s the one</div>
+      <p>The whole product exists for the gap between <b>feeling</b> a yes and being able to <b>name</b> it. That feeling has a word, and it’s a beautiful one: an <b>inkling</b>. You sense the direction before it’s articulate.</p>
+      <p style="margin-top:18px">And hiding inside it: <b>ink</b> — color, type, print, the maker’s material. The name is the product’s whole thesis and its craft, in one warm, ownable word.</p>
+      <p class="sub">Recognition over articulation. You stay the author. The tool just helps the hunch become a direction, then a brand. It reads as a studio with a point of view, not a utility.</p>
+    </div>
+
+    <div class="voice">
+      <div class="h">Voice &amp; personality</div>
+      <div class="prin">
+        <div class="row"><span class="k"></span><div><b>A sharp, warm eye beside you.</b> <span>Encouraging, never instructive. It hands you the brush; it never tells you your taste.</span></div></div>
+        <div class="row"><span class="k"></span><div><b>Sensory and plainspoken.</b> <span>Concrete nouns, real feelings. No “all-in-one platform,” no “leverage,” no jargon.</span></div></div>
+        <div class="row"><span class="k"></span><div><b>A little wry, a little tactile.</b> <span>It has a pulse. Playful where you’re gathering; calm and confident where you’re deciding.</span></div></div>
+      </div>
+      <div class="ba">
+        <div class="item"><div class="lab">Was</div><div class="old">“An all-in-one platform for importing inspiration, extracting colors, previewing typefaces, textures, and more.”</div></div>
+        <div class="item"><div class="lab">Could be</div><div class="new">“You saved two hundred things. A brand is hiding in there. Let’s pull it out.” <span class="d">— direction, yours to make true</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row2">
+    <div>
+      <div class="h">Palette — warm paper, real ink, a confident violet</div>
+      <div class="sw">
+        <div class="swatch"><div class="chip" style="background:#f4eee4"></div><div class="nm">Paper</div><div class="hex">#F4EEE4</div></div>
+        <div class="swatch"><div class="chip" style="background:#251f18"></div><div class="nm">Ink</div><div class="hex">#251F18</div></div>
+        <div class="swatch"><div class="chip" style="background:#a259e6"></div><div class="nm">Signal</div><div class="hex">#A259E6</div></div>
+        <div class="swatch"><div class="chip" style="background:#c8744a"></div><div class="nm">Clay</div><div class="hex">#C8744A</div></div>
+      </div>
+    </div>
+    <div class="type">
+      <div class="h">Type</div>
+      <div class="big">Aa <span class="it">Aa</span></div>
+      <div class="meta"><b>Fraunces</b> for the voice — characterful, a little wonky, warm. Set against</div>
+      <div class="sans"><b>Noto Sans</b> — quiet, legible, the working text.</div>
+    </div>
+  </div>
+
+  <div class="alts">
+    <div class="h">The shortlist — my lead, plus two I’d stand behind</div>
+    <div class="altrow">
+      <div class="alt lead">
+        <div class="nm">inkling<span class="dot">.</span><span class="badge">lead</span></div>
+        <div class="desc">The knowing-before-words, with “ink” baked in. The thesis and the craft in one word.</div>
+      </div>
+      <div class="alt">
+        <div class="nm">Hunch<span class="dot">.</span></div>
+        <div class="desc">Punchier, all gut. “Trust your hunch.” Confident and bare; less of the craft layer.</div>
+      </div>
+      <div class="alt">
+        <div class="nm">Glean<span class="dot">.</span></div>
+        <div class="desc">To gather and distill from abundance. The most elegant; reads quieter, less playful.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">Final name and copy are yours — this is the direction. Pick one and I’ll roll the identity across the whole product: wordmark, chrome, landing, voice.</div>
+</body>
+</html>

@@ -9,6 +9,7 @@ import SwatchBlock from "./SwatchBlock";
 import ShapeBlock from "./ShapeBlock";
 import Section, { SectionNameSuggestions } from "./Section";
 import CommentPin from "./CommentPin";
+import { isDimension } from "../../lib/canvasDimensions";
 import styles from "./canvas.module.css";
 
 // A block belongs to a section when its center falls inside the section's rect.
@@ -154,7 +155,16 @@ export default function Board({
         )}
 
         <SectionNameSuggestions />
-        {sections.map((section) => (
+        {sections
+          .filter((section) => {
+            // An empty dimension scaffold (Color/Imagery/Type) is the invitation on a
+            // fresh board — but never let it float as an empty box over an existing
+            // collage. Once the board has work on it, hide the empty ones.
+            const dim = isDimension((section.name || "").toLowerCase());
+            if (dim && blocks.length > 0 && membersInside(section, blocks) === 0) return false;
+            return true;
+          })
+          .map((section) => (
           <Section
             key={section.id}
             section={section}
