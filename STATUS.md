@@ -31,9 +31,13 @@ Tokens in `globals.css`. GSAP installed. The lock artifact: `public/inkling-fina
   inspiration", well shelved, Direction travels); **"+ Color" summons the real gather**;
   canvas-as-home dimension containers; the warm/craft canvas pass.
 
-## In flight / next (dogfood-driven)
-- **BETA, live:** Lorin imports her real Inkling inspiration (board + screenshots + links) and runs
-  Gather → Play → Build. *Her friction is the next build list.* Meta-test: can Inkling find its own brand?
+## Next move (do this first)
+**THE BETA — Lorin dogfoods her own tool.** Import her real Inkling inspiration (the Pinterest
+board + screenshots + credited links via `/import`), then run **Gather → Play → Build** end to end.
+*Her friction is the next build list.* The meta-test: can Inkling find its own brand? Open the new
+session pointed straight at this.
+
+## Then (dogfood-driven, in rough order)
 - Bring the **inner pages** (studio, gather, build) up to the editorial Inkling bar (they inherit the
   tokens but aren't bespoke-rebuilt yet).
 - Make **Build / export** work end-to-end (gathered palette → a brand → an export).
