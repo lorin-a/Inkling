@@ -56,6 +56,22 @@ export default function Home() {
     return () => ctx.revert();
   }, []);
 
+  // Sections reveal as you scroll — the page keeps composing itself as you move.
+  const pageRef = useRef(null);
+  useEffect(() => {
+    if (!pageRef.current) return;
+    gsap.registerPlugin(ScrollTrigger);
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray("[data-reveal]").forEach((el) => {
+        gsap.from(el, { y: 26, opacity: 0, duration: 0.7, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 88%" } });
+      });
+      gsap.utils.toArray("[data-stagger]").forEach((el) => {
+        gsap.from(el.children, { y: 22, opacity: 0, duration: 0.6, stagger: 0.08, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 86%" } });
+      });
+    }, pageRef);
+    return () => ctx.revert();
+  }, [projects]);
+
   async function selectProject(slug) {
     if (slug === activeSlug) return;
     try {
@@ -88,7 +104,7 @@ export default function Home() {
   const isEmptyAuthedAccount = signedIn && projects !== null && projects.length === 0;
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} ref={pageRef}>
       <span className={styles.grain} aria-hidden="true" />
 
       {/* ── masthead ───────────────────────────────────────────── */}
@@ -152,11 +168,11 @@ export default function Home() {
 
       {/* ── how it works — the spine ───────────────────────────── */}
       <section className={styles.how} id="how">
-        <div className={styles.sectionHead}>
+        <div className={styles.sectionHead} data-reveal>
           <span className={styles.sectionK}>The work — 01 / 03</span>
           <h2 className={styles.sectionH}>Three moves, one studio.</h2>
         </div>
-        <ol className={styles.index}>
+        <ol className={styles.index} data-stagger>
           {MOVES.map((m) => (
             <li key={m.no}>
               <Link href={m.href} className={styles.ix}>
@@ -172,7 +188,7 @@ export default function Home() {
 
       {/* ── your project ───────────────────────────────────────── */}
       <section className={styles.projects}>
-        <div className={styles.sectionHead}>
+        <div className={styles.sectionHead} data-reveal>
           <span className={styles.sectionK}>{signedIn && !isEmptyAuthedAccount ? "Your projects" : "Your studio"}</span>
           <h2 className={styles.sectionH}>
             {!signedIn
@@ -183,7 +199,7 @@ export default function Home() {
           </h2>
         </div>
 
-        <div className={styles.projGrid}>
+        <div className={styles.projGrid} data-stagger>
           {projects === null ? (
             <p className={styles.loading}>Loading…</p>
           ) : (
