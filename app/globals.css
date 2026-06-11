@@ -24,9 +24,9 @@
      tangerine (the warm pop). Structure and restraint over softness. ── */
   --font-mono: "Noto Sans Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-  --bg: #f9f4ec;            /* warm paper — light, creamy, inspiring (not khaki) */
-  --bg-warm: #f4ede1;       /* a touch deeper, still light + warm */
-  --bg-elevated: #fffefa;   /* warm white */
+  --bg: #f7f6f2;            /* newsprint — cooler/truer than cream so the ground doesn't recolour the art */
+  --bg-warm: #efeee9;       /* a touch deeper, same near-neutral family */
+  --bg-elevated: #fdfdfb;   /* near-white, neutral (warmth lives in ink + accent + the art, not the ground) */
   --ink: #1c1810;           /* warm near-black */
   --ink-muted: #8a7f70;     /* warm gray */
   --ink-faint: #b6ab99;     /* faint — index numbers, ghosts */
@@ -49,6 +49,27 @@
   --elev-2: 0 3px 8px rgba(40, 28, 12, 0.12), 0 22px 48px rgba(40, 28, 12, 0.14);
   --elev-float: 0 6px 16px rgba(40, 28, 12, 0.16), 0 36px 70px rgba(40, 28, 12, 0.22);
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* ── Spacing scale — 4pt base. Every gap/pad comes from this set, never an
+     arbitrary value. (4pt over 8pt: 8 is too coarse — you need 12 between 8 and
+     16.) Semantic names, not step numbers. ── */
+  --space-3xs: 4px;
+  --space-2xs: 8px;
+  --space-xs: 12px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+
+  /* ── Layout grid — broadsheet: full-bleed, dense, shared by every section.
+     Bleed + rhythm are FLUID (clamp) so the page breathes on big screens; the
+     column count + gutter are fixed so everything aligns down the page. ── */
+  --grid-cols: 12;
+  --gutter: var(--space-xl);                  /* the 12-col gap (48) */
+  --bleed: clamp(24px, 4.5vw, 64px);          /* section side padding (page edge) */
+  --rhythm: clamp(56px, 8vw, 112px);          /* major vertical section padding */
 
   --motion-fast: 180ms;
   --motion-medium: 380ms;

@@ -6,7 +6,7 @@ import { signOut } from "next-auth/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { apiFetch } from "../lib/api/client";
-import { resetToSample } from "../lib/storage/localStore";
+import { resetToSample, hasChosenStart, getStartMode, startOwn, seedSample } from "../lib/storage/localStore";
 import Submit from "../components/Submit";
 import BrandShuffle from "../components/BrandShuffle";
 import styles from "./page.module.css";
@@ -44,6 +44,16 @@ export default function Home() {
   }
 
   useEffect(() => { refresh(); }, []);
+
+  // First-run: signed-out visitors who haven't walked through the door yet.
+  // `chosen` starts null (unknown) to avoid flashing the wrong UI.
+  const [chosen, setChosen] = useState(null);
+  const [startMode, setStartMode] = useState(null);
+  useEffect(() => { setChosen(hasChosenStart()); setStartMode(getStartMode()); }, []);
+
+  // The two doors. Both start a CLEAN state, then send you where the work is.
+  function beginOwn() { startOwn(); window.location.href = "/import"; }            // your own → bring inspiration in
+  function beginSample() { seedSample(); window.location.href = "/recognize"; }   // sample → into the (soon: guided) arc
 
   // Hero entrance — the words rise in, then the brand card composes itself (its own
   // GSAP). The page should feel like it's being made, not loaded.
@@ -102,6 +112,7 @@ export default function Home() {
   const activeProject = projects?.find((p) => p.slug === activeSlug);
   const signedIn = !!session?.user;
   const isEmptyAuthedAccount = signedIn && projects !== null && projects.length === 0;
+  const firstRun = !signedIn && chosen === false; // hasn't walked the door yet
 
   return (
     <main className={styles.page} ref={pageRef}>
@@ -124,15 +135,15 @@ export default function Home() {
         </nav>
       </header>
 
-      {!signedIn && (
+      {!signedIn && chosen && (
         <div className={styles.banner} role="status">
-          <span className={styles.bannerK}>Sample studio</span>
+          <span className={styles.bannerK}>{startMode === "sample" ? "Sample studio" : "Your studio"}</span>
           <span className={styles.bannerT}>Everything you change saves to this browser only.</span>
           <button
             type="button"
             className={styles.bannerReset}
             onClick={() => {
-              if (confirm("Reset the sample studio? This clears every change you’ve made in this browser.")) {
+              if (confirm("Reset this studio? This clears every change you’ve made in this browser.")) {
                 resetToSample();
                 window.location.reload();
               }
@@ -144,7 +155,29 @@ export default function Home() {
         </div>
       )}
 
-      {/* ── hero ───────────────────────────────────────────────── */}
+      {/* ── first-run onboarding (the door) OR the marketing hero ─ */}
+      {firstRun ? (
+        <section className={styles.onboard}>
+          <p className={styles.eyebrow}><span className={styles.sq} aria-hidden="true" />Welcome · first visit</p>
+          <h1 className={styles.onboardH}>You know it when you <span className={styles.it}>see it.</span></h1>
+          <p className={styles.onboardLede}>
+            Inkling turns everything you’ve saved — your colours, your type, your taste — into a brand
+            you can ship. Two ways to begin:
+          </p>
+          <div className={styles.doors2}>
+            <button type="button" className={`${styles.door2} ${styles.door2own}`} onClick={beginOwn}>
+              <span className={styles.door2tag}>Do it for real</span>
+              <span className={styles.door2title}>Bring your inspiration in <span className={styles.door2arr} aria-hidden="true">→</span></span>
+              <span className={styles.door2desc}>Import your Pinterest, screenshots, or links into a clean project that’s yours.</span>
+            </button>
+            <button type="button" className={styles.door2} onClick={beginSample}>
+              <span className={styles.door2tag}>Learn the arc</span>
+              <span className={styles.door2title}>Explore a sample <span className={styles.door2arr} aria-hidden="true">→</span></span>
+              <span className={styles.door2desc}>Walk Gather → Play → Build on a ready-made board, then start your own.</span>
+            </button>
+          </div>
+        </section>
+      ) : (
       <section className={styles.hero}>
         <div className={styles.heroL} ref={heroLeftRef}>
           <p className={styles.eyebrow}><span className={styles.sq} aria-hidden="true" />A studio for trusting your eye<span className={styles.tag}>New</span></p>
@@ -155,9 +188,12 @@ export default function Home() {
           </p>
           <HeroActions
             signedIn={signedIn}
+            firstRun={firstRun}
             isEmptyAuthedAccount={isEmptyAuthedAccount}
             activeProject={activeProject}
             onNewProject={() => setCreating(true)}
+            onBeginOwn={beginOwn}
+            onBeginSample={beginSample}
           />
         </div>
 
@@ -165,11 +201,11 @@ export default function Home() {
           <BrandShuffle name="Coastline" tagline="where the tide turns" />
         </div>
       </section>
+      )}
 
       {/* ── how it works — the spine ───────────────────────────── */}
       <section className={styles.how} id="how">
         <div className={styles.sectionHead} data-reveal>
-          <span className={styles.sectionK}>The work — 01 / 03</span>
           <h2 className={styles.sectionH}>Three moves, one studio.</h2>
         </div>
         <ol className={styles.index} data-stagger>
@@ -186,13 +222,13 @@ export default function Home() {
         </ol>
       </section>
 
-      {/* ── your project ───────────────────────────────────────── */}
+      {/* ── your project (hidden during first-run — no project yet) ── */}
+      {!firstRun && (
       <section className={styles.projects}>
         <div className={styles.sectionHead} data-reveal>
-          <span className={styles.sectionK}>{signedIn && !isEmptyAuthedAccount ? "Your projects" : "Your studio"}</span>
           <h2 className={styles.sectionH}>
             {!signedIn
-              ? "A sample to play with."
+              ? (startMode === "sample" ? "A sample to play with." : "Your studio.")
               : isEmptyAuthedAccount
                 ? "Start your first direction."
                 : "Pick a direction to work in."}
@@ -221,7 +257,7 @@ export default function Home() {
                     )}
                     <span className={styles.projName}>
                       {p.wordmark || p.name || p.slug}
-                      {!signedIn && <span className={styles.projTag}>Sample</span>}
+                      {!signedIn && startMode === "sample" && <span className={styles.projTag}>Sample</span>}
                     </span>
                     <span className={styles.projFoot}>
                       <span className={styles.projMeta}>{p.pins != null ? `${p.pins} pins` : "—"}</span>
@@ -246,6 +282,7 @@ export default function Home() {
         </div>
         {error && <p className={styles.error}>{error}</p>}
       </section>
+      )}
 
       {/* ── colophon ───────────────────────────────────────────── */}
       <footer className={styles.colophon}>
@@ -270,9 +307,13 @@ export default function Home() {
   );
 }
 
-function HeroActions({ signedIn, isEmptyAuthedAccount, activeProject, onNewProject }) {
+function HeroActions({ signedIn, firstRun, isEmptyAuthedAccount, activeProject, onNewProject, onBeginOwn, onBeginSample }) {
   let primary, doors;
-  if (isEmptyAuthedAccount) {
+  if (firstRun) {
+    // The door, led by the sell: bring your OWN inspiration in is the hero move.
+    primary = { label: "Bring your inspiration in", onClick: onBeginOwn };
+    doors = [{ label: "Explore a sample first", onClick: onBeginSample }];
+  } else if (isEmptyAuthedAccount) {
     primary = { label: "Start a direction", onClick: onNewProject };
     doors = [{ label: "Import a Pinterest board", href: "/import" }];
   } else if (signedIn) {
@@ -290,7 +331,13 @@ function HeroActions({ signedIn, isEmptyAuthedAccount, activeProject, onNewProje
         <button type="button" className={styles.go} onClick={primary.onClick}>{primary.label} <span className={styles.goArr} aria-hidden="true">→</span></button>
       )}
       <ul className={styles.doors}>
-        {doors.map((d) => <li key={d.href}><Link href={d.href} className={styles.door}>{d.label}</Link></li>)}
+        {doors.map((d) => (
+          <li key={d.label}>
+            {d.href
+              ? <Link href={d.href} className={styles.door}>{d.label}</Link>
+              : <button type="button" className={styles.door} onClick={d.onClick}>{d.label}</button>}
+          </li>
+        ))}
       </ul>
     </div>
   );

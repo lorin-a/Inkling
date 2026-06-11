@@ -141,7 +141,7 @@ export default function ImportPage() {
       const text = await file.text();
       const payload = JSON.parse(text);
       if (!payload.pins || !Array.isArray(payload.pins)) {
-        throw new Error("This doesn’t look like a Moodbuilder import file (no `pins` array).");
+        throw new Error("This doesn’t look like an Inkling import file (no `pins` array).");
       }
       setImportStatus({
         kind: "preview",
@@ -241,22 +241,32 @@ export default function ImportPage() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.bar}>
-        <Link href="/" className={styles.back}>← inkling.</Link>
-        <ProjectSwitcher />
-        <div className={styles.barTitle}>Import</div>
+      <span className={styles.grain} aria-hidden="true" />
+
+      <header className={styles.mast}>
+        <div className={styles.mastL}>
+          <Link href="/" className={styles.back}>inkling<span className={styles.dot}>.</span></Link>
+          <span className={styles.ed}>No.&nbsp;01 · Est.&nbsp;2026</span>
+        </div>
+        <div className={styles.mastR}>
+          <ProjectSwitcher />
+          <span className={styles.mastMark}>Import</span>
+        </div>
       </header>
 
-      <main className={styles.main}>
-        <div className={styles.intro}>
-          <h1 className={styles.introH}>Bring your inspiration in.</h1>
-          <p className={styles.introP}>
-            New here? Start anywhere below. Connect a Pinterest or Are.na board, upload your
-            own screenshots, or paste a link. Every reference keeps a line home to its source —
-            so you stay the author, and the makers keep their credit.
-          </p>
+      <section className={styles.intro}>
+        <div className={styles.introTop}>
+          <h1 className={styles.introH}>Bring your<br />inspiration in.</h1>
+          <span className={styles.introMeta}>Four ways in · credit kept</span>
         </div>
+        <p className={styles.introP}>
+          Start anywhere below. Connect a Pinterest or Are.na board, upload your
+          own screenshots, or paste a link. Every reference keeps a line home to its source —
+          so you stay the author, and the makers keep their credit.
+        </p>
+      </section>
 
+      <main>
         <div className={styles.sourceTabs} role="tablist" aria-label="Inspiration source">
           {[
             ["pinterest", "Pinterest board"],
@@ -278,12 +288,17 @@ export default function ImportPage() {
         </div>
 
         {source === "upload" && (
-          <section className={styles.arenaPanel}>
-            <h2 className={styles.stepTitle}>Upload your own</h2>
-            <p className={styles.stepText}>
-              Screenshots, scans, photos — anything not on Pinterest. They’re yours to use, and they
-              stay in this browser (sign in to keep them on your account). Palettes extract automatically.
-            </p>
+          <section className={styles.flow}>
+            <aside className={styles.rail}>
+              <span className={styles.railKicker}>Upload screenshots</span>
+              <h2 className={styles.stepTitle}>Upload your own</h2>
+              <p className={styles.railNote}>
+                Screenshots, scans, photos — anything not on Pinterest. They’re yours to use, and they
+                stay in this browser (sign in to keep them on your account). Palettes extract automatically.
+              </p>
+            </aside>
+            <div className={styles.flowBody}>
+            <div className={styles.panel}>
             <label className={styles.fieldLabel}>Where’s it from? <span className={styles.optional}>(optional — a name, or paste a link to credit the source)</span></label>
             <input
               type="text"
@@ -311,15 +326,22 @@ export default function ImportPage() {
                 <p className={styles.stepHint}>Palettes are extracting in the background.</p>
               </div>
             )}
+            </div>
+            </div>
           </section>
         )}
 
         {source === "link" && (
-          <section className={styles.arenaPanel}>
-            <h2 className={styles.stepTitle}>Paste a link</h2>
-            <p className={styles.stepText}>
-              A direct image link from anywhere on the web. The source is kept and stays clickable — credit, preserved.
-            </p>
+          <section className={styles.flow}>
+            <aside className={styles.rail}>
+              <span className={styles.railKicker}>Paste a link</span>
+              <h2 className={styles.stepTitle}>Paste a link</h2>
+              <p className={styles.railNote}>
+                A direct image link from anywhere on the web. The source is kept and stays clickable — credit, preserved.
+              </p>
+            </aside>
+            <div className={styles.flowBody}>
+            <div className={styles.panel}>
             <label className={styles.fieldLabel}>Image link</label>
             <input
               type="text"
@@ -353,15 +375,22 @@ export default function ImportPage() {
                 <Link href="/library" className={styles.inlineLink}>Open library →</Link>
               </div>
             )}
+            </div>
+            </div>
           </section>
         )}
 
         {source === "arena" && (
-          <section className={styles.arenaPanel}>
-            <h2 className={styles.stepTitle}>Paste an Are.na channel</h2>
-            <p className={styles.stepText}>
-              No bookmark needed. Paste a public channel&rsquo;s link (or just its slug) and Moodbuilder pulls in every image block, with its source link. Palettes extract automatically.
-            </p>
+          <section className={styles.flow}>
+            <aside className={styles.rail}>
+              <span className={styles.railKicker}>Are.na</span>
+              <h2 className={styles.stepTitle}>Paste an Are.na channel</h2>
+              <p className={styles.railNote}>
+                No bookmark needed. Paste a public channel&rsquo;s link (or just its slug) and Inkling pulls in every image block, with its source link. Palettes extract automatically.
+              </p>
+            </aside>
+            <div className={styles.flowBody}>
+            <div className={styles.panel}>
             <div className={styles.arenaRow}>
               <input
                 type="text"
@@ -408,25 +437,42 @@ export default function ImportPage() {
                 </p>
               </div>
             )}
+            </div>
+            </div>
           </section>
         )}
 
-        {source === "pinterest" && (<>
-        <p className={styles.stepHint} style={{ marginBottom: 8 }}>
-          No board yet? <a href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" className={styles.inlineLink}>Make one on Pinterest →</a> Save a handful of pins that feel like you, then come back here for the four steps.
-        </p>
-        <section className={styles.step}>
-          <span className={styles.stepNum}>1</span>
+        {source === "pinterest" && (
+        <div className={styles.flow}>
+        <aside className={styles.rail}>
+          <span className={styles.railKicker}>Pinterest board</span>
+          <h2 className={styles.stepTitle}>The bookmark method</h2>
+          <p className={styles.railNote}>Every reference keeps a line home to its source — you stay the author.</p>
+          <ul className={styles.railSpec}>
+            <li>4 steps · works in Chrome</li>
+            <li>~90s for a few hundred pins</li>
+            <li>re-import adds only what’s new</li>
+          </ul>
+        </aside>
+        <div className={styles.flowBody}>
+        <div className={styles.leadHint}>
+          <p className={styles.stepHint}>
+            No board yet? <a href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" className={styles.inlineLink}>Make one on Pinterest →</a> Save a handful of pins that feel like you, then come back here for the four steps.
+          </p>
+        </div>
+        <ol className={styles.steps}>
+        <li className={styles.step}>
+          <span className={styles.stepNum}>01</span>
           <div className={styles.stepBody}>
             <h2 className={styles.stepTitle}>Show your bookmarks bar</h2>
             <p className={styles.stepText}>
               In Chrome: <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>B</kbd>. The bar appears just under the address bar.
             </p>
           </div>
-        </section>
+        </li>
 
-        <section className={styles.step}>
-          <span className={styles.stepNum}>2</span>
+        <li className={styles.step}>
+          <span className={styles.stepNum}>02</span>
           <div className={styles.stepBody}>
             <h2 className={styles.stepTitle}>Drag this button to your bookmarks bar</h2>
             <p className={styles.stepText}>
@@ -440,7 +486,7 @@ export default function ImportPage() {
                 onClick={(e) => e.preventDefault()}
                 draggable="true"
               >
-                ✦ Save board to Moodbuilder
+                ✦ Save board to Inkling
               </a>
               <button
                 type="button"
@@ -451,13 +497,13 @@ export default function ImportPage() {
               </button>
             </div>
             <p className={styles.stepHint}>
-              If dragging is awkward: click <em>or copy URL</em>, then right-click the bookmarks bar → Add page → paste as the URL and name it <em>Save board to Moodbuilder</em>.
+              If dragging is awkward: click <em>or copy URL</em>, then right-click the bookmarks bar → Add page → paste as the URL and name it <em>Save board to Inkling</em>.
             </p>
           </div>
-        </section>
+        </li>
 
-        <section className={styles.step}>
-          <span className={styles.stepNum}>3</span>
+        <li className={styles.step}>
+          <span className={styles.stepNum}>03</span>
           <div className={styles.stepBody}>
             <h2 className={styles.stepTitle}>Open the Pinterest board for this project and click the bookmark</h2>
             <p className={styles.stepText}>
@@ -470,10 +516,10 @@ export default function ImportPage() {
               Re-importing the same board later only adds the new pins. Existing ones are kept as-is.
             </p>
           </div>
-        </section>
+        </li>
 
-        <section className={styles.step}>
-          <span className={styles.stepNum}>4</span>
+        <li className={styles.step}>
+          <span className={styles.stepNum}>04</span>
           <div className={styles.stepBody}>
             <h2 className={styles.stepTitle}>Drop the JSON here</h2>
             <p className={styles.stepText}>
@@ -551,9 +597,17 @@ export default function ImportPage() {
               </div>
             )}
           </div>
-        </section>
-        </>)}
+        </li>
+        </ol>
+        </div>
+        </div>
+        )}
       </main>
+
+      <footer className={styles.colophon}>
+        <span>Inkling · No.&nbsp;01</span>
+        <span>Every reference keeps a line home to its source.</span>
+      </footer>
     </div>
   );
 }

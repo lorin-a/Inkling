@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Make Inkling yours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=DM+Serif+Display:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f7f6f2; --ink:#1c1810; --accent:#6a2ee6; --sub:#8a7f70;
+    --muted:#8a7f70; --faint:#b6ab99; --line:rgba(40,32,18,0.16); --rule:#2a2419;
+    --wm-font:"Fraunces",Georgia,serif;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif; --mono:"Noto Sans Mono",ui-monospace,monospace;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;overflow:hidden;
+    transition:background-color 1s var(--ease),color 1s var(--ease)}
+  .app{height:100vh;display:flex;flex-direction:column}
+
+  /* top bar — progress + ever-present skip */
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 44px;flex:0 0 auto}
+  .wm{font-family:var(--wm-font);font-size:22px;font-weight:600;letter-spacing:-0.02em}
+  .wm .dot{color:var(--accent)}
+  .progress{display:flex;align-items:center;gap:16px;font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint)}
+  .progress .p{display:flex;align-items:center;gap:7px;transition:color .4s}
+  .progress .p .d{width:7px;height:7px;border-radius:100px;background:currentColor;opacity:.5}
+  .progress .p.on{color:var(--ink)} .progress .p.on .d{opacity:1;background:var(--accent)}
+  .progress .p.done{color:var(--muted)}
+  .skip{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.03em;color:var(--ink);background:none;border:1.5px solid var(--line);border-radius:100px;padding:9px 18px;cursor:pointer;transition:border-color .15s,background-color .15s}
+  .skip:hover{border-color:var(--ink);background:color-mix(in srgb,var(--ink) 6%,transparent)}
+
+  /* the immersive stage */
+  .stage{flex:1 1 auto;position:relative;overflow:hidden}
+  .step{position:absolute;inset:0;display:flex;flex-direction:column;padding:8px 44px 30px;opacity:0;visibility:hidden;transform:translateY(16px);transition:opacity .5s var(--ease),transform .5s var(--ease),visibility .5s}
+  .step.active{opacity:1;visibility:visible;transform:none}
+  .stepHead{flex:0 0 auto;text-align:center;padding:6px 0 18px}
+  .kick{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .stepH{font-family:var(--serif);font-weight:500;font-size:clamp(44px,5.6vw,78px);line-height:.98;letter-spacing:-0.035em;margin-top:14px}
+  .stepSub{font-size:19px;line-height:1.5;color:var(--muted);margin:14px auto 0;max-width:640px}
+
+  /* beat 1 — the wall */
+  .wall{flex:1 1 auto;display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:1fr;gap:12px;min-height:0;padding-bottom:8px}
+  @media (max-width:900px){ .wall{grid-template-columns:repeat(3,1fr)} }
+  .ref{position:relative;border-radius:8px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;transition:transform .3s var(--ease),border-color .2s,box-shadow .3s}
+  .ref img{width:100%;height:100%;object-fit:cover;display:block;transition:filter .35s,transform .5s var(--ease)}
+  .ref:hover{transform:translateY(-4px)} .ref:hover img{transform:scale(1.05)}
+  .ref:not(.on) img{filter:saturate(.85) brightness(.96)}
+  .ref.on{border-color:var(--accent);box-shadow:0 10px 30px rgba(0,0,0,.22)}
+  .ref .chk{position:absolute;top:9px;right:9px;width:26px;height:26px;border-radius:100px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;opacity:0;transform:scale(.4);transition:opacity .2s,transform .3s cubic-bezier(.34,1.56,.64,1)}
+  .ref.on .chk{opacity:1;transform:none}
+
+  /* the gathering bar — colors accumulating, the live feedback */
+  .gather{flex:0 0 auto;display:flex;align-items:center;gap:14px;padding-top:16px}
+  .gatherLabel{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+  .gatherBar{flex:1;display:flex;gap:4px;height:18px}
+  .gatherBar span{flex:1;max-width:46px;border-radius:3px;transform:scaleY(0);transform-origin:bottom;transition:transform .4s var(--ease),background-color .4s}
+  .gatherBar span.f{transform:scaleY(1)}
+
+  /* beat 2 — your colors, big */
+  .palette{flex:1 1 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,104px));gap:18px;justify-content:center;align-content:center;max-width:1040px;margin:0 auto;padding:20px}
+  .pcell{aspect-ratio:3/4;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08), 0 8px 22px rgba(0,0,0,.10);cursor:pointer;position:relative;transition:transform .3s var(--ease),opacity .3s,filter .3s}
+  .pcell:hover{transform:translateY(-4px)}
+  .pcell.off{opacity:.45;filter:grayscale(.92);transform:scale(.78)}
+  .pcell.off .hex{opacity:.6}
+  .pcell .x{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:100px;background:rgba(0,0,0,.5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;opacity:0;transition:opacity .2s}
+  .pcell:hover .x{opacity:1}
+  .pcell .hex{position:absolute;left:8px;bottom:8px;font-family:var(--mono);font-size:10px;color:#fff;mix-blend-mode:difference}
+
+  /* beat 3 — type */
+  .typeStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px}
+  .typeWm{font-family:var(--wm-font);font-size:clamp(64px,12vw,150px);line-height:.9;letter-spacing:-0.04em}
+  .typeWm .dot{color:var(--accent)}
+  .typeOpts{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .topt{border:1.5px solid var(--line);border-radius:8px;padding:16px 26px;cursor:pointer;background:none;text-align:center;transition:border-color .2s,transform .2s var(--ease)}
+  .topt:hover{transform:translateY(-2px)} .topt.on{border-color:var(--accent)}
+  .topt .tn{font-size:30px;line-height:1;color:var(--ink)} .topt .tl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:9px}
+
+  /* reveal */
+  .reveal{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
+  .revWm{font-family:var(--wm-font);font-size:clamp(60px,11vw,150px);line-height:.9;letter-spacing:-0.04em;color:var(--ink)}
+  .revWm .dot{color:var(--accent)}
+  .revTag{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--sub);margin-top:6px}
+  .revSwatches{display:flex;height:34px;width:min(440px,70vw);margin-top:24px;border-radius:5px;overflow:hidden}
+  .revSwatches span{flex:1;transition:background-color .6s}
+  .revLead{font-family:var(--serif);font-size:29px;font-weight:500;margin-top:34px}
+  /* perfect-it panel */
+  .revControls{display:flex;align-items:center;gap:18px;margin-top:32px;flex-wrap:wrap;justify-content:center}
+  .revBtn{display:inline-flex;align-items:center;gap:11px;font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);background:none;border:1.5px solid var(--ink);border-radius:100px;padding:13px 26px;cursor:pointer;transition:background-color .2s,color .2s}
+  .revBtn:hover{background:var(--ink);color:var(--bg)}
+  .revBtn .kbd{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;opacity:.6;border:1px solid currentColor;border-radius:4px;padding:2px 7px}
+  .seg2{display:inline-flex;border:1.5px solid var(--line);border-radius:100px;overflow:hidden}
+  .seg2 button{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:12px 22px;background:none;border:none;cursor:pointer;color:var(--muted)}
+  .seg2 button.on{background:var(--ink);color:var(--bg)}
+
+  /* footer nav */
+  .nav{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 44px 26px}
+  .back{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;padding:10px 2px;visibility:hidden}
+  .back:hover{color:var(--ink)}
+  .navMid{font-family:var(--mono);font-size:14px;color:var(--faint)}
+  .next{display:inline-flex;align-items:center;gap:10px;font-size:17px;font-weight:700;color:var(--bg);background:var(--ink);padding:17px 34px;border-radius:8px;border:none;cursor:pointer;transition:opacity .2s}
+  .next[disabled]{opacity:.32;cursor:default}
+  .next .ar{color:var(--bg);opacity:.9}
+  .ghost{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:4px;margin-right:22px}
+  .ghost:hover{color:var(--ink)}
+
+  @media (prefers-reduced-motion: reduce){ *{transition-duration:.001ms !important;animation:none !important} }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <span class="wm">inkling<span class="dot">.</span></span>
+    <div class="progress" id="progress">
+      <span class="p" data-s="0"><span class="d"></span>Gather</span>
+      <span class="p" data-s="1"><span class="d"></span>Colors</span>
+      <span class="p" data-s="2"><span class="d"></span>Type</span>
+      <span class="p" data-s="3"><span class="d"></span>Your Inkling</span>
+    </div>
+    <button class="skip" id="skipBtn">Skip, take me in →</button>
+  </header>
+
+  <div class="stage">
+    <!-- 0 — pick -->
+    <section class="step" id="s0">
+      <div class="stepHead"><div class="kick">Step 1 of 3 · Gather</div><div class="stepH">What feels like you?</div><div class="stepSub">Tap 3 to 6 that feel like you.</div></div>
+      <div class="wall" id="wall"></div>
+      <div class="gather"><span class="gatherLabel">Colors gathering</span><div class="gatherBar" id="gatherBar"></div></div>
+    </section>
+
+    <!-- 1 — colors -->
+    <section class="step" id="s1">
+      <div class="stepHead"><div class="kick">Step 2 of 3 · Colors</div><div class="stepH">Your colors.</div><div class="stepSub">Tap any to remove it.</div></div>
+      <div class="palette" id="palette"></div>
+    </section>
+
+    <!-- 2 — type -->
+    <section class="step" id="s2">
+      <div class="stepHead"><div class="kick">Step 3 of 3 · Type</div><div class="stepH">Pick your typeface.</div></div>
+      <div class="typeStage">
+        <div class="typeWm" id="typeWm">inkling<span class="dot">.</span></div>
+        <div class="typeOpts" id="typeOpts"></div>
+      </div>
+    </section>
+
+    <!-- 3 — reveal -->
+    <section class="step" id="s3">
+      <div class="reveal">
+        <div class="revWm" id="revWm">inkling<span class="dot">.</span></div>
+        <div class="revTag">“you know it when you see it”</div>
+        <div class="revSwatches" id="revSwatches"></div>
+        <div class="revLead">Here’s your Inkling.</div>
+        <div class="revControls">
+          <button class="revBtn" id="shuffleBtn">⤮ Shuffle <span class="kbd">space</span></button>
+          <div class="seg2" id="segPolarity"><button data-pol="light">Light</button><button data-pol="dark">Dark</button></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="nav">
+    <button class="back" id="backBtn">← Back</button>
+    <span class="navMid" id="navMid"></span>
+    <div>
+      <button class="ghost" id="defaultBtn" style="display:none">Use the default</button>
+      <button class="next" id="nextBtn">Next <span class="ar">→</span></button>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const REFS = [
+    { img:"/sample/1039135314045106126.jpg", pal:["#070d0b","#a5aac4","#1a3e3e","#847d90","#61555c"] },
+    { img:"/sample/1039135314045106266.jpg", pal:["#0b0f18","#33202a","#546571","#6e3b3e","#2e424f"] },
+    { img:"/sample/1039135314045106132.jpg", pal:["#213831","#7a803d","#3c5038","#0d2023","#4b6959"] },
+    { img:"/sample/1039135314045106065.jpg", pal:["#112133","#98360c","#1b4554","#e79c1e","#57685c"] },
+    { img:"/sample/1039135314045105396.jpg", pal:["#085573","#9d9392","#d7d8d9","#42a09c","#b2adaa"] },
+    { img:"/sample/1039135314045105430.jpg", pal:["#186784","#1699a4","#e09dad","#2b58c1","#76c1ce"] },
+    { img:"/sample/1039135314045105367.jpg", pal:["#e06b4a","#908d79","#c9afd8","#354263","#d9cfc2"] },
+    { img:"/sample/1039135314045106233.jpg", pal:["#cb81ac","#8c7977","#b85a7c","#bac7dc","#8f2861"] },
+    { img:"/sample/1039135314045106209.jpg", pal:["#c3b6b8","#ac8365","#a2959c","#526d3b","#baa290"] },
+    { img:"/sample/1039135314045105702.jpg", pal:["#ecddc8","#ebc499","#eaae59","#ed7245","#8eb8a4"] },
+    { img:"/sample/1039135314045105452.jpg", pal:["#f5eee2","#c6cade","#97a9e7","#eba448","#6870db"] },
+    { img:"/sample/1039135314045105598.jpg", pal:["#f7f0f5","#e3d5cc","#d1bb71","#c77452","#8b8bca"] },
+  ];
+  const hex2rgb=h=>{h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16))};
+  const rgb2hex=a=>'#'+a.map(x=>Math.max(0,Math.min(255,Math.round(x))).toString(16).padStart(2,'0')).join('');
+  const lum=h=>{const v=hex2rgb(h).map(x=>{x/=255;return x<=.03928?x/12.92:Math.pow((x+.055)/1.055,2.4)});return .2126*v[0]+.7152*v[1]+.0722*v[2]};
+  const contrast=(a,b)=>{const L1=lum(a),L2=lum(b);return (Math.max(L1,L2)+.05)/(Math.min(L1,L2)+.05)};
+  const chroma=h=>{const[r,g,b]=hex2rgb(h);return (Math.max(r,g,b)-Math.min(r,g,b))/255};
+  const warmth=h=>{const[r,g,b]=hex2rgb(h);return (r-b)/255};
+  const mix=(h,t,a)=>{const x=hex2rgb(h),y=hex2rgb(t);return rgb2hex(x.map((v,i)=>v+(y[i]-v)*a))};
+  const FONTS={fraunces:{f:'"Fraunces",Georgia,serif',label:'Fraunces · editorial'},dmserif:{f:'"DM Serif Display",Georgia,serif',label:'DM Serif · warm'},grotesk:{f:'"Space Grotesk",sans-serif',label:'Space Grotesk · cool'}};
+
+  const state={ step:0, picks:new Set(), dropped:new Set(), edits:{}, added:[], type:'auto', polarity:'auto', seed:0 };
+  const STEPS=4;
+
+  const poolAll=()=>[...new Set([...state.picks].flatMap(i=>REFS[i].pal))];
+  const pool=()=>poolAll().filter(h=>!state.dropped.has(h));
+
+  function compose(){
+    const p=pool(); if(!p.length) return null;
+    const byLum=[...p].sort((a,b)=>lum(a)-lum(b));
+    const avg=p.reduce((s,h)=>s+lum(h),0)/p.length;
+    const polarity=(state.polarity&&state.polarity!=='auto')?state.polarity:(avg>0.42?'light':'dark');
+    const light=polarity==='light';
+    const seed=state.seed||0;
+    // background — pick among the extreme-luminance colors, varied by shuffle
+    const bgCands = light ? byLum.slice(Math.max(0,byLum.length-4)) : byLum.slice(0,Math.min(4,byLum.length));
+    const bgBase = bgCands[seed % bgCands.length] || (light?byLum[byLum.length-1]:byLum[0]);
+    const bg = light?mix(bgBase,'#ffffff',0.42):mix(bgBase,'#000000',0.4);
+    // accent — most saturated with usable contrast, varied by shuffle
+    const cs=[...p].sort((a,b)=>chroma(b)-chroma(a)).filter(h=>contrast(h,bg)>=1.7);
+    let accent=(cs.length?cs[seed%cs.length]:[...p].sort((a,b)=>chroma(b)-chroma(a))[0]);
+    // ink (logo) — high contrast on bg, varied
+    const inkCands=byLum.filter(h=>contrast(h,bg)>=5 && h!==accent);
+    let ink=inkCands.length?inkCands[seed%inkCands.length]:(light?'#181410':'#f4efe6');
+    if(contrast(ink,bg)<4.5) ink=light?mix(ink,'#000000',0.55):mix(ink,'#ffffff',0.55);
+    // subhead — readable, distinct from ink
+    const subCands=[...p].filter(h=>contrast(h,bg)>=2.8 && h!==ink);
+    let sub=subCands.length?subCands[(seed+1)%subCands.length]:mix(ink,bg,0.4);
+    let type=state.type; if(type==='auto'){const w=p.reduce((s,h)=>s+warmth(h),0)/p.length; type=w>0.06?'dmserif':(w<-0.04?'grotesk':'fraunces');}
+    return {bg,ink,accent,sub,font:FONTS[type].f,type,polarity};
+  }
+  function applyPage(r){
+    const s=document.documentElement.style;
+    s.setProperty('--bg',r.bg);s.setProperty('--ink',r.ink);s.setProperty('--accent',r.accent);s.setProperty('--sub',r.sub);
+    s.setProperty('--muted',mix(r.ink,r.bg,0.42));s.setProperty('--faint',mix(r.ink,r.bg,0.62));
+    s.setProperty('--rule',r.ink);s.setProperty('--line',mix(r.ink,r.bg,0.8));s.setProperty('--wm-font',r.font);
+  }
+
+  // ---- beat builders ----
+  const wall=document.getElementById('wall');
+  REFS.forEach((ref,i)=>{
+    const el=document.createElement('div'); el.className='ref'; el.tabIndex=0; el.setAttribute('role','button');
+    el.innerHTML=`<img src="${ref.img}" alt="" loading="lazy"/><span class="chk">✓</span>`;
+    const t=()=>{ state.picks.has(i)?state.picks.delete(i):state.picks.add(i); el.classList.toggle('on',state.picks.has(i)); renderGather(); updateNav(); };
+    el.addEventListener('click',t); el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t();}});
+    wall.appendChild(el);
+  });
+  function renderGather(){
+    const p=poolAll().slice(0,18);
+    const bar=document.getElementById('gatherBar');
+    bar.innerHTML=p.map(h=>`<span style="background:${h}"></span>`).join('');
+    requestAnimationFrame(()=>bar.querySelectorAll('span').forEach((s,k)=>setTimeout(()=>s.classList.add('f'),k*30)));
+  }
+  function renderPalette(){
+    const box=document.getElementById('palette'); const p=poolAll();
+    box.innerHTML=p.map(h=>`<div class="pcell ${state.dropped.has(h)?'off':''}" data-hex="${h}" style="background:${h}"><span class="x">✕</span><span class="hex">${h}</span></div>`).join('');
+    box.querySelectorAll('.pcell').forEach(c=>c.addEventListener('click',()=>{const h=c.dataset.hex;state.dropped.has(h)?state.dropped.delete(h):state.dropped.add(h);c.classList.toggle('off',state.dropped.has(h));}));
+  }
+  function renderType(){
+    const r=compose()||{ink:'var(--ink)',accent:'var(--accent)'};
+    const wm=document.getElementById('typeWm');
+    const cur=state.type==='auto'? (compose()?compose().type:'fraunces') : state.type;
+    wm.style.fontFamily=FONTS[cur].f; wm.style.color=r.ink||'';
+    const opts=document.getElementById('typeOpts');
+    opts.innerHTML=Object.entries(FONTS).map(([k,v])=>`<button class="topt ${cur===k?'on':''}" data-type="${k}"><div class="tn" style="font-family:${v.f}">inkling.</div><div class="tl">${v.label}</div></button>`).join('');
+    opts.querySelectorAll('.topt').forEach(b=>b.addEventListener('click',()=>{state.type=b.dataset.type;renderType();}));
+  }
+  function renderReveal(){
+    const r=compose(); if(!r) return;
+    applyPage(r);
+    const wm=document.getElementById('revWm'); wm.style.fontFamily=r.font; wm.style.color=r.ink;
+    document.getElementById('revSwatches').innerHTML=[r.bg,r.ink,r.accent,r.sub,mix(r.accent,r.ink,0.3)].map(h=>`<span style="background:${h}"></span>`).join('');
+    document.querySelectorAll('#segPolarity button').forEach(b=>b.classList.toggle('on', b.dataset.pol===r.polarity));
+    wm.classList.remove('pop'); void wm.offsetWidth; wm.classList.add('pop');
+  }
+  function shuffleBrand(){ state.seed=(state.seed||0)+1; const ks=Object.keys(FONTS); state.type=ks[Math.floor(Math.random()*ks.length)]; renderReveal(); }
+  document.getElementById('shuffleBtn').addEventListener('click',shuffleBrand);
+  document.getElementById('segPolarity').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;state.polarity=b.dataset.pol;renderReveal();});
+  document.addEventListener('keydown',e=>{ if(e.code==='Space' && state.step===3 && !/INPUT|TEXTAREA|BUTTON/.test(e.target.tagName||'')){ e.preventDefault(); shuffleBrand(); } });
+
+  // ---- step machine ----
+  function show(n){
+    state.step=Math.max(0,Math.min(STEPS-1,n));
+    document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active',i===state.step));
+    document.querySelectorAll('#progress .p').forEach((p,i)=>{p.classList.toggle('on',i===state.step);p.classList.toggle('done',i<state.step);});
+    document.getElementById('backBtn').style.visibility = state.step>0?'visible':'hidden';
+    const next=document.getElementById('nextBtn');
+    document.getElementById('defaultBtn').style.display = state.step===3?'inline-block':'none';
+    if(state.step===0){ renderGather(); }
+    if(state.step===1){ renderPalette(); }
+    if(state.step===2){ renderType(); }
+    if(state.step===3){ renderReveal(); next.innerHTML='Now make your own brand <span class="ar">→</span>'; }
+    else { next.innerHTML='Next <span class="ar">→</span>'; }
+    updateNav();
+  }
+  function updateNav(){
+    const next=document.getElementById('nextBtn');
+    next.disabled = (state.step===0 && state.picks.size===0);
+    document.getElementById('navMid').textContent = state.step===0 ? (state.picks.size?`${state.picks.size} chosen`:'pick a few that feel like you') : '';
+  }
+  document.getElementById('nextBtn').addEventListener('click',()=>{ if(state.step<3) show(state.step+1); else { /* hand to real product */ } });
+  document.getElementById('backBtn').addEventListener('click',()=>show(state.step-1));
+  document.getElementById('skipBtn').addEventListener('click',()=>{ /* exit to product */ alert('→ this is where Skip drops you straight into the real product with your own inspiration.'); });
+  document.getElementById('defaultBtn').addEventListener('click',()=>{ const s=document.documentElement.style;['--bg','--ink','--accent','--sub','--muted','--faint','--rule','--line','--wm-font'].forEach(k=>s.removeProperty(k)); });
+
+  show(0);
+</script>
+</div>
+</body>
+</html>

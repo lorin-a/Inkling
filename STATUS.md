@@ -96,17 +96,31 @@ Tokens in `globals.css`. GSAP installed. The lock artifact: `public/inkling-fina
   inspiration", well shelved, Direction travels); **"+ Color" summons the real gather**;
   canvas-as-home dimension containers; the warm/craft canvas pass.
 
+## ★ Onboarding "Make Inkling yours" — prototype built & loved (2026-06-11)
+The opening act = the real product in miniature, **Inkling as the subject**: you react your way to
+*Inkling's own brand* and the site reskins into your version. Prototype: **`public/make-inkling.html`**
+(self-contained, real interactions, real color engine, contrast-legible by construction). Beats:
+**Gather** (full-screen wall) → **Colors** (clean grid, remove any) → **Type** (pick a face) →
+**reveal** (page wears it; **Shuffle (spacebar)** + Light/Dark, playful not a dead finish). Design laws
+(she reviewed hard): immersive/large/one-decision/skippable every beat; **fast spine + optional depth**
+(per-part precision lives in the real Build tool, not onboarding); direct copy; US English; use
+intuition repeatedly. See [[project_onboarding_genesis]]. **Killed** the playable sample-studio idea.
+
 ## Next move (do this first)
-**THE BETA — Lorin dogfoods her own tool.** Import her real Inkling inspiration (the Pinterest
-board + screenshots + credited links via `/import`), then run **Gather → Play → Build** end to end.
-*Her friction is the next build list.* The meta-test: can Inkling find its own brand? Open the new
-session pointed straight at this.
+**Continue the onboarding — the three Lorin confirmed for next time** (build properly, don't rush):
+1. a **manual color-adjust** step (eyedrop / edit hex) in/after Colors; 2. **more type options +
+pairing choices** = the **Type font-web** (connect/draw a line to pair a title voice + body voice,
+spacebar reshuffles the field, mix-and-match); 3. a **draggable moodboard (Play) beat** before the
+reveal. Then: wire the prototype in as the real front door + full-app skin persistence.
+**Parallel structural priority:** **`RIGHTS.md` Phase 0** (delete `lib/pinterestSourceFetcher.js` +
+stop the bookmarklet auto-scroll) before any public launch — read `RIGHTS.md` before touching import.
 
 ## Then (dogfood-driven, in rough order)
-- Bring the **inner pages** (studio, gather, build) up to the editorial Inkling bar (they inherit the
-  tokens but aren't bespoke-rebuilt yet).
+- Bring the **inner pages** (studio, gather, build) up to the editorial Inkling bar (product register;
+  they inherit the tokens but aren't bespoke-rebuilt yet). `/import` is now editorial + on the grid.
 - Make **Build / export** work end-to-end (gathered palette → a brand → an export).
-- Tidy: bookmarklet still says "Moodbuilder"; `/import` not fully editorial; BrandShuffle monogram nudge.
+- Landing: reconcile masthead/banner/colophon to `--bleed`; the bolder asymmetric brand-register move.
+- (Retiring, per `RIGHTS.md`: the Pinterest scraping bookmarklet → "import your data export".)
 
 ## Open "your call" (from FLOW_AUDIT)
 Merge `/colors`; defer marks/textures/gradients; the Narrow gesture; the cross-project well (shelved).

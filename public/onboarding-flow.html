@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inkling — first-run flow map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f7f6f2; --bg-elev:#fdfdfb; --ink:#1c1810; --muted:#8a7f70; --faint:#b6ab99;
+    --rule:#2a2419; --hairline:rgba(40,32,18,0.16); --hairline-soft:rgba(40,32,18,0.08);
+    --accent:#6a2ee6; --pop:#f0531f;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif; --mono:"Noto Sans Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  /* masthead */
+  .mast{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px 40px;border-bottom:1.5px solid var(--rule);flex-wrap:wrap}
+  .wm{font-family:var(--serif);font-size:24px;font-weight:600;letter-spacing:-0.02em}
+  .wm .wmdot{color:var(--accent)}
+  .mastR{display:flex;align-items:center;gap:18px}
+  .mark{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted)}
+  .reset{font-family:var(--mono);font-size:11px;letter-spacing:0.06em;color:var(--accent);text-decoration:underline;text-underline-offset:3px;cursor:pointer;background:none;border:none}
+  /* stage */
+  .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 40px}
+  .screen{display:none;width:100%;max-width:760px;animation:fade .35s cubic-bezier(.22,1,.36,1)}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){.screen{animation:none}}
+  .kick{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px}
+  .kick .sq{width:8px;height:8px;background:var(--accent);display:inline-block}
+  .kick .pathSample{color:var(--accent)} .kick .pathOwn{color:var(--pop)}
+  h1.h{font-family:var(--serif);font-weight:500;font-size:clamp(34px,5vw,52px);line-height:1;letter-spacing:-0.03em;margin:18px 0 0}
+  .lede{font-size:16px;line-height:1.6;color:var(--muted);margin-top:16px;max-width:560px}
+  /* the "where you are" thread */
+  .thread{display:flex;align-items:center;gap:14px;margin-top:22px;padding:12px 16px;border:1px solid var(--hairline);border-radius:4px;background:var(--bg-elev);flex-wrap:wrap}
+  .thread .proj{font-family:var(--serif);font-size:16px;font-weight:500;padding-right:14px;border-right:1px solid var(--hairline)}
+  .thread .step{font-family:var(--mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint)}
+  .thread .step.on{color:var(--ink);font-weight:600}
+  .thread .step.on::before{content:"● ";color:var(--accent)}
+  .thread .sep{color:var(--faint)}
+  .thread .next{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .thread .next b{color:var(--pop)}
+  /* interaction demo block */
+  .demo{margin-top:24px;border:1px solid var(--hairline);border-radius:6px;background:var(--bg-elev);padding:22px;display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+  .demo .swatchRow{display:flex;gap:6px}
+  .demo .sw{width:46px;height:46px;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+  .demo .imgblock{width:150px;height:104px;border-radius:4px;background:linear-gradient(135deg,#7d9bbf,#caa07e 60%,#b58a98);flex:0 0 auto}
+  .demo .pin{width:88px;height:108px;background:#fff;border:1px solid var(--hairline);border-radius:2px;box-shadow:0 6px 16px rgba(40,28,12,.16);transform:rotate(-4deg)}
+  .demo .pin .pic{height:74px;margin:6px 6px 0;background:linear-gradient(135deg,#caa07e,#7d9bbf)}
+  .demo .board{flex:1;min-width:160px;height:108px;border:1px dashed var(--hairline);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--faint);font-family:var(--mono);font-size:11px}
+  .demo .arrow{font-size:22px;color:var(--pop)}
+  .demo .specimen{flex:1;min-width:200px;height:120px;border-radius:5px;background:#221d14;color:#f3eee4;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:30px;position:relative}
+  .demo .specimen .dotp{color:var(--pop)}
+  .demo .specimen .bar{position:absolute;left:0;right:0;bottom:0;height:18px;display:flex}
+  .demo .specimen .bar span{flex:1}
+  .coach{margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.5}
+  .coach b{color:var(--ink)}
+  .scope{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+  .scope span{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--hairline);border-radius:3px;padding:5px 10px}
+  .scope span.live{color:var(--ink);border-color:var(--accent)}
+  /* choices + buttons */
+  .choices{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:680px){.choices{grid-template-columns:1fr}}
+  .choice{text-align:left;border:1.5px solid var(--hairline);border-radius:6px;background:var(--bg-elev);padding:22px;cursor:pointer;transition:border-color .18s,transform .18s}
+  .choice:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .choice .ct{font-family:var(--serif);font-size:23px;font-weight:500;margin-bottom:8px}
+  .choice .cd{font-size:13.5px;line-height:1.5;color:var(--muted)}
+  .choice .ctag{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;display:block}
+  .choice.sample .ctag{color:var(--accent)} .choice.own .ctag{color:var(--pop)}
+  .actions{margin-top:30px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:10px;font-size:14.5px;font-weight:700;color:var(--bg);background:var(--ink);padding:13px 22px;border-radius:4px;border:none;cursor:pointer;transition:background .18s}
+  .btn:hover{background:#000}
+  .btn .ar{color:var(--pop)}
+  .btn.ghost{background:none;color:var(--muted);font-family:var(--mono);font-size:12px;font-weight:600;padding:13px 4px;text-decoration:underline;text-underline-offset:3px}
+  .btn.ghost:hover{color:var(--ink)}
+  .field{margin-top:22px;max-width:420px}
+  .field input{width:100%;font-family:var(--serif);font-size:22px;padding:11px 14px;background:var(--bg);border:1.5px solid var(--rule);border-radius:4px;color:var(--ink)}
+  .fixnote{margin-top:18px;font-size:13px;color:var(--accent);font-style:italic;font-family:var(--serif)}
+  /* flow rail */
+  .rail{border-top:1px solid var(--hairline);padding:14px 40px;display:flex;align-items:center;gap:6px;overflow-x:auto;background:var(--bg-elev)}
+  .rail .rl{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-right:10px;flex:0 0 auto}
+  .dot{flex:0 0 auto;font-family:var(--mono);font-size:11px;color:var(--muted);background:none;border:1px solid var(--hairline);border-radius:100px;padding:5px 12px;cursor:pointer;white-space:nowrap;transition:all .15s}
+  .dot:hover{border-color:var(--ink);color:var(--ink)}
+  .dot.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .dot.s{border-color:rgba(106,46,230,.35)} .dot.s.on{background:var(--accent);border-color:var(--accent)}
+  .dot.o{border-color:rgba(240,83,31,.35)} .dot.o.on{background:var(--pop);border-color:var(--pop)}
+  .branch{flex:0 0 auto;color:var(--faint);font-size:13px;padding:0 4px}
+</style>
+</head>
+<body>
+  <header class="mast">
+    <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap">
+      <span class="wm">inkling<span class="wmdot">.</span></span>
+      <span class="mark">First-run flow · a map to walk</span>
+    </div>
+    <div class="mastR">
+      <span class="mark" id="pathLabel"></span>
+      <button class="reset" onclick="go('door')">↺ back to the door</button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <!-- ① DOOR -->
+    <section class="screen active" id="door">
+      <p class="kick"><span class="sq"></span>Welcome · first visit</p>
+      <h1 class="h">What brings you in?</h1>
+      <p class="lede">One question at the door. It decides everything after — and it means your real work never lands in the same pile as a demo.</p>
+      <div class="choices">
+        <button class="choice sample" onclick="go('s_gather')">
+          <span class="ctag">Learn the arc</span>
+          <div class="ct">Explore a sample</div>
+          <div class="cd">A guided tour. You make one real move at each step — gather, play, build — and feel the whole arc once, safely. ~2 minutes.</div>
+        </button>
+        <button class="choice own" onclick="go('o_name')">
+          <span class="ctag">Do it for real</span>
+          <div class="ct">Start your own</div>
+          <div class="cd">Name a project, bring your own inspiration in, and work it yourself. Starts empty. Unmistakably yours.</div>
+        </button>
+      </div>
+    </section>
+
+    <!-- SAMPLE PATH -->
+    <section class="screen" id="s_gather">
+      <p class="kick"><span class="pathSample">Guided tour</span> · 1 of 3 · Gather</p>
+      <h1 class="h">Pull a colour you love.</h1>
+      <p class="lede">From this image. One move — that's all. Watch it land in your palette. Type and images gather the very same way.</p>
+      <div class="demo">
+        <div class="imgblock"></div>
+        <span class="arrow">→</span>
+        <div class="swatchRow"><span class="sw" style="background:#7d9bbf"></span><span class="sw" style="background:#caa07e"></span><span class="sw" style="background:#b58a98;outline:2px solid var(--accent);outline-offset:2px"></span></div>
+      </div>
+      <div class="scope"><span class="live">● Colour</span><span>Type</span><span>Images</span></div>
+      <p class="coach">Coachmark: <b>“Click a colour in the image — it joins your gathered palette.”</b> Gather is colour <i>and</i> type <i>and</i> images, all one step.</p>
+      <div class="actions"><button class="btn" onclick="go('s_play')">I pulled one <span class="ar">→</span></button><button class="btn ghost" onclick="go('door')">skip the tour</button></div>
+    </section>
+
+    <section class="screen" id="s_play">
+      <p class="kick"><span class="pathSample">Guided tour</span> · 2 of 3 · Play</p>
+      <h1 class="h">Drag a pin onto your board.</h1>
+      <p class="lede">Now arrange. One pin, dragged into place — the tactile half. This is where the pile becomes a direction.</p>
+      <div class="demo">
+        <div class="pin"><div class="pic"></div></div>
+        <span class="arrow">→</span>
+        <div class="board">drop it here</div>
+      </div>
+      <p class="coach">Coachmark: <b>“Drag the pin onto the board. It snaps into place.”</b></p>
+      <div class="actions"><button class="btn" onclick="go('s_build')">I placed one <span class="ar">→</span></button><button class="btn ghost" onclick="go('door')">skip the tour</button></div>
+    </section>
+
+    <section class="screen" id="s_build">
+      <p class="kick"><span class="pathSample">Guided tour</span> · 3 of 3 · Build</p>
+      <h1 class="h">Shuffle a brand into being.</h1>
+      <p class="lede">Hit shuffle — a whole direction composes from what you gathered. The payoff: overwhelm becomes something tangible.</p>
+      <div class="demo">
+        <div class="specimen">Coastline<span class="dotp">.</span><div class="bar"><span style="background:#7d9bbf"></span><span style="background:#caa07e"></span><span style="background:#b58a98"></span></div></div>
+      </div>
+      <p class="coach">Coachmark: <b>“Press Shuffle — watch a brand appear.”</b></p>
+      <div class="actions"><button class="btn" onclick="go('s_end')">I shuffled <span class="ar">→</span></button><button class="btn ghost" onclick="go('door')">skip the tour</button></div>
+    </section>
+
+    <section class="screen" id="s_end">
+      <p class="kick"><span class="pathSample">Guided tour</span> · done</p>
+      <h1 class="h">That’s the whole arc.</h1>
+      <p class="lede">Gather → Play → Build. You’ve felt it once. Now do it with your own inspiration — your project starts clean and empty.</p>
+      <div class="actions"><button class="btn" onclick="go('o_name')">Start your own project <span class="ar">→</span></button><button class="btn ghost" onclick="go('door')">back to the door</button></div>
+      <p class="fixnote">The sample only ever lived here, in the tour. It never mixes into your project.</p>
+    </section>
+
+    <!-- OWN PATH -->
+    <section class="screen" id="o_name">
+      <p class="kick"><span class="pathOwn">Your own</span> · new project</p>
+      <h1 class="h">Name it.</h1>
+      <p class="lede">A project is a clean, separate space — its own inspiration, its own directions. Naming it is the moment it becomes <i>yours</i>.</p>
+      <div class="field"><input value="Coastline rebrand" readonly /></div>
+      <div class="actions"><button class="btn" onclick="go('o_empty')">Create <span class="ar">→</span></button></div>
+    </section>
+
+    <section class="screen" id="o_empty">
+      <p class="kick"><span class="pathOwn">Coastline rebrand</span> · home</p>
+      <h1 class="h">An empty home, waiting.</h1>
+      <p class="lede">Nothing pre-loaded. No demo pins. Just one invitation — bring your inspiration in.</p>
+      <div class="thread"><span class="proj">Coastline rebrand</span><span class="step on">Gather</span><span class="sep">·</span><span class="step">Play</span><span class="sep">·</span><span class="step">Build</span><span class="next">first: <b>bring it in</b></span></div>
+      <div class="actions"><button class="btn" onclick="go('o_import')">Bring your inspiration in <span class="ar">→</span></button></div>
+      <p class="fixnote">This is the fix for what lost you: your project is empty and yours. No sample bleed.</p>
+    </section>
+
+    <section class="screen" id="o_import">
+      <p class="kick"><span class="pathOwn">Coastline rebrand</span> · import</p>
+      <h1 class="h">Your board lands here.</h1>
+      <p class="lede">Pinterest, screenshots, links — only <i>your</i> pins, in <i>your</i> project. Then one clear next move appears.</p>
+      <div class="thread"><span class="proj">Coastline rebrand</span><span class="step on">Gather</span><span class="sep">·</span><span class="step">Play</span><span class="sep">·</span><span class="step">Build</span><span class="next">next: <b>gather</b></span></div>
+      <div class="actions"><button class="btn" onclick="go('o_gather')">Gather what rings true <span class="ar">→</span></button></div>
+    </section>
+
+    <section class="screen" id="o_gather">
+      <p class="kick"><span class="pathOwn">Coastline rebrand</span> · Gather</p>
+      <h1 class="h">Gather, your way.</h1>
+      <p class="lede">Same move you learned in the tour — now self-directed, over your own pins. Pull the colour, type, and images that ring true.</p>
+      <div class="thread"><span class="proj">Coastline rebrand</span><span class="step on">Gather</span><span class="sep">·</span><span class="step">Play</span><span class="sep">·</span><span class="step">Build</span><span class="next">next: <b>play</b></span></div>
+      <div class="scope"><span class="live">● Colour</span><span class="live">● Type</span><span class="live">● Images</span></div>
+      <div class="actions"><button class="btn" onclick="go('o_play')">On to Play <span class="ar">→</span></button></div>
+    </section>
+
+    <section class="screen" id="o_play">
+      <p class="kick"><span class="pathOwn">Coastline rebrand</span> · Play</p>
+      <h1 class="h">Arrange &amp; carve directions.</h1>
+      <p class="lede">The board. Rifle the pile, collage, annotate — carve a few clear directions out of the overwhelm.</p>
+      <div class="thread"><span class="proj">Coastline rebrand</span><span class="step">Gather</span><span class="sep">·</span><span class="step on">Play</span><span class="sep">·</span><span class="step">Build</span><span class="next">next: <b>build</b></span></div>
+      <div class="actions"><button class="btn" onclick="go('o_build')">On to Build <span class="ar">→</span></button></div>
+    </section>
+
+    <section class="screen" id="o_build">
+      <p class="kick"><span class="pathOwn">Coastline rebrand</span> · Build</p>
+      <h1 class="h">Make it tangible.</h1>
+      <p class="lede">A direction becomes a brand — palette, wordmark, a book, an export. Yours to ship. The arc closes: overwhelm → relief → tangible.</p>
+      <div class="thread"><span class="proj">Coastline rebrand</span><span class="step">Gather</span><span class="sep">·</span><span class="step">Play</span><span class="sep">·</span><span class="step on">Build</span><span class="next">the payoff</span></div>
+      <div class="demo"><div class="specimen">Coastline<span class="dotp">.</span><div class="bar"><span style="background:#7d9bbf"></span><span style="background:#caa07e"></span><span style="background:#b58a98"></span></div></div></div>
+      <div class="actions"><button class="btn" onclick="go('door')">Walk it again <span class="ar">↺</span></button></div>
+    </section>
+  </main>
+
+  <nav class="rail" id="rail">
+    <span class="rl">The map</span>
+    <button class="dot" data-s="door" onclick="go('door')">Door</button>
+    <span class="branch">┐</span>
+    <button class="dot s" data-s="s_gather" onclick="go('s_gather')">Tour · Gather</button>
+    <button class="dot s" data-s="s_play" onclick="go('s_play')">Play</button>
+    <button class="dot s" data-s="s_build" onclick="go('s_build')">Build</button>
+    <button class="dot s" data-s="s_end" onclick="go('s_end')">→ your own</button>
+    <span class="branch">┘┐</span>
+    <button class="dot o" data-s="o_name" onclick="go('o_name')">Name</button>
+    <button class="dot o" data-s="o_empty" onclick="go('o_empty')">Empty home</button>
+    <button class="dot o" data-s="o_import" onclick="go('o_import')">Import</button>
+    <button class="dot o" data-s="o_gather" onclick="go('o_gather')">Gather</button>
+    <button class="dot o" data-s="o_play" onclick="go('o_play')">Play</button>
+    <button class="dot o" data-s="o_build" onclick="go('o_build')">Build</button>
+  </nav>
+
+<script>
+  function go(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active', s.id===id));
+    document.querySelectorAll('.dot').forEach(d=>d.classList.toggle('on', d.dataset.s===id));
+    var label = id.startsWith('s_') ? 'Sample · guided tour' : (id.startsWith('o_') ? 'Your own project' : '');
+    document.getElementById('pathLabel').textContent = label;
+    window.scrollTo(0,0);
+  }
+  go('door');
+</script>
+</body>
+</html>

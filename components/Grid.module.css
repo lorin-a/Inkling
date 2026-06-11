@@ -1,0 +1,36 @@
+/* Full-bleed section: shared edge padding + vertical rhythm. `flush` drops the
+   vertical rhythm (for bands that set their own); `rule` adds the hard editorial
+   divider beneath. */
+.bleed {
+  padding: var(--rhythm) var(--bleed);
+}
+.bleed.flush {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.bleed.rule {
+  border-bottom: 1.5px solid var(--rule);
+}
+
+/* The shared 12-column grid. Children place themselves via grid-column (inline
+   or the col-* helpers). Gutter + column count come from tokens, so every grid
+   on every page lines up. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols), 1fr);
+  gap: var(--gutter);
+}
+
+/* Column-span helpers — the common spans. Use inline grid-column for one-offs. */
+.grid > .col2 { grid-column: span 2; }
+.grid > .col3 { grid-column: span 3; }
+.grid > .col4 { grid-column: span 4; }
+.grid > .col5 { grid-column: span 5; }
+.grid > .col6 { grid-column: span 6; }
+.grid > .col7 { grid-column: span 7; }
+.grid > .col8 { grid-column: span 8; }
+
+@media (max-width: 880px) {
+  .grid { grid-template-columns: 1fr; gap: var(--space-lg); }
+  .grid > [class*="col"] { grid-column: 1 / -1; }
+}

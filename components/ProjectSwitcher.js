@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { apiFetch } from "../lib/api/client";
 import { useAuthed } from "../lib/api/useAuthed";
+import { getStartMode } from "../lib/storage/localStore";
 import styles from "./ProjectSwitcher.module.css";
 
 /**
@@ -17,7 +18,10 @@ export default function ProjectSwitcher() {
   const [activeSlug, setActiveSlugState] = useState(null);
   const [open, setOpen] = useState(false);
   const [switching, setSwitching] = useState(false);
+  const [startMode, setStartMode] = useState(null); // "own" | "sample" — signed-out only
   const rootRef = useRef(null);
+
+  useEffect(() => { setStartMode(getStartMode()); }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -81,7 +85,7 @@ export default function ProjectSwitcher() {
       </button>
       {authed === false && (
         <>
-          <span className={styles.sampleChip}>Sample</span>
+          {startMode === "sample" && <span className={styles.sampleChip}>Sample</span>}
           <Link href="/login" className={styles.saveHint}>
             <span className={styles.saveDot} aria-hidden="true" />
             Sign in to save
