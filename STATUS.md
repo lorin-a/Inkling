@@ -22,6 +22,9 @@ Tokens in `globals.css`. GSAP installed. The lock artifact: `public/inkling-fina
 (exploration mocks in `public/inkling-*.html`).
 
 ## Shipped this arc (recent → older)
+- **Session continuity set up** (process, not product): `STATUS.md` = live state, memory = decisions,
+  git = history. Trimmed the bloated `project_product_direction` memory (767 → 171 lines), retired
+  `NEXT.md`. New universal **`/wrapup`** skill closes a session; open the next with "Read STATUS.md…".
 - **New-user import** (`/import`): Pinterest (+ "make one" nudge), Upload screenshots, Paste-a-link,
   Are.na — all with **source crediting**, working signed-out. Link path verified end-to-end.
 - **Landing rebuilt to Inkling**: masthead + edition line, hero with a **living brand** (`BrandShuffle`,
