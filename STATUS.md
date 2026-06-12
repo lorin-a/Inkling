@@ -119,13 +119,27 @@ intuition repeatedly. See [[project_onboarding_genesis]]. **Killed** the playabl
   faded secondary text lifted; picker is a fixed-legible panel; instructional copy tightened.
 - See [[project_onboarding_genesis]] for the locked design laws.
 
+## ★ Onboarding Type beat — BUILT as "the playground" (2026-06-12, NOT yet committed → this session)
+`public/make-inkling.html`. Took **three attempts**; the first two were killed as *selectors, not
+play* (the gesture pointed at fixed samples instead of changing the type): the **constellation**
+(tap two stars, an ink line draws the pairing) and the **voicer** (drag a giant wordmark to scrub
+6 faces). Locked lesson: **type must be a *material you manipulate*, not a menu** — taste surfaces
+by shaping, not picking. And Lorin named the flow's grammar: **anchor → pull → play** (images→colors,
+colors→accents, **name→letters**); personalization deepens each step (images → colors → **name** →
+brand). What shipped: type your name → wordmark becomes "Elijah's inkling.", then **play the letters**
+— drag up/down = weight (variable fonts, opens on Fraunces so it's alive immediately), left/right =
+letter-spacing, a grip between the lines = leading, **Space** shuffles the face (keeps your sculpt).
+Name + face + weight carry into the reveal. Verified desktop + mobile, 0 console errors.
+- ⚠ **OPEN (do this next on the Type beat):** the drag is loved but **lacks direction/guidance and
+  isn't discoverable** — needs a discoverability + directional-affordance pass.
+- Minor: weight is dead on the two single-weight faces (DM Serif, Instrument); offered to swap for
+  Playfair/Cormorant (variable) if weight should respond on every style.
+
 ## Next move (do this first)
-**Continue the onboarding — the two remaining beats** (build properly, don't rush):
-1. the **Type font-web** — connect/pair a title + body voice, spacebar reshuffles, mix-and-match.
-   Proposed interaction (the *constellation*) is in `project_onboarding_genesis`, awaiting Lorin's
-   reaction on two taste calls (tap-tap-draws-the-line vs drag; allow pairing two display faces).
-2. a **draggable moodboard (Play) beat** before the reveal. Then: wire the prototype in as the real
-   front door + full-app skin persistence.
+**The draggable moodboard (Play) beat** — slots in before the reveal (known shape, clean build).
+Then: **one QA + design-review sweep on the finished flow** (motion, a11y, reduced-motion, mobile,
+keyboard) — *fold the Type-drag discoverability/direction fix into that sweep*. Then wire the
+prototype in as the real front door + full-app skin persistence.
 **Parallel structural priority:** **`RIGHTS.md` Phase 0** (delete `lib/pinterestSourceFetcher.js` +
 stop the bookmarklet auto-scroll) before any public launch — read `RIGHTS.md` before touching import.
 

@@ -6,7 +6,7 @@
 <title>Make Inkling yours</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=DM+Serif+Display:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,300..600&family=DM+Serif+Display:ital@0;1&family=Space+Grotesk:wght@300..700&family=Noto+Sans:wght@100..900&family=Noto+Sans+Mono:wght@400..700&family=Instrument+Serif:ital@0;1&family=Newsreader:opsz,wght@6..72,200..700&family=Space+Mono:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root{
     --bg:#f7f6f2; --ink:#1c1810; --accent:#6a2ee6; --sub:#8a7f70;
@@ -101,17 +101,39 @@
   .ceReset[disabled]{opacity:.3;cursor:default;text-decoration:none}
   .ceDone{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--bg);background:var(--ink);border:none;border-radius:100px;padding:11px 24px;cursor:pointer}
 
-  /* beat 3 — type */
-  .typeStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px}
-  .typeWm{font-family:var(--wm-font);font-size:clamp(64px,12vw,150px);line-height:.9;letter-spacing:-0.04em}
-  .typeWm .dot{color:var(--accent)}
-  .typeOpts{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
-  .topt{border:1.5px solid var(--line);border-radius:8px;padding:16px 26px;cursor:pointer;background:none;text-align:center;transition:border-color .2s,transform .2s var(--ease)}
-  .topt:hover{transform:translateY(-2px)} .topt.on{border-color:var(--accent)}
-  .topt .tn{font-size:30px;line-height:1;color:var(--ink)} .topt .tl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:9px}
+  /* beat 3 — type: the playground. anchor on your name, then play the letters with your hands —
+     drag up/down for weight, left/right for spacing, the grip for leading, space to shuffle the style. */
+  .nameInput{font-family:var(--serif);font-size:inherit;font-weight:500;color:var(--ink);background:none;border:none;border-bottom:2px solid var(--accent);padding:0 2px 2px;width:8ch;text-align:center}
+  .nameInput::placeholder{color:var(--faint);font-style:italic}
+  .nameInput:focus{outline:none;border-bottom-color:var(--ink)}
+  .play{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(20px,3.4vh,46px)}
+  .playWord{position:relative;display:flex;flex-direction:column;align-items:center;color:var(--ink);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;outline-offset:12px;padding:clamp(8px,1.6vh,20px) clamp(20px,5vw,70px)}
+  .playWord.grabbing{cursor:grabbing} .playWord.shuffling .wl{animation:styleMorph .3s var(--ease)}
+  .wl{line-height:.92;white-space:nowrap;transition:font-weight .05s linear}
+  .wl1{font-size:clamp(28px,5.2vw,68px);letter-spacing:-0.02em;color:var(--sub)}
+  .wl2{font-size:clamp(60px,13vw,168px);letter-spacing:-0.04em}
+  .wl2 .dot{color:var(--accent)}
+  @keyframes styleMorph{0%{filter:blur(7px);opacity:.35}100%{filter:none;opacity:1}}
+  /* the leading grip — a slim handle living between the lines; drag it to open or close the gap */
+  .leadGrip{align-self:center;width:64px;height:14px;margin:var(--leadGap,8px) 0;border:none;background:none;cursor:ns-resize;position:relative;opacity:0;transition:opacity .3s;touch-action:none}
+  .leadGrip::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:46px;height:3px;border-radius:100px;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 18%,transparent)}
+  .playWord:hover .leadGrip,.leadGrip:focus-visible,.playWord.grabbing .leadGrip{opacity:.85}
+  /* drag affordance — axis hints that breathe until you grab, then retire */
+  .dragHint{position:absolute;inset:0;pointer-events:none;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);transition:opacity .4s}
+  .dragHint .hintAx{position:absolute;animation:hintBreathe 2.6s var(--ease) infinite}
+  .dragHint .v{top:6px;left:50%;transform:translateX(-50%)} .dragHint .h{top:50%;right:-2px;transform:translateY(-50%)}
+  .playWord.touched .dragHint{opacity:0}
+  @keyframes hintBreathe{0%,100%{opacity:.45}50%{opacity:.9}}
+  .playBar{display:flex;align-items:center;gap:18px}
+  .shuffleStyle{display:inline-flex;align-items:center;gap:11px;font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);background:none;border:1.5px solid var(--ink);border-radius:100px;padding:12px 24px;cursor:pointer;transition:background-color .2s,color .2s}
+  .shuffleStyle:hover{background:var(--ink);color:var(--bg)}
+  .shuffleStyle .kbd{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;opacity:.6;border:1px solid currentColor;border-radius:4px;padding:2px 7px}
+  .styleName{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 
   /* reveal */
   .reveal{position:relative;flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
+  .revName{font-family:var(--wm-font);font-size:clamp(20px,2.4vw,32px);line-height:1;letter-spacing:-0.02em;color:var(--sub);margin-bottom:-2px}
+  .revName:empty{display:none}
   .revWm{font-family:var(--wm-font);font-size:clamp(60px,11vw,150px);line-height:.9;letter-spacing:-0.04em;color:var(--ink);cursor:pointer}
   .revWm .dot{color:var(--accent)}
   .revTag{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--sub);margin-top:6px;cursor:pointer}
@@ -181,6 +203,15 @@
   .ghost{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:4px;margin-right:22px}
   .ghost:hover{color:var(--ink)}
 
+  /* phone: thumb-drag the word; the hints sit close, the grip stays reachable */
+  @media (max-width:560px){
+    .top{padding:16px 20px} .nav{padding:14px 20px 18px} .step{padding:6px 20px 16px}
+    .stepHead{padding:2px 0 10px} .stepH{font-size:32px} .stepSub{font-size:16px;margin-top:8px;line-height:1.5}
+    .play{gap:26px}
+    .wl1{font-size:clamp(24px,7vw,40px)} .wl2{font-size:clamp(54px,18vw,92px)}
+    .leadGrip{opacity:.7} .dragHint{font-size:10px}
+    .shuffleStyle{font-size:15px}
+  }
   @media (prefers-reduced-motion: reduce){ *{transition-duration:.001ms !important;animation:none !important} }
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>
@@ -224,18 +255,27 @@
       </div>
     </section>
 
-    <!-- 2 — type -->
+    <!-- 2 — type: the playground (anchor on your name, play the letters) -->
     <section class="step" id="s2">
-      <div class="stepHead"><div class="kick">Step 3 of 3 · Type</div><div class="stepH">Pick your typeface.</div></div>
-      <div class="typeStage">
-        <div class="typeWm" id="typeWm">inkling<span class="dot">.</span></div>
-        <div class="typeOpts" id="typeOpts"></div>
+      <div class="stepHead"><div class="kick">Step 3 of 3 · Type</div><div class="stepH">Make it yours.</div><div class="stepSub">Whose inkling is this? <input id="nameInput" class="nameInput" type="text" maxlength="16" placeholder="your name" autocomplete="off" spellcheck="false" aria-label="Your name" /></div></div>
+      <div class="play">
+        <div class="playWord" id="playWord" tabindex="0" role="group" aria-label="Play with your type. Drag up and down for weight, left and right for letter spacing. Press space to shuffle the style.">
+          <div class="wl wl1" id="wl1">Your</div>
+          <button class="leadGrip" id="leadGrip" tabindex="-1" aria-hidden="true"></button>
+          <div class="wl wl2" id="wl2">inkling<span class="dot">.</span></div>
+          <span class="dragHint" id="dragHint"><span class="hintAx v">↕ weight</span><span class="hintAx h">↔ spacing</span></span>
+        </div>
+        <div class="playBar">
+          <button class="shuffleStyle" id="shuffleStyle">⤮ Shuffle style <span class="kbd">space</span></button>
+          <span class="styleName" id="styleName"></span>
+        </div>
       </div>
     </section>
 
     <!-- 3 — reveal -->
     <section class="step" id="s3">
       <div class="reveal">
+        <div class="revName" id="revName"></div>
         <div class="revWm" id="revWm">inkling<span class="dot" id="revDot">.</span></div>
         <div class="revTag" id="revTag">“you know it when you see it”</div>
         <div class="revLead">Here’s your Inkling.</div>
@@ -286,9 +326,30 @@
   const rgb2hsl=([r,g,b])=>{r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0,l=(mx+mn)/2;if(mx!==mn){const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h/=6;}return[h*360,s*100,l*100]};
   const hsl2hex=(h,s,l)=>{h=((h%360)+360)%360/360;s=Math.max(0,Math.min(100,s))/100;l=Math.max(0,Math.min(100,l))/100;if(s===0){const v=l*255;return rgb2hex([v,v,v]);}const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q,f=t=>{t=(t+1)%1;return t<1/6?p+(q-p)*6*t:t<1/2?q:t<2/3?p+(q-p)*(2/3-t)*6:p;};return rgb2hex([f(h+1/3)*255,f(h)*255,f(h-1/3)*255])};
   const isHex=h=>/^#?[0-9a-fA-F]{6}$/.test(h);
-  const FONTS={fraunces:{f:'"Fraunces",Georgia,serif',label:'Fraunces · editorial'},dmserif:{f:'"DM Serif Display",Georgia,serif',label:'DM Serif · warm'},grotesk:{f:'"Space Grotesk",sans-serif',label:'Space Grotesk · cool'}};
+  // every face Inkling can wear — the name shown to the user, plus a reading-body it auto-pairs with
+  const FONTS={
+    fraunces:  {f:'"Fraunces",Georgia,serif',           name:'Fraunces'},
+    dmserif:   {f:'"DM Serif Display",Georgia,serif',   name:'DM Serif'},
+    instrument:{f:'"Instrument Serif",Georgia,serif',   name:'Instrument'},
+    grotesk:   {f:'"Space Grotesk",sans-serif',         name:'Grotesk'},
+    poppins:   {f:'"Poppins",system-ui,sans-serif',     name:'Poppins'},
+    notosans:  {f:'"Noto Sans",system-ui,sans-serif',   name:'Noto Sans'},
+    newsreader:{f:'"Newsreader",Georgia,serif',         name:'Newsreader'},
+    mono:      {f:'"Space Mono",ui-monospace,monospace',name:'Space Mono'},
+  };
+  // the six voices you drag through — ordered so every neighbour is a big jump (each scrub feels like a real change).
+  // `char` names the FEELING (taste), `body` is the reading face it pairs with. All six are deliberately distinct.
+  const VOICES=[
+    {key:'fraunces',  char:'Editorial', body:'notosans'},
+    {key:'grotesk',   char:'Modern',    body:'newsreader'},
+    {key:'dmserif',   char:'Dramatic',  body:'notosans'},
+    {key:'poppins',   char:'Friendly',  body:'newsreader'},
+    {key:'instrument',char:'Refined',   body:'notosans'},
+    {key:'mono',      char:'Technical', body:'notosans'},
+  ];
 
-  const state={ step:0, picks:new Set(), dropped:new Set(), edits:{}, history:[], added:[], type:'auto', polarity:'auto', seed:0, assign:{}, assignRole:null };
+  const state={ step:0, picks:new Set(), dropped:new Set(), edits:{}, history:[], added:[], title:'auto', body:'auto',
+                name:'', weight:500, tracking:0, leading:10, polarity:'auto', seed:0, assign:{}, assignRole:null };
   // nudge a color toward legibility against bg until it clears `ratio` — keeps its hue, guarantees contrast
   const readable=(c,bg,ratio)=>{ const toward=lum(bg)<0.5?'#ffffff':'#000000'; let o=c,t=0; while(contrast(o,bg)<ratio&&t<16){o=mix(o,toward,0.1);t++;} return o; };
   const bestOn=bg=>contrast(bg,'#ffffff')>=contrast(bg,'#111111')?'#ffffff':'#111111'; // legible label color for a colored surface
@@ -327,8 +388,14 @@
     let sub;
     if(A.sub){ sub=A.sub; }
     else { const c=[...p].filter(h=>h!==ink&&h!==accent).sort((a,b)=>contrast(b,bg)-contrast(a,bg))[0]||mix(ink,bg,0.3); sub=readable(c,bg,4.5); }
-    let type=state.type; if(type==='auto'){const w=p.reduce((s,h)=>s+warmth(h),0)/p.length; type=w>0.06?'dmserif':(w<-0.04?'grotesk':'fraunces');}
-    return {bg,ink,accent,sub,font:FONTS[type].f,type,polarity};
+    // title voice — explicit pick, else inferred from palette warmth
+    let titleType=state.title;
+    if(!titleType||titleType==='auto'){const w=p.reduce((s,h)=>s+warmth(h),0)/p.length; titleType=w>0.06?'dmserif':(w<-0.04?'grotesk':'fraunces');}
+    // body voice — explicit pick, else the reading face this voice pairs with
+    let bodyType=state.body;
+    if(!bodyType||bodyType==='auto'){ const v=VOICES.find(v=>v.key===titleType); bodyType=v?v.body:'notosans'; }
+    const titleFont=FONTS[titleType].f, bodyFont=FONTS[bodyType].f;
+    return {bg,ink,accent,sub,font:titleFont,titleFont,bodyFont,titleType,bodyType,type:titleType,polarity};
   }
   function applyPage(r){
     const s=document.documentElement.style;
@@ -401,15 +468,57 @@
   document.addEventListener('keydown',e=>{ if(state.step!==1)return;
     if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){ e.preventDefault(); undo(); }
     else if(e.key==='Escape'&&cedit.classList.contains('on')){ e.preventDefault(); closeEdit(); } });
-  function renderType(){
-    const r=compose()||{ink:'var(--ink)',accent:'var(--accent)'};
-    const wm=document.getElementById('typeWm');
-    const cur=state.type==='auto'? (compose()?compose().type:'fraunces') : state.type;
-    wm.style.fontFamily=FONTS[cur].f; wm.style.color=r.ink||'';
-    const opts=document.getElementById('typeOpts');
-    opts.innerHTML=Object.entries(FONTS).map(([k,v])=>`<button class="topt ${cur===k?'on':''}" data-type="${k}"><div class="tn" style="font-family:${v.f}">inkling.</div><div class="tl">${v.label}</div></button>`).join('');
-    opts.querySelectorAll('.topt').forEach(b=>b.addEventListener('click',()=>{state.type=b.dataset.type;renderType();}));
+  // ---- beat 3: the playground — anchor on your name, play the letters with your hands ----
+  const playWord=document.getElementById('playWord'), wl1=document.getElementById('wl1'), wl2=document.getElementById('wl2'),
+        leadGrip=document.getElementById('leadGrip'), nameInput=document.getElementById('nameInput');
+  // open on Fraunces — our signature, and fully variable so the weight drag is alive on the first touch
+  function curFace(){ if(state.title==='auto'||!VOICES.some(v=>v.key===state.title)){ state.title='fraunces'; } return state.title; }
+  function applyType(){ // push weight / tracking / leading / face onto the live word
+    const f=FONTS[curFace()].f;
+    playWord.style.fontFamily=f;
+    wl1.style.fontWeight=wl2.style.fontWeight=Math.round(state.weight);
+    wl1.style.letterSpacing=wl2.style.letterSpacing=state.tracking.toFixed(3)+'em';
+    leadGrip.style.setProperty('--leadGap',state.leading+'px');
   }
+  function renderPlay(){
+    nameInput.value=state.name;
+    wl1.textContent=state.name?`${state.name}’s`:'Your';
+    applyType();
+    const sn=document.getElementById('styleName'); const v=VOICES.find(v=>v.key===curFace());
+    sn.textContent=FONTS[curFace()].name+(v?' · '+v.char:'');
+  }
+  // name — the anchor. live-updates the possessive line.
+  nameInput.addEventListener('input',()=>{ state.name=nameInput.value.replace(/\s+/g,' ').trimStart(); wl1.textContent=state.name?`${state.name}’s`:'Your'; });
+  nameInput.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();nameInput.blur();playWord.focus();} });
+  // shuffle the style — keeps your weight/spacing sculpt, tries it on a different face
+  function shuffleStyle(){ const i=VOICES.findIndex(v=>v.key===curFace()); state.title=VOICES[(i+1+VOICES.length)%VOICES.length].key; state.body='auto';
+    playWord.classList.remove('shuffling'); void playWord.offsetWidth; playWord.classList.add('shuffling'); renderPlay(); }
+  document.getElementById('shuffleStyle').addEventListener('click',shuffleStyle);
+  // weight + spacing — drag the word itself. up/down = weight, left/right = letter-spacing. both at once = play.
+  let pdrag=null;
+  playWord.addEventListener('pointerdown',e=>{ if(state.step!==2||e.target===leadGrip)return; playWord.classList.add('touched','grabbing');
+    pdrag={x:e.clientX,y:e.clientY,w:state.weight,t:state.tracking}; try{playWord.setPointerCapture(e.pointerId);}catch(_){} });
+  playWord.addEventListener('pointermove',e=>{ if(!pdrag)return;
+    state.weight=Math.max(100,Math.min(900,pdrag.w-(e.clientY-pdrag.y)*1.3));      // drag up → heavier
+    state.tracking=Math.max(-0.06,Math.min(0.42,pdrag.t+(e.clientX-pdrag.x)*0.0011)); // drag right → looser
+    applyType(); });
+  const endPDrag=()=>{ if(!pdrag)return; pdrag=null; playWord.classList.remove('grabbing'); };
+  playWord.addEventListener('pointerup',endPDrag); playWord.addEventListener('pointercancel',endPDrag);
+  // leading — the grip between the lines. drag it to open or close the gap.
+  let ldrag=null;
+  leadGrip.addEventListener('pointerdown',e=>{ e.stopPropagation(); ldrag={y:e.clientY,l:state.leading}; playWord.classList.add('touched');
+    try{leadGrip.setPointerCapture(e.pointerId);}catch(_){} });
+  leadGrip.addEventListener('pointermove',e=>{ if(!ldrag)return; state.leading=Math.max(-18,Math.min(120,ldrag.l+(e.clientY-ldrag.y))); applyType(); });
+  const endLDrag=()=>{ ldrag=null; };
+  leadGrip.addEventListener('pointerup',endLDrag); leadGrip.addEventListener('pointercancel',endLDrag);
+  // keyboard play — arrows nudge weight (↑↓) and spacing (←→); space shuffles the style
+  playWord.addEventListener('keydown',e=>{
+    if(e.key==='ArrowUp'){e.preventDefault();playWord.classList.add('touched');state.weight=Math.min(900,state.weight+50);applyType();}
+    else if(e.key==='ArrowDown'){e.preventDefault();playWord.classList.add('touched');state.weight=Math.max(100,state.weight-50);applyType();}
+    else if(e.key==='ArrowRight'){e.preventDefault();playWord.classList.add('touched');state.tracking=Math.min(0.42,state.tracking+0.02);applyType();}
+    else if(e.key==='ArrowLeft'){e.preventDefault();playWord.classList.add('touched');state.tracking=Math.max(-0.06,state.tracking-0.02);applyType();} });
+  document.addEventListener('keydown',e=>{ if(state.step!==2)return;
+    if(e.code==='Space' && e.target!==nameInput){ e.preventDefault(); playWord.classList.add('touched'); shuffleStyle(); } });
   const ROLE_DEFS=[{k:'bg',label:'Background'},{k:'ink',label:'Title'},{k:'sub',label:'Subhead'},{k:'accent',label:'Button'}];
   const roleColor=(r,k)=>k==='bg'?r.bg:k==='ink'?r.ink:k==='sub'?r.sub:r.accent;
   // the contrast each part owes its background — the actual WCAG rule, named so it teaches
@@ -419,9 +528,11 @@
   function renderReveal(){
     const r=compose(); if(!r) return;
     applyPage(r);
-    const wm=document.getElementById('revWm'); wm.style.fontFamily=r.font; wm.style.color=r.ink;
+    const wm=document.getElementById('revWm'); wm.style.fontFamily=r.titleFont; wm.style.color=r.ink; wm.style.fontWeight=Math.round(state.weight); // the sculpted weight carries through
+    const rn=document.getElementById('revName'); rn.textContent=state.name?`${state.name}’s`:''; rn.style.fontFamily=r.titleFont; rn.style.color=r.sub; // the name carries through
     document.getElementById('revDot').style.color=r.accent;
-    document.getElementById('revTag').style.color=r.sub;
+    const lead=document.querySelector('.revLead'); if(lead) lead.style.fontFamily=r.titleFont;       // title voice
+    const tag=document.getElementById('revTag'); tag.style.color=r.sub; tag.style.fontFamily=r.bodyFont; // body voice
     const sb=document.getElementById('revSample'); sb.style.background=r.accent; sb.style.color=bestOn(r.accent);
     // role row — current color per part, pin state, and an honest contrast flag on overrides
     const roles=document.getElementById('roles');
@@ -516,7 +627,7 @@
     if(state.step!==3 && assignPop.classList.contains('on')) closeAssign();
     if(state.step===0){ renderGather(); }
     if(state.step===1){ renderPalette(); }
-    if(state.step===2){ renderType(); }
+    if(state.step===2){ renderPlay(); }
     if(state.step===3){ renderReveal(); next.innerHTML='Now make your own brand <span class="ar">→</span>'; }
     else { next.innerHTML='Next <span class="ar">→</span>'; }
     updateNav();
