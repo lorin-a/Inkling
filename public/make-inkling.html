@@ -35,8 +35,8 @@
 
   /* the immersive stage */
   .stage{flex:1 1 auto;position:relative;overflow:hidden}
-  .step{position:absolute;inset:0;display:flex;flex-direction:column;padding:8px 44px 30px;opacity:0;visibility:hidden;transform:translateY(16px);transition:opacity .5s var(--ease),transform .5s var(--ease),visibility .5s}
-  .step.active{opacity:1;visibility:visible;transform:none}
+  .step{position:absolute;inset:0;display:flex;flex-direction:column;padding:8px 44px 30px;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(16px);transition:opacity .5s var(--ease),transform .5s var(--ease),visibility .5s}
+  .step.active{opacity:1;visibility:visible;pointer-events:auto;transform:none}
   .stepHead{flex:0 0 auto;text-align:center;padding:6px 0 18px}
   .kick{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .stepH{font-family:var(--serif);font-weight:500;font-size:clamp(44px,5.6vw,78px);line-height:.98;letter-spacing:-0.035em;margin-top:14px}
@@ -61,14 +61,45 @@
   .gatherBar span.f{transform:scaleY(1)}
 
   /* beat 2 — your colors, big */
-  .palette{flex:1 1 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,104px));gap:18px;justify-content:center;align-content:center;max-width:1040px;margin:0 auto;padding:20px}
-  .pcell{aspect-ratio:3/4;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08), 0 8px 22px rgba(0,0,0,.10);cursor:pointer;position:relative;transition:transform .3s var(--ease),opacity .3s,filter .3s}
+  .palette{flex:1 1 auto;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,104px));gap:18px;justify-content:center;align-content:center;max-width:1040px;width:100%;margin:0 auto;padding:20px}
+  .palette::-webkit-scrollbar{width:8px} .palette::-webkit-scrollbar-thumb{background:var(--line);border-radius:100px}
+  .pcell{aspect-ratio:3/4;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08), 0 8px 22px rgba(0,0,0,.10);cursor:pointer;position:relative;transition:transform .3s var(--ease),opacity .3s,filter .3s,box-shadow .3s}
   .pcell:hover{transform:translateY(-4px)}
   .pcell.off{opacity:.45;filter:grayscale(.92);transform:scale(.78)}
   .pcell.off .hex{opacity:.6}
-  .pcell .x{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:100px;background:rgba(0,0,0,.5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;opacity:0;transition:opacity .2s}
+  .pcell.edited{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.5), 0 0 0 2px var(--accent), 0 8px 22px rgba(0,0,0,.14)}
+  .pcell .x{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:100px;background:rgba(0,0,0,.5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;opacity:0;transition:opacity .2s,background-color .15s;z-index:2}
   .pcell:hover .x{opacity:1}
+  .pcell .x:hover{background:rgba(0,0,0,.78)}
   .pcell .hex{position:absolute;left:8px;bottom:8px;font-family:var(--mono);font-size:10px;color:#fff;mix-blend-mode:difference}
+
+  /* beat 2 — edit in context: the palette stays, controls dock below, selected swatch lives in the group */
+  .pcell.sel{transform:translateY(-6px) scale(1.04);box-shadow:0 0 0 3px var(--accent), 0 16px 38px rgba(0,0,0,.24);z-index:3}
+  .undoBtn{position:absolute;top:4px;right:0;display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--muted);background:none;border:1.5px solid var(--line);border-radius:100px;padding:8px 16px;cursor:pointer;transition:border-color .15s,color .15s}
+  .undoBtn:hover{border-color:var(--ink);color:var(--ink)}
+  .undoBtn[hidden]{display:none}
+  .cedit{flex:0 0 auto;display:flex;align-items:center;gap:clamp(18px,3vw,40px);width:100%;max-width:1040px;margin:6px auto 0;
+    border:1.5px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--bg) 50%,#ffffff);box-shadow:0 14px 44px rgba(0,0,0,.12);
+    max-height:0;opacity:0;overflow:hidden;padding:0 26px;border-width:0;
+    transition:max-height .35s var(--ease),opacity .25s var(--ease),padding .35s var(--ease),border-width .2s}
+  .cedit.on{max-height:240px;opacity:1;padding:18px 26px;border-width:1.5px}
+  .ceSwatch{display:flex;align-items:center;gap:13px;flex:0 0 auto}
+  .cePrev{width:54px;height:68px;border-radius:9px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12), 0 6px 16px rgba(0,0,0,.16);flex:0 0 auto;transition:background-color .1s}
+  .ceHexRow{display:flex;align-items:center;gap:7px}
+  .ceHexRow .hash{font-family:var(--mono);font-size:18px;color:var(--muted)}
+  .ceHexRow input[type=text]{width:8ch;font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:.04em;color:var(--ink);background:none;border:none;border-bottom:1.5px solid var(--line);padding:5px 0;text-transform:lowercase}
+  .ceHexRow input[type=text]:focus{outline:none;border-bottom-color:var(--accent)}
+  .ceSliders{flex:1 1 auto;display:flex;flex-direction:column;gap:14px;min-width:160px}
+  .ceRow{display:flex;align-items:center;gap:14px}
+  .ceRow label{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);width:74px;flex:0 0 auto}
+  .ceRow input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:11px;border-radius:100px;cursor:pointer;outline-offset:4px}
+  .ceRow input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:100px;background:#fff;border:2px solid var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:grab}
+  .ceRow input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:100px;background:#fff;border:2px solid var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:grab}
+  .ceActions{display:flex;align-items:center;gap:14px;flex:0 0 auto}
+  .ceReset{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+  .ceReset:hover{color:var(--ink)}
+  .ceReset[disabled]{opacity:.3;cursor:default;text-decoration:none}
+  .ceDone{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--bg);background:var(--ink);border:none;border-radius:100px;padding:11px 24px;cursor:pointer}
 
   /* beat 3 — type */
   .typeStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px}
@@ -80,13 +111,56 @@
   .topt .tn{font-size:30px;line-height:1;color:var(--ink)} .topt .tl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:9px}
 
   /* reveal */
-  .reveal{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
-  .revWm{font-family:var(--wm-font);font-size:clamp(60px,11vw,150px);line-height:.9;letter-spacing:-0.04em;color:var(--ink)}
+  .reveal{position:relative;flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
+  .revWm{font-family:var(--wm-font);font-size:clamp(60px,11vw,150px);line-height:.9;letter-spacing:-0.04em;color:var(--ink);cursor:pointer}
   .revWm .dot{color:var(--accent)}
-  .revTag{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--sub);margin-top:6px}
-  .revSwatches{display:flex;height:34px;width:min(440px,70vw);margin-top:24px;border-radius:5px;overflow:hidden}
-  .revSwatches span{flex:1;transition:background-color .6s}
-  .revLead{font-family:var(--serif);font-size:29px;font-weight:500;margin-top:34px}
+  .revTag{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--sub);margin-top:6px;cursor:pointer}
+  .revLead{font-family:var(--serif);font-size:29px;font-weight:500;color:var(--ink);margin-top:26px}
+  .revSample{margin-top:22px;font-family:var(--sans);font-weight:700;font-size:16px;border:none;border-radius:100px;padding:13px 30px;cursor:pointer;transition:background-color .5s var(--ease),color .5s var(--ease)}
+  /* role assignment — pin which color plays which part */
+  .revHint{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:30px}
+  .roles{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+  .role{display:flex;align-items:center;gap:11px;background:none;border:1.5px solid var(--line);border-radius:12px;padding:8px 15px 8px 9px;cursor:pointer;transition:border-color .15s}
+  .role:hover{border-color:var(--ink)} .role.pinned{border-color:var(--accent)}
+  .rsw{width:30px;height:30px;border-radius:7px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);flex:0 0 auto}
+  .rmeta{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+  .rl{font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:6px}
+  .rl .lock{color:var(--accent);font-size:8px}
+  .rhex{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:lowercase}
+  .rhex.warn{color:var(--accent)}
+  /* the picker is control chrome, not brand preview: give it a fixed, always-legible surface (the preview tiles still carry the real brand colors inline) */
+  .assignPop{--ink:#1c1810;--bg:#f7f5f0;--muted:#6f6555;--faint:#988e7d;--line:rgba(28,24,16,0.16);
+    position:absolute;left:50%;bottom:84px;transform:translateX(-50%) translateY(8px);width:min(460px,88vw);background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:16px;padding:17px 20px 19px;box-shadow:0 22px 60px rgba(0,0,0,.36);opacity:0;visibility:hidden;transition:opacity .25s var(--ease),transform .25s var(--ease);z-index:6}
+  .assignPop.on{opacity:1;visibility:visible;transform:translateX(-50%)}
+  .apHead{font-family:var(--sans);font-size:14px;color:var(--ink);margin-bottom:13px}
+  .apHead b{font-weight:700}
+  .apStd{display:block;font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5}
+  .apLegend{display:inline-flex;align-items:center;color:var(--faint)}
+  .apInsight{font-family:var(--sans);font-size:12.5px;line-height:1.55;color:var(--ink);background:color-mix(in srgb,var(--accent) 14%,transparent);border:1px solid color-mix(in srgb,var(--accent) 32%,transparent);border-radius:10px;padding:10px 13px;margin:0 0 13px}
+  .apInsight2{display:block;color:var(--muted);margin-top:5px}
+  .apSw{display:flex;flex-wrap:wrap;gap:11px;align-items:center}
+  .apc{position:relative;width:46px;height:46px;border-radius:9px;border:2.5px solid transparent;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(0,0,0,.16);transition:transform .15s,opacity .2s;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .apc:hover{transform:translateY(-3px)} .apc.on{border-color:var(--accent)}
+  .apc.prev .smp{font-weight:700;font-size:19px;line-height:1}
+  .apc.prev .chip{width:22px;height:22px;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+  .apGroup{margin-bottom:14px}
+  .apGl{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+  .apGlNote{display:block;font-family:var(--sans);font-size:11.5px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted);margin-top:4px}
+  .apGroup.faint .apGl{color:var(--muted)}
+  .apGroup.faint .apc{opacity:.5}.apGroup.faint .apc:hover{opacity:1}
+  .apAutoRow{margin-top:2px}
+  .apWhy{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);background:none;border:none;text-decoration:underline;text-underline-offset:3px;cursor:pointer;margin-left:9px;padding:2px}
+  .apWhy:hover,.apWhy.on{color:var(--ink)}
+  .apWhyBox{font-family:var(--sans);font-size:12px;line-height:1.55;color:var(--muted);margin:-3px 0 14px}
+  .apAuto{display:inline-flex;align-items:center;height:40px;padding:0 15px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);background:none;border:1.5px dashed var(--line);border-radius:9px;cursor:pointer}
+  .apAuto.on{border-style:solid;border-color:var(--accent)}
+  .apTeach{margin-top:15px;border-top:1px solid var(--line);padding-top:14px}
+  .apTeach[hidden]{display:none}
+  .apWarn{font-family:var(--sans);font-size:13.5px;line-height:1.5;color:var(--ink);margin-bottom:12px}
+  .apTeachBtns{display:flex;gap:10px;flex-wrap:wrap}
+  .apFix{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--bg);background:var(--ink);border:none;border-radius:100px;padding:10px 18px;cursor:pointer}
+  .apAnyway{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--muted);background:none;border:1.5px solid var(--line);border-radius:100px;padding:10px 18px;cursor:pointer}
+  .apAnyway:hover{color:var(--ink);border-color:var(--ink)}
   /* perfect-it panel */
   .revControls{display:flex;align-items:center;gap:18px;margin-top:32px;flex-wrap:wrap;justify-content:center}
   .revBtn{display:inline-flex;align-items:center;gap:11px;font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);background:none;border:1.5px solid var(--ink);border-radius:100px;padding:13px 26px;cursor:pointer;transition:background-color .2s,color .2s}
@@ -127,15 +201,27 @@
   <div class="stage">
     <!-- 0 — pick -->
     <section class="step" id="s0">
-      <div class="stepHead"><div class="kick">Step 1 of 3 · Gather</div><div class="stepH">What feels like you?</div><div class="stepSub">Tap 3 to 6 that feel like you.</div></div>
+      <div class="stepHead"><div class="kick">Step 1 of 3 · Gather</div><div class="stepH">What feels like you?</div><div class="stepSub">Tap 3 to 6 images.</div></div>
       <div class="wall" id="wall"></div>
       <div class="gather"><span class="gatherLabel">Colors gathering</span><div class="gatherBar" id="gatherBar"></div></div>
     </section>
 
     <!-- 1 — colors -->
     <section class="step" id="s1">
-      <div class="stepHead"><div class="kick">Step 2 of 3 · Colors</div><div class="stepH">Your colors.</div><div class="stepSub">Tap any to remove it.</div></div>
+      <div class="stepHead"><div class="kick">Step 2 of 3 · Colors</div><div class="stepH">Your colors.</div><div class="stepSub">Tap to adjust. <span aria-hidden="true">✕</span> to remove.</div></div>
+      <button class="undoBtn" id="undoBtn" hidden>↶ Undo</button>
       <div class="palette" id="palette"></div>
+      <div class="cedit" id="cedit" role="group" aria-label="Adjust color">
+        <div class="ceSwatch">
+          <span class="cePrev" id="cePrev"></span>
+          <span class="ceHexRow"><span class="hash" aria-hidden="true">#</span><input type="text" id="ceHex" inputmode="text" autocomplete="off" spellcheck="false" maxlength="6" aria-label="Hex value" /></span>
+        </div>
+        <div class="ceSliders">
+          <div class="ceRow"><label for="ceHue">Hue</label><input type="range" id="ceHue" min="0" max="360" step="1" /></div>
+          <div class="ceRow"><label for="ceLight">Lightness</label><input type="range" id="ceLight" min="0" max="100" step="1" /></div>
+        </div>
+        <div class="ceActions"><button class="ceReset" id="ceReset">Reset</button><button class="ceDone" id="ceDone">Done</button></div>
+      </div>
     </section>
 
     <!-- 2 — type -->
@@ -150,14 +236,17 @@
     <!-- 3 — reveal -->
     <section class="step" id="s3">
       <div class="reveal">
-        <div class="revWm" id="revWm">inkling<span class="dot">.</span></div>
-        <div class="revTag">“you know it when you see it”</div>
-        <div class="revSwatches" id="revSwatches"></div>
+        <div class="revWm" id="revWm">inkling<span class="dot" id="revDot">.</span></div>
+        <div class="revTag" id="revTag">“you know it when you see it”</div>
         <div class="revLead">Here’s your Inkling.</div>
+        <button class="revSample" id="revSample">Make it real →</button>
+        <div class="revHint">Tap a part to set its color. Contrast is checked as you go.</div>
+        <div class="roles" id="roles"></div>
         <div class="revControls">
           <button class="revBtn" id="shuffleBtn">⤮ Shuffle <span class="kbd">space</span></button>
           <div class="seg2" id="segPolarity"><button data-pol="light">Light</button><button data-pol="dark">Dark</button></div>
         </div>
+        <div class="assignPop" id="assignPop" role="dialog" aria-label="Assign color" hidden></div>
       </div>
     </section>
   </div>
@@ -194,42 +283,57 @@
   const chroma=h=>{const[r,g,b]=hex2rgb(h);return (Math.max(r,g,b)-Math.min(r,g,b))/255};
   const warmth=h=>{const[r,g,b]=hex2rgb(h);return (r-b)/255};
   const mix=(h,t,a)=>{const x=hex2rgb(h),y=hex2rgb(t);return rgb2hex(x.map((v,i)=>v+(y[i]-v)*a))};
+  const rgb2hsl=([r,g,b])=>{r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0,l=(mx+mn)/2;if(mx!==mn){const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h/=6;}return[h*360,s*100,l*100]};
+  const hsl2hex=(h,s,l)=>{h=((h%360)+360)%360/360;s=Math.max(0,Math.min(100,s))/100;l=Math.max(0,Math.min(100,l))/100;if(s===0){const v=l*255;return rgb2hex([v,v,v]);}const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q,f=t=>{t=(t+1)%1;return t<1/6?p+(q-p)*6*t:t<1/2?q:t<2/3?p+(q-p)*(2/3-t)*6:p;};return rgb2hex([f(h+1/3)*255,f(h)*255,f(h-1/3)*255])};
+  const isHex=h=>/^#?[0-9a-fA-F]{6}$/.test(h);
   const FONTS={fraunces:{f:'"Fraunces",Georgia,serif',label:'Fraunces · editorial'},dmserif:{f:'"DM Serif Display",Georgia,serif',label:'DM Serif · warm'},grotesk:{f:'"Space Grotesk",sans-serif',label:'Space Grotesk · cool'}};
 
-  const state={ step:0, picks:new Set(), dropped:new Set(), edits:{}, added:[], type:'auto', polarity:'auto', seed:0 };
+  const state={ step:0, picks:new Set(), dropped:new Set(), edits:{}, history:[], added:[], type:'auto', polarity:'auto', seed:0, assign:{}, assignRole:null };
+  // nudge a color toward legibility against bg until it clears `ratio` — keeps its hue, guarantees contrast
+  const readable=(c,bg,ratio)=>{ const toward=lum(bg)<0.5?'#ffffff':'#000000'; let o=c,t=0; while(contrast(o,bg)<ratio&&t<16){o=mix(o,toward,0.1);t++;} return o; };
+  const bestOn=bg=>contrast(bg,'#ffffff')>=contrast(bg,'#111111')?'#ffffff':'#111111'; // legible label color for a colored surface
   const STEPS=4;
 
-  const poolAll=()=>[...new Set([...state.picks].flatMap(i=>REFS[i].pal))];
-  const pool=()=>poolAll().filter(h=>!state.dropped.has(h));
+  const poolAll=()=>[...new Set([...state.picks].flatMap(i=>REFS[i].pal))]; // original hexes (stable keys)
+  const disp=h=>state.edits[h]||h;                                          // what a swatch shows after manual adjust
+  const pool=()=>poolAll().filter(h=>!state.dropped.has(h)).map(disp);      // engine reads the adjusted colors
 
   function compose(){
     const p=pool(); if(!p.length) return null;
+    const A=state.assign||{};
     const byLum=[...p].sort((a,b)=>lum(a)-lum(b));
-    const avg=p.reduce((s,h)=>s+lum(h),0)/p.length;
-    const polarity=(state.polarity&&state.polarity!=='auto')?state.polarity:(avg>0.42?'light':'dark');
-    const light=polarity==='light';
     const seed=state.seed||0;
-    // background — pick among the extreme-luminance colors, varied by shuffle
-    const bgCands = light ? byLum.slice(Math.max(0,byLum.length-4)) : byLum.slice(0,Math.min(4,byLum.length));
-    const bgBase = bgCands[seed % bgCands.length] || (light?byLum[byLum.length-1]:byLum[0]);
-    const bg = light?mix(bgBase,'#ffffff',0.42):mix(bgBase,'#000000',0.4);
-    // accent — most saturated with usable contrast, varied by shuffle
-    const cs=[...p].sort((a,b)=>chroma(b)-chroma(a)).filter(h=>contrast(h,bg)>=1.7);
-    let accent=(cs.length?cs[seed%cs.length]:[...p].sort((a,b)=>chroma(b)-chroma(a))[0]);
-    // ink (logo) — high contrast on bg, varied
-    const inkCands=byLum.filter(h=>contrast(h,bg)>=5 && h!==accent);
-    let ink=inkCands.length?inkCands[seed%inkCands.length]:(light?'#181410':'#f4efe6');
-    if(contrast(ink,bg)<4.5) ink=light?mix(ink,'#000000',0.55):mix(ink,'#ffffff',0.55);
-    // subhead — readable, distinct from ink
-    const subCands=[...p].filter(h=>contrast(h,bg)>=2.8 && h!==ink);
-    let sub=subCands.length?subCands[(seed+1)%subCands.length]:mix(ink,bg,0.4);
+    // background — pinned value wins; else pick among extreme-luminance colors per polarity, varied by shuffle
+    let bg;
+    if(A.bg){ bg=A.bg; }
+    else {
+      const avg=p.reduce((s,h)=>s+lum(h),0)/p.length;
+      const pol=(state.polarity&&state.polarity!=='auto')?state.polarity:(avg>0.42?'light':'dark');
+      const lp=pol==='light';
+      const bgCands=lp?byLum.slice(Math.max(0,byLum.length-4)):byLum.slice(0,Math.min(4,byLum.length));
+      const bgBase=bgCands[seed%bgCands.length]||(lp?byLum[byLum.length-1]:byLum[0]);
+      bg=lp?mix(bgBase,'#ffffff',0.42):mix(bgBase,'#000000',0.4);
+    }
+    const polarity=lum(bg)>=0.4?'light':'dark'; // derive from the actual bg so pinned backgrounds behave
+    // accent (button + period) — pinned, else most saturated with usable contrast; clamp to ≥3:1 (large/graphic)
+    let accent;
+    if(A.accent){ accent=A.accent; }
+    else { const cs=[...p].sort((a,b)=>chroma(b)-chroma(a)).filter(h=>contrast(h,bg)>=2.4); accent=readable(cs.length?cs[seed%cs.length]:[...p].sort((a,b)=>chroma(b)-chroma(a))[0],bg,3); }
+    // ink (title) — pinned, else highest-contrast pool color, guaranteed to clear AA (4.5:1)
+    let ink;
+    if(A.ink){ ink=A.ink; }
+    else { const c=byLum.filter(h=>h!==accent).sort((a,b)=>contrast(b,bg)-contrast(a,bg))[0]||(polarity==='light'?'#181410':'#f4efe6'); ink=readable(c,bg,4.5); }
+    // subhead — pinned, else best remaining color, also guaranteed AA
+    let sub;
+    if(A.sub){ sub=A.sub; }
+    else { const c=[...p].filter(h=>h!==ink&&h!==accent).sort((a,b)=>contrast(b,bg)-contrast(a,bg))[0]||mix(ink,bg,0.3); sub=readable(c,bg,4.5); }
     let type=state.type; if(type==='auto'){const w=p.reduce((s,h)=>s+warmth(h),0)/p.length; type=w>0.06?'dmserif':(w<-0.04?'grotesk':'fraunces');}
     return {bg,ink,accent,sub,font:FONTS[type].f,type,polarity};
   }
   function applyPage(r){
     const s=document.documentElement.style;
     s.setProperty('--bg',r.bg);s.setProperty('--ink',r.ink);s.setProperty('--accent',r.accent);s.setProperty('--sub',r.sub);
-    s.setProperty('--muted',mix(r.ink,r.bg,0.42));s.setProperty('--faint',mix(r.ink,r.bg,0.62));
+    s.setProperty('--muted',mix(r.ink,r.bg,0.32));s.setProperty('--faint',mix(r.ink,r.bg,0.48));
     s.setProperty('--rule',r.ink);s.setProperty('--line',mix(r.ink,r.bg,0.8));s.setProperty('--wm-font',r.font);
   }
 
@@ -245,14 +349,58 @@
   function renderGather(){
     const p=poolAll().slice(0,18);
     const bar=document.getElementById('gatherBar');
-    bar.innerHTML=p.map(h=>`<span style="background:${h}"></span>`).join('');
+    bar.innerHTML=p.map(h=>`<span style="background:${disp(h)}"></span>`).join('');
     requestAnimationFrame(()=>bar.querySelectorAll('span').forEach((s,k)=>setTimeout(()=>s.classList.add('f'),k*30)));
   }
   function renderPalette(){
     const box=document.getElementById('palette'); const p=poolAll();
-    box.innerHTML=p.map(h=>`<div class="pcell ${state.dropped.has(h)?'off':''}" data-hex="${h}" style="background:${h}"><span class="x">✕</span><span class="hex">${h}</span></div>`).join('');
-    box.querySelectorAll('.pcell').forEach(c=>c.addEventListener('click',()=>{const h=c.dataset.hex;state.dropped.has(h)?state.dropped.delete(h):state.dropped.add(h);c.classList.toggle('off',state.dropped.has(h));}));
+    box.innerHTML=p.map(h=>{const d=disp(h);return `<div class="pcell ${state.dropped.has(h)?'off':''} ${state.edits[h]?'edited':''}" data-hex="${h}" tabindex="0" role="button" aria-label="Color ${d}, tap to adjust" style="background:${d}"><span class="x" role="button" aria-label="Remove ${d}">✕</span><span class="hex">${d}</span></div>`;}).join('');
+    box.querySelectorAll('.pcell').forEach(c=>{
+      const h=c.dataset.hex;
+      const remove=e=>{e.stopPropagation();pushHist();state.dropped.has(h)?state.dropped.delete(h):state.dropped.add(h);c.classList.toggle('off',state.dropped.has(h));};
+      c.querySelector('.x').addEventListener('click',remove);
+      c.addEventListener('click',()=>{ if(state.dropped.has(h)){pushHist();state.dropped.delete(h);c.classList.remove('off');return;} openEdit(h); });
+      c.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!state.dropped.has(h))openEdit(h);} else if(e.key==='Backspace'||e.key==='Delete'){e.preventDefault();remove(e);} });
+    });
+    if(cedit.classList.contains('on')) selectCell(state.editing);
+    refreshUndo();
   }
+
+  // ---- manual color-adjust: edit in context, with undo ----
+  const cedit=document.getElementById('cedit'), cePrev=document.getElementById('cePrev'),
+        ceHue=document.getElementById('ceHue'), ceLight=document.getElementById('ceLight'), ceHex=document.getElementById('ceHex'),
+        undoBtn=document.getElementById('undoBtn');
+  // history — snapshots of {edits, dropped}; undo steps back through adjusts AND removals
+  const snap=()=>({edits:{...state.edits},dropped:[...state.dropped]});
+  function pushHist(s){ state.history.push(s||snap()); refreshUndo(); }
+  function refreshUndo(){ undoBtn.hidden=state.history.length===0; }
+  function undo(){ if(!state.history.length)return; const s=state.history.pop(); state.edits=s.edits; state.dropped=new Set(s.dropped); renderPalette(); if(cedit.classList.contains('on')) paintEditor(disp(state.editing)); refreshUndo(); }
+  // gesture batching — one undo step per slider drag / hex entry, not per pixel
+  let pending=null;
+  const beginGesture=()=>{ if(!pending) pending=snap(); };
+  const commitGesture=()=>{ if(pending){ if(JSON.stringify(pending)!==JSON.stringify(snap())) pushHist(pending); pending=null; } };
+
+  function selectCell(orig){ document.querySelectorAll('.pcell.sel').forEach(c=>c.classList.remove('sel')); const c=document.querySelector(`.pcell[data-hex="${orig}"]`); if(c)c.classList.add('sel'); }
+  function liveCell(orig){ const c=document.querySelector(`.pcell[data-hex="${orig}"]`); if(!c)return; const d=disp(orig); c.style.background=d; const hx=c.querySelector('.hex'); if(hx)hx.textContent=d; c.classList.toggle('edited',!!state.edits[orig]); }
+  function paintEditor(h){ cePrev.style.background=h; ceHex.value=h.replace('#',''); const[hue,s,l]=rgb2hsl(hex2rgb(h)); ceHue.value=Math.round(hue); ceLight.value=Math.round(l);
+    ceHue.style.background='linear-gradient(90deg,'+[0,60,120,180,240,300,360].map(d=>hsl2hex(d,Math.max(s,55),55)).join(',')+')';
+    ceLight.style.background='linear-gradient(90deg,'+[0,25,50,75,100].map(L=>hsl2hex(hue,s,L)).join(',')+')';
+    document.getElementById('ceReset').disabled=!state.edits[state.editing]; }
+  function setEdit(h){ const orig=state.editing; if(h.toLowerCase()===orig.toLowerCase()) delete state.edits[orig]; else state.edits[orig]=h; paintEditor(h); liveCell(orig); document.getElementById('ceReset').disabled=!state.edits[orig]; }
+  function openEdit(orig){ state.editing=orig; selectCell(orig); paintEditor(disp(orig)); cedit.classList.add('on'); setTimeout(()=>ceHue.focus({preventScroll:true}),60); }
+  function closeEdit(){ cedit.classList.remove('on'); document.querySelectorAll('.pcell.sel').forEach(c=>c.classList.remove('sel')); const c=document.querySelector(`.pcell[data-hex="${state.editing}"]`); if(c)c.focus({preventScroll:true}); state.editing=null; }
+  function fromSliders(){ const[,s]=rgb2hsl(hex2rgb(disp(state.editing))); setEdit(hsl2hex(+ceHue.value,s,+ceLight.value)); }
+  const arrowKeys=['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+  [ceHue,ceLight].forEach(sl=>{ sl.addEventListener('pointerdown',beginGesture); sl.addEventListener('keydown',e=>{if(arrowKeys.includes(e.key))beginGesture();}); sl.addEventListener('input',fromSliders); sl.addEventListener('change',commitGesture); });
+  ceHex.addEventListener('focus',beginGesture);
+  ceHex.addEventListener('input',()=>{ const v=ceHex.value.trim(); if(isHex(v)) setEdit('#'+v.replace('#','').toLowerCase()); });
+  ceHex.addEventListener('blur',commitGesture);
+  document.getElementById('ceDone').addEventListener('click',()=>{ commitGesture(); closeEdit(); });
+  document.getElementById('ceReset').addEventListener('click',()=>{ if(!state.edits[state.editing])return; pushHist(); delete state.edits[state.editing]; liveCell(state.editing); paintEditor(state.editing); });
+  undoBtn.addEventListener('click',undo);
+  document.addEventListener('keydown',e=>{ if(state.step!==1)return;
+    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){ e.preventDefault(); undo(); }
+    else if(e.key==='Escape'&&cedit.classList.contains('on')){ e.preventDefault(); closeEdit(); } });
   function renderType(){
     const r=compose()||{ink:'var(--ink)',accent:'var(--accent)'};
     const wm=document.getElementById('typeWm');
@@ -262,18 +410,99 @@
     opts.innerHTML=Object.entries(FONTS).map(([k,v])=>`<button class="topt ${cur===k?'on':''}" data-type="${k}"><div class="tn" style="font-family:${v.f}">inkling.</div><div class="tl">${v.label}</div></button>`).join('');
     opts.querySelectorAll('.topt').forEach(b=>b.addEventListener('click',()=>{state.type=b.dataset.type;renderType();}));
   }
+  const ROLE_DEFS=[{k:'bg',label:'Background'},{k:'ink',label:'Title'},{k:'sub',label:'Subhead'},{k:'accent',label:'Button'}];
+  const roleColor=(r,k)=>k==='bg'?r.bg:k==='ink'?r.ink:k==='sub'?r.sub:r.accent;
+  // the contrast each part owes its background — the actual WCAG rule, named so it teaches
+  const ROLE_AA={ ink:{ratio:3,std:'AA Large',note:'The title is large text — it needs 3:1.'},
+                  sub:{ratio:4.5,std:'AA',note:'The subhead is body text — it needs 4.5:1.'},
+                  accent:{ratio:3,std:'AA',note:'The button & accent need 3:1 to stand out.'}, bg:null };
   function renderReveal(){
     const r=compose(); if(!r) return;
     applyPage(r);
     const wm=document.getElementById('revWm'); wm.style.fontFamily=r.font; wm.style.color=r.ink;
-    document.getElementById('revSwatches').innerHTML=[r.bg,r.ink,r.accent,r.sub,mix(r.accent,r.ink,0.3)].map(h=>`<span style="background:${h}"></span>`).join('');
+    document.getElementById('revDot').style.color=r.accent;
+    document.getElementById('revTag').style.color=r.sub;
+    const sb=document.getElementById('revSample'); sb.style.background=r.accent; sb.style.color=bestOn(r.accent);
+    // role row — current color per part, pin state, and an honest contrast flag on overrides
+    const roles=document.getElementById('roles');
+    roles.innerHTML=ROLE_DEFS.map(d=>{
+      const c=roleColor(r,d.k), pinned=!!(state.assign&&state.assign[d.k]);
+      const aa=ROLE_AA[d.k]; const warn=aa&&contrast(c,r.bg)<aa.ratio;
+      return `<button class="role ${pinned?'pinned':''}" data-role="${d.k}"><span class="rsw" style="background:${c}"></span><span class="rmeta"><span class="rl">${d.label}${pinned?' <span class="lock">●</span>':''}</span><span class="rhex ${warn?'warn':''}">${warn?'⚠ low contrast':c}</span></span></button>`;
+    }).join('');
+    roles.querySelectorAll('.role').forEach(b=>b.addEventListener('click',()=>openAssign(b.dataset.role)));
     document.querySelectorAll('#segPolarity button').forEach(b=>b.classList.toggle('on', b.dataset.pol===r.polarity));
     wm.classList.remove('pop'); void wm.offsetWidth; wm.classList.add('pop');
   }
-  function shuffleBrand(){ state.seed=(state.seed||0)+1; const ks=Object.keys(FONTS); state.type=ks[Math.floor(Math.random()*ks.length)]; renderReveal(); }
+  // assign popover — tap a part, choose a color from the gathered palette, or hand it back to Auto
+  const assignPop=document.getElementById('assignPop');
+  // when a background is the constraint, name what's happening instead of letting a wall of dim swatches read as the user's failure
+  function bgGuidance(bg){ const L=lum(bg);
+    if(L>=0.6) return 'On a light background, text needs to be dark to read clearly. Few mid-tones will qualify.';
+    if(L<=0.16) return 'On a dark background, text needs to be light to read clearly.';
+    return 'On a mid-tone background, only very light or very dark text reads clearly. That’s expected. Keep the bold color here, and use light or dark text.'; }
+  // group labels read differently for text you read vs a fill that must stand out
+  const GROUP_LABELS={ text:{clear:'Reads clearly',faint:'Too faint here'}, fill:{clear:'Stands out',faint:'Blends into the background'} };
+  // a swatch is a *preview*, not a score: text roles show the word in that color on your bg; the button shows the color as a chip on your bg
+  function tile(g,cur,bg,font,kind){
+    const inner = kind==='fill' ? `<span class="chip" style="background:${g.h}"></span>` : `<span class="smp" style="color:${g.h};font-family:${font}">Ag</span>`;
+    return `<button class="apc prev ${cur===g.h?'on':''}" data-hex="${g.h}" style="background:${bg}" title="${g.cr.toFixed(1)}:1" aria-label="${g.h}, contrast ${g.cr.toFixed(1)} to 1, ${g.pass?'reads clearly':'too faint'}">${inner}</button>`;
+  }
+  function openAssign(role){
+    state.assignRole=role; const p=pool(); const cur=state.assign&&state.assign[role];
+    const r=compose(); const bg=r.bg; const aa=ROLE_AA[role]; const label=ROLE_DEFS.find(d=>d.k===role).label;
+    let body;
+    if(aa){
+      const kind=role==='accent'?'fill':'text', L=GROUP_LABELS[kind];
+      const graded=p.map(h=>({h,cr:contrast(h,bg),pass:contrast(h,bg)>=aa.ratio})).sort((a,b)=>b.cr-a.cr);
+      const clear=graded.filter(g=>g.pass), faint=graded.filter(g=>!g.pass);
+      const insight=(clear.length/graded.length<0.4)?`<div class="apInsight">${bgGuidance(bg)}</div>`:'';
+      const group=(title,arr,cls,note)=>arr.length?`<div class="apGroup ${cls}"><div class="apGl">${title}${note?`<span class="apGlNote">${note}</span>`:''}</div><div class="apSw">${arr.map(g=>tile(g,cur,bg,r.font,kind)).join('')}</div></div>`:'';
+      body=insight
+        +group(L.clear,clear,'','Meets accessibility contrast on this background.')
+        +group(L.faint,faint,'faint','Below the accessibility standard with this background. Still usable, not recommended.')
+        +`<div class="apSw apAutoRow"><button class="apAuto ${cur?'':'on'}">Use Auto</button></div>`;
+    } else {
+      body=`<div class="apSw">${p.map(h=>`<button class="apc ${cur===h?'on':''}" data-hex="${h}" style="background:${h}" aria-label="${h}"></button>`).join('')}<button class="apAuto ${cur?'':'on'}">Use Auto</button></div>`;
+    }
+    assignPop.innerHTML=`<div class="apHead">Assign <b>${label}</b>${aa?`<button class="apWhy" type="button">Why?</button>`:''}</div>`
+      +(aa?`<div class="apWhyBox" hidden>Contrast is the lightness gap between text and its background. “Reads clearly” means it meets the WCAG standard for that text size. Large text (the title) needs less contrast than small text (the subhead).</div>`:'')
+      +body+`<div class="apTeach" hidden></div>`;
+    assignPop.querySelectorAll('.apc').forEach(c=>c.addEventListener('click',()=>chooseSwatch(role,c.dataset.hex)));
+    assignPop.querySelector('.apAuto').addEventListener('click',()=>{ if(state.assign)delete state.assign[role]; closeAssign(); renderReveal(); });
+    const why=assignPop.querySelector('.apWhy'); if(why)why.addEventListener('click',()=>{ const b=assignPop.querySelector('.apWhyBox'); b.hidden=!b.hidden; why.classList.toggle('on',!b.hidden); });
+    assignPop.hidden=false; requestAnimationFrame(()=>assignPop.classList.add('on'));
+  }
+  function chooseSwatch(role,hex){
+    const aa=ROLE_AA[role]; const bg=compose().bg; const cr=aa?contrast(hex,bg):99;
+    if(aa && cr<aa.ratio){ // teachable moment — don't block, explain and offer the fix
+      const fixed=readable(hex,bg,aa.ratio); const teach=assignPop.querySelector('.apTeach');
+      assignPop.querySelectorAll('.apc').forEach(c=>c.classList.toggle('on',c.dataset.hex===hex));
+      teach.hidden=false;
+      const verb=role==='accent'?'blends into your background':'is faint on your background';
+      teach.innerHTML=`<div class="apWarn">This color ${verb}.</div>`+
+        `<div class="apTeachBtns"><button class="apFix">Make it readable</button><button class="apAnyway">Use it anyway</button></div>`;
+      teach.querySelector('.apFix').addEventListener('click',()=>{ (state.assign=state.assign||{})[role]=fixed; closeAssign(); renderReveal(); });
+      teach.querySelector('.apAnyway').addEventListener('click',()=>{ (state.assign=state.assign||{})[role]=hex; closeAssign(); renderReveal(); });
+      return;
+    }
+    (state.assign=state.assign||{})[role]=hex; closeAssign(); renderReveal();
+  }
+  function closeAssign(){ assignPop.classList.remove('on'); assignPop.hidden=true; state.assignRole=null; }
+  // tapping the live elements opens that part's picker directly
+  document.getElementById('revWm').addEventListener('click',e=>{ if(e.target.id==='revDot'){openAssign('accent');} else openAssign('ink'); });
+  document.getElementById('revTag').addEventListener('click',()=>openAssign('sub'));
+  document.getElementById('revSample').addEventListener('click',()=>openAssign('accent'));
+  document.addEventListener('click',e=>{ if(state.step===3 && assignPop.classList.contains('on') && !assignPop.contains(e.target) && !e.target.closest('.role,#revWm,#revTag,#revSample')) closeAssign(); });
+  function shuffleBrand(){ if(assignPop.classList.contains('on'))closeAssign(); state.seed=(state.seed||0)+1; renderReveal(); } // keeps the chosen font + pinned roles; reshuffles the rest
   document.getElementById('shuffleBtn').addEventListener('click',shuffleBrand);
   document.getElementById('segPolarity').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;state.polarity=b.dataset.pol;renderReveal();});
-  document.addEventListener('keydown',e=>{ if(e.code==='Space' && state.step===3 && !/INPUT|TEXTAREA|BUTTON/.test(e.target.tagName||'')){ e.preventDefault(); shuffleBrand(); } });
+  // spacebar shuffles on the reveal regardless of which control holds focus; preventDefault stops a focused button from also firing
+  document.addEventListener('keydown',e=>{
+    if(state.step!==3) return;
+    if(e.key==='Escape' && assignPop.classList.contains('on')){ e.preventDefault(); closeAssign(); return; }
+    if(e.code==='Space' && !/INPUT|TEXTAREA/.test(e.target.tagName||'')){ e.preventDefault(); shuffleBrand(); }
+  });
 
   // ---- step machine ----
   function show(n){
@@ -283,6 +512,8 @@
     document.getElementById('backBtn').style.visibility = state.step>0?'visible':'hidden';
     const next=document.getElementById('nextBtn');
     document.getElementById('defaultBtn').style.display = state.step===3?'inline-block':'none';
+    if(state.step!==1 && cedit.classList.contains('on')) closeEdit();
+    if(state.step!==3 && assignPop.classList.contains('on')) closeAssign();
     if(state.step===0){ renderGather(); }
     if(state.step===1){ renderPalette(); }
     if(state.step===2){ renderType(); }
@@ -293,7 +524,7 @@
   function updateNav(){
     const next=document.getElementById('nextBtn');
     next.disabled = (state.step===0 && state.picks.size===0);
-    document.getElementById('navMid').textContent = state.step===0 ? (state.picks.size?`${state.picks.size} chosen`:'pick a few that feel like you') : '';
+    document.getElementById('navMid').textContent = state.step===0 ? (state.picks.size?`${state.picks.size} chosen`:'pick a few to start') : '';
   }
   document.getElementById('nextBtn').addEventListener('click',()=>{ if(state.step<3) show(state.step+1); else { /* hand to real product */ } });
   document.getElementById('backBtn').addEventListener('click',()=>show(state.step-1));
