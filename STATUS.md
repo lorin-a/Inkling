@@ -106,12 +106,26 @@ The opening act = the real product in miniature, **Inkling as the subject**: you
 (per-part precision lives in the real Build tool, not onboarding); direct copy; US English; use
 intuition repeatedly. See [[project_onboarding_genesis]]. **Killed** the playable sample-studio idea.
 
+## ★ Onboarding Colors → reveal — BUILT & verified (2026-06-12, commit a3b6e39)
+`public/make-inkling.html`. The Colors beat + reveal are now a real little tool:
+- **Manual color-adjust, edited *in context*** (palette stays on screen, selected swatch lifts in
+  the group, dock holds hue/lightness/hex) + real **undo** (button + ⌘Z, covers adjusts & removals).
+- **Role assignment at the reveal** — assign Background/Title/Subhead/Button; **pinning beats
+  Shuffle** (it reshuffles only what isn't pinned); **Shuffle no longer changes the chosen font**.
+- **Accessibility-as-teaching, graded not gated** — WCAG-AA floor in the engine (fixed the dark-mode
+  failure); the picker **previews the word on your bg** grouped *Reads clearly / Too faint here* with
+  plain notes; numbers hide behind "Why?"; a faint pick → "Make it readable" / "Use it anyway".
+- **Fixes:** inactive steps no longer intercept clicks (Gather wall was overlaying reveal controls);
+  faded secondary text lifted; picker is a fixed-legible panel; instructional copy tightened.
+- See [[project_onboarding_genesis]] for the locked design laws.
+
 ## Next move (do this first)
-**Continue the onboarding — the three Lorin confirmed for next time** (build properly, don't rush):
-1. a **manual color-adjust** step (eyedrop / edit hex) in/after Colors; 2. **more type options +
-pairing choices** = the **Type font-web** (connect/draw a line to pair a title voice + body voice,
-spacebar reshuffles the field, mix-and-match); 3. a **draggable moodboard (Play) beat** before the
-reveal. Then: wire the prototype in as the real front door + full-app skin persistence.
+**Continue the onboarding — the two remaining beats** (build properly, don't rush):
+1. the **Type font-web** — connect/pair a title + body voice, spacebar reshuffles, mix-and-match.
+   Proposed interaction (the *constellation*) is in `project_onboarding_genesis`, awaiting Lorin's
+   reaction on two taste calls (tap-tap-draws-the-line vs drag; allow pairing two display faces).
+2. a **draggable moodboard (Play) beat** before the reveal. Then: wire the prototype in as the real
+   front door + full-app skin persistence.
 **Parallel structural priority:** **`RIGHTS.md` Phase 0** (delete `lib/pinterestSourceFetcher.js` +
 stop the bookmarklet auto-scroll) before any public launch — read `RIGHTS.md` before touching import.
 
