@@ -110,8 +110,15 @@
   /* ===== beat: COLORS — see & curate the palette you gathered (adjust in context + undo) ===== */
   .undoBtn{align-self:flex-end;display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--muted);background:none;border:1.5px solid var(--line);border-radius:100px;padding:8px 16px;cursor:pointer;transition:border-color .15s,color .15s;margin:-4px 2px 4px}
   .undoBtn:hover{border-color:var(--ink);color:var(--ink)} .undoBtn[hidden]{display:none}
-  .palette{flex:1 1 auto;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,110px));gap:18px;justify-content:center;align-content:safe center;max-width:1080px;width:100%;margin:0 auto;padding:14px}
+  /* contextual curation — each gathered image beside the colors it gave you */
+  .palette{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:16px;max-width:900px;width:100%;margin:0 auto;padding:6px 14px 18px}
   .palette::-webkit-scrollbar{width:8px}.palette::-webkit-scrollbar-thumb{background:var(--line);border-radius:100px}
+  .curRow{display:flex;align-items:center;gap:22px;padding:16px;border-radius:18px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
+  .curImg{flex:0 0 auto;width:108px;height:128px;border:none;padding:0;cursor:pointer;background:none;overflow:hidden;
+    box-shadow:0 10px 26px rgba(0,0,0,.16);transition:border-radius .45s var(--spring),transform .2s var(--ease)}
+  .curImg:hover{transform:translateY(-3px)} .curImg:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .curImg img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+  .curSwatches{flex:1 1 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:12px;align-content:center}
   .pcell{aspect-ratio:3/4;border-radius:11px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08), 0 8px 22px rgba(0,0,0,.1);cursor:pointer;position:relative;border:none;padding:0;transition:transform .3s var(--ease),opacity .3s,filter .3s,box-shadow .3s}
   .pcell:hover{transform:translateY(-5px)}
   .pcell.off{opacity:.4;filter:grayscale(.92);transform:scale(.78)}
@@ -311,6 +318,7 @@
     .head{padding:4px 0 10px} .H{font-size:30px} .sub{font-size:15px;margin-top:8px}
     .specWall{grid-template-columns:1fr} .homeHero{padding:14px 0 24px}
     .specWd{font-size:38px} .spec{min-height:132px}
+    .curRow{flex-direction:column;align-items:stretch;gap:14px} .curImg{width:100%;height:168px}
     .weightCtl input[type=range]{width:140px}
     /* the color adjust dock wraps so the sliders + buttons never clip on a phone */
     .cedit{flex-wrap:wrap;gap:14px 18px} .cedit.on{max-height:380px}
@@ -465,7 +473,7 @@
 
     <!-- 2 — colors -->
     <section class="beat" id="bColors">
-      <div class="head"><div class="kick">Colors · keep the ones you want</div><div class="H" id="colorsH">Your colors.</div><div class="sub">Every color you gathered. Tap one to adjust it. <span aria-hidden="true">✕</span> to remove. These become your brand colors.</div></div>
+      <div class="head"><div class="kick">Colors · from each image</div><div class="H" id="colorsH">Your colors.</div><div class="sub">Each image and the colors it gave you. Keep the ones you want, tap a color to adjust it, <span aria-hidden="true">✕</span> to drop it. Tap an image to reframe it.</div></div>
       <button class="undoBtn" id="undoBtn" hidden>↶ Undo</button>
       <div class="palette" id="palette"></div>
       <div class="cedit" id="cedit" role="group" aria-label="Adjust color">
@@ -718,18 +726,27 @@
   let cPending=null; const beginGesture=()=>{ if(!cPending) cPending=snap(); };
   const commitGesture=()=>{ if(cPending){ if(JSON.stringify(cPending)!==JSON.stringify(snap())) pushHist(cPending); cPending=null; } };
   function renderPalette(){
-    document.getElementById('colorsH').textContent = state.name?`${state.name}’s colors.`:'Your colors.';
-    const p=colorPool();
-    palette.innerHTML=p.map(h=>{const d=disp(h);return `<button class="pcell ${state.droppedColors.has(h)?'off':''} ${state.edits[h]?'edited':''}" data-hex="${h}" aria-label="Color ${d}, tap to adjust" style="background:${d}"><span class="x" role="button" aria-label="Remove ${d}">✕</span><span class="hex">${d}</span></button>`;}).join('');
+    document.getElementById('colorsH').textContent='Your colors.';
+    if(!state.gatherShapes) state.gatherShapes={};
+    const imgs=[...state.picks];
+    palette.innerHTML=imgs.map(i=>{
+      const sw=REFS[i].pal.map(h=>{const d=disp(h);return `<button class="pcell ${state.droppedColors.has(h)?'off':''} ${state.edits[h]?'edited':''}" data-hex="${h}" aria-label="Color ${d}, tap to adjust" style="background:${d}"><span class="x" role="button" aria-label="Remove ${d}">✕</span><span class="hex">${d}</span></button>`;}).join('');
+      return `<div class="curRow">
+        <button class="curImg" data-img="${i}" aria-label="Image you gathered — tap to reframe it"><img src="${REFS[i].img}" alt="" loading="lazy"/></button>
+        <div class="curSwatches">${sw}</div>
+      </div>`;}).join('');
     palette.querySelectorAll('.pcell').forEach(c=>{ const h=c.dataset.hex;
-      const remove=e=>{e.stopPropagation();pushHist();state.droppedColors.has(h)?state.droppedColors.delete(h):state.droppedColors.add(h);c.classList.toggle('off',state.droppedColors.has(h));};
+      const remove=e=>{e.stopPropagation();pushHist();state.droppedColors.has(h)?state.droppedColors.delete(h):state.droppedColors.add(h);liveCell(h);};
       c.querySelector('.x').addEventListener('click',remove);
-      c.addEventListener('click',()=>{ if(state.droppedColors.has(h)){pushHist();state.droppedColors.delete(h);c.classList.remove('off');return;} openEdit(h); }); });
+      c.addEventListener('click',()=>{ if(state.droppedColors.has(h)){pushHist();state.droppedColors.delete(h);liveCell(h);return;} openEdit(h); }); });
+    palette.querySelectorAll('.curImg').forEach(b=>{ const i=+b.dataset.img; applyCurShape(b,i);
+      b.addEventListener('click',()=>{ state.gatherShapes[i]=((state.gatherShapes[i]||0)+1)%SHAPES.image.length; applyCurShape(b,i); }); });
     if(cedit.classList.contains('on')) selectCell(state.editing);
     refreshUndo();
   }
-  function selectCell(orig){ palette.querySelectorAll('.pcell.sel').forEach(c=>c.classList.remove('sel')); const c=palette.querySelector(`.pcell[data-hex="${orig}"]`); if(c)c.classList.add('sel'); }
-  function liveCell(orig){ const c=palette.querySelector(`.pcell[data-hex="${orig}"]`); if(!c)return; const d=disp(orig); c.style.background=d; const hx=c.querySelector('.hex'); if(hx)hx.textContent=d; c.classList.toggle('edited',!!state.edits[orig]); }
+  function applyCurShape(b,i){ b.style.borderRadius=SHAPES.image[state.gatherShapes[i]||0]; }
+  function selectCell(orig){ palette.querySelectorAll('.pcell.sel').forEach(c=>c.classList.remove('sel')); palette.querySelectorAll(`.pcell[data-hex="${orig}"]`).forEach(c=>c.classList.add('sel')); }
+  function liveCell(orig){ const d=disp(orig); palette.querySelectorAll(`.pcell[data-hex="${orig}"]`).forEach(c=>{ c.style.background=d; const hx=c.querySelector('.hex'); if(hx)hx.textContent=d; c.classList.toggle('edited',!!state.edits[orig]); c.classList.toggle('off',state.droppedColors.has(orig)); }); }
   function paintEditor(h){ cePrev.style.background=h; ceHex.value=h.replace('#',''); const[hue,s,l]=rgb2hsl(hex2rgb(h)); ceHue.value=Math.round(hue); ceLight.value=Math.round(l);
     ceHue.style.background='linear-gradient(90deg,'+[0,60,120,180,240,300,360].map(d=>hsl2hex(d,Math.max(s,55),55)).join(',')+')';
     ceLight.style.background='linear-gradient(90deg,'+[0,25,50,75,100].map(L=>hsl2hex(hue,s,L)).join(',')+')';
@@ -868,7 +885,7 @@
     const W=board.clientWidth||900, H=board.clientHeight||500;
     const iw=Math.round(Math.min(W*0.135,172)), imgs=[...state.picks], cols=boardColorSet(), types=state.typePicks.slice(0,3);
     const units=[];
-    imgs.forEach(i=>units.push({kind:'image',refIndex:i,src:REFS[i].img,w:iw,h:Math.round(iw*1.2),label:'Image you gathered'}));
+    imgs.forEach(i=>units.push({kind:'image',refIndex:i,src:REFS[i].img,w:iw,h:Math.round(iw*1.2),shape:(state.gatherShapes&&state.gatherShapes[i])||0,label:'Image you gathered'}));
     cols.forEach(c=>units.push({kind:'color',hex:c.hex,orig:c.orig,w:84,h:84,label:`Color ${c.hex}`}));
     types.forEach(k=>units.push({kind:'type',key:k,weight:state.weight,w:196,h:Math.round(iw*1.2*0.62),label:`Type: ${FONTS[k].name}`}));
     units.forEach((u,k)=>u._k=k);
