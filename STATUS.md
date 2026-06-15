@@ -4,7 +4,7 @@
 (`project_product_direction`, `project_onboarding_genesis`); the journey lives in git. Keep this short.
 
 ## Right now
-- **Branch `v2`** (`main` = frozen OG standalone). Last commit `855b860`: the onboarding prototype rebuild. Tree clean, **not pushed**.
+- **Branch `v2`** (`main` = frozen OG standalone). **Track A is FROZEN** — the prototype is finished and is the reference; stop adding product features to it. Next work is Track B. Tree clean, **not pushed**.
 - Run: `npm run dev` → `localhost:3000`. The onboarding prototype is `public/make-inkling.html`.
 - Dogfood signed-out (localStorage); Playwright runs in a separate browser, not yours.
 
@@ -18,21 +18,15 @@ editorial rigor. Locked decisions + brand → memory.
 
 ## The plan: two tracks (don't blur them)
 
-**Track A — the prototype (`public/make-inkling.html`).** Job: *prove the experience + thesis*, Inkling
-as the subject. Finish to a demo bar, then **FREEZE** as the reference. Stop adding real-product
-features to it. Currently a working 7-beat flow: Name → Gather → Colors → Type → Moodboard → Brand
-(applied to live mockups + spec) → Home (brand-dressed, living moodboard + permanent shuffle).
-Verified desktop + mobile, keyboard, 0 console errors.
-
-Remaining to finish + freeze:
-1. **Opening frame** (the capstone — currently opens cold at Name): Inkling load animation → the
-   creative-process spine *as* the felt explanation (show the arc, don't write a paragraph) → a
-   two-door choice ("co-design Inkling to learn" · "drop into my own canvas").
-2. **Home parity:** full moodboard-edit (reshape/stretch/rotate) + manual color choice on the living
-   artifact (it's drag-only today).
-3. **One motion climax:** the board *assembles* into the brand lockup (then controls fade in). The
-   single "arrival" moment, not motion sprinkled everywhere.
-4. **One QA + design-review sweep** (reduced-motion, keyboard, mobile) → freeze.
+**Track A — the prototype (`public/make-inkling.html`). FROZEN — the reference.** Job: *prove the
+experience + thesis*, Inkling as the subject. Don't add real-product features here; build those in
+Track B. The full flow: **Opening frame** (load → the Gather·Play·Build spine as the felt explanation
+→ two doors: "Co-design Inkling" guided · "Drop into my own canvas" straight to the living canvas) →
+Name → Gather → Colors → Type → Moodboard → **Brand** (the board *assembles* into the lockup, then
+controls fade in — the one arrival) → Home (brand-dressed, living artifact with full edit + manual
+color roles + permanent shuffle). Verified desktop + mobile, keyboard (tab order, Enter, focus, the
+intro holds `inert` over the flow), reduced-motion (content stays visible, climax goes instant), 0
+console errors.
 
 **Track B — the real Next.js product.** Where the durable architecture is built, in dependency order:
 1. **Color engine** (make-or-break): OKLCH harmony + hue-cluster detection → "you gathered two
@@ -46,10 +40,11 @@ Remaining to finish + freeze:
    retention moat. (Connects to `project_community_publishing`.)
 
 ## Next move (do this first)
-**Build the prototype's opening frame** (Track A #1): the Inkling load animation + the creative-process
-spine as the felt explanation + the two-door choice. It's what makes a viewer go *"oh, I see — this is
-my creative home base"* before they start (that realization is the onboarding's success metric). Then
-Home parity → motion climax → sweep → freeze. Then open Track B with the color engine.
+**Open Track B with the color engine** (Track B #1) — Track A is frozen. Build OKLCH harmony +
+hue-cluster detection → "you gathered two directions" + ramp snapping. It's the make-or-break
+foundation and also powers the curation beat. See `project_smart_color_engine`,
+`project_color_theory_research` (Sanzo Wada dataset ready). Build it in the real Next.js app (`app/`),
+not the frozen prototype.
 
 ## Locked decisions (→ memory for the why)
 - **Two surfaces:** workspace = neutral container (your brand is the color inside it); home/onboarding
