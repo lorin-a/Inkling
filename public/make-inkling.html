@@ -27,7 +27,7 @@
   .app{height:100vh;display:flex;flex-direction:column}
 
   /* ---- top bar: wordmark · progress · skip ---- */
-  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 40px;flex:0 0 auto}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 44px;flex:0 0 auto}
   .wm{font-family:var(--title-font);font-size:22px;font-weight:600;letter-spacing:-0.02em}
   .wm .dot{color:var(--accent)}
   .progress{display:flex;align-items:center;gap:15px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
@@ -42,10 +42,10 @@
   .stage{flex:1 1 auto;position:relative;overflow:hidden}
   .beat{position:absolute;inset:0;display:flex;flex-direction:column;padding:6px 40px 24px;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(18px);transition:opacity .55s var(--ease),transform .55s var(--ease),visibility .55s}
   .beat.active{opacity:1;visibility:visible;pointer-events:auto;transform:none}
-  .head{flex:0 0 auto;text-align:center;padding:8px 0 16px}
+  .head{flex:0 0 auto;text-align:center;padding:18px 0 26px}
   .kick{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-  .H{font-family:var(--serif);font-weight:500;font-size:clamp(40px,5.2vw,72px);line-height:.98;letter-spacing:-0.035em;margin-top:12px}
-  .sub{font-size:18px;line-height:1.5;color:var(--muted);margin:12px auto 0;max-width:600px}
+  .H{font-family:var(--serif);font-weight:500;font-size:clamp(40px,5.2vw,72px);line-height:.98;letter-spacing:-0.035em;margin-top:16px}
+  .sub{font-size:18px;line-height:1.55;color:var(--sub);margin:16px auto 0;max-width:600px}
 
   /* ===== beat 0 — NAME (one obvious question) ===== */
   .name{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;text-align:center}
@@ -75,7 +75,9 @@
   .gatherBar span.f{transform:scaleY(1)}
 
   /* ===== beat 2 — TYPE (specimen wall + weight slider) ===== */
-  .typeBar{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:22px;padding:0 0 16px;flex-wrap:wrap}
+  .typeBar{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:18px 26px;padding:4px 0 24px;flex-wrap:wrap}
+  .modeWrap{display:flex;align-items:center;gap:9px}
+  .modeLabel{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .weightCtl{display:flex;align-items:center;gap:13px;background:color-mix(in srgb,var(--bg) 40%,#fff);border:1.5px solid var(--line);border-radius:100px;padding:9px 20px}
   .weightCtl label{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
   .weightCtl input[type=range]{-webkit-appearance:none;appearance:none;width:200px;height:8px;border-radius:100px;background:linear-gradient(90deg,var(--faint),var(--ink));cursor:pointer;outline-offset:4px}
@@ -86,7 +88,7 @@
   .fchip{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:none;border:1.5px solid var(--line);border-radius:100px;padding:8px 14px;cursor:pointer;transition:border-color .15s,color .15s,background-color .15s}
   .fchip:hover{border-color:var(--ink);color:var(--ink)} .fchip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
   .modeToggle{display:flex;gap:0;border:1.5px solid var(--line);border-radius:100px;overflow:hidden}
-  .mchip{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:none;border:none;padding:8px 16px;cursor:pointer;transition:color .15s,background-color .15s}
+  .mchip{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:none;border:none;padding:9px 17px;cursor:pointer;transition:color .15s,background-color .15s}
   .mchip:hover{color:var(--ink)} .mchip.on{background:var(--ink);color:var(--bg)}
   /* uniform specimen grid — every face shown at the SAME size, each dressed in one of your gathered colors,
      so you compare letterforms (not sizes) and see your type on your palette */
@@ -413,7 +415,7 @@
   .spine{position:relative;width:100%;max-width:1040px;margin:42px auto 0}
   .spineArt{width:100%}
   .spineArt svg{display:block;width:100%;height:auto;overflow:visible}
-  .spineArt svg path{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+  .spineArt svg path{fill:none;stroke:var(--ink);stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
   .spineLabels{position:relative;min-height:120px;margin-top:8px}
   .lbl{position:absolute;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;text-align:center;width:max-content;max-width:232px}
   .bookLabel{font-family:'Caveat',cursive;font-weight:600;font-size:clamp(24px,3vw,36px);color:var(--ink);line-height:1}
@@ -543,9 +545,11 @@
       <div class="typeBar">
         <div class="weightCtl"><label for="weight">Weight</label><input type="range" id="weight" min="200" max="800" step="10" value="420" /><span class="weightVal" id="weightVal">420</span></div>
         <div class="filterRow" id="filterRow"></div>
-        <div class="modeToggle" id="modeToggle" role="group" aria-label="Preview light or dark">
-          <button class="mchip on" data-mode="light" type="button">Light</button>
-          <button class="mchip" data-mode="dark" type="button">Dark</button>
+        <div class="modeWrap"><span class="modeLabel">Preview</span>
+          <div class="modeToggle" id="modeToggle" role="group" aria-label="Preview light or dark">
+            <button class="mchip on" data-mode="light" type="button"><span aria-hidden="true">☀</span> Light</button>
+            <button class="mchip" data-mode="dark" type="button"><span aria-hidden="true">☾</span> Dark</button>
+          </div>
         </div>
       </div>
       <div class="specWall" id="specWall"></div>

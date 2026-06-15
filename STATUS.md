@@ -12,15 +12,15 @@
 Compiled from Lorin's dogfeeding (2026-06-15). Cross-cutting first (they lift every screen), then per-beat, then features.
 
 **Cross-cutting (do first — highest leverage):**
-- [ ] **A. Legibility / contrast (accessibility, inviolable).** Faded kickers/instructions/headers are unreadable across beats; the paint stencil text is barely visible. Bump `--muted`/`--faint`/kick contrast to AA; no instruction text below AA.
-- [ ] **B. Spacing / breathing.** Nav · header · instructions feel cramped (Type, Brand especially). Give the top room; consistent vertical rhythm; nothing crammed at the top.
-- [ ] **C. Guidance / affordances.** "Not obvious I can drag," "needs a LOT more guidance," "I'd never know." Make interactive things obviously interactive (drag hints, a "what is this?" tooltip/popover per surface), progressive hints.
+- [x] **A. Legibility / contrast (accessibility, inviolable).** DONE — darkened `--sub/--muted/--faint`; stopped washing the page with the pale stencil (brand now scoped to the artifacts), so all chrome text is AA.
+- [~] **B. Spacing / breathing.** PASS 1 done — roomier top bar + `.head` rhythm + Type bar. Revisit Brand/Home density next.
+- [ ] **C. Guidance / affordances.** "Not obvious I can drag," "needs a LOT more guidance," "I'd never know." Make interactive things obviously interactive (drag hints, a "what is this?" tooltip/popover per surface), progressive hints. ← NEXT, biggest UX gap.
 
 **Per-beat:**
-- [ ] **D. Intro spine SVG** — "does not look good": bulb is disconnected from the wave, the loop floats. Fix the composition into one connected line, or swap in Lorin's hand-drawn SVG.
-- [ ] **E. Type beat** — make the Light/Dark toggle obvious (almost missed); fix header/instruction spacing.
-- [ ] **F. Brand / paint** — faded stencil + cramped top; move instructions to a tooltip/popover; make drag-to-slot obvious; let it breathe.
-- [ ] **G. Home bento** — "chaotic as hell" when painted: calm it (contrast, spacing, the moodboard tile crowds the top); make it read as a clean deliverable.
+- [~] **D. Intro spine SVG** — bumped the line weight; the composition still has gaps. Best path = swap in Lorin's hand-drawn SVG (see J).
+- [x] **E. Type beat** — Light/Dark toggle now labeled "Preview ☀/☾" and obvious; spacing fixed.
+- [~] **F. Brand / paint** — stencil text now readable + page calm; STILL TODO: move instructions to a tooltip, make drag-to-slot obvious (part of C).
+- [x] **G. Home bento** — calmed: page chrome stays newsprint, brand scoped to the bento tiles (no more full-page wash).
 
 **Feature builds (after the polish foundation):**
 - [ ] **H. Dropper layout** — enlarge the image + a loupe so picking a color from the photo is precise ("favor the feature").
