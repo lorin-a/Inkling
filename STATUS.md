@@ -26,7 +26,7 @@ Compiled from Lorin's dogfeeding (2026-06-15). Cross-cutting first (they lift ev
 - [x] **H. Dropper layout** — DONE — bigger image in the Colors step + a magnifier loupe (follows the cursor, shows the zoomed pixel + live hex) so picking is precise.
 - [~] **I. Moodboard enrichment** — add-a-color tool DONE ("＋ Color" → pick any gathered color, incl. ones dropped/missing, onto the board; counts back into the brand). STILL TODO: recolor type pieces in place, and "more than color/type/image" (notes, shapes, textures).
 - [ ] **J. Hand-drawn SVGs** — wire in Lorin's own drawings when she provides them.
-- [ ] **K. Full crop port** in the moodboard (zoom + crop box, like the real site).
+- [x] **K. Crop** in the moodboard — DONE (prototype): the ✛ reframe handle pans, scroll zooms (1–3×), clipped to the frame = pan + zoom crop. (A dedicated crop-box UI is the real-site version for Track B.)
 - [x] **L. Name-echo rebalance** — DONE — name now only in two warm spots (the Gather hello + Home); Board/Colors/Type are instructional.
 
 ## What it is
