@@ -405,13 +405,13 @@
       <button class="door door-primary" id="doorLearn" type="button">
         <span class="doorKick">Learn by making</span>
         <span class="doorTitle">Co-design Inkling</span>
-        <span class="doorDesc">Give Inkling its own look, and learn the whole flow by making something real.</span>
+        <span class="doorDesc">Give Inkling a look and learn how it works by making something real.</span>
         <span class="doorGo">Start together <span aria-hidden="true">→</span></span>
       </button>
       <button class="door" id="doorOwn" type="button">
         <span class="doorKick">I’ll explore</span>
         <span class="doorTitle">Drop into my own canvas</span>
-        <span class="doorDesc">Skip the walkthrough and start playing with taste on a living canvas.</span>
+        <span class="doorDesc">Skip the walkthrough and go straight to your own canvas.</span>
         <span class="doorGo">Take me in <span aria-hidden="true">→</span></span>
       </button>
     </div>
@@ -435,7 +435,7 @@
     <section class="beat" id="b0">
       <div class="name">
         <div class="nameKick">Make Inkling yours</div>
-        <div class="nameQ">First. Whose taste are we building with?</div>
+        <div class="nameQ">First, what’s your name?</div>
         <div class="nameWrap"><input id="nameField" class="nameField" type="text" maxlength="16" placeholder="your name" autocomplete="off" spellcheck="false" aria-label="Your name" /></div>
         <div class="nameHint" id="nameHint">Type a name, or skip. You can change it anytime.</div>
         <div class="nameGo"><button class="next" id="nameGo">Begin <span aria-hidden="true">→</span></button></div>
@@ -444,14 +444,14 @@
 
     <!-- 1 — gather -->
     <section class="beat" id="b1">
-      <div class="head"><div class="kick">Gather · collect what rings true</div><div class="H" id="gatherH">What feels like you?</div><div class="sub">Tap 3 to 6 images. Your colors gather as you go.</div></div>
+      <div class="head"><div class="kick">Gather · collect what you like</div><div class="H" id="gatherH">What do you like?</div><div class="sub">Tap 3 to 6 images. Your colors gather as you go.</div></div>
       <div class="wall" id="wall"></div>
       <div class="gather"><span class="gatherLabel">Colors gathering</span><div class="gatherBar" id="gatherBar"></div></div>
     </section>
 
     <!-- 2 — colors -->
     <section class="beat" id="bColors">
-      <div class="head"><div class="kick">Colors · keep what’s yours</div><div class="H" id="colorsH">Your colors.</div><div class="sub">Every color you gathered. Tap one to adjust it. <span aria-hidden="true">✕</span> to remove. These dress your brand.</div></div>
+      <div class="head"><div class="kick">Colors · keep the ones you want</div><div class="H" id="colorsH">Your colors.</div><div class="sub">Every color you gathered. Tap one to adjust it. <span aria-hidden="true">✕</span> to remove. These become your brand colors.</div></div>
       <button class="undoBtn" id="undoBtn" hidden>↶ Undo</button>
       <div class="palette" id="palette"></div>
       <div class="cedit" id="cedit" role="group" aria-label="Adjust color">
@@ -469,7 +469,7 @@
 
     <!-- 3 — type -->
     <section class="beat" id="b2">
-      <div class="head"><div class="kick">Type · what do you like?</div><div class="H" id="typeH">Find your voice.</div><div class="sub">Slide to feel the weight. Tap the faces you’re drawn to, like the images.</div></div>
+      <div class="head"><div class="kick">Type · what do you like?</div><div class="H" id="typeH">Choose your fonts.</div><div class="sub">Slide to change the weight. Tap the fonts you like.</div></div>
       <div class="typeBar">
         <div class="weightCtl"><label for="weight">Weight</label><input type="range" id="weight" min="200" max="800" step="10" value="420" /><span class="weightVal" id="weightVal">420</span></div>
         <div class="filterRow" id="filterRow"></div>
@@ -486,7 +486,7 @@
 
     <!-- 4 — brand: applied to real artifacts -->
     <section class="beat" id="b4">
-      <div class="head"><div class="kick">Brand · see it for real</div><div class="H">Here’s your Inkling.</div><div class="sub">Your taste, on the real things. Shuffle directions, swap any color, until it clicks.</div></div>
+      <div class="head"><div class="kick">Brand · see it for real</div><div class="H">Here’s your Inkling.</div><div class="sub">Your taste on real designs. Shuffle directions or swap any color.</div></div>
       <div class="perfect">
         <div class="applied">
           <div class="mockGallery">
@@ -510,7 +510,7 @@
           </aside>
         </div>
         <div class="brandControls">
-          <div class="roleHint">We placed your colors. Tap a role to swap any that feel off.</div>
+          <div class="roleHint">We placed your colors. Tap a role to swap one.</div>
           <div class="roles" id="roles"></div>
           <div class="ratioReadout" id="ratioReadout" aria-label="Contrast, checked"></div>
           <button class="pbtn" id="shuffleBtn">⤮ Shuffle the direction <span class="kbd">space</span></button>
@@ -523,18 +523,18 @@
       <div class="home">
         <div class="homeHero">
           <div>
-            <div class="homeEdition"><span id="homeEd">Inkling · dressed by you</span><span class="rule"></span></div>
+            <div class="homeEdition"><span id="homeEd">Your version of Inkling</span><span class="rule"></span></div>
             <h1 class="homeH" id="homeH">Your taste, <em>made into a brand.</em></h1>
-            <p class="homeLede" id="homeLede">This is Inkling, wearing the brand you just made. Your moodboard lives here. Drag it, keep playing. When you’re ready, do it for real with your own inspiration.</p>
+            <p class="homeLede" id="homeLede">This is Inkling with the brand you just made. Your moodboard is here. Drag it around and keep playing. When you’re ready, start again with your own images.</p>
             <div class="homeCtas">
               <button class="homePrimary" id="homeStart">Make your own brand <span aria-hidden="true">→</span></button>
               <button class="homeGhost" id="homeDefault">Reset to default Inkling</button>
             </div>
           </div>
           <div class="homeArtWrap">
-            <div class="canvas artifact" id="artifact" role="application" aria-label="Your living moodboard. Drag a piece to move it, tap to reshape, twist or stretch from the corners."><span class="artifactTag">your moodboard, still yours to move</span><button class="artShuffle" id="homeShuffle">⤮ Shuffle the look</button></div>
+            <div class="canvas artifact" id="artifact" role="application" aria-label="Your living moodboard. Drag a piece to move it, tap to reshape, twist or stretch from the corners."><span class="artifactTag">your moodboard, drag to move it</span><button class="artShuffle" id="homeShuffle">⤮ Shuffle the look</button></div>
             <div class="homeAdjust">
-              <span class="roleHint">Tap a role to choose its color, or shuffle the whole look.</span>
+              <span class="roleHint">Tap a role to change its color, or shuffle the look.</span>
               <div class="roles" id="homeRoles"></div>
             </div>
           </div>
@@ -687,7 +687,7 @@
     wall.appendChild(el);
   });
   function renderGather(){
-    document.getElementById('gatherH').textContent = state.name?`What feels like you, ${state.name}?`:'What feels like you?';
+    document.getElementById('gatherH').textContent = state.name?`What do you like, ${state.name}?`:'What do you like?';
     const p=colorPool().slice(0,18), bar=document.getElementById('gatherBar');
     bar.innerHTML=p.map(h=>`<span style="background:${h}"></span>`).join('');
     requestAnimationFrame(()=>bar.querySelectorAll('span').forEach((s,k)=>setTimeout(()=>s.classList.add('f'),k*28)));
@@ -743,7 +743,7 @@
   filterRow.querySelectorAll('.fchip').forEach(c=>c.addEventListener('click',()=>{ state.typeFilter=c.dataset.cat;
     filterRow.querySelectorAll('.fchip').forEach(x=>x.classList.toggle('on',x===c)); renderSpecs(); }));
   function renderSpecs(){
-    document.getElementById('typeH').textContent = state.name?`Find your voice, ${state.name}.`:'Find your voice.';
+    document.getElementById('typeH').textContent = state.name?`Choose your fonts, ${state.name}.`:'Choose your fonts.';
     const word=poss();
     const keys=FONT_KEYS.filter(k=>state.typeFilter==='all'||FONTS[k].cat===state.typeFilter);
     const SPANS=[7,5, 4,4,4, 6,6, 5,7, 4,4,4];                  // editorial mosaic rhythm (wraps for any count)
@@ -915,13 +915,13 @@
 
   // ============ beat 5: home ============
   const MOVES=[
-    {no:'01',label:'Gather',blurb:'React to everything you’ve saved. Pull the colors, type, and images that ring true.'},
-    {no:'02',label:'Play',blurb:'Arrange it on your board. Carve a few clear directions out of the overwhelm.'},
-    {no:'03',label:'Build',blurb:'Shuffle a direction into a brand — a palette, a wordmark, a book, an export.'},
+    {no:'01',label:'Gather',blurb:'Look through everything you’ve saved. Pull the colors, type, and images you like.'},
+    {no:'02',label:'Play',blurb:'Arrange it on your board. Sort it into a few clear directions.'},
+    {no:'03',label:'Build',blurb:'Turn a direction into a brand: a palette, a wordmark, a book, and an export.'},
   ];
   function renderHome(){
     const r=compose(); if(r) applyBrandGlobal(r);
-    document.getElementById('homeEd').textContent = (state.name?`${state.name}’s edition`:'Your edition')+' · dressed by you';
+    document.getElementById('homeEd').textContent = state.name?`${state.name}’s version of Inkling`:'Your version of Inkling';
     document.getElementById('homeH').innerHTML = `${poss()} taste, <em>made into a brand.</em>`;
     document.getElementById('homeIndex').innerHTML=MOVES.map(m=>`<div class="move"><div class="moveNo">${m.no}</div><div class="moveLabel">${m.label}</div><div class="moveBlurb">${m.blurb}</div></div>`).join('');
     renderHomeRoles();
@@ -942,7 +942,7 @@
     // home parity: the living artifact gets the board's full vocabulary — drag, reshape, stretch, rotate, reframe, remove
     clones.forEach(c=>makeItem(host,c,()=>({w:host.clientWidth,h:host.clientHeight}),state.homeItems));
   }
-  document.getElementById('homeStart').addEventListener('click',()=>alert('→ This is where you start your own brand. Bring in your real inspiration and walk the same path, for keeps.'));
+  document.getElementById('homeStart').addEventListener('click',()=>alert('→ This is where you’d start your own brand. Bring in your own images and do it for real.'));
   document.getElementById('homeDefault').addEventListener('click',()=>{ clearBrandGlobal(); });
   // manual color choice on the living artifact — react, not random: tap a role to walk your gathered colors through it
   function renderHomeRoles(){ const r=compose(); if(!r)return; const el=document.getElementById('homeRoles'); if(!el)return;
