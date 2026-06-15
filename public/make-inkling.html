@@ -6,7 +6,7 @@
 <title>Make Inkling yours</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,300..600&family=Playfair+Display:ital,wght@0,400..900;1,400..700&family=DM+Serif+Display:ital@0;1&family=Instrument+Serif:ital@0;1&family=Zilla+Slab:wght@300;400;500;600;700&family=Space+Grotesk:wght@300..700&family=Poppins:wght@300;400;500;600;700&family=Oswald:wght@200..700&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Syne:wght@400..800&family=Caveat:wght@400..700&family=Space+Mono:wght@400;700&family=Noto+Sans:wght@100..900&family=Noto+Sans+Mono:wght@400..700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,300..600&family=Young+Serif&family=Abril+Fatface&family=Baskervville:ital@0;1&family=Gloock&family=Zilla+Slab:wght@300;400;500;600;700&family=Space+Grotesk:wght@300..700&family=Familjen+Grotesk:wght@400..700&family=Red+Hat+Display:wght@300..900&family=Archivo+Black&family=Oswald:wght@200..700&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Syne:wght@400..800&family=Nunito:wght@200..1000&family=Caveat:wght@400..700&family=Borel&family=Space+Mono:wght@400;700&family=DM+Mono:wght@300;400;500&family=Noto+Sans:wght@100..900&family=Noto+Sans+Mono:wght@400..700&display=swap" rel="stylesheet" />
 <style>
   :root{
     --bg:#f7f6f2; --ink:#1c1810; --accent:#6a2ee6; --spark:#f0531f; --sub:#6f6354;
@@ -114,10 +114,13 @@
   .palette{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:16px;max-width:900px;width:100%;margin:0 auto;padding:6px 14px 18px}
   .palette::-webkit-scrollbar{width:8px}.palette::-webkit-scrollbar-thumb{background:var(--line);border-radius:100px}
   .curRow{display:flex;align-items:center;gap:22px;padding:16px;border-radius:18px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
-  .curImg{flex:0 0 auto;width:108px;height:128px;border:none;padding:0;cursor:pointer;background:none;overflow:hidden;
-    box-shadow:0 10px 26px rgba(0,0,0,.16);transition:border-radius .45s var(--spring),transform .2s var(--ease)}
+  .curImg{position:relative;flex:0 0 auto;width:108px;height:128px;border:none;padding:0;cursor:crosshair;background:none;overflow:hidden;border-radius:12px;
+    box-shadow:0 10px 26px rgba(0,0,0,.16);transition:transform .2s var(--ease)}
   .curImg:hover{transform:translateY(-3px)} .curImg:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
   .curImg img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+  .curPick{position:absolute;left:0;right:0;bottom:0;font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.55));padding:14px 6px 6px;opacity:0;transition:opacity .18s;pointer-events:none}
+  .curImg:hover .curPick,.curImg:focus-visible .curPick{opacity:1}
   .curSwatches{flex:1 1 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:12px;align-content:center}
   .pcell{aspect-ratio:3/4;border-radius:11px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08), 0 8px 22px rgba(0,0,0,.1);cursor:pointer;position:relative;border:none;padding:0;transition:transform .3s var(--ease),opacity .3s,filter .3s,box-shadow .3s}
   .pcell:hover{transform:translateY(-5px)}
@@ -159,7 +162,7 @@
   .it.grab .body{box-shadow:0 8px 16px var(--shadow-2), 0 28px 60px var(--shadow-3)}
   .it-image .body{background:#fff}
   .it-image img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
-  .it-color .body{display:flex;align-items:flex-end;padding:9px}
+  .it-color .body{display:flex;align-items:center;justify-content:center;padding:9px;text-align:center}
   .it-color .hex{font-family:var(--mono);font-size:10px;font-weight:600;color:#fff;mix-blend-mode:difference;letter-spacing:.02em}
   .it-type .body{background:#fff;display:flex;flex-direction:column;justify-content:center;padding:16px 18px;gap:4px}
   .it-type .tName{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
@@ -169,9 +172,9 @@
   .it:hover .rm,.it:focus-within .rm{opacity:1;transform:none}
   .it .rm:hover{background:var(--spark)}
   /* handles — show on hover: stretch (corner) and rotate (twist). tap the body to reshape. */
-  .it .rz,.it .rt{position:absolute;width:20px;height:20px;border-radius:100px;background:var(--bg);border:2px solid var(--accent);opacity:0;transform:scale(.5);transition:opacity .18s,transform .25s var(--spring);z-index:3;touch-action:none}
-  .it .rz{right:-7px;bottom:-7px;cursor:nwse-resize}
-  .it .rt{left:-7px;top:-7px;cursor:grab;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--accent);line-height:1}
+  .it .rz,.it .rt{position:absolute;width:28px;height:28px;border-radius:100px;background:var(--bg);border:2px solid var(--accent);opacity:0;transform:scale(.5);transition:opacity .18s,transform .25s var(--spring);z-index:3;touch-action:none;box-shadow:0 2px 8px rgba(0,0,0,.22)}
+  .it .rz{right:-11px;bottom:-11px;cursor:nwse-resize}
+  .it .rt{left:-11px;top:-11px;cursor:grab;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--accent);line-height:1}
   .it:hover .rz,.it:focus-within .rz,.it:hover .rt,.it:focus-within .rt{opacity:1;transform:none}
   .it.grab .rz,.it.grab .rt{opacity:0}
   /* reframe handle (images only) — drag to pan the photo inside its shape */
@@ -473,7 +476,7 @@
 
     <!-- 2 — colors -->
     <section class="beat" id="bColors">
-      <div class="head"><div class="kick">Colors · from each image</div><div class="H" id="colorsH">Your colors.</div><div class="sub">Each image and the colors it gave you. Keep the ones you want, tap a color to adjust it, <span aria-hidden="true">✕</span> to drop it. Tap an image to reframe it.</div></div>
+      <div class="head"><div class="kick">Colors · from each image</div><div class="H" id="colorsH">Your colors.</div><div class="sub">Each image and the colors it gave you. Keep the ones you want, tap a color to adjust it, <span aria-hidden="true">✕</span> to drop it. Tap an image to pick a color straight from it.</div></div>
       <button class="undoBtn" id="undoBtn" hidden>↶ Undo</button>
       <div class="palette" id="palette"></div>
       <div class="cedit" id="cedit" role="group" aria-label="Adjust color">
@@ -596,19 +599,27 @@
   // NB: single-quoted family names — these strings get injected into double-quoted HTML style="" attributes,
   // so double quotes here would break the attribute and silently fall every specimen back to one font.
   // a deliberately VARIED set — editorial serif → slab → grotesque → geometric → condensed → expressive → avant-garde → script → mono
+  // a deliberately WIDE range so faces don't blur together — and weighted toward fonts Lorin actually owns
+  // (Young Serif, Familjen, Baskervville, Red Hat, Nunito, Borel are in her ~/Library/Fonts). Single-quoted families (see NB below).
   const FONTS={
-    fraunces:  {f:"'Fraunces',Georgia,serif",         name:'Fraunces',  char:'Editorial',   cat:'serif'},
-    playfair:  {f:"'Playfair Display',Georgia,serif", name:'Playfair',  char:'Dramatic',    cat:'serif'},
-    dmserif:   {f:"'DM Serif Display',Georgia,serif", name:'DM Serif',  char:'Statement',   cat:'serif'},
-    instrument:{f:"'Instrument Serif',Georgia,serif", name:'Instrument',char:'Refined',     cat:'serif'},
-    zilla:     {f:"'Zilla Slab',Georgia,serif",       name:'Zilla Slab',char:'Sturdy',      cat:'serif'},
-    grotesk:   {f:"'Space Grotesk',sans-serif",       name:'Space Grotesk',char:'Modern',   cat:'sans'},
-    poppins:   {f:"'Poppins',system-ui,sans-serif",   name:'Poppins',   char:'Friendly',    cat:'sans'},
-    oswald:    {f:"'Oswald',sans-serif",              name:'Oswald',    char:'Condensed',   cat:'sans'},
-    bricolage: {f:"'Bricolage Grotesque',sans-serif", name:'Bricolage', char:'Expressive',  cat:'sans'},
-    syne:      {f:"'Syne',sans-serif",                name:'Syne',      char:'Avant-garde', cat:'sans'},
-    caveat:    {f:"'Caveat',cursive",                 name:'Caveat',    char:'Handwritten', cat:'sans'},
-    mono:      {f:"'Space Mono',monospace",           name:'Space Mono',char:'Technical',   cat:'mono'},
+    fraunces:    {f:"'Fraunces',Georgia,serif",          name:'Fraunces',     char:'Editorial',   cat:'serif'},
+    youngserif:  {f:"'Young Serif',Georgia,serif",       name:'Young Serif',  char:'Earthy',      cat:'serif'},
+    abril:       {f:"'Abril Fatface',Georgia,serif",     name:'Abril',        char:'Display',     cat:'serif'},
+    baskervville:{f:"'Baskervville',Georgia,serif",      name:'Baskervville', char:'Classic',     cat:'serif'},
+    gloock:      {f:"'Gloock',Georgia,serif",            name:'Gloock',       char:'Chunky',      cat:'serif'},
+    zilla:       {f:"'Zilla Slab',Georgia,serif",        name:'Zilla Slab',   char:'Slab',        cat:'serif'},
+    grotesk:     {f:"'Space Grotesk',sans-serif",        name:'Space Grotesk',char:'Modern',      cat:'sans'},
+    familjen:    {f:"'Familjen Grotesk',sans-serif",     name:'Familjen',     char:'Clean',       cat:'sans'},
+    redhat:      {f:"'Red Hat Display',sans-serif",      name:'Red Hat',      char:'Geometric',   cat:'sans'},
+    archivoblack:{f:"'Archivo Black',sans-serif",        name:'Archivo Black',char:'Heavy',       cat:'sans'},
+    oswald:      {f:"'Oswald',sans-serif",               name:'Oswald',       char:'Condensed',   cat:'sans'},
+    bricolage:   {f:"'Bricolage Grotesque',sans-serif",  name:'Bricolage',    char:'Expressive',  cat:'sans'},
+    syne:        {f:"'Syne',sans-serif",                 name:'Syne',         char:'Avant-garde', cat:'sans'},
+    nunito:      {f:"'Nunito',sans-serif",               name:'Nunito',       char:'Rounded',     cat:'sans'},
+    caveat:      {f:"'Caveat',cursive",                  name:'Caveat',       char:'Handwritten', cat:'sans'},
+    borel:       {f:"'Borel',cursive",                   name:'Borel',        char:'Looping',     cat:'sans'},
+    mono:        {f:"'Space Mono',monospace",            name:'Space Mono',   char:'Technical',   cat:'mono'},
+    dmmono:      {f:"'DM Mono',monospace",               name:'DM Mono',      char:'Code',        cat:'mono'},
   };
   const FONT_KEYS=Object.keys(FONTS);
   const bodyFor=key=>FONTS[key].cat==='serif'?"'Space Grotesk',sans-serif":"'Fraunces',Georgia,serif";
@@ -634,7 +645,9 @@
                 items:[], itemsSig:'', homeSig:'',
                 seed:0, assign:{}, polarity:'auto', variations:[], varAt:-1 };
 
-  const colorPool=()=>{ const seen=new Set(),out=[]; [...state.picks].forEach(i=>REFS[i].pal.forEach(h=>{ if(!seen.has(h)){seen.add(h);out.push(h);} })); return out; };
+  // every color from each gathered image — its auto-extracted palette PLUS any you eyedropped from the photo
+  const imgColors=i=>REFS[i].pal.concat((state.picked&&state.picked[i])||[]);
+  const colorPool=()=>{ const seen=new Set(),out=[]; [...state.picks].forEach(i=>imgColors(i).forEach(h=>{ if(!seen.has(h)){seen.add(h);out.push(h);} })); return out; };
   const disp=h=>state.edits[h]||h;                                  // a color's current value after manual adjust
   const activeOriginals=()=>colorPool().filter(h=>!state.droppedColors.has(h));
   const activeColors=()=>activeOriginals().map(disp);               // edited values — what the engine + board read
@@ -727,24 +740,36 @@
   const commitGesture=()=>{ if(cPending){ if(JSON.stringify(cPending)!==JSON.stringify(snap())) pushHist(cPending); cPending=null; } };
   function renderPalette(){
     document.getElementById('colorsH').textContent='Your colors.';
-    if(!state.gatherShapes) state.gatherShapes={};
+    if(!state.picked) state.picked={};
     const imgs=[...state.picks];
     palette.innerHTML=imgs.map(i=>{
-      const sw=REFS[i].pal.map(h=>{const d=disp(h);return `<button class="pcell ${state.droppedColors.has(h)?'off':''} ${state.edits[h]?'edited':''}" data-hex="${h}" aria-label="Color ${d}, tap to adjust" style="background:${d}"><span class="x" role="button" aria-label="Remove ${d}">✕</span><span class="hex">${d}</span></button>`;}).join('');
+      const sw=imgColors(i).map(h=>{const d=disp(h);return `<button class="pcell ${state.droppedColors.has(h)?'off':''} ${state.edits[h]?'edited':''}" data-hex="${h}" aria-label="Color ${d}, tap to adjust" style="background:${d}"><span class="x" role="button" aria-label="Remove ${d}">✕</span><span class="hex">${d}</span></button>`;}).join('');
       return `<div class="curRow">
-        <button class="curImg" data-img="${i}" aria-label="Image you gathered — tap to reframe it"><img src="${REFS[i].img}" alt="" loading="lazy"/></button>
+        <button class="curImg" data-img="${i}" aria-label="Pick a color from this image"><img src="${REFS[i].img}" alt="" loading="lazy"/><span class="curPick">＋ pick a color</span></button>
         <div class="curSwatches">${sw}</div>
       </div>`;}).join('');
     palette.querySelectorAll('.pcell').forEach(c=>{ const h=c.dataset.hex;
       const remove=e=>{e.stopPropagation();pushHist();state.droppedColors.has(h)?state.droppedColors.delete(h):state.droppedColors.add(h);liveCell(h);};
       c.querySelector('.x').addEventListener('click',remove);
       c.addEventListener('click',()=>{ if(state.droppedColors.has(h)){pushHist();state.droppedColors.delete(h);liveCell(h);return;} openEdit(h); }); });
-    palette.querySelectorAll('.curImg').forEach(b=>{ const i=+b.dataset.img; applyCurShape(b,i);
-      b.addEventListener('click',()=>{ state.gatherShapes[i]=((state.gatherShapes[i]||0)+1)%SHAPES.image.length; applyCurShape(b,i); }); });
+    // eyedropper — sample a color straight from the photo and add it to that image's row
+    palette.querySelectorAll('.curImg').forEach(b=>{ const i=+b.dataset.img, img=b.querySelector('img');
+      b.addEventListener('click',e=>{ const hex=samplePixel(img,e); if(!hex)return;
+        if(!state.picked[i]) state.picked[i]=[];
+        if(!imgColors(i).includes(hex)){ state.picked[i].push(hex); state.droppedColors.delete(hex); renderPalette(); openEdit(hex); } }); });
     if(cedit.classList.contains('on')) selectCell(state.editing);
     refreshUndo();
   }
-  function applyCurShape(b,i){ b.style.borderRadius=SHAPES.image[state.gatherShapes[i]||0]; }
+  // read the pixel under the click, accounting for object-fit:cover cropping
+  function samplePixel(img,e){
+    const nw=img.naturalWidth, nh=img.naturalHeight; if(!nw||!nh) return null;
+    const r=img.getBoundingClientRect(); const xr=(e.clientX-r.left)/r.width, yr=(e.clientY-r.top)/r.height;
+    const boxR=r.width/r.height, imgR=nw/nh; let sw,sh,sx,sy;
+    if(imgR>boxR){ sh=nh; sw=nh*boxR; sx=(nw-sw)/2; sy=0; } else { sw=nw; sh=nw/boxR; sx=0; sy=(nh-sh)/2; }
+    const px=Math.max(0,Math.min(nw-1,Math.round(sx+xr*sw))), py=Math.max(0,Math.min(nh-1,Math.round(sy+yr*sh)));
+    try{ const cv=document.createElement('canvas'); cv.width=nw; cv.height=nh; const cx=cv.getContext('2d');
+      cx.drawImage(img,0,0); const d=cx.getImageData(px,py,1,1).data; return rgb2hex([d[0],d[1],d[2]]); }catch(_){ return null; }
+  }
   function selectCell(orig){ palette.querySelectorAll('.pcell.sel').forEach(c=>c.classList.remove('sel')); palette.querySelectorAll(`.pcell[data-hex="${orig}"]`).forEach(c=>c.classList.add('sel')); }
   function liveCell(orig){ const d=disp(orig); palette.querySelectorAll(`.pcell[data-hex="${orig}"]`).forEach(c=>{ c.style.background=d; const hx=c.querySelector('.hex'); if(hx)hx.textContent=d; c.classList.toggle('edited',!!state.edits[orig]); c.classList.toggle('off',state.droppedColors.has(orig)); }); }
   function paintEditor(h){ cePrev.style.background=h; ceHex.value=h.replace('#',''); const[hue,s,l]=rgb2hsl(hex2rgb(h)); ceHue.value=Math.round(hue); ceLight.value=Math.round(l);
