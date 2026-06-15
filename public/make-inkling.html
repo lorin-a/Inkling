@@ -207,6 +207,11 @@
   .it .rt{left:-11px;top:-11px;cursor:grab;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--accent);line-height:1}
   .it:hover .rz,.it:focus-within .rz,.it:hover .rt,.it:focus-within .rt{opacity:1;transform:none}
   .it.grab .rz,.it.grab .rt{opacity:0}
+  /* recolor handle (type pieces) — a swatch you tap to walk the wordmark through your palette */
+  .it .rcq{position:absolute;left:-11px;bottom:-11px;width:28px;height:28px;border-radius:100px;background:var(--accent);border:2.5px solid var(--bg);
+    opacity:0;transform:scale(.5);transition:opacity .18s,transform .25s var(--spring);z-index:3;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.24)}
+  .it:hover .rcq,.it:focus-within .rcq{opacity:1;transform:none}
+  .it.grab .rcq{opacity:0}
   /* reframe handle (images only) — drag to pan the photo inside its shape */
   .it .rf{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.6);width:32px;height:32px;border-radius:50%;
     background:color-mix(in srgb,#000 42%,transparent);border:1.5px solid rgba(255,255,255,.9);color:#fff;font-size:14px;
@@ -997,7 +1002,7 @@
     if(it.kind==='image') inner=`<span class="body"><img src="${it.src}" alt=""/></span>`;
     else if(it.kind==='color') inner=`<span class="body" style="background:${it.hex}"><span class="hex">${it.hex}</span></span>`;
     else inner=`<span class="body"><span class="tName">${FONTS[it.key].name}</span><span class="tWord" style="font-family:${FONTS[it.key].f};font-weight:${clamp(it.weight,300,700)};font-size:${Math.round(it.h*0.34)}px">inkling<span class="dot">.</span></span></span>`;
-    el.innerHTML=inner+`<span class="rt" aria-hidden="true">⟳</span><span class="rm" role="button" aria-label="Remove">✕</span><span class="rz" aria-hidden="true"></span>`+(it.kind==='image'?`<span class="rf" aria-hidden="true">✛</span>`:'');
+    el.innerHTML=inner+`<span class="rt" aria-hidden="true">⟳</span><span class="rm" role="button" aria-label="Remove">✕</span><span class="rz" aria-hidden="true"></span>`+(it.kind==='image'?`<span class="rf" aria-hidden="true">✛</span>`:'')+(it.kind==='type'?`<span class="rcq" role="button" aria-label="Recolor the type"></span>`:'');
     el.setAttribute('aria-label',it.label+' Tap to reshape; drag to move; corner to resize; twist to rotate.');
     host.appendChild(el); it.el=el; place(it); applyShape(it);
     // reposition + layer (bring to front) + tap-to-reshape (a tap that didn't drag cycles the shape)
@@ -1034,6 +1039,13 @@
       rf.addEventListener('pointermove',e=>{ if(!fd)return; it.fx=clamp(fd.fx-(e.clientX-fd.px)*0.32,0,100); it.fy=clamp(fd.fy-(e.clientY-fd.py)*0.32,0,100); applyFrame(); });
       const fe=()=>{fd=null;}; rf.addEventListener('pointerup',fe); rf.addEventListener('pointercancel',fe);
       el.addEventListener('wheel',e=>{ e.preventDefault(); it.zoom=clamp((it.zoom||1)-Math.sign(e.deltaY)*0.14,1,3); applyFrame(); },{passive:false}); }
+    // recolor (type pieces) — tap the swatch handle to walk the wordmark through your palette
+    const rcq=el.querySelector('.rcq');
+    if(rcq){ const tw=el.querySelector('.tWord');
+      const applyCol=()=>{ if(it.color&&tw) tw.style.color=it.color; rcq.style.background=it.color||'var(--accent)'; };
+      applyCol();
+      rcq.addEventListener('click',e=>{ e.stopPropagation(); const pal=boardColors(); if(!pal.length)return;
+        const ci=it.color?pal.indexOf(it.color):-1; it.color=pal[(ci+1)%pal.length]; applyCol(); }); }
     el.addEventListener('keydown',e=>{ const S=22, b=bounds();
       if(e.key==='ArrowUp'){e.preventDefault();it.y=clamp(it.y-S,-it.h*0.3,b.h-it.h*0.7);place(it);}
       else if(e.key==='ArrowDown'){e.preventDefault();it.y=clamp(it.y+S,-it.h*0.3,b.h-it.h*0.7);place(it);}
