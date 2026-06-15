@@ -324,6 +324,41 @@
   .homeArtWrap{display:flex;flex-direction:column;gap:16px;min-width:0}
   .homeAdjust{display:flex;flex-direction:column;align-items:center;gap:11px}
   .homeAdjust .roleHint{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:none;color:var(--muted);text-align:center}
+
+  /* ===== beat 5 — the brand-deliverable bento (living moodboard + palette + type + applied mockups, all editable) ===== */
+  .deliv{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:18px;padding:4px 4px 18px}
+  .deliv::-webkit-scrollbar{width:9px}.deliv::-webkit-scrollbar-thumb{background:var(--line);border-radius:100px}
+  .delivHead{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+  .delivH{font-family:var(--title-font);font-weight:500;font-size:clamp(28px,3.8vw,50px);line-height:1;letter-spacing:-0.03em}
+  .delivH em{font-style:italic;color:var(--accent)}
+  .bento{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;grid-auto-rows:158px;width:100%;max-width:1180px;margin:0 auto}
+  .bcell{position:relative;border-radius:18px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--line);transition:background-color .5s var(--ease),color .5s var(--ease)}
+  .bcellTag{position:absolute;top:12px;left:14px;z-index:6;font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);pointer-events:none}
+  .cell-board{grid-column:span 7;grid-row:span 2;background-color:var(--surface-2);
+    background-image:radial-gradient(circle, color-mix(in srgb,var(--ink) 12%,transparent) 1.2px, transparent 1.4px);background-size:22px 22px}
+  .cell-board .artifact{position:absolute;inset:0;aspect-ratio:auto;min-height:0;border-radius:18px;background:none;box-shadow:none}
+  .cell-palette{grid-column:span 5;display:flex;flex-direction:column;gap:11px;padding:34px 18px 16px;background:var(--surface-2)}
+  .cell-type{grid-column:span 5;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:34px 20px 18px;background:var(--surface-2)}
+  .cell-site{grid-column:span 6} .cell-poster{grid-column:span 3} .cell-logo{grid-column:span 3} .cell-app{grid-column:span 3}
+  .delivPalette{display:flex;flex-wrap:wrap;gap:8px}
+  .delivPalette .sw{width:26px;height:26px;border-radius:7px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.14)}
+  .delivWm{font-family:var(--title-font);font-weight:500;font-size:clamp(30px,3.6vw,46px);letter-spacing:-0.03em;line-height:1;color:var(--wm,var(--ink))}
+  .delivWm .dot{color:var(--accent)}
+  .delivFaces{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--muted)}
+  .recolorRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .recolorLabel{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+  .recolorSwatches{display:flex;gap:6px;flex-wrap:wrap}
+  .recolorSwatches .rc{width:20px;height:20px;border-radius:6px;cursor:pointer;border:none;padding:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.14);transition:transform .15s var(--ease)}
+  .recolorSwatches .rc:hover{transform:translateY(-2px) scale(1.1)} .recolorSwatches .rc.on{box-shadow:0 0 0 2px var(--accent)}
+  .delivCtas{display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap;padding-top:2px}
+  .bento .mk{box-shadow:inset 0 0 0 1px var(--line)}
+  .bento .mk-site{grid-column:span 6;min-height:0}
+  .bento .mk-poster,.bento .mk-logo,.bento .mk-app{aspect-ratio:auto}
+  @media(max-width:860px){
+    .bento{grid-template-columns:repeat(2,1fr);grid-auto-rows:150px}
+    .cell-board{grid-column:span 2;grid-row:span 2} .cell-palette,.cell-type{grid-column:span 2}
+    .bento .mk-site,.cell-site{grid-column:span 2} .cell-poster,.cell-logo,.cell-app{grid-column:span 2}
+  }
   .homeAdjust .roles{justify-content:center}
   .homeIndex{border-top:1px solid var(--line);padding:28px 8px 16px;display:grid;grid-template-columns:repeat(3,1fr);gap:0}
   @media (max-width:720px){ .homeIndex{grid-template-columns:1fr;gap:18px} }
@@ -562,26 +597,46 @@
 
     <!-- 5 — home (the climax) -->
     <section class="beat" id="b5">
-      <div class="home">
-        <div class="homeHero">
-          <div>
-            <div class="homeEdition"><span id="homeEd">Your version of Inkling</span><span class="rule"></span></div>
-            <h1 class="homeH" id="homeH">Your taste, <em>made into a brand.</em></h1>
-            <p class="homeLede" id="homeLede">This is Inkling with the brand you just made. Your moodboard is here. Drag it around and keep playing. When you’re ready, start again with your own images.</p>
-            <div class="homeCtas">
-              <button class="homePrimary" id="homeStart">Make your own brand <span aria-hidden="true">→</span></button>
-              <button class="homeGhost" id="homeDefault">Reset to default Inkling</button>
-            </div>
-          </div>
-          <div class="homeArtWrap">
-            <div class="canvas artifact" id="artifact" role="application" aria-label="Your living moodboard. Drag a piece to move it, tap to reshape, twist or stretch from the corners."><span class="artifactTag">your moodboard, drag to move it</span><button class="artShuffle" id="homeShuffle">⤮ Shuffle the look</button></div>
-            <div class="homeAdjust">
-              <span class="roleHint">Tap a role to change its color, or shuffle the look.</span>
-              <div class="roles" id="homeRoles"></div>
-            </div>
-          </div>
+      <div class="deliv">
+        <div class="delivHead">
+          <div class="homeEdition"><span class="rule"></span><span id="homeEd">Your version of Inkling</span><span class="rule"></span></div>
+          <h1 class="delivH" id="homeH">Your taste, <em>made into a brand.</em></h1>
         </div>
-        <div class="homeIndex" id="homeIndex"></div>
+        <div class="bento" id="bento">
+          <div class="bcell cell-board">
+            <span class="bcellTag">Moodboard</span>
+            <div class="canvas artifact" id="artifact" role="application" aria-label="Your living moodboard. Drag a piece to move it, tap to reshape, twist or stretch from the corners."></div>
+          </div>
+          <div class="bcell cell-palette">
+            <span class="bcellTag">Palette</span>
+            <div class="delivPalette" id="delivPalette"></div>
+            <div class="roleHint">Tap a role to swap its color.</div>
+            <div class="roles" id="homeRoles"></div>
+          </div>
+          <div class="bcell cell-type">
+            <span class="bcellTag">Type</span>
+            <div class="delivWm" id="delivWm">inkling<span class="dot">.</span></div>
+            <div class="delivFaces" id="delivFaces"></div>
+            <div class="recolorRow"><span class="recolorLabel">Recolor</span><div class="recolorSwatches" id="recolorSwatches"></div></div>
+          </div>
+          <div class="bcell cell-site mk mk-site">
+            <div class="mkbar"><span class="mkdots"><i></i><i></i><i></i></span><span class="mkwm">inkling<b>.</b></span></div>
+            <div class="mksite-body">
+              <div class="mkkick mkName"></div>
+              <div class="mksite-h">Your taste, made into a brand.</div>
+              <div class="mksite-sub">A studio that turns what you gather into a direction you can build with.</div>
+              <span class="mkbtn">Get started</span>
+            </div>
+          </div>
+          <div class="bcell cell-poster mk mk-poster"><div class="mkposter-wm">inkling<b>.</b></div><div class="mkposter-tag">you know it<br>when you see it</div></div>
+          <div class="bcell cell-logo mk mk-logo"><span class="mkpre mkName"></span><span class="mklogo-wm">inkling<b>.</b></span></div>
+          <div class="bcell cell-app mk mk-app"><span class="mkapp-mark" id="delivInitial">i<b>.</b></span></div>
+        </div>
+        <div class="delivCtas">
+          <button class="homeGhost" id="homeShuffle">⤮ Shuffle the look</button>
+          <button class="homePrimary" id="homeStart">Make your own <span aria-hidden="true">→</span></button>
+          <button class="homeGhost" id="homeDefault">Reset to default</button>
+        </div>
       </div>
     </section>
   </div>
@@ -1038,10 +1093,23 @@
     const r=compose(); if(r) applyBrandGlobal(r);
     document.getElementById('homeEd').textContent = state.name?`${state.name}’s version of Inkling`:'Your version of Inkling';
     document.getElementById('homeH').innerHTML = `${poss()} taste, <em>made into a brand.</em>`;
-    document.getElementById('homeIndex').innerHTML=MOVES.map(m=>`<div class="move"><div class="moveNo">${m.no}</div><div class="moveLabel">${m.label}</div><div class="moveBlurb">${m.blurb}</div></div>`).join('');
+    // palette tile
+    document.getElementById('delivPalette').innerHTML=boardColors().slice(0,12).map(h=>`<span class="sw" style="background:${h}"></span>`).join('');
     renderHomeRoles();
-    requestAnimationFrame(buildHomeArtifact); // build once the panel has real dimensions
+    // type tile — primary wordmark + faces + recolor swatches
+    const tk=primaryType(), wm=document.getElementById('delivWm'); wm.style.fontFamily=FONTS[tk].f;
+    document.getElementById('delivFaces').textContent = r ? `${FONTS[tk].name} · ${(r.bodyFont.match(/'([^']+)'/)||[,'Sans'])[1]}` : FONTS[tk].name;
+    const rc=document.getElementById('recolorSwatches'), rpal=boardColors().slice(0,10);
+    rc.innerHTML=rpal.map(h=>`<button class="rc ${state.wmColor===h?'on':''}" data-h="${h}" style="background:${h}" type="button" aria-label="Recolor the wordmark ${h}"></button>`).join('');
+    rc.querySelectorAll('.rc').forEach(b=>b.addEventListener('click',()=>{ state.wmColor=(state.wmColor===b.dataset.h?null:b.dataset.h);
+      applyWmColor(); rc.querySelectorAll('.rc').forEach(x=>x.classList.toggle('on',x.dataset.h===state.wmColor)); }));
+    applyWmColor();
+    // applied mockups
+    document.querySelectorAll('#bento .mkName').forEach(e=>e.textContent=state.name?poss():'');
+    document.getElementById('delivInitial').innerHTML=(state.name?state.name[0].toLowerCase():'i')+'<b>.</b>';
+    requestAnimationFrame(buildHomeArtifact); // build once the cell has real dimensions
   }
+  function applyWmColor(){ const d=document.querySelector('.deliv'); if(d) d.style.setProperty('--wm', state.wmColor||''); }
   // clone the moodboard, scaled, into the hero panel — the always-draggable artifact
   function buildHomeArtifact(){
     const host=document.getElementById('artifact'); host.querySelectorAll('.it').forEach(e=>e.remove());
