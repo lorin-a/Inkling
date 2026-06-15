@@ -37,6 +37,21 @@
   .progress .p.done{color:var(--muted)} .progress .p.done .d{background:var(--accent);opacity:.7}
   .skip{font-family:var(--mono);font-size:13.5px;font-weight:600;letter-spacing:.02em;color:var(--ink);background:none;border:1.5px solid var(--line);border-radius:100px;padding:9px 17px;cursor:pointer;transition:border-color .15s,background-color .15s}
   .skip:hover{border-color:var(--ink);background:color-mix(in srgb,var(--ink) 6%,transparent)}
+  .topR{display:flex;align-items:center;gap:12px}
+  .help{width:34px;height:34px;border-radius:100px;font-family:var(--mono);font-size:15px;font-weight:700;color:var(--muted);
+    background:none;border:1.5px solid var(--line);cursor:pointer;transition:border-color .15s,color .15s,background-color .15s;flex:0 0 auto}
+  .help:hover{border-color:var(--ink);color:var(--ink);background:color-mix(in srgb,var(--ink) 6%,transparent)}
+  /* coach — a per-surface 'what is this' bubble that points at the thing to do */
+  .coach{position:fixed;z-index:130;max-width:300px;background:var(--ink);color:var(--bg);border-radius:14px;padding:14px 16px 13px;
+    box-shadow:0 18px 44px rgba(0,0,0,.32);opacity:0;visibility:hidden;transform:translateY(6px);
+    transition:opacity .25s var(--ease),transform .25s var(--ease),visibility .25s}
+  .coach.on{opacity:1;visibility:visible;transform:none}
+  .coachTag{display:block;font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.62;margin-bottom:5px}
+  .coach p{font-family:var(--body-font);font-size:13.5px;line-height:1.5;margin:0 0 11px}
+  .coachX{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--bg);
+    background:color-mix(in srgb,var(--bg) 20%,transparent);border:none;border-radius:100px;padding:7px 14px;cursor:pointer;transition:background-color .15s}
+  .coachX:hover{background:color-mix(in srgb,var(--bg) 32%,transparent)}
+  .coachArrow{position:absolute;width:14px;height:14px;background:var(--ink);transform:rotate(45deg);border-radius:2px}
 
   /* ---- the stage ---- */
   .stage{flex:1 1 auto;position:relative;overflow:hidden}
@@ -499,7 +514,7 @@
       <span class="p" data-b="4"><span class="d"></span>Moodboard</span>
       <span class="p" data-b="5"><span class="d"></span>Brand</span>
     </div>
-    <button class="skip" id="skipBtn">Skip, take me in →</button>
+    <div class="topR"><button class="help" id="helpBtn" type="button" aria-label="What is this step?">?</button><button class="skip" id="skipBtn">Skip, take me in →</button></div>
   </header>
 
   <div class="stage">
@@ -643,6 +658,13 @@
         </div>
       </div>
     </section>
+  </div>
+
+  <div class="coach" id="coach" role="status">
+    <span class="coachArrow" aria-hidden="true"></span>
+    <span class="coachTag" id="coachTag">Tip</span>
+    <p id="coachText"></p>
+    <button class="coachX" id="coachX" type="button">Got it</button>
   </div>
 
   <footer class="nav">
@@ -1013,6 +1035,7 @@
         state.items.push(u); makeItem(board,u,()=>({w:board.clientWidth,h:board.clientHeight}));
         x+=u.w+gap; });
       y+=rowH+gap; });
+    if(typeof dragNudge==='function') dragNudge(board);
   }
   function renderBoard(){ const bh=document.getElementById('boardH'); if(bh) bh.textContent=state.name?`${state.name}’s board.`:'Your board.';
     const sig=[...state.picks].join(',')+'|'+activeColors().join(',')+'|'+state.typePicks.join(',');
@@ -1131,6 +1154,7 @@
     state.homeItems=clones;
     // home parity: the living artifact gets the board's full vocabulary — drag, reshape, stretch, rotate, reframe, remove
     clones.forEach(c=>makeItem(host,c,()=>({w:host.clientWidth,h:host.clientHeight}),state.homeItems));
+    if(typeof dragNudge==='function') dragNudge(host);
   }
   document.getElementById('homeStart').addEventListener('click',()=>alert('→ This is where you’d start your own brand. Bring in your own images and do it for real.'));
   document.getElementById('homeDefault').addEventListener('click',()=>{ state.assign={}; state.wmColor=null; renderHome(); });
@@ -1167,7 +1191,41 @@
                    : state.beat===BEAT.board ? 'See your brand <span aria-hidden="true">→</span>'
                    : 'Next <span aria-hidden="true">→</span>';
     updateNav();
+    hideCoach(); if(GUIDE[state.beat]) setTimeout(()=>{ if(state.beat===n) showCoachFor(state.beat); }, 720); // first-visit guidance
   }
+
+  // ============ guidance — a per-surface coach bubble + drag nudge ============
+  const coach=document.getElementById('coach'), coachText=document.getElementById('coachText'),
+        coachTag=document.getElementById('coachTag'), coachArrow=document.querySelector('.coachArrow');
+  state.coached=new Set();
+  const GUIDE={
+    [BEAT.gather]:{tag:'Gather',text:'Tap the images that ring true — 3 to 6. Your colors gather as you go.',at:()=>document.querySelector('#wall .ref')},
+    [BEAT.colors]:{tag:'Colors',text:'Each image and the colors it gave you. Tap a swatch to adjust it, ✕ to drop it — or tap the photo to eyedrop a new color.',at:()=>document.querySelector('#palette .curImg')},
+    [BEAT.type]:{tag:'Type',text:'Tap the faces you like. Slide the weight, star a primary, and toggle Light/Dark to see them in context.',at:()=>document.querySelector('#specWall .spec')},
+    [BEAT.board]:{tag:'Moodboard',text:'Drag any piece to move it. Tap a piece to reshape it; use the corner handles to resize or rotate.',at:()=>document.querySelector('#board .it')},
+    [BEAT.brand]:{tag:'Paint it in',text:'Drop a color into each slot to paint your brand — or tap a slot, then a color. Fill all four.',at:()=>document.querySelector('#paintWells .well')},
+    [BEAT.home]:{tag:'Your brand',text:'Your brand, all in one place. Drag the moodboard, tap a palette role to swap a color, or recolor the type.',at:()=>document.querySelector('#artifact .it')||document.getElementById('bento')},
+  };
+  function positionCoach(a){
+    if(!a){ coach.style.left='50%'; coach.style.top='120px'; coach.style.transform='translateX(-50%)'; coachArrow.style.display='none'; return; }
+    coach.style.transform='none'; coachArrow.style.display='block';
+    const r=a.getBoundingClientRect(), cw=coach.offsetWidth||280, ch=coach.offsetHeight||110, vw=innerWidth, gap=14;
+    let top=r.bottom+gap, below=true; if(top+ch>innerHeight-12){ top=r.top-ch-gap; below=false; }
+    let left=r.left+r.width/2-cw/2; left=Math.max(12,Math.min(vw-cw-12,left));
+    coach.style.left=left+'px'; coach.style.top=Math.max(12,top)+'px';
+    const ax=Math.max(14,Math.min(cw-26,r.left+r.width/2-left-7));
+    coachArrow.style.left=ax+'px'; coachArrow.style.top=below?'-7px':(ch-7)+'px';
+  }
+  function showCoachFor(beat,force){ const g=GUIDE[beat]; if(!g)return; if(!force && state.coached.has(beat))return; state.coached.add(beat);
+    coachTag.textContent=g.tag; coachText.textContent=g.text; coach.classList.add('on'); requestAnimationFrame(()=>positionCoach(g.at&&g.at())); }
+  function hideCoach(){ coach.classList.remove('on'); }
+  document.getElementById('coachX').addEventListener('click',hideCoach);
+  document.getElementById('helpBtn').addEventListener('click',()=>showCoachFor(state.beat,true));
+  document.querySelector('.stage').addEventListener('pointerdown',e=>{ if(!e.target.closest('.coach')) hideCoach(); }, true);
+  window.addEventListener('resize',()=>{ if(coach.classList.contains('on')&&GUIDE[state.beat]) positionCoach(GUIDE[state.beat].at&&GUIDE[state.beat].at()); });
+  // drag nudge — telegraph that pieces are draggable (a gentle pulse on the first piece, once per surface)
+  function dragNudge(host){ if(reduceMo||!hasG||!host)return; const b=host.querySelector('.it .body'); if(!b)return;
+    gsap.fromTo(b,{scale:1},{scale:1.07,duration:.5,yoyo:true,repeat:1,ease:'power2.inOut',delay:.5,transformOrigin:'center'}); }
   function updateNav(){
     const next=document.getElementById('nextBtn'), mid=document.getElementById('navMid');
     let disabled=false, label='';

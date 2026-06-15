@@ -14,12 +14,12 @@ Compiled from Lorin's dogfeeding (2026-06-15). Cross-cutting first (they lift ev
 **Cross-cutting (do first — highest leverage):**
 - [x] **A. Legibility / contrast (accessibility, inviolable).** DONE — darkened `--sub/--muted/--faint`; stopped washing the page with the pale stencil (brand now scoped to the artifacts), so all chrome text is AA.
 - [~] **B. Spacing / breathing.** PASS 1 done — roomier top bar + `.head` rhythm + Type bar. Revisit Brand/Home density next.
-- [ ] **C. Guidance / affordances.** "Not obvious I can drag," "needs a LOT more guidance," "I'd never know." Make interactive things obviously interactive (drag hints, a "what is this?" tooltip/popover per surface), progressive hints. ← NEXT, biggest UX gap.
+- [x] **C. Guidance / affordances.** DONE — a per-surface coach bubble appears once per beat (anchored to the thing to do), a "?" in the top bar recalls it, and a drag-nudge pulse telegraphs that pieces move. Dismiss on first interaction or "Got it."
 
 **Per-beat:**
 - [~] **D. Intro spine SVG** — bumped the line weight; the composition still has gaps. Best path = swap in Lorin's hand-drawn SVG (see J).
 - [x] **E. Type beat** — Light/Dark toggle now labeled "Preview ☀/☾" and obvious; spacing fixed.
-- [~] **F. Brand / paint** — stencil text now readable + page calm; STILL TODO: move instructions to a tooltip, make drag-to-slot obvious (part of C).
+- [x] **F. Brand / paint** — stencil readable + page calm + the paint coach now explains "drop a color into a slot" (drag-to-slot guidance via C). Could still let the layout breathe more.
 - [x] **G. Home bento** — calmed: page chrome stays newsprint, brand scoped to the bento tiles (no more full-page wash).
 
 **Feature builds (after the polish foundation):**
