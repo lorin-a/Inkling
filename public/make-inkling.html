@@ -194,6 +194,9 @@
   .it-image img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
   .it-color .body{display:flex;align-items:center;justify-content:center;padding:9px;text-align:center}
   .it-color .hex{font-family:var(--mono);font-size:10px;font-weight:600;color:#fff;mix-blend-mode:difference;letter-spacing:.02em}
+  .it-note .body{background:#fffdf4;display:flex;align-items:center;justify-content:center;padding:12px 14px;box-shadow:0 1px 2px var(--shadow-1),0 12px 28px var(--shadow-2)}
+  .it-note .noteText{font-family:'Caveat',cursive;font-weight:600;font-size:24px;line-height:1.18;color:var(--ink);outline:none;text-align:center;width:100%;min-height:1em;cursor:text;word-break:break-word}
+  .it-note .noteText:empty::before{content:'note';opacity:.4}
   .it-type .body{background:#fff;display:flex;flex-direction:column;justify-content:center;padding:16px 18px;gap:4px}
   .it-type .tName{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .it-type .tWord{line-height:.95;color:var(--ink)}
@@ -604,7 +607,7 @@
     <section class="beat" id="b3">
       <div class="head"><div class="kick">Moodboard · narrow it down</div><div class="H" id="boardH">Your board.</div><div class="sub">Everything you gathered. Drag to move, tap to reshape, twist or stretch from the corners.</div></div>
       <div class="canvas board" id="board" role="application" aria-label="Your moodboard. Tab to an item, arrow keys to move it, Backspace to remove it.">
-        <div class="boardTools"><button class="boardToolBtn" id="addColorBtn" type="button">＋ Color</button></div>
+        <div class="boardTools"><button class="boardToolBtn" id="addNoteBtn" type="button">＋ Note</button><button class="boardToolBtn" id="addColorBtn" type="button">＋ Color</button></div>
         <div class="addPop" id="addPop"><div class="addPopTtl">Add a color to your board</div><div class="addGrid" id="addGrid"></div></div>
       </div>
     </section>
@@ -1001,6 +1004,7 @@
     let inner='';
     if(it.kind==='image') inner=`<span class="body"><img src="${it.src}" alt=""/></span>`;
     else if(it.kind==='color') inner=`<span class="body" style="background:${it.hex}"><span class="hex">${it.hex}</span></span>`;
+    else if(it.kind==='note') inner=`<span class="body"><span class="noteText" contenteditable="true" spellcheck="false" role="textbox" aria-label="Note">${it.text||''}</span></span>`;
     else inner=`<span class="body"><span class="tName">${FONTS[it.key].name}</span><span class="tWord" style="font-family:${FONTS[it.key].f};font-weight:${clamp(it.weight,300,700)};font-size:${Math.round(it.h*0.34)}px">inkling<span class="dot">.</span></span></span>`;
     el.innerHTML=inner+`<span class="rt" aria-hidden="true">⟳</span><span class="rm" role="button" aria-label="Remove">✕</span><span class="rz" aria-hidden="true"></span>`+(it.kind==='image'?`<span class="rf" aria-hidden="true">✛</span>`:'')+(it.kind==='type'?`<span class="rcq" role="button" aria-label="Recolor the type"></span>`:'');
     el.setAttribute('aria-label',it.label+' Tap to reshape; drag to move; corner to resize; twist to rotate.');
@@ -1012,7 +1016,8 @@
     el.addEventListener('pointermove',e=>{ if(!d)return; const b=bounds();
       if(Math.abs(e.clientX-d.px)+Math.abs(e.clientY-d.py)>5) d.moved=true;
       it.x=clamp(d.x+(e.clientX-d.px),-it.w*0.35,b.w-it.w*0.65); it.y=clamp(d.y+(e.clientY-d.py),-it.h*0.3,b.h-it.h*0.7); place(it); });
-    const end=()=>{ if(!d)return; const tap=!d.moved; d=null; el.classList.remove('grab'); if(tap) cycleShape(it); };
+    const end=()=>{ if(!d)return; const tap=!d.moved; d=null; el.classList.remove('grab');
+      if(tap){ if(it.kind==='note'){ const t=el.querySelector('.noteText'); if(t) t.focus(); } else cycleShape(it); } };
     el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end);
     el.querySelector('.rm').addEventListener('click',e=>{ e.stopPropagation(); removeItem(it,coll); });
     // rotate — twist the top-left handle around the item's center
@@ -1046,7 +1051,12 @@
       applyCol();
       rcq.addEventListener('click',e=>{ e.stopPropagation(); const pal=boardColors(); if(!pal.length)return;
         const ci=it.color?pal.indexOf(it.color):-1; it.color=pal[(ci+1)%pal.length]; applyCol(); }); }
-    el.addEventListener('keydown',e=>{ const S=22, b=bounds();
+    // note pieces — save typed text; clicking the text shouldn't reshape
+    const nt=el.querySelector('.noteText');
+    if(nt){ nt.addEventListener('input',()=>{ it.text=nt.textContent; });
+      nt.addEventListener('pointerdown',e=>{ if(document.activeElement===nt) e.stopPropagation(); }); }
+    el.addEventListener('keydown',e=>{ if(nt&&document.activeElement===nt) return;   // typing a note: keys go to the text, not the item controls
+      const S=22, b=bounds();
       if(e.key==='ArrowUp'){e.preventDefault();it.y=clamp(it.y-S,-it.h*0.3,b.h-it.h*0.7);place(it);}
       else if(e.key==='ArrowDown'){e.preventDefault();it.y=clamp(it.y+S,-it.h*0.3,b.h-it.h*0.7);place(it);}
       else if(e.key==='ArrowLeft'){e.preventDefault();it.x=clamp(it.x-S,-it.w*0.35,b.w-it.w*0.65);place(it);}
@@ -1113,6 +1123,15 @@
     // sync the signature to current state so we DON'T rebuild (which would wipe the manual add + arrangement)
     state.itemsSig=[...state.picks].join(',')+'|'+activeColors().join(',')+'|'+state.typePicks.join(','); }
   addColorBtn.addEventListener('click',e=>{ e.stopPropagation(); const on=addPop.classList.toggle('on'); if(on) renderAddGrid(); });
+  // add a note — a draggable, editable text card (the "more than color/type/image" piece)
+  function addNoteToBoard(){ const board=document.getElementById('board'), W=board.clientWidth||900, H=board.clientHeight||500, n=state.items.length;
+    const u={kind:'note',text:'',w:152,h:96,shape:0,rot:((n*5)%7)-3,label:'Note',
+      x:Math.round(W/2-76+((n*41)%150)-75), y:Math.round(H/2-48+((n*29)%100)-50),
+      z:Math.max(0,...state.items.map(x=>x.z||0))+1};
+    state.items.push(u); makeItem(board,u,()=>({w:board.clientWidth,h:board.clientHeight}));
+    state.itemsSig=[...state.picks].join(',')+'|'+activeColors().join(',')+'|'+state.typePicks.join(',');
+    setTimeout(()=>{ const t=u.el&&u.el.querySelector('.noteText'); if(t)t.focus(); },60); }
+  document.getElementById('addNoteBtn').addEventListener('click',e=>{ e.stopPropagation(); addPop.classList.remove('on'); addNoteToBoard(); });
   document.addEventListener('click',e=>{ if(addPop.classList.contains('on') && !e.target.closest('#addPop') && !e.target.closest('#addColorBtn')) addPop.classList.remove('on'); });
 
   // ============ beat 4: perfect & compare ============
