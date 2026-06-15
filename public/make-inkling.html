@@ -214,6 +214,20 @@
   .it-image:hover .rf,.it-image:focus-within .rf{display:flex;opacity:1;transform:translate(-50%,-50%) scale(1)}
   .it.grab .rf{display:none}
 
+  /* add-a-color tool on the moodboard */
+  .boardTools{position:absolute;top:12px;right:14px;z-index:8;display:flex;gap:8px}
+  .boardToolBtn{font-family:var(--sans);font-size:13.5px;font-weight:700;color:var(--ink);background:color-mix(in srgb,var(--bg) 68%,#fff);
+    border:1.5px solid var(--line);border-radius:100px;padding:8px 16px;cursor:pointer;transition:border-color .15s,transform .15s var(--ease)}
+  .boardToolBtn:hover{border-color:var(--ink);transform:translateY(-1px)}
+  .addPop{position:absolute;top:52px;right:14px;z-index:9;background:var(--surface-3);border:1.5px solid var(--line);border-radius:14px;
+    padding:14px 15px;box-shadow:0 18px 44px rgba(0,0,0,.18);width:268px;opacity:0;visibility:hidden;transform:translateY(-6px);
+    transition:opacity .18s,transform .18s var(--ease),visibility .18s}
+  .addPop.on{opacity:1;visibility:visible;transform:none}
+  .addPopTtl{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:11px}
+  .addGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+  .addGrid .ac{aspect-ratio:1;border-radius:7px;cursor:pointer;border:none;padding:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.14);transition:transform .12s var(--ease)}
+  .addGrid .ac:hover{transform:scale(1.14)} .addGrid .ac.here{opacity:.32;cursor:default}
+
   /* ===== beat 3 — MOODBOARD ===== */
   /* the workspace surface — a dot grid like the real canvas, with a soft center vignette */
   .board{flex:1 1 auto;border-radius:16px;background-color:var(--surface-2);
@@ -584,7 +598,10 @@
     <!-- 3 — moodboard -->
     <section class="beat" id="b3">
       <div class="head"><div class="kick">Moodboard · narrow it down</div><div class="H" id="boardH">Your board.</div><div class="sub">Everything you gathered. Drag to move, tap to reshape, twist or stretch from the corners.</div></div>
-      <div class="canvas board" id="board" role="application" aria-label="Your moodboard. Tab to an item, arrow keys to move it, Backspace to remove it."></div>
+      <div class="canvas board" id="board" role="application" aria-label="Your moodboard. Tab to an item, arrow keys to move it, Backspace to remove it.">
+        <div class="boardTools"><button class="boardToolBtn" id="addColorBtn" type="button">＋ Color</button></div>
+        <div class="addPop" id="addPop"><div class="addPopTtl">Add a color to your board</div><div class="addGrid" id="addGrid"></div></div>
+      </div>
     </section>
 
     <!-- 4 — brand: applied to real artifacts -->
@@ -1063,9 +1080,25 @@
       y+=rowH+gap; });
     if(typeof dragNudge==='function') dragNudge(board);
   }
-  function renderBoard(){ const bh=document.getElementById('boardH'); if(bh) bh.textContent=state.name?`${state.name}’s board.`:'Your board.';
+  function renderBoard(){ const bh=document.getElementById('boardH'); if(bh) bh.textContent='Your board.';
     const sig=[...state.picks].join(',')+'|'+activeColors().join(',')+'|'+state.typePicks.join(',');
     if(sig!==state.itemsSig){ state.itemsSig=sig; buildItems(); } }
+  // add a color to the board — bring back any gathered color that feels missing
+  const addColorBtn=document.getElementById('addColorBtn'), addPop=document.getElementById('addPop'), addGrid=document.getElementById('addGrid');
+  function renderAddGrid(){ const onBoard=new Set(state.items.filter(i=>i.kind==='color').map(i=>i.hex));
+    addGrid.innerHTML=colorPool().map(h=>{const d=disp(h); return `<button class="ac ${onBoard.has(d)?'here':''}" data-hex="${h}" style="background:${d}" title="${d}" aria-label="Add ${d}"></button>`;}).join('');
+    addGrid.querySelectorAll('.ac:not(.here)').forEach(b=>b.addEventListener('click',()=>{ addColorToBoard(b.dataset.hex); addPop.classList.remove('on'); })); }
+  function addColorToBoard(orig){ const board=document.getElementById('board'), hex=disp(orig);
+    state.droppedColors.delete(orig);                                    // un-drop so it counts in the brand too
+    const W=board.clientWidth||900, H=board.clientHeight||500, n=state.items.length;
+    const u={kind:'color',hex,orig,w:84,h:84,shape:0,rot:0,label:`Color ${hex}`,
+      x:Math.round(W/2-42+((n*37)%120)-60), y:Math.round(H/2-42+((n*23)%90)-45),
+      z:Math.max(0,...state.items.map(x=>x.z||0))+1};
+    state.items.push(u); makeItem(board,u,()=>({w:board.clientWidth,h:board.clientHeight}));
+    // sync the signature to current state so we DON'T rebuild (which would wipe the manual add + arrangement)
+    state.itemsSig=[...state.picks].join(',')+'|'+activeColors().join(',')+'|'+state.typePicks.join(','); }
+  addColorBtn.addEventListener('click',e=>{ e.stopPropagation(); const on=addPop.classList.toggle('on'); if(on) renderAddGrid(); });
+  document.addEventListener('click',e=>{ if(addPop.classList.contains('on') && !e.target.closest('#addPop') && !e.target.closest('#addColorBtn')) addPop.classList.remove('on'); });
 
   // ============ beat 4: perfect & compare ============
   const ROLE_DEFS=[{k:'bg',label:'Background'},{k:'ink',label:'Title'},{k:'accent',label:'Accent'},{k:'sub',label:'Subhead'}];

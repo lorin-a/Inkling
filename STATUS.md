@@ -24,10 +24,10 @@ Compiled from Lorin's dogfeeding (2026-06-15). Cross-cutting first (they lift ev
 
 **Feature builds (after the polish foundation):**
 - [x] **H. Dropper layout** — DONE — bigger image in the Colors step + a magnifier loupe (follows the cursor, shows the zoomed pixel + live hex) so picking is precise.
-- [ ] **I. Moodboard enrichment** — add/pick colors on the board, recolor type pieces, more than color/type/image (notes, shapes).
+- [~] **I. Moodboard enrichment** — add-a-color tool DONE ("＋ Color" → pick any gathered color, incl. ones dropped/missing, onto the board; counts back into the brand). STILL TODO: recolor type pieces in place, and "more than color/type/image" (notes, shapes, textures).
 - [ ] **J. Hand-drawn SVGs** — wire in Lorin's own drawings when she provides them.
 - [ ] **K. Full crop port** in the moodboard (zoom + crop box, like the real site).
-- [ ] **L. Name-echo rebalance** — finish (Gather/Board/Home still echo; keep ~2 warm spots).
+- [x] **L. Name-echo rebalance** — DONE — name now only in two warm spots (the Gather hello + Home); Board/Colors/Type are instructional.
 
 ## What it is
 **Inkling — the intuitive's creative home base.** One place that replaces the 5 apps + 10 tabs a visual
