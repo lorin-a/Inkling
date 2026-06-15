@@ -17,7 +17,7 @@ Compiled from Lorin's dogfeeding (2026-06-15). Cross-cutting first (they lift ev
 - [x] **C. Guidance / affordances.** DONE — a per-surface coach bubble appears once per beat (anchored to the thing to do), a "?" in the top bar recalls it, and a drag-nudge pulse telegraphs that pieces move. Dismiss on first interaction or "Got it."
 
 **Per-beat:**
-- [~] **D. Intro spine SVG** — bumped the line weight; the composition still has gaps. Best path = swap in Lorin's hand-drawn SVG (see J).
+- [x] **D. Intro spine SVG** — REDRAWN as one clean *connected* authored line (bulb → wave through the dots → loop+arrow); was 3 stitched vectors that looked broken. Colors harmonized (numbers match their muted dots; only the logo dot stays ultraviolet), hierarchy rebalanced, blurb/label sizes bumped for accessibility, tagline → "know it when you see it." (J: still swappable for Lorin's own hand-drawn SVG if she wants.)
 - [x] **E. Type beat** — Light/Dark toggle now labeled "Preview ☀/☾" and obvious; spacing fixed.
 - [x] **F. Brand / paint** — stencil readable + page calm + the paint coach now explains "drop a color into a slot" (drag-to-slot guidance via C). Could still let the layout breathe more.
 - [x] **G. Home bento** — calmed: page chrome stays newsprint, brand scoped to the bento tiles (no more full-page wash).
