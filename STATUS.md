@@ -23,7 +23,7 @@ Compiled from Lorin's dogfeeding (2026-06-15). Cross-cutting first (they lift ev
 - [x] **G. Home bento** — calmed: page chrome stays newsprint, brand scoped to the bento tiles (no more full-page wash).
 
 **Feature builds (after the polish foundation):**
-- [ ] **H. Dropper layout** — enlarge the image + a loupe so picking a color from the photo is precise ("favor the feature").
+- [x] **H. Dropper layout** — DONE — bigger image in the Colors step + a magnifier loupe (follows the cursor, shows the zoomed pixel + live hex) so picking is precise.
 - [ ] **I. Moodboard enrichment** — add/pick colors on the board, recolor type pieces, more than color/type/image (notes, shapes).
 - [ ] **J. Hand-drawn SVGs** — wire in Lorin's own drawings when she provides them.
 - [ ] **K. Full crop port** in the moodboard (zoom + crop box, like the real site).
