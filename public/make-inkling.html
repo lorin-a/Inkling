@@ -85,6 +85,9 @@
   .filterRow{display:flex;gap:7px}
   .fchip{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:none;border:1.5px solid var(--line);border-radius:100px;padding:8px 14px;cursor:pointer;transition:border-color .15s,color .15s,background-color .15s}
   .fchip:hover{border-color:var(--ink);color:var(--ink)} .fchip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .modeToggle{display:flex;gap:0;border:1.5px solid var(--line);border-radius:100px;overflow:hidden}
+  .mchip{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:none;border:none;padding:8px 16px;cursor:pointer;transition:color .15s,background-color .15s}
+  .mchip:hover{color:var(--ink)} .mchip.on{background:var(--ink);color:var(--bg)}
   /* uniform specimen grid — every face shown at the SAME size, each dressed in one of your gathered colors,
      so you compare letterforms (not sizes) and see your type on your palette */
   .specWall{flex:1 1 auto;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(246px,1fr));gap:16px;padding:4px 4px 12px;align-content:start}
@@ -494,10 +497,14 @@
 
     <!-- 3 — type -->
     <section class="beat" id="b2">
-      <div class="head"><div class="kick">Type · in your palette</div><div class="H" id="typeH">Choose your fonts.</div><div class="sub">Each face is shown in your colors. Tap the ones you like, slide to set the weight, and star one as primary.</div></div>
+      <div class="head"><div class="kick">Type · find your voice</div><div class="H" id="typeH">Choose your fonts.</div><div class="sub">Tap the ones you like, slide to set the weight, and star one as primary. Toggle light or dark to see them in context.</div></div>
       <div class="typeBar">
         <div class="weightCtl"><label for="weight">Weight</label><input type="range" id="weight" min="200" max="800" step="10" value="420" /><span class="weightVal" id="weightVal">420</span></div>
         <div class="filterRow" id="filterRow"></div>
+        <div class="modeToggle" id="modeToggle" role="group" aria-label="Preview light or dark">
+          <button class="mchip on" data-mode="light" type="button">Light</button>
+          <button class="mchip" data-mode="dark" type="button">Dark</button>
+        </div>
       </div>
       <div class="specWall" id="specWall"></div>
       <div class="typeTray" id="typeTray"></div>
@@ -641,7 +648,7 @@
   // ============ state ============
   const BEAT={name:0,gather:1,colors:2,type:3,board:4,brand:5,home:6}, BEATS=7;
   const state={ beat:0, name:'', picks:new Set(), droppedColors:new Set(), edits:{}, history:[], editing:null,
-                typePicks:[], weight:420, typeFilter:'all',
+                typePicks:[], weight:420, typeFilter:'all', typeMode:'light',
                 items:[], itemsSig:'', homeSig:'',
                 seed:0, assign:{}, polarity:'auto', variations:[], varAt:-1 };
 
@@ -799,18 +806,21 @@
   filterRow.innerHTML=CATS.map(([k,l])=>`<button class="fchip ${k==='all'?'on':''}" data-cat="${k}">${l}</button>`).join('');
   filterRow.querySelectorAll('.fchip').forEach(c=>c.addEventListener('click',()=>{ state.typeFilter=c.dataset.cat;
     filterRow.querySelectorAll('.fchip').forEach(x=>x.classList.toggle('on',x===c)); renderSpecs(); }));
+  const modeToggle=document.getElementById('modeToggle');
+  modeToggle.querySelectorAll('.mchip').forEach(c=>c.addEventListener('click',()=>{ state.typeMode=c.dataset.mode;
+    modeToggle.querySelectorAll('.mchip').forEach(x=>x.classList.toggle('on',x===c)); renderSpecs(); }));
   function renderSpecs(){
     document.getElementById('typeH').textContent='Choose your fonts.';
     const keys=FONT_KEYS.filter(k=>state.typeFilter==='all'||FONTS[k].cat===state.typeFilter);
-    const pal=dedupeColors(activeColors(),40);                 // your gathered colors dress the cards
-    const tint=c=>mix(c,'#fdfbf6',0.74);                       // pale colored paper — pretty + legible
-    specWall.innerHTML=keys.map((k,i)=>{ const F=FONTS[k], on=state.typePicks.includes(k), primary=state.typePicks[0]===k;
-      let bg='var(--surface-2)', ink='var(--ink)', dot='var(--accent)';
-      if(pal.length){ const C=pal[i%pal.length]; bg=tint(C); ink=readable('#211b12',bg,5.2); dot=readable(C,bg,3); }
+    // one calm, consistent setting so you compare letterforms — toggle light/dark to see them in context
+    const dark=state.typeMode==='dark';
+    const bg=dark?'#1c1813':'#fbf9f4', ink=dark?'#f4efe5':'#1c1810';
+    const r=compose(); const accent=readable(r?r.accent:'#6a2ee6', bg, 3);
+    specWall.innerHTML=keys.map((k)=>{ const F=FONTS[k], on=state.typePicks.includes(k), primary=state.typePicks[0]===k;
       return `<button class="spec ${on?'on':''} ${primary?'primary':''}" data-k="${k}" style="background:${bg};color:${ink}">
         <span class="specChk" aria-hidden="true">✓</span>
         <span class="specTop"><span class="specNm">${F.name}</span><span class="specCh">${F.char}</span></span>
-        <span class="specWd" style="font-family:${F.f};font-weight:${state.weight}">inkling<span class="dot" style="color:${dot}">.</span></span>
+        <span class="specWd" style="font-family:${F.f};font-weight:${state.weight}">inkling<span class="dot" style="color:${accent}">.</span></span>
         <span class="specStar" data-star="${k}" role="button" tabindex="-1">${primary?'★ primary':'set primary'}</span>
       </button>`; }).join('');
     specWall.querySelectorAll('.spec').forEach(c=>{
