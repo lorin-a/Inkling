@@ -9,8 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,300..600&family=Young+Serif&family=Abril+Fatface&family=Baskervville:ital@0;1&family=Gloock&family=Zilla+Slab:wght@300;400;500;600;700&family=Space+Grotesk:wght@300..700&family=Familjen+Grotesk:wght@400..700&family=Red+Hat+Display:wght@300..900&family=Archivo+Black&family=Oswald:wght@200..700&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Syne:wght@400..800&family=Nunito:wght@200..1000&family=Caveat:wght@400..700&family=Borel&family=Space+Mono:wght@400;700&family=DM+Mono:wght@300;400;500&family=Noto+Sans:wght@100..900&family=Noto+Sans+Mono:wght@400..700&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --bg:#f7f6f2; --ink:#1c1810; --accent:#6a2ee6; --spark:#f0531f; --sub:#6f6354;
-    --muted:#8a7f70; --faint:#b6ab99; --line:rgba(40,32,18,0.14); --rule:#2a2419;
+    --bg:#f7f6f2; --ink:#1c1810; --accent:#6a2ee6; --spark:#f0531f; --sub:#5f5546;
+    --muted:#6a5e4c; --faint:#897c68; --line:rgba(40,32,18,0.16); --rule:#2a2419;
     /* semantic layer (merged from the theme-system pass) — derived live so they adapt to any skin */
     --surface-2:#fcfbf7; --surface-3:#ffffff;          /* raised surfaces */
     --on-accent:#ffffff; --focus:var(--accent);        /* legible label on accent; focus ring */
@@ -758,14 +758,14 @@
     return {bg,ink,accent,sub,polarity,titleFont:FONTS[tk].f,bodyFont:bodyFor(tk),weight:state.weight};
   }
   // paint the whole document in the composed brand (used at Home)
-  function applyBrandGlobal(r){
-    const s=document.documentElement.style, dark=lum(r.bg)<0.42;
+  function applyBrandVars(s,r){
+    const dark=lum(r.bg)<0.42;
     s.setProperty('--bg',r.bg); s.setProperty('--ink',r.ink); s.setProperty('--accent',r.accent); s.setProperty('--sub',r.sub);
-    s.setProperty('--muted',mix(r.ink,r.bg,0.34)); s.setProperty('--faint',mix(r.ink,r.bg,0.5));
+    s.setProperty('--muted',mix(r.ink,r.bg,0.32)); s.setProperty('--faint',mix(r.ink,r.bg,0.44));
     s.setProperty('--line',mix(r.ink,r.bg,0.82)); s.setProperty('--rule',r.ink);
     s.setProperty('--title-font',r.titleFont); s.setProperty('--body-font',r.bodyFont);
     // derived semantic layer — raised surfaces, legible label-on-accent, ink-tinted elevation
-    s.setProperty('--surface-2', mix(r.bg, dark?'#ffffff':'#ffffff', dark?0.07:0.55));
+    s.setProperty('--surface-2', mix(r.bg, '#ffffff', dark?0.07:0.55));
     s.setProperty('--surface-3', dark?mix(r.bg,'#ffffff',0.13):'#ffffff');
     s.setProperty('--on-accent', readable(bestOn(r.accent), r.accent, 4.5));
     s.setProperty('--focus', r.accent);
@@ -774,6 +774,9 @@
     s.setProperty('--shadow-2',`rgba(${sb},${dark?.55:.16})`);
     s.setProperty('--shadow-3',`rgba(${sb},${dark?.6:.3})`);
   }
+  function applyBrandGlobal(r){ applyBrandVars(document.documentElement.style,r); }
+  // scope the brand to the artifacts only, so the page chrome stays readable (no pale-stencil wash, calmer home)
+  function applyBrandScoped(el,r){ if(el) applyBrandVars(el.style,r); }
   function clearBrandGlobal(){ const s=document.documentElement.style;
     ['--bg','--ink','--accent','--sub','--muted','--faint','--line','--rule','--title-font','--body-font',
      '--surface-2','--surface-3','--on-accent','--focus','--shadow-1','--shadow-2','--shadow-3'].forEach(k=>s.removeProperty(k)); }
@@ -1029,7 +1032,7 @@
   function renderBrand(){
     if(!state.assign) state.assign={};
     if(!state.activeWell || state.assign[state.activeWell]) state.activeWell=ORDER.find(k=>!state.assign[k])||null;
-    const r=paintCompose(); applyBrandGlobal(r);
+    const r=paintCompose(); applyBrandScoped(document.querySelector('#b4 .mockGallery'),r);  // only the mockups paint; page chrome stays readable
     document.querySelectorAll('#b4 .mkName').forEach(e=>e.textContent=state.name?poss():'');
     document.getElementById('mkInitial').innerHTML=(state.name?state.name[0].toLowerCase():'i')+'<b>.</b>';
     document.getElementById('specPalette').innerHTML=boardColors().slice(0,9).map(h=>`<span class="sw" style="background:${h}"></span>`).join('');
@@ -1090,7 +1093,7 @@
     {no:'03',label:'Build',blurb:'Turn a direction into a brand: a palette, a wordmark, a book, and an export.'},
   ];
   function renderHome(){
-    const r=compose(); if(r) applyBrandGlobal(r);
+    const r=compose(); if(r) applyBrandScoped(document.getElementById('bento'),r);  // the bento wears the brand; the page stays calm + readable
     document.getElementById('homeEd').textContent = state.name?`${state.name}’s version of Inkling`:'Your version of Inkling';
     document.getElementById('homeH').innerHTML = `${poss()} taste, <em>made into a brand.</em>`;
     // palette tile
@@ -1126,16 +1129,16 @@
     clones.forEach(c=>makeItem(host,c,()=>({w:host.clientWidth,h:host.clientHeight}),state.homeItems));
   }
   document.getElementById('homeStart').addEventListener('click',()=>alert('→ This is where you’d start your own brand. Bring in your own images and do it for real.'));
-  document.getElementById('homeDefault').addEventListener('click',()=>{ clearBrandGlobal(); });
+  document.getElementById('homeDefault').addEventListener('click',()=>{ state.assign={}; state.wmColor=null; renderHome(); });
   // manual color choice on the living artifact — react, not random: tap a role to walk your gathered colors through it
   function renderHomeRoles(){ const r=compose(); if(!r)return; const el=document.getElementById('homeRoles'); if(!el)return;
     el.innerHTML=ROLE_DEFS.map(d=>`<button class="role" data-role="${d.k}" type="button"><span class="rsw" style="background:${roleColor(r,d.k)}"></span><span class="rl">${d.label}</span></button>`).join('');
     el.querySelectorAll('.role').forEach(b=>b.addEventListener('click',()=>cycleRoleHome(b.dataset.role))); }
   function cycleRoleHome(role){ const p=activeColors(); if(!p.length)return;
     const cur=state.assign[role], idx=cur?p.indexOf(cur):-1; state.assign[role]=p[(idx+1)%p.length];
-    const r=compose(); if(r) applyBrandGlobal(r); renderHomeRoles(); }
+    const r=compose(); if(r) applyBrandScoped(document.getElementById('bento'),r); renderHomeRoles(); }
   // the permanent playground — keep shuffling the look right from the home page
-  function shuffleLook(){ state.assign={}; state.seed=(state.seed||0)+1; state.polarity=state.polarity==='light'?'dark':(state.polarity==='dark'?'auto':'light'); const r=compose(); if(r) applyBrandGlobal(r); renderHomeRoles(); }
+  function shuffleLook(){ state.assign={}; state.seed=(state.seed||0)+1; state.polarity=state.polarity==='light'?'dark':(state.polarity==='dark'?'auto':'light'); renderHome(); }
   document.getElementById('homeShuffle').addEventListener('click',shuffleLook);
 
   // ============ step machine ============
@@ -1144,7 +1147,7 @@
     document.querySelectorAll('.beat').forEach((s,i)=>s.classList.toggle('active',i===state.beat));
     document.querySelectorAll('#progress .p').forEach(p=>{ const b=+p.dataset.b; p.classList.toggle('on',b===state.beat); p.classList.toggle('done',b<state.beat); });
     document.getElementById('backBtn').style.visibility = state.beat>0 && state.beat<BEAT.home ? 'visible':'hidden';
-    if(state.beat<BEAT.brand) clearBrandGlobal(); // beats before Brand stay newsprint; Brand & Home wear the brand
+    clearBrandGlobal(); // the page chrome stays newsprint throughout; the brand is scoped to the artifacts (mockups / bento)
     if(state.beat!==BEAT.colors && cedit.classList.contains('on')) closeEdit();
     if(state.beat===BEAT.name){ setTimeout(()=>nameField.focus({preventScroll:true}),120); }
     if(state.beat===BEAT.gather){ renderGather(); }
