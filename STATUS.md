@@ -4,7 +4,9 @@
 (`project_product_direction`, `project_onboarding_genesis`); the journey lives in git. Keep this short.
 
 ## Right now
-- **Branch `v2`** (`main` = frozen OG standalone). **Track A re-opened for a polish pass** (Lorin is dogfooding hard and redirecting live). It is NOT frozen. Track B waits until the prototype feels right. Not pushed.
+- **Branch `v2`** (`main` = frozen OG standalone). **Track A — polished + demo-ready.** Full page-by-page self-audit done, literal doors + story-beat animation, contextual curation/dropper-loupe/notes/recolor, paint-by-number Brand, calm bento Home, guidance coach layer, legibility/contrast fixed, QA-swept (mobile · reduced-motion · keyboard · 0 console errors). Effectively re-frozen as the reference. Not pushed.
+- **Two open, both non-blocking:** D/J — swap in Lorin's own hand-drawn spine SVG when she sends it; B — micro-breathing if she spots a dense spot on a walk-through.
+- **Next chapter = Track B** (real Next.js product, color engine first) — a deliberate pivot; start on Lorin's go.
 - Run: `npm run dev` → `localhost:3000`. The onboarding prototype is `public/make-inkling.html`.
 - Dogfood signed-out (localStorage); Playwright runs in a separate browser, not yours.
 
