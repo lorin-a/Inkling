@@ -374,25 +374,17 @@
   .introMark .dot{display:inline-block;color:var(--accent);transform-origin:50% 80%}
   .introLede{font-family:var(--serif);font-style:italic;font-size:clamp(16px,2vw,22px);color:var(--muted);margin-top:16px}
 
-  /* the spine row — hand-drawn Idea, the three-station line, hand-drawn Identity */
-  .spine{width:100%;max-width:1000px;margin-top:46px}
-  .spineRow{display:flex;align-items:center;justify-content:center;gap:8px}
-  .bookend{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:4px;width:clamp(92px,12vw,148px)}
-  .bookend svg{width:100%;height:auto;overflow:visible;display:block}
-  .bookend svg path{fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
-  .bookLabel{font-family:'Caveat',cursive;font-weight:600;font-size:clamp(25px,3.2vw,38px);color:var(--ink);line-height:1}
-  .bookend.left .bookLabel{margin-top:-2px} .bookend.right .bookLabel{margin-top:-2px}
-  .spineMid{flex:1 1 auto;min-width:0;max-width:660px}
-  .spineTrack{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding-top:30px;--lineScale:1}
-  .spineTrack::before{content:"";position:absolute;left:6%;right:6%;top:36px;height:2px;
-    background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 55%,var(--line)));
-    transform:scaleX(var(--lineScale));transform-origin:left}
-  .station{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 6px}
-  .stationDot{width:13px;height:13px;border-radius:100px;background:var(--accent);box-shadow:0 0 0 5px var(--bg);
-    position:relative;z-index:2;margin-bottom:18px}
+  /* the spine — ONE continuous hand-drawn line: Idea bulb → wave through the stations → Identity loop (Lorin's Figma) */
+  .spine{position:relative;width:100%;max-width:1040px;margin:42px auto 0}
+  .spineArt{width:100%}
+  .spineArt svg{display:block;width:100%;height:auto;overflow:visible}
+  .spineArt svg path{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+  .spineLabels{position:relative;min-height:120px;margin-top:8px}
+  .lbl{position:absolute;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;text-align:center;width:max-content;max-width:232px}
+  .bookLabel{font-family:'Caveat',cursive;font-weight:600;font-size:clamp(24px,3vw,36px);color:var(--ink);line-height:1}
   .stationNo{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.16em;color:var(--accent)}
-  .stationLabel{font-family:var(--serif);font-weight:600;font-size:clamp(20px,2.4vw,28px);letter-spacing:-0.02em;margin-top:5px}
-  .stationBlurb{font-family:var(--body-font);font-size:13px;line-height:1.5;color:var(--sub);margin-top:8px;max-width:25ch}
+  .stationLabel{font-family:var(--serif);font-weight:600;font-size:clamp(20px,2.4vw,28px);letter-spacing:-0.02em;margin-top:3px}
+  .stationBlurb{font-family:var(--body-font);font-size:13px;line-height:1.5;color:var(--sub);margin-top:7px;max-width:24ch}
 
   /* the two doors */
   .doorsKick{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-top:50px}
@@ -413,10 +405,9 @@
   @media(max-width:680px){
     .intro{padding:36px 22px}
     .doors{grid-template-columns:1fr}
-    .spineRow{flex-direction:column;gap:6px} .bookend{width:128px}
-    .bookend.right{order:3} .spineMid{width:100%}
-    .spineTrack{grid-template-columns:1fr;gap:22px;padding-top:6px} .spineTrack::before{display:none}
-    .stationDot{margin-bottom:10px} .stationBlurb{max-width:36ch}
+    .spine{margin-top:28px}
+    .spineLabels{display:flex;flex-direction:column;align-items:center;gap:18px;min-height:0;margin-top:14px}
+    .lbl{position:static;transform:none;left:auto!important;max-width:36ch} .stationBlurb{max-width:36ch}
   }
 </style>
 </head>
@@ -427,45 +418,35 @@
     <div class="introMark" id="introMark">inkling<span class="dot">.</span></div>
     <p class="introLede">you know it when you see it.</p>
     <div class="spine" id="spine">
-      <div class="spineRow">
-        <div class="bookend left">
-          <!-- redrawn lightbulb — cleaner single-line bulb, rays, filament, connector to the spine -->
-          <svg viewBox="0 0 120 96" aria-hidden="true">
-            <path d="M30 28 L21 16"/>
-            <path d="M50 19 L50 5"/>
-            <path d="M70 28 L79 16"/>
-            <path d="M42 50 C45 44 49 53 51 47 C53 42 57 51 59 45"/>
-            <path d="M34 71 C24 63 22 45 33 35 C43 26 60 26 70 35 C81 45 79 63 69 71 C66 74 64 77 64 80 L39 80 C39 77 37 74 34 71 Z"/>
-            <path d="M40 84 H63"/>
-            <path d="M43 88 H60"/>
-            <path d="M47 91 C50 95 54 95 57 91"/>
-            <path d="M63 86 C87 93 88 73 120 80"/>
-          </svg>
-          <span class="bookLabel">Idea</span>
-        </div>
-        <div class="spineMid"><div class="spineTrack" id="spineTrack"></div></div>
-        <div class="bookend right">
-          <!-- redrawn loop-and-arrow — one clean stroke from the spine, a loose loop, an arrow out to Identity -->
-          <svg viewBox="0 0 100 104" aria-hidden="true">
-            <path d="M2 64 C24 58 28 36 50 38 C72 40 70 73 50 69 C36 66 42 47 62 49 C90 52 95 75 85 94"/>
-            <path d="M76 84 L86 96 L97 85"/>
-          </svg>
-          <span class="bookLabel">Identity</span>
-        </div>
+      <!-- ONE continuous line from Lorin's Figma: rays + filament + bulb + the wave + the loop-and-arrow, composed to connect -->
+      <div class="spineArt" id="spineArt">
+        <svg viewBox="0 0 507 90" aria-hidden="true">
+          <path d="M10.1213 10.0244C10.0136 10.1304 9.00891 9.63304 7.34185 8.56777C6.16621 7.59674 4.65533 5.92009 2.8876 3.74804C2.15912 2.781 1.77287 2.08846 1.00008 1.00008" transform="translate(1.45,7.2)"/>
+          <path d="M1 1V14.9381" transform="translate(16.72,1)"/>
+          <path d="M1.00011 10.4146C1.29968 10.2143 2.00938 9.55323 3.14076 8.29474C4.29655 6.76782 5.65798 5.13133 7.19223 3.52313C7.96241 2.70004 8.71554 1.86276 9.99639 1.0001" transform="translate(30.06,5.15)"/>
+          <path d="M10.3628 18.7684C10.3628 17.0401 9.86633 12.5241 8.691 9.80904C8.02796 8.27739 7.32458 6.87214 6.55134 5.78414C5.75238 4.65995 3.61295 4.56735 1.7587 4.79917C1.02013 4.8915 0.903304 5.72185 1.06189 6.34406C1.22047 6.96628 1.7119 7.55701 2.59702 7.89203C3.48214 8.22706 4.74605 8.28849 5.64877 8.03319C8.56497 7.20843 9.50036 3.71609 10.0121 1.36961C10.1113 0.914677 9.1197 0.859672 8.78375 1.31576C8.44779 1.77185 8.44779 2.79846 8.74904 3.56715C10.8879 5.73967 12.6643 7.142 13.7469 8.25531C14.3002 8.83933 14.8615 9.46204 15.7585 10.9349" transform="translate(16.32,30.95)"/>
+          <path d="M15.5171 44.0344C15.4162 44.0344 13.5987 44.0899 10.7492 43.8963C9.6394 43.821 9.31587 43.0919 9.45321 42.7233C9.78083 41.8441 11.7118 42.0199 12.6366 41.9315C13.2743 41.8706 10.727 41.253 10.0607 40.7126C9.37889 40.1597 11.9995 39.6331 12.8606 39.5485C13.535 39.4823 11.0745 38.5635 10.6912 37.5318C10.3205 36.534 12.5781 36.243 13.6146 35.8295C14.6761 35.4059 14.1006 33.4687 13.6439 32.2468C12.6527 29.5943 9.02783 28.1209 6.68973 26.0758C4.05605 23.7721 2.54036 19.7175 1.43039 15.5219C0.441723 11.7847 1.37497 8.69161 2.05332 7.3812C3.68166 4.23565 7.44782 2.86157 10.7158 1.64845C14.7314 0.157758 20.3443 1.46959 22.5345 3.23629C24.9676 5.19889 26.4175 9.61827 28.1564 14.107C30.1214 19.1794 27.5787 22.1149 26.4093 24.5502C25.2255 27.0154 21.7443 27.8002 20.083 30.147C17.8536 33.2961 21.3372 35.6156 21.2692 36.7204C21.2375 37.2358 20.4448 37.4609 20.3932 37.8168C20.3415 38.1727 20.8591 38.6019 21.0701 39.1436C21.2812 39.6853 21.1701 40.3265 20.7691 40.7401C20.3682 41.1538 19.6807 41.3204 19.4843 41.7016C19.2879 42.0828 19.6035 42.6735 19.5935 43.2778C19.5836 43.8821 19.2386 44.4821 18.7045 44.8189C18.1704 45.1558 17.4576 45.2113 16.9802 45.5454C16.0177 46.2189 16.0552 48.7607 16.295 51.671C16.6486 55.9625 21.3939 58.1187 25.9397 60.3758C29.6761 62.2309 38.0336 62.0524 43.6134 60.5184C50.415 58.6484 53.8264 52.2144 60.0358 43.4899C64.7594 36.8531 68.7128 34.4778 77.0876 29.8086C82.5516 26.7622 93.7106 26.3401 100.235 27.9778C102.893 29.9706 104.233 31.7786 104.803 33.0801C105.053 33.732 105.226 34.3665 105.403 35.1783" transform="translate(10.04,21.47)"/>
+          <path d="M1.00027 20.1612C1.24402 20.8168 2.43077 22.7136 4.80435 26.5199C7.41757 30.7105 10.4935 34.9197 13.4682 37.3493C16.3689 39.7185 18.6903 40.3194 20.6853 41.5101C22.7311 42.7312 25.7215 43.1858 29.1875 43.6699C36.04 44.627 39.7307 42.3885 44.9862 40.1777C48.1057 38.8655 52.0239 36.2831 54.8559 34.3321C57.0586 32.8146 61.2395 30.9496 65.2906 28.7607C72.8329 24.6853 76.4896 21.1768 79.5612 18.3453C81.8343 16.2498 84.9369 13.792 87.5445 11.9651C89.7791 10.3995 92.312 9.98985 96.2428 9.1917C101.468 8.13078 108.121 9.02423 114.664 11.7549C120.151 14.0446 126.051 18.7903 131.319 21.263C135.261 23.1134 138.867 26.0912 141.229 27.9378C143.455 29.6778 145.791 31.4196 148.213 32.6274C151.484 34.2577 154.009 34.7107 157.437 34.6818C160.438 34.6565 165.32 29.173 168.561 26.2297C170.834 24.1661 173.064 19.6132 175.997 14.6806C178.679 10.1685 185.114 5.70572 188.167 4.00404C194.098 0.697897 197.688 1.01166 205.001 1.00673C208.312 1.0045 211.673 3.27973 215.079 5.06743C219.035 7.1437 225.045 8.21391 229.555 9.69546C236.228 11.8872 240.107 15.7919 242.238 18.9389C244.204 21.8428 247.126 25.3144 254.615 33.617C257.445 36.7545 260.497 38.5134 262.514 39.9913C264.683 41.5816 268.204 42.546 272.137 43.0422C280.068 44.0428 283.429 42.14 286.425 41.4336C288.61 40.9185 290.974 39.4489 293.026 37.9355C294.756 36.6598 296.883 35.8364 298.851 34.6072C300.837 33.3667 302.37 31.5085 303.707 29.7172C304.131 28.7174 304.31 27.675 304.375 26.627C304.44 26.0992 304.569 25.5796 304.703 24.7833" transform="translate(114.76,38)"/>
+          <path d="M1 38.3838C1 36.478 1.58568 31.1521 3.82929 26.4218C6.75393 20.2556 10.7765 11.8131 13.8958 7.26208C15.9068 4.32804 18.9839 2.70661 25.7418 1.46818C31.6003 0.394572 35.9136 1.41257 37.4216 2.08092C40.622 3.49929 43.5175 7.16752 47.7605 13.2707C49.3089 15.498 49.4639 19.1229 49.3754 23.1155C49.2737 27.7022 45.1508 30.5564 42.8395 32.4419C40.327 34.4915 37.5525 34.0004 35.7699 33.5965C33.6643 33.1194 32.4305 30.3584 31.3383 28.0935C28.7057 22.6345 31.0328 14.0704 33.9941 10.0141C37.1657 5.66972 41.5384 5.35714 57.0596 3.21175C65.6776 2.02054 71.1615 3.35228 73.3546 4.40728C77.5354 6.41851 81.2199 11.9886 84.0046 17.3575C85.8204 20.8585 85.972 27.2094 84.9372 31.9376C84.1974 35.3174 82.3842 37.8982 81.0794 40.8951C80.1582 43.0112 79.8133 47.2301 79.5359 51.277C79.4563 52.439 78.9548 51.7207 78.5154 51.0722C77.6499 49.7946 76.5538 48.1882 75.9807 47.0053C74.9064 44.788 78.308 50.8858 79.3148 51.7125C80.5446 51.9545 81.8347 51.5009 83.0631 50.7144C83.689 50.3512 84.3202 50.0609 85.7813 48.7851" transform="translate(418.56,22.87)"/>
+          <circle class="spdot" cx="143" cy="79" r="9" fill="#c4a35a"/>
+          <circle class="spdot" cx="265" cy="69" r="9" fill="#b46d68"/>
+          <circle class="spdot" cx="385" cy="79" r="9" fill="#6675b3"/>
+        </svg>
       </div>
+      <div class="spineLabels" id="spineLabels"></div>
     </div>
     <div class="doorsKick">Two ways in</div>
     <div class="doors" id="doors">
       <button class="door door-primary" id="doorLearn" type="button">
-        <span class="doorKick">Learn by making</span>
+        <span class="doorKick">Learn by playing</span>
         <span class="doorTitle">Co-design Inkling</span>
-        <span class="doorDesc">Give Inkling a look and learn how it works by making something real.</span>
+        <span class="doorDesc">Make your version of Inkling.</span>
         <span class="doorGo">Start together <span aria-hidden="true">→</span></span>
       </button>
       <button class="door" id="doorOwn" type="button">
-        <span class="doorKick">I’ll explore</span>
+        <span class="doorKick">Explore</span>
         <span class="doorTitle">Drop into my own canvas</span>
-        <span class="doorDesc">Skip the walkthrough and go straight to your own canvas.</span>
+        <span class="doorDesc">Poke around and find out.</span>
         <span class="doorGo">Take me in <span aria-hidden="true">→</span></span>
       </button>
     </div>
@@ -562,13 +543,12 @@
             <div class="mk mk-app"><span class="mkapp-mark" id="mkInitial">i<b>.</b></span></div>
           </div>
           <aside class="brandControls">
-            <div class="paintHint" id="paintHint">Drop a color into each slot — or tap a slot, then a color.</div>
+            <div class="paintHint" id="paintHint">Tap a color to fill the glowing slot — they fill in order. Or drag a color onto any slot.</div>
             <div class="paintWells" id="paintWells"></div>
             <div class="paintTray" id="paintTray" aria-label="Your colors"></div>
             <div class="ratioReadout" id="ratioReadout" aria-label="Contrast, checked"></div>
             <div class="perfectCtl">
-              <button class="pbtn" id="fillBtn">Fill it for me</button>
-              <button class="pbtn" id="shuffleBtn">⤮ Surprise me <span class="kbd">space</span></button>
+              <button class="pbtn" id="fillBtn">Fill it for me <span class="kbd">space</span></button>
             </div>
           </aside>
         </div>
@@ -1043,8 +1023,8 @@
     const sub=p.filter(h=>h!==ink&&h!==accent&&h!==bg).sort((a,b)=>contrast(b,bg)-contrast(a,bg))[0]||ink;
     state.assign={bg,ink,accent,sub}; state.activeWell=null; renderBrand(); }
   function shuffleBrand(){ state.seed=(state.seed||0)+1; state.polarity=state.polarity==='light'?'dark':(state.polarity==='dark'?'auto':'light'); fillAuto(); }
-  document.getElementById('fillBtn').addEventListener('click',fillAuto);
-  document.getElementById('shuffleBtn').addEventListener('click',shuffleBrand);
+  // one button: first press fills, each press after re-rolls a fresh direction (fill + surprise, merged)
+  document.getElementById('fillBtn').addEventListener('click',shuffleBrand);
   document.addEventListener('keydown',e=>{ if(state.beat!==BEAT.brand)return;
     if(e.code==='Space' && !/INPUT|TEXTAREA/.test(e.target.tagName||'')){ e.preventDefault(); shuffleBrand(); } });
 
@@ -1135,7 +1115,8 @@
     const b4=document.getElementById('b4'); b4.classList.add('assembling');
     setTimeout(()=>{ show(BEAT.brand);                        // brand stage crosses in while the pieces are still collapsing
       requestAnimationFrame(()=>requestAnimationFrame(()=>b4.classList.remove('assembling'))); }, 360);
-    setTimeout(()=>{ state.itemsSig=''; renderBoard(); }, 1300); // rebuild clean board so Back is pristine
+    // restore each piece to where YOU left it (don't rebuild) so Back preserves your arrangement
+    setTimeout(()=>{ items.forEach(it=>{ const el=it.el; if(!el)return; el.style.transition=''; el.style.opacity=''; place(it); }); }, 1300);
   }
   document.getElementById('nextBtn').addEventListener('click',()=>{
     if(state.beat===BEAT.brand) show(BEAT.home);
@@ -1154,36 +1135,34 @@
   const intro=document.getElementById('intro'), app=document.querySelector('.app');
   const reduceMo=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hasG=typeof gsap!=='undefined';
-  // the felt explanation is the arc itself — single-source the three moments from MOVES
-  document.getElementById('spineTrack').innerHTML=MOVES.map((m,i)=>
-    `<div class="station s${i}"><span class="stationDot" aria-hidden="true"></span><span class="stationNo">${m.no}</span><span class="stationLabel">${m.label}</span><span class="stationBlurb">${m.blurb}</span></div>`).join('');
+  // the felt explanation is the arc itself — labels positioned under the one-line drawing's dots
+  const LBLX=[28.2,52.3,75.9];
+  document.getElementById('spineLabels').innerHTML=
+    `<div class="lbl bookLabel" data-l="idea" style="left:12.2%">Idea</div>`+
+    MOVES.map((m,i)=>`<div class="lbl station" style="left:${LBLX[i]}%"><span class="stationNo">${m.no}</span><span class="stationLabel">${m.label}</span><span class="stationBlurb">${m.blurb}</span></div>`).join('')+
+    `<div class="lbl bookLabel" data-l="identity" style="left:91%">Identity</div>`;
   const $ =s=>intro.querySelector(s), $$=s=>[...intro.querySelectorAll(s)];
   const introMark=$('#introMark'), introDot=$('#introMark .dot'), introLede=$('.introLede'),
-        track=document.getElementById('spineTrack'), stationEls=$$('.station'), dotEls=$$('.stationDot'),
-        leftPaths=$$('.bookend.left svg path'), rightPaths=$$('.bookend.right svg path'),
-        leftLabel=$('.bookend.left .bookLabel'), rightLabel=$('.bookend.right .bookLabel'),
+        linePaths=$$('#spineArt svg path'), spdots=$$('#spineArt .spdot'),
+        ideaLabel=$('.lbl[data-l="idea"]'), idLabel=$('.lbl[data-l="identity"]'), stationEls=$$('.lbl.station'),
         doorsKick=$('.doorsKick'), doorEls=$$('.doors .door'), skipBtn=document.getElementById('introSkip');
   let introTL=null;
   function buildIntro(){
-    const inkPaths=[...leftPaths,...rightPaths];
-    inkPaths.forEach(p=>{ const len=p.getTotalLength()||0; gsap.set(p,{strokeDasharray:len,strokeDashoffset:len}); });
-    gsap.set([introMark,introLede,leftLabel,rightLabel,doorsKick,skipBtn],{autoAlpha:0});
+    linePaths.forEach(p=>{ const len=p.getTotalLength()||0; gsap.set(p,{strokeDasharray:len,strokeDashoffset:len}); });
+    gsap.set([introMark,introLede,ideaLabel,idLabel,...stationEls,doorsKick,skipBtn],{autoAlpha:0});
     gsap.set(introMark,{y:16,scale:1.05}); gsap.set(introDot,{scale:0});
-    gsap.set([introLede,leftLabel,rightLabel],{y:8});
-    gsap.set(stationEls,{autoAlpha:0,y:12}); gsap.set(dotEls,{scale:0});
-    gsap.set(doorEls,{autoAlpha:0}); gsap.set(track,{'--lineScale':0});
+    gsap.set([introLede,ideaLabel,idLabel,...stationEls],{y:8});
+    gsap.set(spdots,{attr:{r:0}}); gsap.set(doorEls,{autoAlpha:0});
     const tl=gsap.timeline({paused:true});
     tl.to(introMark,{autoAlpha:1,y:0,scale:1,duration:.9,ease:'power3.out'})
       .to(introDot,{scale:1,duration:.7,ease:'back.out(2.4)'},'-=.45')
       .to(skipBtn,{autoAlpha:1,duration:.4},'-=.55')
       .to(introLede,{autoAlpha:1,y:0,duration:.7,ease:'power2.out'},'-=.4')
-      .to(leftPaths,{strokeDashoffset:0,duration:.85,ease:'power1.inOut',stagger:.07},'-=.1')   // the bulb draws
-      .to(leftLabel,{autoAlpha:1,y:0,duration:.5,ease:'power2.out'},'-=.35')
-      .to(track,{'--lineScale':1,duration:.95,ease:'power2.inOut'},'-=.2')                       // the spine draws across
-      .to(dotEls,{scale:1,duration:.4,ease:'back.out(2)',stagger:.26},'<+=.12')                  // stations light as it passes
-      .to(stationEls,{autoAlpha:1,y:0,duration:.5,ease:'power2.out',stagger:.26},'<+=.04')
-      .to(rightPaths,{strokeDashoffset:0,duration:1,ease:'power1.inOut',stagger:.12},'-=.5')      // the scribble loops out to Identity
-      .to(rightLabel,{autoAlpha:1,y:0,duration:.5,ease:'power2.out'},'-=.4')
+      .to(linePaths,{strokeDashoffset:0,duration:1.7,ease:'power1.inOut',stagger:.13},'-=.1')   // the ONE line draws: bulb → wave → loop
+      .to(ideaLabel,{autoAlpha:1,y:0,duration:.5,ease:'power2.out'},'-=1.55')
+      .to(spdots,{attr:{r:9},duration:.4,ease:'back.out(2.2)',stagger:.32},'-=1.05')            // muted dots land as the wave passes
+      .to(stationEls,{autoAlpha:1,y:0,duration:.5,ease:'power2.out',stagger:.32},'-=1.0')
+      .to(idLabel,{autoAlpha:1,y:0,duration:.5,ease:'power2.out'},'-=.25')
       .to(doorsKick,{autoAlpha:1,duration:.4},'-=.15')
       .to(doorEls,{autoAlpha:1,duration:.55,stagger:.12},'-=.05');
     return tl;
