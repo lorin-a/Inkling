@@ -470,21 +470,36 @@
   .stationLabel{font-family:var(--serif);font-weight:600;font-size:clamp(23px,2.7vw,31px);letter-spacing:-0.02em;margin-top:4px}
   .stationBlurb{font-family:var(--body-font);font-size:14.5px;line-height:1.55;color:var(--sub);margin-top:8px;max-width:23ch}
 
-  /* the two doors */
-  .doorsKick{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-top:50px}
-  .doors{display:grid;grid-template-columns:1fr 1fr;gap:18px;width:100%;max-width:740px;margin-top:16px}
-  .door{text-align:left;background:var(--surface-2);border:1.5px solid var(--line);border-radius:16px;
-    padding:24px 26px;cursor:pointer;display:flex;flex-direction:column;gap:9px;align-items:flex-start;
-    transition:border-color .18s,transform .25s var(--ease),box-shadow .25s,background-color .2s}
-  .door:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 18px 44px rgba(0,0,0,.13)}
-  .door-primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-  .door-primary:hover{border-color:var(--ink)}
+  /* ===== two literal doors — pick one; it swings open and you step through ===== */
+  .doorsKick{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:54px}
+  .doors{display:grid;grid-template-columns:1fr 1fr;gap:30px;width:100%;max-width:680px;margin-top:18px;perspective:1600px}
+  .door{position:relative;height:312px;border:none;background:none;padding:0;cursor:pointer;transform-style:preserve-3d}
+  .doorGlow{position:absolute;inset:6px;border-radius:15px;opacity:0;transition:opacity .45s var(--ease);pointer-events:none;
+    background:radial-gradient(130% 100% at 50% 45%, color-mix(in srgb,var(--accent) 34%,transparent), transparent 72%)}
+  .door:hover .doorGlow,.door:focus-visible .doorGlow{opacity:1}
+  .doorLeaf{position:absolute;inset:0;border-radius:16px;background:var(--surface-2);border:1.5px solid var(--line);
+    box-shadow:0 14px 36px rgba(0,0,0,.12);display:flex;flex-direction:column;justify-content:flex-end;padding:24px 26px;text-align:left;
+    backface-visibility:hidden;will-change:transform;transition:transform .6s var(--ease),box-shadow .45s var(--ease),border-color .2s}
+  .door-left .doorLeaf{transform-origin:left center} .door-right .doorLeaf{transform-origin:right center}
+  .door-primary .doorLeaf{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .door:hover .doorLeaf,.door:focus-visible .doorLeaf{box-shadow:0 28px 64px rgba(0,0,0,.26)}
+  .door-left:hover .doorLeaf,.door-left:focus-visible .doorLeaf{transform:rotateY(19deg)}
+  .door-right:hover .doorLeaf,.door-right:focus-visible .doorLeaf{transform:rotateY(-19deg)}
+  .door.opening.door-left .doorLeaf{transform:rotateY(108deg)} .door.opening.door-right .doorLeaf{transform:rotateY(-108deg)}
+  /* the door's own panels + knob make it read as a real door */
+  .doorPanel{position:absolute;border:1.5px solid currentColor;opacity:.16;border-radius:5px;pointer-events:none}
+  .door-left .doorPanel{left:18px;right:38px} .door-right .doorPanel{left:38px;right:18px}
+  .doorPanel:nth-of-type(1){top:18px;height:36%} .doorPanel:nth-of-type(2){top:calc(18px + 36% + 12px);height:30%}
+  .door-primary .doorPanel{opacity:.22}
+  .doorKnob{position:absolute;top:50%;width:11px;height:11px;border-radius:50%;background:currentColor;opacity:.55;box-shadow:0 0 0 4px color-mix(in srgb,currentColor 12%,transparent)}
+  .door-left .doorKnob{right:17px} .door-right .doorKnob{left:17px}
+  .doorFace{position:relative;display:flex;flex-direction:column;gap:7px;align-items:flex-start}
   .doorKick{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-  .door-primary .doorKick{color:color-mix(in srgb,var(--bg) 62%,transparent)}
+  .door-primary .doorKick{color:color-mix(in srgb,var(--bg) 64%,transparent)}
   .doorTitle{font-family:var(--serif);font-weight:600;font-size:clamp(21px,2.6vw,27px);letter-spacing:-0.02em;line-height:1.06}
   .doorDesc{font-family:var(--body-font);font-size:13.5px;line-height:1.5;color:var(--sub)}
-  .door-primary .doorDesc{color:color-mix(in srgb,var(--bg) 80%,transparent)}
-  .doorGo{margin-top:3px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--accent)}
+  .door-primary .doorDesc{color:color-mix(in srgb,var(--bg) 82%,transparent)}
+  .doorGo{margin-top:4px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--accent)}
   .door-primary .doorGo{color:var(--bg)}
   @media(max-width:680px){
     .intro{padding:36px 22px}
@@ -506,16 +521,16 @@
       <div class="spineArt" id="spineArt">
         <!-- one clean continuous line: bulb → wave through the 3 dots → loop + arrow (authored to actually connect) -->
         <svg viewBox="0 0 1000 168" aria-hidden="true">
-          <path d="M88 44 L77 28"/>
-          <path d="M118 35 L118 17"/>
-          <path d="M148 44 L159 28"/>
-          <path d="M109 74 C112 67 118 80 121 71"/>
-          <path d="M105 114 C92 106 84 92 84 76 C84 57 99 43 118 43 C137 43 152 57 152 76 C152 92 144 106 131 114"/>
-          <path d="M107 117 H129"/>
-          <path d="M110 122 H126"/>
-          <path d="M114 126 C117 131 121 131 124 126"/>
-          <path d="M125 118 C176 130 244 122 320 112 C392 102 438 84 510 90 C586 96 626 120 700 112 C774 104 814 92 855 80 C902 65 914 26 880 24 C852 22 862 64 899 63 C934 62 938 98 920 124"/>
-          <path d="M904 110 L920 126 L938 106"/>
+          <path class="bulbP" d="M88 44 L77 28"/>
+          <path class="bulbP" d="M118 35 L118 17"/>
+          <path class="bulbP" d="M148 44 L159 28"/>
+          <path class="bulbP" d="M109 74 C112 67 118 80 121 71"/>
+          <path class="bulbP" d="M105 114 C92 106 84 92 84 76 C84 57 99 43 118 43 C137 43 152 57 152 76 C152 92 144 106 131 114"/>
+          <path class="bulbP" d="M107 117 H129"/>
+          <path class="bulbP" d="M110 122 H126"/>
+          <path class="bulbP" d="M114 126 C117 131 121 131 124 126"/>
+          <path class="mainP" d="M125 118 C176 130 244 122 320 112 C392 102 438 84 510 90 C586 96 626 120 700 112 C774 104 814 92 855 80 C902 65 914 26 880 24 C852 22 862 64 899 63 C934 62 938 98 920 124"/>
+          <path class="arrowP" d="M904 110 L920 126 L938 106"/>
           <circle class="spdot" cx="320" cy="112" r="12" fill="#c4a35a"/>
           <circle class="spdot" cx="510" cy="90" r="12" fill="#b46d68"/>
           <circle class="spdot" cx="700" cy="112" r="12" fill="#6675b3"/>
@@ -523,19 +538,33 @@
       </div>
       <div class="spineLabels" id="spineLabels"></div>
     </div>
-    <div class="doorsKick">Two ways in</div>
+    <div class="doorsKick">Pick a door</div>
     <div class="doors" id="doors">
-      <button class="door door-primary" id="doorLearn" type="button">
-        <span class="doorKick">Learn by playing</span>
-        <span class="doorTitle">Co-design Inkling</span>
-        <span class="doorDesc">Make your version of Inkling.</span>
-        <span class="doorGo">Start together <span aria-hidden="true">→</span></span>
+      <button class="door door-left door-primary" id="doorLearn" type="button" aria-label="Co-design Inkling — learn by playing">
+        <span class="doorGlow" aria-hidden="true"></span>
+        <span class="doorLeaf">
+          <span class="doorPanel"></span><span class="doorPanel"></span>
+          <span class="doorKnob" aria-hidden="true"></span>
+          <span class="doorFace">
+            <span class="doorKick">Learn by playing</span>
+            <span class="doorTitle">Co-design Inkling</span>
+            <span class="doorDesc">Make your version of Inkling.</span>
+            <span class="doorGo">Open this door <span aria-hidden="true">→</span></span>
+          </span>
+        </span>
       </button>
-      <button class="door" id="doorOwn" type="button">
-        <span class="doorKick">Explore</span>
-        <span class="doorTitle">Drop into my own canvas</span>
-        <span class="doorDesc">Poke around and find out.</span>
-        <span class="doorGo">Take me in <span aria-hidden="true">→</span></span>
+      <button class="door door-right" id="doorOwn" type="button" aria-label="Explore on your own">
+        <span class="doorGlow" aria-hidden="true"></span>
+        <span class="doorLeaf">
+          <span class="doorPanel"></span><span class="doorPanel"></span>
+          <span class="doorKnob" aria-hidden="true"></span>
+          <span class="doorFace">
+            <span class="doorKick">Explore</span>
+            <span class="doorTitle">Wander in on your own</span>
+            <span class="doorDesc">Poke around and find out.</span>
+            <span class="doorGo">Open this door <span aria-hidden="true">→</span></span>
+          </span>
+        </span>
       </button>
     </div>
   </div>
@@ -1378,23 +1407,37 @@
         doorsKick=$('.doorsKick'), doorEls=$$('.doors .door'), skipBtn=document.getElementById('introSkip');
   let introTL=null;
   function buildIntro(){
-    linePaths.forEach(p=>{ const len=p.getTotalLength()||0; gsap.set(p,{strokeDasharray:len,strokeDashoffset:len}); });
+    const bulbP=$$('#spineArt .bulbP'), mainP=$('#spineArt .mainP'), arrowP=$('#spineArt .arrowP');
+    [...bulbP,mainP,arrowP].forEach(p=>{ const len=p.getTotalLength()||0; gsap.set(p,{strokeDasharray:len,strokeDashoffset:len}); });
     gsap.set([introMark,introLede,ideaLabel,idLabel,...stationEls,doorsKick,skipBtn],{autoAlpha:0});
     gsap.set(introMark,{y:16,scale:1.05}); gsap.set(introDot,{scale:0});
     gsap.set([introLede,ideaLabel,idLabel,...stationEls],{y:8});
     gsap.set(spdots,{attr:{r:0}}); gsap.set(doorEls,{autoAlpha:0});
     const tl=gsap.timeline({paused:true});
-    tl.to(introMark,{autoAlpha:1,y:0,scale:1,duration:.9,ease:'power3.out'})
-      .to(introDot,{scale:1,duration:.7,ease:'back.out(2.4)'},'-=.45')
-      .to(skipBtn,{autoAlpha:1,duration:.4},'-=.55')
-      .to(introLede,{autoAlpha:1,y:0,duration:.7,ease:'power2.out'},'-=.4')
-      .to(linePaths,{strokeDashoffset:0,duration:1.7,ease:'power1.inOut',stagger:.13},'-=.1')   // the ONE line draws: bulb → wave → loop
-      .to(ideaLabel,{autoAlpha:1,y:0,duration:.5,ease:'power2.out'},'-=1.55')
-      .to(spdots,{attr:{r:9},duration:.4,ease:'back.out(2.2)',stagger:.32},'-=1.05')            // muted dots land as the wave passes
-      .to(stationEls,{autoAlpha:1,y:0,duration:.5,ease:'power2.out',stagger:.32},'-=1.0')
-      .to(idLabel,{autoAlpha:1,y:0,duration:.5,ease:'power2.out'},'-=.25')
-      .to(doorsKick,{autoAlpha:1,duration:.4},'-=.15')
-      .to(doorEls,{autoAlpha:1,duration:.55,stagger:.12},'-=.05');
+    // BEAT 1 — the brand arrives
+    tl.to(introMark,{autoAlpha:1,y:0,scale:1,duration:.95,ease:'power3.out'})
+      .to(introDot,{scale:1,duration:.62,ease:'back.out(2.4)'},'-=.4')
+      .to(skipBtn,{autoAlpha:1,duration:.4},'-=.5')
+      .to(introLede,{autoAlpha:1,y:0,duration:.7,ease:'power2.out'},'-=.3')
+      .to({},{duration:.5})                                                   // hold — let the promise land
+    // BEAT 2 — the idea sparks
+      .to(ideaLabel,{autoAlpha:1,y:0,duration:.5,ease:'power2.out'})
+      .to(bulbP,{strokeDashoffset:0,duration:.8,ease:'power1.inOut',stagger:.05},'-=.35')
+    // BEAT 3 — the line travels, dropping each waypoint as it reaches it
+      .to(mainP,{strokeDashoffset:0,duration:1.9,ease:'power1.inOut'},'+=.15')
+      .to(spdots[0],{attr:{r:12},duration:.4,ease:'back.out(2.2)'},'-=1.55')
+      .to(stationEls[0],{autoAlpha:1,y:0,duration:.45,ease:'power2.out'},'-=1.45')
+      .to(spdots[1],{attr:{r:12},duration:.4,ease:'back.out(2.2)'},'-=1.05')
+      .to(stationEls[1],{autoAlpha:1,y:0,duration:.45,ease:'power2.out'},'-=.95')
+      .to(spdots[2],{attr:{r:12},duration:.4,ease:'back.out(2.2)'},'-=.55')
+      .to(stationEls[2],{autoAlpha:1,y:0,duration:.45,ease:'power2.out'},'-=.45')
+    // BEAT 4 — arrival
+      .to(arrowP,{strokeDashoffset:0,duration:.45,ease:'power2.out'},'-=.1')
+      .to(idLabel,{autoAlpha:1,y:0,duration:.5,ease:'power2.out'},'-=.2')
+      .to({},{duration:.55})                                                  // hold — you've seen the whole arc
+    // BEAT 5 — pick a door
+      .to(doorsKick,{autoAlpha:1,duration:.45,ease:'power2.out'})
+      .to(doorEls,{autoAlpha:1,duration:.6,stagger:.16,ease:'power2.out'},'-=.1');
     return tl;
   }
   const focusFirstDoor=()=>setTimeout(()=>{const d=document.getElementById('doorLearn'); if(d)d.focus({preventScroll:true});}, reduceMo?0:120);
@@ -1402,14 +1445,21 @@
   function dismissIntro(then){ if(introTL) introTL.kill(); app.removeAttribute('inert');
     if(hasG){ gsap.to(intro,{autoAlpha:0,duration:reduceMo?0:.45,ease:'power2.inOut',onComplete:()=>{ intro.style.display='none'; if(then)then(); }}); }
     else { intro.style.display='none'; if(then)then(); } }
+  // the chosen door swings open, the rest steps back, then you go through — the transition IS the door opening
+  const doorLearnEl=document.getElementById('doorLearn'), doorOwnEl=document.getElementById('doorOwn');
+  function chooseDoor(doorEl, then){ if(introTL) introTL.kill();
+    doorEl.classList.add('opening');
+    if(hasG && !reduceMo){ const rest=[introMark,introLede,document.getElementById('spine'),doorsKick,skipBtn, doorEl===doorLearnEl?doorOwnEl:doorLearnEl];
+      gsap.to(rest,{autoAlpha:0,duration:.4,ease:'power2.in'}); }
+    setTimeout(()=>dismissIntro(then), reduceMo?0:640); }
   skipBtn.addEventListener('click',skipIntro);
   // clicking the backdrop during the reveal fast-forwards to the choice
   intro.addEventListener('click',e=>{ if(e.target.closest('.door')||e.target.closest('.introSkip'))return;
     if(introTL && introTL.totalProgress()<1) skipIntro(); });
   // door 1 — the guided path: design Inkling's brand, learn the flow
-  document.getElementById('doorLearn').addEventListener('click',()=>dismissIntro(()=>show(BEAT.name)));
-  // door 2 — drop straight onto a living canvas (the real product's path; here it lands you in the playground)
-  document.getElementById('doorOwn').addEventListener('click',()=>dismissIntro(()=>{
+  doorLearnEl.addEventListener('click',()=>chooseDoor(doorLearnEl,()=>show(BEAT.name)));
+  // door 2 — wander in on your own (the real product's path; here it lands you in the playground)
+  doorOwnEl.addEventListener('click',()=>chooseDoor(doorOwnEl,()=>{
     if(state.picks.size<3){ [0,9,11,4].forEach(i=>state.picks.add(i)); }
     if(!state.typePicks.length){ state.typePicks=['fraunces','grotesk']; }
     state.itemsSig=''; renderBoard(); show(BEAT.home);
