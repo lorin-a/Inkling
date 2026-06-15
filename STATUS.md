@@ -135,11 +135,154 @@ Name + face + weight carry into the reveal. Verified desktop + mobile, 0 console
 - Minor: weight is dead on the two single-weight faces (DM Serif, Instrument); offered to swap for
   Playfair/Cormorant (variable) if weight should respond on every style.
 
+## ★ Onboarding REBUILT as the full intro→homepage sequence (2026-06-15, NOT yet committed)
+Lorin's redirect: the moodboard is the hero (a *composite* artifact: images + colors + type, always
+draggable, and *it* shuffles into the brand); type deserves its own real "what do I like" beat; name
+should be an obvious question; kill the transparent-overlay reveal and the cryptic "leads"; the
+sequence should resolve *into a homepage* that hosts the living moodboard and invites "make your own."
+Full ground-up rebuild of `public/make-inkling.html` (the proven AA-guaranteed color engine reused).
+The model she named — **Gather → Narrow → Perfect → Compare** — is the spine. Six beats:
+- **0 Name** — one big editorial question ("First. Whose taste are we building with?"); anchors all.
+- **1 Gather** — image wall; colors accrue.
+- **2 Type** — a **specimen wall of 12 faces**, each rendering "[Name]’s inkling." with its character
+  (Editorial/Dramatic/…), a **live global weight slider**, serif/sans/mono filters; tap to collect,
+  first = primary (a clear "★ primary", not "leads"). This is "see and choose fonts."
+- **3 Moodboard** — the hero. A **composite, always-draggable board**: your images + color chips +
+  type cards, **interleaved and shelf-packed into a centered contact sheet** (not banded by kind).
+  Drag, bring-to-front, remove (hover ✕ / Backspace), keyboard-operable.
+- **4 Brand (perfect & compare)** — a **solid composed plate** (not an overlay): "[Name]’s inkling."
+  in your primary type + palette + accent button; **Shuffle** spins new directions, **Compare** keeps
+  the last 4 as thumbnails, role chips cycle colors (engine guarantees AA on every pick).
+- **5 Home** — the climax: the page **wears the composed brand** (tokens applied globally), a
+  brand-dressed homepage with the **living draggable moodboard artifact** in the hero + the 01/02/03
+  Gather·Play·Build index + "Make your own brand →." Skip is a fast spine straight to the brand.
+- **Verified:** desktop 1440 + mobile 390 across every beat, keyboard (move/remove), drag (board +
+  home artifact), shuffle/compare, brand-applies-at-home; **0 console errors.** Reduced-motion safe by
+  construction (opacity-only keyframes, visible resting state). Mobile fixes made this pass: type
+  specimen card height (grid was squeezing rows → `grid-auto-rows:min-content` + `min-height`); home
+  hero/index overlap (`.home` flex-shrink collapse → block scroll container; artifact built in rAF).
+
+## ★ Round 2 (2026-06-15, after Lorin's per-beat review — all built & verified)
+Seven beats now: **Name · Gather · Colors · Type · Moodboard · Brand · Home.**
+- **Name echoes everywhere** — "What feels like you, Lorin?", "Lorin's colors.", "Find your voice,
+  Lorin.", "Lorin's board.", "Lorin's taste, made into a brand."
+- **Colors step REINSTATED as its own beat** (she said "the color step is missing"): the full ported
+  adjust-in-context tool — every gathered color in a grid, tap to adjust (hue/lightness/hex dock,
+  selected swatch lifts), ✕ to remove, real **Undo** (⌘Z). Edits thread through the engine + board
+  (keyed by original hex). Mobile: the dock wraps so nothing clips.
+- **Type bug fixed (critical):** every specimen looked identical because the `FONTS` family strings
+  used double quotes injected into double-quoted `style=""` attrs (broke the attr → all fell back to
+  one font). Switched to single quotes; 12 faces now render distinctly. Type beat also centered (no
+  more lopsided empty space), 4-up, with a hover "＋ keep" cue so it reads tap-to-collect like Gather.
+- **Moodboard is now a real composition tool:** canvas **dot-grid** surface; **all** your colors
+  shown (curated to ~14 by dedupe + luminance spread, was capped at 8 — colors were never skipped,
+  just truncated); **resize** handle (corner, keeps aspect), **rotate** handle (twist), **reposition
+  + layer** (drag + bring-to-front), and **tap-to-reshape** cycling 5 shapes (rounded · circle ·
+  square · blob · arch). Shapes/rotation carry into the Home artifact.
+- **Brand is immersive** — the whole page wears the composed brand (not just a plate/box); Shuffle
+  recolours everything.
+- **Home keeps the playground** — a permanent "⤮ Shuffle the look" re-spins the brand live; the
+  artifact **faithfully mirrors** the board (uniform scale + center, shapes included).
+- Verified desktop 1440 + mobile 390 across all beats; keyboard + drag/resize/rotate/reshape; 0
+  console errors.
+
+## ★ Token-system merge (2026-06-15) — adopted from a parallel "theme-system" pass
+Folded a semantic-token layer under the experience (kept our gathered-from-images thesis, dropped its
+preset-themes/random-surprise model + spec-sheet aesthetic + off-brand Bricolage wordmark):
+**derived surfaces** (`--surface-2/3`), **`--on-accent`** + **`--focus`**, **ink-tinted elevation**
+(`--shadow-1/2/3`, so shadows read on dark skins) — all set live in `applyBrandGlobal`. Board/artifact
+surfaces + item shadows repointed to tokens; brand button label uses `--on-accent`. Added a **contrast
+readout** on Brand ("Title 18:1 AAA · Subhead AAA · Accent AA") — the engine's guarantees made visible
+("checked, not hoped"), a light return of the deferred a11y-teaching. Reframed Brand roles **react-not-
+decide**: "We placed your colors. Tap a role to swap any that feel off." Verified, 0 console errors.
+
+## ★ Round 3 (2026-06-15) — Type restructure + moodboard shape system
+- **Type beat rebuilt:** more *varied* faces (added Zilla Slab/Oswald/Syne/Caveat; dropped redundant
+  serifs) spanning editorial→slab→grotesque→geometric→condensed→expressive→avant-garde→script→mono;
+  and an **editorial bento** (12-col, varied spans, wordmark scales with card size) so it has hierarchy
+  and rhythm instead of a flat uniform table.
+- **Moodboard shape system upgraded:** per-content shape sets (images/colors get round/blob/arch/
+  capsule; **type stays text-safe** so the word never clips — fixes the cut-off); the morph is now
+  **animated**; images gain a **reframe handle** (drag to pan the photo inside its shape). Reshape/
+  rotate/resize/reposition all confirmed on images. 0 console errors.
+- **OPEN — big product question put to Lorin (Image #5–7 + her note):** is the payoff a *brand book*
+  (abstract palette/type) or the brand **applied to real final-form artifacts** (logo/web/poster/merch
+  mockups) you shuffle + custom-assign colors on — "know it when you see it" in context? Plus: Brand
+  page reads overwhelming (too many CTAs); Home should have full moodboard-edit + manual color choice.
+  These reshape the Brand/Home back half; awaiting her direction before rebuilding them.
+
+## ★ Round 4 (2026-06-15) — Brand beat rebuilt around APPLIED MOCKUPS (thesis shift)
+Lorin's key realization: "know it when you see it" only fires when you see your taste **on real
+artifacts**, not on an abstract brand book. She chose payoff = **"both, equal"** (applied mockups +
+brand spec). Source = **Inkling templates first** (my call on her "fuzzy"; user-SVG upload is a
+phase-2 power feature — the hard part is mapping arbitrary SVG fills→roles). Built: the Brand beat now
+shows the brand **applied to a site, poster, logo lockup, and app tile** (all reskin live off the
+brand tokens), beside a compact **spec/receipt** (palette · type · wordmark). Controls calmed to one
+row — Shuffle (whole direction) + manual role-swap ("see it to choose it") + contrast readout — and a
+single forward CTA (killed the competing "Make it real" vs "Make it home"). Fixes the "overwhelming
+control panel" note. 0 console errors.
+
+## Real-product architecture decisions (from the web-Claude thread — proposed, agreed)
+- **Two surfaces, two jobs.** The *workspace* (gather/colors/type/moodboard/build) is a **neutral
+  container** — the user's brand is the colorful thing *inside* it, so styled chrome would compete +
+  break legibility. Only the *home page* (and the onboarding, where Inkling is the subject) **wears the
+  brand**. This resolves the immersive-vs-neutral tension by surface. NB: the prototype is already
+  built this way (neutral beats; only Brand+Home go immersive) — hold the line; don't skin the workspace.
+- **The import moment IS the empty canvas.** No modal-then-dump: the user lands in the canvas they'll
+  keep working in, and its empty state holds the three sources (Pinterest/upload/URL). First item lands
+  and stays. (Continuity: the thing you first touch never teleports.) Real-product first-run pattern.
+- **Naming an upload = the first tag.** API images arrive with provenance (auto-credited); uploads need
+  one act of authorship — naming — which doubles as the seed of the **taste database** tagging. One
+  thread, not two.
+- **Adaptive curation beat (the hinge = volume).** Small set (~<20) → lay them all out. Big board
+  (60–100 mixed pins) → a **clustering beat** first: "you brought a lot — here are the 2–3 directions
+  hiding in it, which pulls you?" This is the SAME "you gathered two directions" idea from the color
+  roadmap (independent convergence). My position: it's the signature overwhelm-relief moment, **not
+  optional overhead** — build it; the only open number is the threshold (I'd tip ~20). Big boards are
+  the CORE case (Pinterest origin; overwhelm is the whole reason Inkling exists).
+- Flagged: Pinterest API storage/display/credit terms must be verified when that path is concrete;
+  the drag-canvas on touch/small screens is the hardest technical problem — design mobile with desktop.
+
+## NEW product pillars raised this session (not yet built — roadmap)
+- **Applied-mockups as the payoff** (built a first version at Brand; the real product should let users
+  shuffle/customize their brand on real artifacts — and eventually their own uploaded SVG logos/
+  mockups, which needs an SVG fill/stroke→role mapping engine).
+- **Tagged "taste database"** (Lorin: "deep value in tagging items to create my own taste database"):
+  gathered inspiration becomes a persistent, taggable, queryable personal library — taste as a
+  compounding asset reused across projects, not a one-off gather. Real-app feature (data model +
+  tagging UI + search); connects to [[project_community_publishing]] and the "your taste → brand"
+  thesis. **My take:** strong, and it's the bridge from "made one brand" to "Inkling is where my taste
+  lives." Belongs in the real app, not the prototype.
+- **Home still owes:** full moodboard-edit (reshape/stretch/rotate) + manual color choice on the
+  living artifact (currently drag-only) — queued.
+
+## Design roadmap (from the strategic critique — ranked; agreed unless noted)
+1. **Color → brand system (make-or-break).** Move harmony to perceptual space (OKLCH/LAB); handle
+   *images that disagree* — if colors cluster into two hue families, surface "you gathered two
+   directions" (a Narrow decision, on-thesis) instead of blending to mud; snap chroma/lightness to a
+   ramp so palettes read intentional. NB: our engine already derives roles (not equal-chip sorting),
+   so this is an upgrade, not a rebuild. **Recommended next deep focus.**
+2. **Motion as continuity → one orchestrated climax.** The Brand should *arrive* (gathered pieces
+   assemble into the lockup, then controls fade in), not open as a panel. *Pushback:* do the single
+   climax (board→lockup) — don't gold-plate object-persistence across every step (high cost, mobile
+   risk) for diminishing returns.
+3. **React-vs-decide lens** (cheap, started this pass): convert remaining decisions to reactions;
+   role assignment is now pre-made + "swap if wrong."
+4. **Define the deliverable** ("Make it real"): a one-page brand sheet (palette+hex+roles, the two
+   faces, wordmark, moodboard as provenance) + CSS-variable tokens. *Pushback:* MVP = sheet + CSS
+   tokens; defer Figma export. Risk is leaving it undefined, not the exact mix.
+- Own sessions: mobile drag-canvas behavior; type-pairing constraints (x-height/skeleton allow-list).
+
+## Deferred (port back)
+- Full **a11y teaching popover** ("Reads clearly / Too faint", "Why?") — partial return via the readout.
+- Bespoke **board→brand / brand→home** morph transitions (see roadmap #2).
+- Richer shape set (scalloped/cloud need SVG masks; current 5 are bulletproof border-radius).
+
 ## Next move (do this first)
-**The draggable moodboard (Play) beat** — slots in before the reveal (known shape, clean build).
-Then: **one QA + design-review sweep on the finished flow** (motion, a11y, reduced-motion, mobile,
-keyboard) — *fold the Type-drag discoverability/direction fix into that sweep*. Then wire the
-prototype in as the real front door + full-app skin persistence.
+**Wire the sequence in as the real front door** — `public/make-inkling.html` → a real onboarding
+route + full-app skin persistence (the composed bg/ink/accent/sub + fonts carry into the live app via
+the CSS tokens; the Home "Make your own brand" / "Reset to default" + Skip become the real entry/exit;
+they're `alert()`/token-reset placeholders today).
 **Parallel structural priority:** **`RIGHTS.md` Phase 0** (delete `lib/pinterestSourceFetcher.js` +
 stop the bookmarklet auto-scroll) before any public launch — read `RIGHTS.md` before touching import.
 

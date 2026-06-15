@@ -6,89 +6,128 @@
 <title>Make Inkling yours</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,300..600&family=DM+Serif+Display:ital@0;1&family=Space+Grotesk:wght@300..700&family=Noto+Sans:wght@100..900&family=Noto+Sans+Mono:wght@400..700&family=Instrument+Serif:ital@0;1&family=Newsreader:opsz,wght@6..72,200..700&family=Space+Mono:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,300..600&family=Playfair+Display:ital,wght@0,400..900;1,400..700&family=DM+Serif+Display:ital@0;1&family=Instrument+Serif:ital@0;1&family=Zilla+Slab:wght@300;400;500;600;700&family=Space+Grotesk:wght@300..700&family=Poppins:wght@300;400;500;600;700&family=Oswald:wght@200..700&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Syne:wght@400..800&family=Caveat:wght@400..700&family=Space+Mono:wght@400;700&family=Noto+Sans:wght@100..900&family=Noto+Sans+Mono:wght@400..700&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --bg:#f7f6f2; --ink:#1c1810; --accent:#6a2ee6; --sub:#8a7f70;
-    --muted:#8a7f70; --faint:#b6ab99; --line:rgba(40,32,18,0.16); --rule:#2a2419;
-    --wm-font:"Fraunces",Georgia,serif;
+    --bg:#f7f6f2; --ink:#1c1810; --accent:#6a2ee6; --spark:#f0531f; --sub:#6f6354;
+    --muted:#8a7f70; --faint:#b6ab99; --line:rgba(40,32,18,0.14); --rule:#2a2419;
+    /* semantic layer (merged from the theme-system pass) — derived live so they adapt to any skin */
+    --surface-2:#fcfbf7; --surface-3:#ffffff;          /* raised surfaces */
+    --on-accent:#ffffff; --focus:var(--accent);        /* legible label on accent; focus ring */
+    --shadow-1:rgba(28,24,16,.07); --shadow-2:rgba(28,24,16,.16); --shadow-3:rgba(28,24,16,.3); /* tinted by ink */
+    --title-font:"Fraunces",Georgia,serif; --body-font:"Noto Sans",system-ui,sans-serif;
     --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif; --mono:"Noto Sans Mono",ui-monospace,monospace;
-    --ease:cubic-bezier(.22,1,.36,1);
+    --ease:cubic-bezier(.22,1,.36,1); --spring:cubic-bezier(.34,1.56,.64,1);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;overflow:hidden;
-    transition:background-color 1s var(--ease),color 1s var(--ease)}
+    transition:background-color .9s var(--ease),color .9s var(--ease)}
+  button{font-family:inherit}
   .app{height:100vh;display:flex;flex-direction:column}
 
-  /* top bar — progress + ever-present skip */
-  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 44px;flex:0 0 auto}
-  .wm{font-family:var(--wm-font);font-size:22px;font-weight:600;letter-spacing:-0.02em}
+  /* ---- top bar: wordmark · progress · skip ---- */
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 40px;flex:0 0 auto}
+  .wm{font-family:var(--title-font);font-size:22px;font-weight:600;letter-spacing:-0.02em}
   .wm .dot{color:var(--accent)}
-  .progress{display:flex;align-items:center;gap:16px;font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint)}
+  .progress{display:flex;align-items:center;gap:15px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
   .progress .p{display:flex;align-items:center;gap:7px;transition:color .4s}
-  .progress .p .d{width:7px;height:7px;border-radius:100px;background:currentColor;opacity:.5}
-  .progress .p.on{color:var(--ink)} .progress .p.on .d{opacity:1;background:var(--accent)}
-  .progress .p.done{color:var(--muted)}
-  .skip{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.03em;color:var(--ink);background:none;border:1.5px solid var(--line);border-radius:100px;padding:9px 18px;cursor:pointer;transition:border-color .15s,background-color .15s}
+  .progress .p .d{width:7px;height:7px;border-radius:100px;background:currentColor;opacity:.5;transition:background-color .3s,opacity .3s,transform .3s var(--spring)}
+  .progress .p.on{color:var(--ink)} .progress .p.on .d{opacity:1;background:var(--accent);transform:scale(1.35)}
+  .progress .p.done{color:var(--muted)} .progress .p.done .d{background:var(--accent);opacity:.7}
+  .skip{font-family:var(--mono);font-size:13.5px;font-weight:600;letter-spacing:.02em;color:var(--ink);background:none;border:1.5px solid var(--line);border-radius:100px;padding:9px 17px;cursor:pointer;transition:border-color .15s,background-color .15s}
   .skip:hover{border-color:var(--ink);background:color-mix(in srgb,var(--ink) 6%,transparent)}
 
-  /* the immersive stage */
+  /* ---- the stage ---- */
   .stage{flex:1 1 auto;position:relative;overflow:hidden}
-  .step{position:absolute;inset:0;display:flex;flex-direction:column;padding:8px 44px 30px;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(16px);transition:opacity .5s var(--ease),transform .5s var(--ease),visibility .5s}
-  .step.active{opacity:1;visibility:visible;pointer-events:auto;transform:none}
-  .stepHead{flex:0 0 auto;text-align:center;padding:6px 0 18px}
-  .kick{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-  .stepH{font-family:var(--serif);font-weight:500;font-size:clamp(44px,5.6vw,78px);line-height:.98;letter-spacing:-0.035em;margin-top:14px}
-  .stepSub{font-size:19px;line-height:1.5;color:var(--muted);margin:14px auto 0;max-width:640px}
+  .beat{position:absolute;inset:0;display:flex;flex-direction:column;padding:6px 40px 24px;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(18px);transition:opacity .55s var(--ease),transform .55s var(--ease),visibility .55s}
+  .beat.active{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+  .head{flex:0 0 auto;text-align:center;padding:8px 0 16px}
+  .kick{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .H{font-family:var(--serif);font-weight:500;font-size:clamp(40px,5.2vw,72px);line-height:.98;letter-spacing:-0.035em;margin-top:12px}
+  .sub{font-size:18px;line-height:1.5;color:var(--muted);margin:12px auto 0;max-width:600px}
 
-  /* beat 1 — the wall */
-  .wall{flex:1 1 auto;display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:1fr;gap:12px;min-height:0;padding-bottom:8px}
+  /* ===== beat 0 — NAME (one obvious question) ===== */
+  .name{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;text-align:center}
+  .nameKick{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:26px}
+  .nameQ{font-family:var(--serif);font-weight:500;font-size:clamp(38px,6vw,86px);line-height:1.02;letter-spacing:-0.035em;max-width:14ch}
+  .nameWrap{margin-top:40px;display:flex;align-items:baseline;gap:2px;font-family:var(--serif);font-size:clamp(34px,5vw,60px);line-height:1.1}
+  .nameField{font-family:inherit;font-size:inherit;font-weight:500;color:var(--accent);background:none;border:none;border-bottom:2.5px solid var(--line);padding:0 6px 6px;width:12ch;text-align:center;caret-color:var(--accent)}
+  .nameField::placeholder{color:var(--faint);font-style:italic;opacity:.8}
+  .nameField:focus{outline:none;border-bottom-color:var(--accent)}
+  .nameHint{margin-top:30px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--faint);height:16px;transition:opacity .3s}
+  .nameGo{margin-top:34px}
+
+  /* ===== beat 1 — GATHER (image wall) ===== */
+  .wall{flex:1 1 auto;display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:1fr;gap:11px;min-height:0;padding-bottom:6px}
   @media (max-width:900px){ .wall{grid-template-columns:repeat(3,1fr)} }
-  .ref{position:relative;border-radius:8px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;transition:transform .3s var(--ease),border-color .2s,box-shadow .3s}
+  .ref{position:relative;border-radius:8px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;transition:transform .3s var(--ease),border-color .2s,box-shadow .3s;padding:0;background:none}
   .ref img{width:100%;height:100%;object-fit:cover;display:block;transition:filter .35s,transform .5s var(--ease)}
   .ref:hover{transform:translateY(-4px)} .ref:hover img{transform:scale(1.05)}
-  .ref:not(.on) img{filter:saturate(.85) brightness(.96)}
-  .ref.on{border-color:var(--accent);box-shadow:0 10px 30px rgba(0,0,0,.22)}
-  .ref .chk{position:absolute;top:9px;right:9px;width:26px;height:26px;border-radius:100px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;opacity:0;transform:scale(.4);transition:opacity .2s,transform .3s cubic-bezier(.34,1.56,.64,1)}
+  .ref:not(.on) img{filter:saturate(.85) brightness(.97)}
+  .ref.on{border-color:var(--accent);box-shadow:0 10px 28px rgba(0,0,0,.2)}
+  .ref .chk{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:100px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;opacity:0;transform:scale(.4);transition:opacity .2s,transform .3s var(--spring)}
   .ref.on .chk{opacity:1;transform:none}
-
-  /* the gathering bar — colors accumulating, the live feedback */
-  .gather{flex:0 0 auto;display:flex;align-items:center;gap:14px;padding-top:16px}
+  .gather{flex:0 0 auto;display:flex;align-items:center;gap:14px;padding-top:14px}
   .gatherLabel{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
-  .gatherBar{flex:1;display:flex;gap:4px;height:18px}
-  .gatherBar span{flex:1;max-width:46px;border-radius:3px;transform:scaleY(0);transform-origin:bottom;transition:transform .4s var(--ease),background-color .4s}
+  .gatherBar{flex:1;display:flex;gap:4px;height:16px}
+  .gatherBar span{flex:1;max-width:44px;border-radius:3px;transform:scaleY(0);transform-origin:bottom;transition:transform .4s var(--ease),background-color .4s}
   .gatherBar span.f{transform:scaleY(1)}
 
-  /* beat 2 — your colors, big */
-  .palette{flex:1 1 auto;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,104px));gap:18px;justify-content:center;align-content:center;max-width:1040px;width:100%;margin:0 auto;padding:20px}
-  .palette::-webkit-scrollbar{width:8px} .palette::-webkit-scrollbar-thumb{background:var(--line);border-radius:100px}
-  .pcell{aspect-ratio:3/4;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08), 0 8px 22px rgba(0,0,0,.10);cursor:pointer;position:relative;transition:transform .3s var(--ease),opacity .3s,filter .3s,box-shadow .3s}
-  .pcell:hover{transform:translateY(-4px)}
-  .pcell.off{opacity:.45;filter:grayscale(.92);transform:scale(.78)}
-  .pcell.off .hex{opacity:.6}
-  .pcell.edited{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.5), 0 0 0 2px var(--accent), 0 8px 22px rgba(0,0,0,.14)}
-  .pcell .x{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:100px;background:rgba(0,0,0,.5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;opacity:0;transition:opacity .2s,background-color .15s;z-index:2}
-  .pcell:hover .x{opacity:1}
-  .pcell .x:hover{background:rgba(0,0,0,.78)}
-  .pcell .hex{position:absolute;left:8px;bottom:8px;font-family:var(--mono);font-size:10px;color:#fff;mix-blend-mode:difference}
+  /* ===== beat 2 — TYPE (specimen wall + weight slider) ===== */
+  .typeBar{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:22px;padding:0 0 16px;flex-wrap:wrap}
+  .weightCtl{display:flex;align-items:center;gap:13px;background:color-mix(in srgb,var(--bg) 40%,#fff);border:1.5px solid var(--line);border-radius:100px;padding:9px 20px}
+  .weightCtl label{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .weightCtl input[type=range]{-webkit-appearance:none;appearance:none;width:200px;height:8px;border-radius:100px;background:linear-gradient(90deg,var(--faint),var(--ink));cursor:pointer;outline-offset:4px}
+  .weightCtl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:100px;background:#fff;border:2px solid var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:grab}
+  .weightCtl input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:100px;background:#fff;border:2px solid var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:grab}
+  .weightVal{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink);width:3ch;text-align:right}
+  .filterRow{display:flex;gap:7px}
+  .fchip{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:none;border:1.5px solid var(--line);border-radius:100px;padding:8px 14px;cursor:pointer;transition:border-color .15s,color .15s,background-color .15s}
+  .fchip:hover{border-color:var(--ink);color:var(--ink)} .fchip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  /* editorial mosaic — a 12-col specimen spread, cards in varied spans so the section has rhythm, not a flat table */
+  .specWall{flex:1 1 auto;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(12,1fr);gap:14px;padding:4px 4px 8px;align-content:safe center;align-items:start}
+  .specWall::-webkit-scrollbar{width:8px}.specWall::-webkit-scrollbar-thumb{background:var(--line);border-radius:100px}
+  .spec{position:relative;text-align:left;background:var(--surface-2);border:2px solid var(--line);border-radius:14px;padding:24px 26px 20px;cursor:pointer;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;transition:border-color .18s,transform .22s var(--ease),box-shadow .25s,background-color .2s}
+  .spec:hover{transform:translateY(-5px);box-shadow:0 16px 38px rgba(0,0,0,.11);border-color:var(--accent)}
+  .spec.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,#fff);box-shadow:0 12px 30px rgba(0,0,0,.12)}
+  .spec .keep{position:absolute;top:18px;right:18px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);opacity:0;transition:opacity .18s}
+  .spec:hover:not(.on) .keep{opacity:.85}
+  .specName{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+  .specName .cat{color:var(--faint)}
+  .specWord{display:block;margin-top:14px;line-height:1;color:var(--ink);white-space:nowrap}
+  .specSmall{font-size:calc(var(--ss,40px) * .4);color:var(--sub);letter-spacing:-0.01em}
+  .specBig{font-size:var(--ss,40px);letter-spacing:-0.03em}
+  .specBig .dot{color:var(--accent)}
+  .spec .pick{position:absolute;top:16px;right:16px;width:26px;height:26px;border-radius:100px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;opacity:0;transform:scale(.4);transition:opacity .2s,transform .3s var(--spring)}
+  .spec.on .pick{opacity:1;transform:none}
+  .spec .star{position:absolute;bottom:14px;right:16px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);border:1px solid color-mix(in srgb,var(--accent) 32%,transparent);border-radius:100px;padding:3px 9px;opacity:0;cursor:pointer;transition:opacity .2s}
+  .spec.on .star{opacity:1} .spec.primary .star{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .typeTray{flex:0 0 auto;text-align:center;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--muted);padding-top:12px;height:18px}
 
-  /* beat 2 — edit in context: the palette stays, controls dock below, selected swatch lives in the group */
+  /* ===== beat: COLORS — see & curate the palette you gathered (adjust in context + undo) ===== */
+  .undoBtn{align-self:flex-end;display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--muted);background:none;border:1.5px solid var(--line);border-radius:100px;padding:8px 16px;cursor:pointer;transition:border-color .15s,color .15s;margin:-4px 2px 4px}
+  .undoBtn:hover{border-color:var(--ink);color:var(--ink)} .undoBtn[hidden]{display:none}
+  .palette{flex:1 1 auto;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,110px));gap:18px;justify-content:center;align-content:safe center;max-width:1080px;width:100%;margin:0 auto;padding:14px}
+  .palette::-webkit-scrollbar{width:8px}.palette::-webkit-scrollbar-thumb{background:var(--line);border-radius:100px}
+  .pcell{aspect-ratio:3/4;border-radius:11px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08), 0 8px 22px rgba(0,0,0,.1);cursor:pointer;position:relative;border:none;padding:0;transition:transform .3s var(--ease),opacity .3s,filter .3s,box-shadow .3s}
+  .pcell:hover{transform:translateY(-5px)}
+  .pcell.off{opacity:.4;filter:grayscale(.92);transform:scale(.78)}
+  .pcell.edited{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.5), 0 0 0 2px var(--accent), 0 8px 22px rgba(0,0,0,.14)}
   .pcell.sel{transform:translateY(-6px) scale(1.04);box-shadow:0 0 0 3px var(--accent), 0 16px 38px rgba(0,0,0,.24);z-index:3}
-  .undoBtn{position:absolute;top:4px;right:0;display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--muted);background:none;border:1.5px solid var(--line);border-radius:100px;padding:8px 16px;cursor:pointer;transition:border-color .15s,color .15s}
-  .undoBtn:hover{border-color:var(--ink);color:var(--ink)}
-  .undoBtn[hidden]{display:none}
-  .cedit{flex:0 0 auto;display:flex;align-items:center;gap:clamp(18px,3vw,40px);width:100%;max-width:1040px;margin:6px auto 0;
-    border:1.5px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--bg) 50%,#ffffff);box-shadow:0 14px 44px rgba(0,0,0,.12);
-    max-height:0;opacity:0;overflow:hidden;padding:0 26px;border-width:0;
-    transition:max-height .35s var(--ease),opacity .25s var(--ease),padding .35s var(--ease),border-width .2s}
+  .pcell .x{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:100px;background:rgba(0,0,0,.5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;opacity:0;transition:opacity .2s,background-color .15s;z-index:2}
+  .pcell:hover .x{opacity:1} .pcell .x:hover{background:var(--spark)}
+  .pcell .hex{position:absolute;left:8px;bottom:8px;font-family:var(--mono);font-size:10px;color:#fff;mix-blend-mode:difference}
+  .cedit{flex:0 0 auto;display:flex;align-items:center;gap:clamp(18px,3vw,40px);width:100%;max-width:1000px;margin:6px auto 0;
+    border:1.5px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--bg) 50%,#fff);box-shadow:0 14px 44px rgba(0,0,0,.12);
+    max-height:0;opacity:0;overflow:hidden;padding:0 26px;border-width:0;transition:max-height .35s var(--ease),opacity .25s var(--ease),padding .35s var(--ease),border-width .2s}
   .cedit.on{max-height:240px;opacity:1;padding:18px 26px;border-width:1.5px}
   .ceSwatch{display:flex;align-items:center;gap:13px;flex:0 0 auto}
-  .cePrev{width:54px;height:68px;border-radius:9px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12), 0 6px 16px rgba(0,0,0,.16);flex:0 0 auto;transition:background-color .1s}
-  .ceHexRow{display:flex;align-items:center;gap:7px}
+  .cePrev{width:54px;height:68px;border-radius:9px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12), 0 6px 16px rgba(0,0,0,.16);flex:0 0 auto}
+  .ceHexRow{display:flex;align-items:center;gap:6px}
   .ceHexRow .hash{font-family:var(--mono);font-size:18px;color:var(--muted)}
-  .ceHexRow input[type=text]{width:8ch;font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:.04em;color:var(--ink);background:none;border:none;border-bottom:1.5px solid var(--line);padding:5px 0;text-transform:lowercase}
-  .ceHexRow input[type=text]:focus{outline:none;border-bottom-color:var(--accent)}
+  .ceHexRow input{width:8ch;font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:.04em;color:var(--ink);background:none;border:none;border-bottom:1.5px solid var(--line);padding:5px 0;text-transform:lowercase}
+  .ceHexRow input:focus{outline:none;border-bottom-color:var(--accent)}
   .ceSliders{flex:1 1 auto;display:flex;flex-direction:column;gap:14px;min-width:160px}
   .ceRow{display:flex;align-items:center;gap:14px}
   .ceRow label{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);width:74px;flex:0 0 auto}
@@ -97,120 +136,169 @@
   .ceRow input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:100px;background:#fff;border:2px solid var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:grab}
   .ceActions{display:flex;align-items:center;gap:14px;flex:0 0 auto}
   .ceReset{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
-  .ceReset:hover{color:var(--ink)}
-  .ceReset[disabled]{opacity:.3;cursor:default;text-decoration:none}
+  .ceReset:hover{color:var(--ink)} .ceReset[disabled]{opacity:.3;cursor:default;text-decoration:none}
   .ceDone{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--bg);background:var(--ink);border:none;border-radius:100px;padding:11px 24px;cursor:pointer}
 
-  /* beat 3 — type: the playground. anchor on your name, then play the letters with your hands —
-     drag up/down for weight, left/right for spacing, the grip for leading, space to shuffle the style. */
-  .nameInput{font-family:var(--serif);font-size:inherit;font-weight:500;color:var(--ink);background:none;border:none;border-bottom:2px solid var(--accent);padding:0 2px 2px;width:8ch;text-align:center}
-  .nameInput::placeholder{color:var(--faint);font-style:italic}
-  .nameInput:focus{outline:none;border-bottom-color:var(--ink)}
-  .play{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(20px,3.4vh,46px)}
-  .playWord{position:relative;display:flex;flex-direction:column;align-items:center;color:var(--ink);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;outline-offset:12px;padding:clamp(8px,1.6vh,20px) clamp(20px,5vw,70px)}
-  .playWord.grabbing{cursor:grabbing} .playWord.shuffling .wl{animation:styleMorph .3s var(--ease)}
-  .wl{line-height:.92;white-space:nowrap;transition:font-weight .05s linear}
-  .wl1{font-size:clamp(28px,5.2vw,68px);letter-spacing:-0.02em;color:var(--sub)}
-  .wl2{font-size:clamp(60px,13vw,168px);letter-spacing:-0.04em}
-  .wl2 .dot{color:var(--accent)}
-  @keyframes styleMorph{0%{filter:blur(7px);opacity:.35}100%{filter:none;opacity:1}}
-  /* the leading grip — a slim handle living between the lines; drag it to open or close the gap */
-  .leadGrip{align-self:center;width:64px;height:14px;margin:var(--leadGap,8px) 0;border:none;background:none;cursor:ns-resize;position:relative;opacity:0;transition:opacity .3s;touch-action:none}
-  .leadGrip::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:46px;height:3px;border-radius:100px;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 18%,transparent)}
-  .playWord:hover .leadGrip,.leadGrip:focus-visible,.playWord.grabbing .leadGrip{opacity:.85}
-  /* drag affordance — axis hints that breathe until you grab, then retire */
-  .dragHint{position:absolute;inset:0;pointer-events:none;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);transition:opacity .4s}
-  .dragHint .hintAx{position:absolute;animation:hintBreathe 2.6s var(--ease) infinite}
-  .dragHint .v{top:6px;left:50%;transform:translateX(-50%)} .dragHint .h{top:50%;right:-2px;transform:translateY(-50%)}
-  .playWord.touched .dragHint{opacity:0}
-  @keyframes hintBreathe{0%,100%{opacity:.45}50%{opacity:.9}}
-  .playBar{display:flex;align-items:center;gap:18px}
-  .shuffleStyle{display:inline-flex;align-items:center;gap:11px;font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);background:none;border:1.5px solid var(--ink);border-radius:100px;padding:12px 24px;cursor:pointer;transition:background-color .2s,color .2s}
-  .shuffleStyle:hover{background:var(--ink);color:var(--bg)}
-  .shuffleStyle .kbd{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;opacity:.6;border:1px solid currentColor;border-radius:4px;padding:2px 7px}
-  .styleName{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  /* ===== shared: draggable cards (moodboard + home artifact) ===== */
+  .canvas{position:relative;min-height:0;overflow:hidden;touch-action:none}
+  .it{position:absolute;top:0;left:0;cursor:grab;border:none;padding:0;background:none;will-change:transform;transform-origin:center;
+    transition:box-shadow .2s var(--ease),transform .4s var(--ease);animation:itIn .55s var(--ease) both}
+  @keyframes itIn{from{opacity:0}}
+  .it.grab{cursor:grabbing;transition:box-shadow .2s var(--ease);z-index:60}
+  .it:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+  .it .body{width:100%;height:100%;border-radius:9px;overflow:hidden;box-shadow:0 1px 2px var(--shadow-1), 0 12px 28px var(--shadow-2);transition:border-radius .45s var(--spring)}
+  .it.grab .body{box-shadow:0 8px 16px var(--shadow-2), 0 28px 60px var(--shadow-3)}
+  .it-image .body{background:#fff}
+  .it-image img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+  .it-color .body{display:flex;align-items:flex-end;padding:9px}
+  .it-color .hex{font-family:var(--mono);font-size:10px;font-weight:600;color:#fff;mix-blend-mode:difference;letter-spacing:.02em}
+  .it-type .body{background:#fff;display:flex;flex-direction:column;justify-content:center;padding:16px 18px;gap:4px}
+  .it-type .tName{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .it-type .tWord{line-height:.95;color:var(--ink)}
+  .it-type .tWord .dot{color:var(--accent)}
+  .it .rm{position:absolute;top:-9px;right:-9px;width:24px;height:24px;border-radius:100px;background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;opacity:0;transform:scale(.5);transition:opacity .18s,transform .25s var(--spring);z-index:2}
+  .it:hover .rm,.it:focus-within .rm{opacity:1;transform:none}
+  .it .rm:hover{background:var(--spark)}
+  /* handles — show on hover: stretch (corner) and rotate (twist). tap the body to reshape. */
+  .it .rz,.it .rt{position:absolute;width:20px;height:20px;border-radius:100px;background:var(--bg);border:2px solid var(--accent);opacity:0;transform:scale(.5);transition:opacity .18s,transform .25s var(--spring);z-index:3;touch-action:none}
+  .it .rz{right:-7px;bottom:-7px;cursor:nwse-resize}
+  .it .rt{left:-7px;top:-7px;cursor:grab;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--accent);line-height:1}
+  .it:hover .rz,.it:focus-within .rz,.it:hover .rt,.it:focus-within .rt{opacity:1;transform:none}
+  .it.grab .rz,.it.grab .rt{opacity:0}
+  /* reframe handle (images only) — drag to pan the photo inside its shape */
+  .it .rf{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.6);width:32px;height:32px;border-radius:50%;
+    background:color-mix(in srgb,#000 42%,transparent);border:1.5px solid rgba(255,255,255,.9);color:#fff;font-size:14px;
+    display:none;align-items:center;justify-content:center;cursor:move;z-index:4;opacity:0;transition:opacity .18s,transform .25s var(--spring)}
+  .it-image:hover .rf,.it-image:focus-within .rf{display:flex;opacity:1;transform:translate(-50%,-50%) scale(1)}
+  .it.grab .rf{display:none}
 
-  /* reveal */
-  .reveal{position:relative;flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
-  .revName{font-family:var(--wm-font);font-size:clamp(20px,2.4vw,32px);line-height:1;letter-spacing:-0.02em;color:var(--sub);margin-bottom:-2px}
-  .revName:empty{display:none}
-  .revWm{font-family:var(--wm-font);font-size:clamp(60px,11vw,150px);line-height:.9;letter-spacing:-0.04em;color:var(--ink);cursor:pointer}
-  .revWm .dot{color:var(--accent)}
-  .revTag{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--sub);margin-top:6px;cursor:pointer}
-  .revLead{font-family:var(--serif);font-size:29px;font-weight:500;color:var(--ink);margin-top:26px}
-  .revSample{margin-top:22px;font-family:var(--sans);font-weight:700;font-size:16px;border:none;border-radius:100px;padding:13px 30px;cursor:pointer;transition:background-color .5s var(--ease),color .5s var(--ease)}
-  /* role assignment — pin which color plays which part */
-  .revHint{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:30px}
-  .roles{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:14px}
-  .role{display:flex;align-items:center;gap:11px;background:none;border:1.5px solid var(--line);border-radius:12px;padding:8px 15px 8px 9px;cursor:pointer;transition:border-color .15s}
-  .role:hover{border-color:var(--ink)} .role.pinned{border-color:var(--accent)}
-  .rsw{width:30px;height:30px;border-radius:7px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);flex:0 0 auto}
-  .rmeta{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
-  .rl{font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:6px}
-  .rl .lock{color:var(--accent);font-size:8px}
-  .rhex{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:lowercase}
-  .rhex.warn{color:var(--accent)}
-  /* the picker is control chrome, not brand preview: give it a fixed, always-legible surface (the preview tiles still carry the real brand colors inline) */
-  .assignPop{--ink:#1c1810;--bg:#f7f5f0;--muted:#6f6555;--faint:#988e7d;--line:rgba(28,24,16,0.16);
-    position:absolute;left:50%;bottom:84px;transform:translateX(-50%) translateY(8px);width:min(460px,88vw);background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:16px;padding:17px 20px 19px;box-shadow:0 22px 60px rgba(0,0,0,.36);opacity:0;visibility:hidden;transition:opacity .25s var(--ease),transform .25s var(--ease);z-index:6}
-  .assignPop.on{opacity:1;visibility:visible;transform:translateX(-50%)}
-  .apHead{font-family:var(--sans);font-size:14px;color:var(--ink);margin-bottom:13px}
-  .apHead b{font-weight:700}
-  .apStd{display:block;font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5}
-  .apLegend{display:inline-flex;align-items:center;color:var(--faint)}
-  .apInsight{font-family:var(--sans);font-size:12.5px;line-height:1.55;color:var(--ink);background:color-mix(in srgb,var(--accent) 14%,transparent);border:1px solid color-mix(in srgb,var(--accent) 32%,transparent);border-radius:10px;padding:10px 13px;margin:0 0 13px}
-  .apInsight2{display:block;color:var(--muted);margin-top:5px}
-  .apSw{display:flex;flex-wrap:wrap;gap:11px;align-items:center}
-  .apc{position:relative;width:46px;height:46px;border-radius:9px;border:2.5px solid transparent;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(0,0,0,.16);transition:transform .15s,opacity .2s;display:flex;align-items:center;justify-content:center;overflow:hidden}
-  .apc:hover{transform:translateY(-3px)} .apc.on{border-color:var(--accent)}
-  .apc.prev .smp{font-weight:700;font-size:19px;line-height:1}
-  .apc.prev .chip{width:22px;height:22px;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
-  .apGroup{margin-bottom:14px}
-  .apGl{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
-  .apGlNote{display:block;font-family:var(--sans);font-size:11.5px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted);margin-top:4px}
-  .apGroup.faint .apGl{color:var(--muted)}
-  .apGroup.faint .apc{opacity:.5}.apGroup.faint .apc:hover{opacity:1}
-  .apAutoRow{margin-top:2px}
-  .apWhy{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);background:none;border:none;text-decoration:underline;text-underline-offset:3px;cursor:pointer;margin-left:9px;padding:2px}
-  .apWhy:hover,.apWhy.on{color:var(--ink)}
-  .apWhyBox{font-family:var(--sans);font-size:12px;line-height:1.55;color:var(--muted);margin:-3px 0 14px}
-  .apAuto{display:inline-flex;align-items:center;height:40px;padding:0 15px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);background:none;border:1.5px dashed var(--line);border-radius:9px;cursor:pointer}
-  .apAuto.on{border-style:solid;border-color:var(--accent)}
-  .apTeach{margin-top:15px;border-top:1px solid var(--line);padding-top:14px}
-  .apTeach[hidden]{display:none}
-  .apWarn{font-family:var(--sans);font-size:13.5px;line-height:1.5;color:var(--ink);margin-bottom:12px}
-  .apTeachBtns{display:flex;gap:10px;flex-wrap:wrap}
-  .apFix{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--bg);background:var(--ink);border:none;border-radius:100px;padding:10px 18px;cursor:pointer}
-  .apAnyway{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--muted);background:none;border:1.5px solid var(--line);border-radius:100px;padding:10px 18px;cursor:pointer}
-  .apAnyway:hover{color:var(--ink);border-color:var(--ink)}
-  /* perfect-it panel */
-  .revControls{display:flex;align-items:center;gap:18px;margin-top:32px;flex-wrap:wrap;justify-content:center}
-  .revBtn{display:inline-flex;align-items:center;gap:11px;font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);background:none;border:1.5px solid var(--ink);border-radius:100px;padding:13px 26px;cursor:pointer;transition:background-color .2s,color .2s}
-  .revBtn:hover{background:var(--ink);color:var(--bg)}
-  .revBtn .kbd{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;opacity:.6;border:1px solid currentColor;border-radius:4px;padding:2px 7px}
-  .seg2{display:inline-flex;border:1.5px solid var(--line);border-radius:100px;overflow:hidden}
-  .seg2 button{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:12px 22px;background:none;border:none;cursor:pointer;color:var(--muted)}
-  .seg2 button.on{background:var(--ink);color:var(--bg)}
+  /* ===== beat 3 — MOODBOARD ===== */
+  /* the workspace surface — a dot grid like the real canvas, with a soft center vignette */
+  .board{flex:1 1 auto;border-radius:16px;background-color:var(--surface-2);
+    background-image:
+      radial-gradient(circle, color-mix(in srgb,var(--ink) 13%,transparent) 1.3px, transparent 1.5px),
+      radial-gradient(135% 105% at 50% 36%, color-mix(in srgb,var(--ink) 4%,transparent), transparent 72%);
+    background-size:24px 24px, 100% 100%;
+    box-shadow:inset 0 0 0 1px var(--line)}
 
-  /* footer nav */
-  .nav{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 44px 26px}
-  .back{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;padding:10px 2px;visibility:hidden}
+  /* ===== beat 4 — BRAND: your taste applied to real artifacts (live reskin) + a compact spec ===== */
+  /* the mockups are the hero here, so the headline gives up room */
+  #b4 .head{padding:4px 0 8px} #b4 .H{font-size:clamp(28px,3.4vw,44px)} #b4 .sub{margin-top:7px;font-size:16px}
+  .perfect{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:16px;overflow:auto;padding-bottom:6px}
+  .applied{display:grid;grid-template-columns:1.7fr 1fr;gap:22px;width:100%;max-width:1180px;margin:0 auto;align-items:start}
+  @media(max-width:900px){.applied{grid-template-columns:1fr}}
+  .mockGallery{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+  .mk{border-radius:14px;overflow:hidden;box-shadow:0 18px 44px var(--shadow-3);position:relative;transition:background-color .5s var(--ease),color .5s var(--ease)}
+  .mk b{font-style:normal;color:var(--accent)}                              /* the dot */
+  /* site */
+  .mk-site{grid-column:span 6;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;min-height:150px}
+  .mkbar{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--line)}
+  .mkdots{display:flex;gap:5px}.mkdots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+  .mkwm{font-family:var(--title-font);font-weight:600;font-size:15px;letter-spacing:-.02em;margin-left:4px}
+  .mksite-body{padding:24px 26px;display:flex;flex-direction:column;align-items:flex-start;gap:9px}
+  .mkkick{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--sub)}
+  .mksite-h{font-family:var(--title-font);font-weight:500;font-size:clamp(22px,3vw,34px);line-height:1;letter-spacing:-.02em}
+  .mksite-sub{font-family:var(--body-font);font-size:13.5px;color:var(--sub);max-width:34ch}
+  .mkbtn{margin-top:6px;font-family:var(--body-font);font-weight:700;font-size:13px;background:var(--accent);color:var(--on-accent);border-radius:100px;padding:9px 18px}
+  /* poster */
+  .mk-poster{grid-column:span 2;aspect-ratio:1/1;background:var(--accent);color:var(--on-accent);padding:18px;display:flex;flex-direction:column;justify-content:space-between}
+  .mk-poster b{color:var(--on-accent);opacity:.7}
+  .mkposter-wm{font-family:var(--title-font);font-weight:600;font-size:clamp(26px,3.4vw,40px);line-height:.92;letter-spacing:-.03em}
+  .mkposter-tag{font-family:var(--body-font);font-style:italic;font-size:13px;line-height:1.3;opacity:.92}
+  /* logo lockup */
+  .mk-logo{grid-column:span 2;aspect-ratio:1/1;background:var(--surface-2);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;padding:14px}
+  .mk-logo .mkpre{font-family:var(--title-font);font-size:13px;color:var(--sub)}
+  .mklogo-wm{font-family:var(--title-font);font-weight:500;font-size:clamp(28px,3.6vw,40px);letter-spacing:-.03em;line-height:.95}
+  /* app tile */
+  .mk-app{grid-column:span 2;aspect-ratio:1/1;background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:center}
+  .mkapp-mark{font-family:var(--title-font);font-weight:600;font-size:clamp(52px,7vw,84px);line-height:1;letter-spacing:-.04em}
+  .mkapp-mark b{color:var(--accent)}
+  /* the spec / receipt */
+  .brandSpec{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:20px 22px;display:flex;flex-direction:column;gap:16px;transition:background-color .5s var(--ease),border-color .5s var(--ease)}
+  .specHd{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .specRow{display:flex;flex-direction:column;gap:8px}
+  .specRow .sw-row{display:flex;flex-wrap:wrap;gap:7px}
+  .specRow .sw-row .sw{width:30px;height:30px;border-radius:7px;box-shadow:inset 0 0 0 1px rgba(128,128,128,.25)}
+  .specFace{font-size:24px;color:var(--ink);line-height:1.1}
+  .specFaceSub{font-size:16px;color:var(--sub);line-height:1.1}
+  .specWm{font-family:var(--title-font);font-weight:500;font-size:30px;letter-spacing:-.03em;color:var(--ink)}
+  .specWm b{font-style:normal;color:var(--accent)}
+  .brandControls{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:1180px;margin:0 auto}
+  .perfectCtl{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center}
+  .pbtn{display:inline-flex;align-items:center;gap:11px;font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);background:none;border:1.5px solid var(--ink);border-radius:100px;padding:13px 26px;cursor:pointer;transition:background-color .2s,color .2s}
+  .pbtn:hover{background:var(--ink);color:var(--bg)}
+  .pbtn .kbd{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;opacity:.6;border:1px solid currentColor;border-radius:4px;padding:2px 7px}
+  .roleHint{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:center}
+  .roles{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  /* contrast, checked not hoped — the trust line (merged from the theme-system pass) */
+  .ratioReadout{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--muted)}
+  .ratioReadout b{font-weight:600;font-variant-numeric:tabular-nums}
+  .ratioReadout .ok{color:#2f9e63} .ratioReadout .lo{color:var(--spark)}
+  .role{display:flex;align-items:center;gap:10px;background:none;border:1.5px solid var(--line);border-radius:11px;padding:7px 14px 7px 8px;cursor:pointer;transition:border-color .15s}
+  .role:hover{border-color:var(--ink)}
+  .role .rsw{width:26px;height:26px;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+  .role .rl{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--ink)}
+  .compare{display:flex;align-items:center;gap:12px}
+  .compareLabel{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .thumbs{display:flex;gap:9px}
+  .thumb{width:62px;height:42px;border-radius:8px;border:2px solid transparent;cursor:pointer;position:relative;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);transition:transform .2s,border-color .15s}
+  .thumb:hover{transform:translateY(-3px)} .thumb.on{border-color:var(--accent)}
+  .thumb .td{position:absolute;right:6px;bottom:6px;width:11px;height:11px;border-radius:100px;box-shadow:0 0 0 1px rgba(255,255,255,.5)}
+
+  /* ===== beat 5 — HOME (the climax) ===== */
+  .home{flex:1 1 auto;min-height:0;overflow:auto;display:block}
+  .home::-webkit-scrollbar{width:9px}.home::-webkit-scrollbar-thumb{background:var(--line);border-radius:100px}
+  .homeHero{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;padding:24px 8px 36px;min-height:60%}
+  @media (max-width:860px){ .homeHero{display:block;min-height:0} .artifact{aspect-ratio:auto;height:300px;margin-top:24px} }
+  .homeEdition{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;gap:16px;align-items:center}
+  .homeEdition .rule{flex:1;height:1px;background:var(--line)}
+  .homeH{font-family:var(--title-font);font-weight:500;font-size:clamp(40px,5.4vw,76px);line-height:.99;letter-spacing:-0.035em;margin-top:22px}
+  .homeH em{font-style:italic;color:var(--accent)}
+  .homeLede{font-family:var(--body-font);font-size:19px;line-height:1.55;color:var(--sub);margin-top:20px;max-width:42ch}
+  .homeCtas{margin-top:30px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .homePrimary{display:inline-flex;align-items:center;gap:11px;font-family:var(--body-font);font-size:17px;font-weight:700;color:var(--bg);background:var(--ink);border:none;border-radius:9px;padding:16px 30px;cursor:pointer;transition:transform .2s var(--ease)}
+  .homePrimary:hover{transform:translateY(-2px)}
+  .homeGhost{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+  .homeGhost:hover{color:var(--ink)}
+  .artifact{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:1/0.92;min-height:300px;
+    background-color:var(--surface-2);
+    background-image:
+      radial-gradient(circle, color-mix(in srgb,var(--ink) 12%,transparent) 1.2px, transparent 1.4px),
+      radial-gradient(130% 100% at 60% 30%, color-mix(in srgb,var(--ink) 5%,transparent), transparent 70%);
+    background-size:22px 22px, 100% 100%;
+    box-shadow:inset 0 0 0 1px var(--line), 0 30px 70px var(--shadow-3)}
+  .artifactTag{position:absolute;top:14px;left:16px;font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);z-index:5;pointer-events:none}
+  .artShuffle{position:absolute;top:11px;right:13px;z-index:8;font-family:var(--sans);font-size:13.5px;font-weight:700;color:var(--ink);background:color-mix(in srgb,var(--bg) 65%,#fff);border:1.5px solid var(--line);border-radius:100px;padding:9px 17px;cursor:pointer;transition:border-color .15s,transform .15s var(--ease)}
+  .artShuffle:hover{border-color:var(--ink);transform:translateY(-1px)}
+  .homeIndex{border-top:1px solid var(--line);padding:28px 8px 16px;display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+  @media (max-width:720px){ .homeIndex{grid-template-columns:1fr;gap:18px} }
+  .move{padding:0 26px;border-left:1px solid var(--line)}
+  .move:first-child{padding-left:0;border-left:none}
+  .moveNo{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.1em;color:var(--accent)}
+  .moveLabel{font-family:var(--title-font);font-size:26px;font-weight:600;letter-spacing:-0.02em;margin-top:6px}
+  .moveBlurb{font-family:var(--body-font);font-size:14.5px;line-height:1.55;color:var(--sub);margin-top:8px}
+
+  /* ---- footer nav ---- */
+  .nav{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 40px 24px}
+  .back{font-family:var(--mono);font-size:14.5px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;padding:10px 2px;visibility:hidden}
   .back:hover{color:var(--ink)}
-  .navMid{font-family:var(--mono);font-size:14px;color:var(--faint)}
-  .next{display:inline-flex;align-items:center;gap:10px;font-size:17px;font-weight:700;color:var(--bg);background:var(--ink);padding:17px 34px;border-radius:8px;border:none;cursor:pointer;transition:opacity .2s}
-  .next[disabled]{opacity:.32;cursor:default}
-  .next .ar{color:var(--bg);opacity:.9}
-  .ghost{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:4px;margin-right:22px}
+  .navMid{font-family:var(--mono);font-size:13px;color:var(--faint)}
+  .navR{display:flex;align-items:center;gap:18px}
+  .ghost{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:4px;display:none}
   .ghost:hover{color:var(--ink)}
+  .next{display:inline-flex;align-items:center;gap:10px;font-size:16.5px;font-weight:700;color:var(--bg);background:var(--ink);padding:16px 32px;border-radius:8px;border:none;cursor:pointer;transition:opacity .2s,transform .2s var(--ease)}
+  .next:hover{transform:translateY(-2px)} .next[disabled]{opacity:.32;cursor:default;transform:none}
 
-  /* phone: thumb-drag the word; the hints sit close, the grip stays reachable */
+  @media (max-width:820px){ .progress{font-size:0;gap:10px} .progress .p{gap:0} }
   @media (max-width:560px){
-    .top{padding:16px 20px} .nav{padding:14px 20px 18px} .step{padding:6px 20px 16px}
-    .stepHead{padding:2px 0 10px} .stepH{font-size:32px} .stepSub{font-size:16px;margin-top:8px;line-height:1.5}
-    .play{gap:26px}
-    .wl1{font-size:clamp(24px,7vw,40px)} .wl2{font-size:clamp(54px,18vw,92px)}
-    .leadGrip{opacity:.7} .dragHint{font-size:10px}
-    .shuffleStyle{font-size:15px}
+    .top{padding:14px 18px} .nav{padding:12px 18px 16px} .beat{padding:6px 18px 14px}
+    .head{padding:4px 0 10px} .H{font-size:30px} .sub{font-size:15px;margin-top:8px}
+    .specWall{grid-template-columns:1fr} .homeHero{padding:14px 0 24px}
+    .specBig{font-size:34px} .specSmall{font-size:15px} .spec{padding:18px 18px 16px;min-height:96px!important}
+    .weightCtl input[type=range]{width:140px}
+    /* the color adjust dock wraps so the sliders + buttons never clip on a phone */
+    .cedit{flex-wrap:wrap;gap:14px 18px} .cedit.on{max-height:380px}
+    .ceSwatch{flex:1 1 auto} .ceActions{order:2;margin-left:auto} .ceSliders{order:3;flex-basis:100%}
   }
   @media (prefers-reduced-motion: reduce){ *{transition-duration:.001ms !important;animation:none !important} }
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -219,27 +307,39 @@
 <body>
 <div class="app">
   <header class="top">
-    <span class="wm">inkling<span class="dot">.</span></span>
+    <span class="wm" id="wmTop">inkling<span class="dot">.</span></span>
     <div class="progress" id="progress">
-      <span class="p" data-s="0"><span class="d"></span>Gather</span>
-      <span class="p" data-s="1"><span class="d"></span>Colors</span>
-      <span class="p" data-s="2"><span class="d"></span>Type</span>
-      <span class="p" data-s="3"><span class="d"></span>Your Inkling</span>
+      <span class="p" data-b="1"><span class="d"></span>Gather</span>
+      <span class="p" data-b="2"><span class="d"></span>Colors</span>
+      <span class="p" data-b="3"><span class="d"></span>Type</span>
+      <span class="p" data-b="4"><span class="d"></span>Moodboard</span>
+      <span class="p" data-b="5"><span class="d"></span>Brand</span>
     </div>
     <button class="skip" id="skipBtn">Skip, take me in →</button>
   </header>
 
   <div class="stage">
-    <!-- 0 — pick -->
-    <section class="step" id="s0">
-      <div class="stepHead"><div class="kick">Step 1 of 3 · Gather</div><div class="stepH">What feels like you?</div><div class="stepSub">Tap 3 to 6 images.</div></div>
+    <!-- 0 — name -->
+    <section class="beat" id="b0">
+      <div class="name">
+        <div class="nameKick">Make Inkling yours</div>
+        <div class="nameQ">First. Whose taste are we building with?</div>
+        <div class="nameWrap"><input id="nameField" class="nameField" type="text" maxlength="16" placeholder="your name" autocomplete="off" spellcheck="false" aria-label="Your name" /></div>
+        <div class="nameHint" id="nameHint">Type a name, or skip. You can change it anytime.</div>
+        <div class="nameGo"><button class="next" id="nameGo">Begin <span aria-hidden="true">→</span></button></div>
+      </div>
+    </section>
+
+    <!-- 1 — gather -->
+    <section class="beat" id="b1">
+      <div class="head"><div class="kick">Gather · collect what rings true</div><div class="H" id="gatherH">What feels like you?</div><div class="sub">Tap 3 to 6 images. Your colors gather as you go.</div></div>
       <div class="wall" id="wall"></div>
       <div class="gather"><span class="gatherLabel">Colors gathering</span><div class="gatherBar" id="gatherBar"></div></div>
     </section>
 
-    <!-- 1 — colors -->
-    <section class="step" id="s1">
-      <div class="stepHead"><div class="kick">Step 2 of 3 · Colors</div><div class="stepH">Your colors.</div><div class="stepSub">Tap to adjust. <span aria-hidden="true">✕</span> to remove.</div></div>
+    <!-- 2 — colors -->
+    <section class="beat" id="bColors">
+      <div class="head"><div class="kick">Colors · keep what’s yours</div><div class="H" id="colorsH">Your colors.</div><div class="sub">Every color you gathered. Tap one to adjust it. <span aria-hidden="true">✕</span> to remove. These dress your brand.</div></div>
       <button class="undoBtn" id="undoBtn" hidden>↶ Undo</button>
       <div class="palette" id="palette"></div>
       <div class="cedit" id="cedit" role="group" aria-label="Adjust color">
@@ -255,38 +355,73 @@
       </div>
     </section>
 
-    <!-- 2 — type: the playground (anchor on your name, play the letters) -->
-    <section class="step" id="s2">
-      <div class="stepHead"><div class="kick">Step 3 of 3 · Type</div><div class="stepH">Make it yours.</div><div class="stepSub">Whose inkling is this? <input id="nameInput" class="nameInput" type="text" maxlength="16" placeholder="your name" autocomplete="off" spellcheck="false" aria-label="Your name" /></div></div>
-      <div class="play">
-        <div class="playWord" id="playWord" tabindex="0" role="group" aria-label="Play with your type. Drag up and down for weight, left and right for letter spacing. Press space to shuffle the style.">
-          <div class="wl wl1" id="wl1">Your</div>
-          <button class="leadGrip" id="leadGrip" tabindex="-1" aria-hidden="true"></button>
-          <div class="wl wl2" id="wl2">inkling<span class="dot">.</span></div>
-          <span class="dragHint" id="dragHint"><span class="hintAx v">↕ weight</span><span class="hintAx h">↔ spacing</span></span>
+    <!-- 3 — type -->
+    <section class="beat" id="b2">
+      <div class="head"><div class="kick">Type · what do you like?</div><div class="H" id="typeH">Find your voice.</div><div class="sub">Slide to feel the weight. Tap the faces you’re drawn to, like the images.</div></div>
+      <div class="typeBar">
+        <div class="weightCtl"><label for="weight">Weight</label><input type="range" id="weight" min="200" max="800" step="10" value="420" /><span class="weightVal" id="weightVal">420</span></div>
+        <div class="filterRow" id="filterRow"></div>
+      </div>
+      <div class="specWall" id="specWall"></div>
+      <div class="typeTray" id="typeTray"></div>
+    </section>
+
+    <!-- 3 — moodboard -->
+    <section class="beat" id="b3">
+      <div class="head"><div class="kick">Moodboard · narrow it down</div><div class="H" id="boardH">Your board.</div><div class="sub">Everything you gathered. Drag to move, tap to reshape, twist or stretch from the corners.</div></div>
+      <div class="canvas board" id="board" role="application" aria-label="Your moodboard. Tab to an item, arrow keys to move it, Backspace to remove it."></div>
+    </section>
+
+    <!-- 4 — brand: applied to real artifacts -->
+    <section class="beat" id="b4">
+      <div class="head"><div class="kick">Brand · see it for real</div><div class="H">Here’s your Inkling.</div><div class="sub">Your taste, on the real things. Shuffle directions, swap any color, until it clicks.</div></div>
+      <div class="perfect">
+        <div class="applied">
+          <div class="mockGallery">
+            <div class="mk mk-site">
+              <div class="mkbar"><span class="mkdots"><i></i><i></i><i></i></span><span class="mkwm">inkling<b>.</b></span></div>
+              <div class="mksite-body">
+                <div class="mkkick mkName"></div>
+                <div class="mksite-h">Your taste, made into a brand.</div>
+                <div class="mksite-sub">A studio that turns what you gather into a direction you can build with.</div>
+                <span class="mkbtn">Get started</span>
+              </div>
+            </div>
+            <div class="mk mk-poster"><div class="mkposter-wm">inkling<b>.</b></div><div class="mkposter-tag">you know it<br>when you see it</div></div>
+            <div class="mk mk-logo"><span class="mkpre mkName"></span><span class="mklogo-wm">inkling<b>.</b></span></div>
+            <div class="mk mk-app"><span class="mkapp-mark" id="mkInitial">i<b>.</b></span></div>
+          </div>
+          <aside class="brandSpec">
+            <div class="specRow"><span class="specHd">Palette</span><div class="sw-row" id="specPalette"></div></div>
+            <div class="specRow"><span class="specHd">Type</span><div><div class="specFace" id="specTitle">Fraunces</div><div class="specFaceSub" id="specBody">Space Grotesk</div></div></div>
+            <div class="specRow"><span class="specHd">Wordmark</span><div class="specWm">inkling<b>.</b></div></div>
+          </aside>
         </div>
-        <div class="playBar">
-          <button class="shuffleStyle" id="shuffleStyle">⤮ Shuffle style <span class="kbd">space</span></button>
-          <span class="styleName" id="styleName"></span>
+        <div class="brandControls">
+          <div class="roleHint">We placed your colors. Tap a role to swap any that feel off.</div>
+          <div class="roles" id="roles"></div>
+          <div class="ratioReadout" id="ratioReadout" aria-label="Contrast, checked"></div>
+          <button class="pbtn" id="shuffleBtn">⤮ Shuffle the direction <span class="kbd">space</span></button>
         </div>
       </div>
     </section>
 
-    <!-- 3 — reveal -->
-    <section class="step" id="s3">
-      <div class="reveal">
-        <div class="revName" id="revName"></div>
-        <div class="revWm" id="revWm">inkling<span class="dot" id="revDot">.</span></div>
-        <div class="revTag" id="revTag">“you know it when you see it”</div>
-        <div class="revLead">Here’s your Inkling.</div>
-        <button class="revSample" id="revSample">Make it real →</button>
-        <div class="revHint">Tap a part to set its color. Contrast is checked as you go.</div>
-        <div class="roles" id="roles"></div>
-        <div class="revControls">
-          <button class="revBtn" id="shuffleBtn">⤮ Shuffle <span class="kbd">space</span></button>
-          <div class="seg2" id="segPolarity"><button data-pol="light">Light</button><button data-pol="dark">Dark</button></div>
+    <!-- 5 — home (the climax) -->
+    <section class="beat" id="b5">
+      <div class="home">
+        <div class="homeHero">
+          <div>
+            <div class="homeEdition"><span id="homeEd">Inkling · dressed by you</span><span class="rule"></span></div>
+            <h1 class="homeH" id="homeH">Your taste, <em>made into a brand.</em></h1>
+            <p class="homeLede" id="homeLede">This is Inkling, wearing the brand you just made. Your moodboard lives here. Drag it, keep playing. When you’re ready, do it for real with your own inspiration.</p>
+            <div class="homeCtas">
+              <button class="homePrimary" id="homeStart">Make your own brand <span aria-hidden="true">→</span></button>
+              <button class="homeGhost" id="homeDefault">Reset to default Inkling</button>
+            </div>
+          </div>
+          <div class="canvas artifact" id="artifact" role="application" aria-label="Your living moodboard. Drag the pieces around."><span class="artifactTag">your moodboard, still yours to move</span><button class="artShuffle" id="homeShuffle">⤮ Shuffle the look</button></div>
         </div>
-        <div class="assignPop" id="assignPop" role="dialog" aria-label="Assign color" hidden></div>
+        <div class="homeIndex" id="homeIndex"></div>
       </div>
     </section>
   </div>
@@ -294,14 +429,15 @@
   <footer class="nav">
     <button class="back" id="backBtn">← Back</button>
     <span class="navMid" id="navMid"></span>
-    <div>
-      <button class="ghost" id="defaultBtn" style="display:none">Use the default</button>
-      <button class="next" id="nextBtn">Next <span class="ar">→</span></button>
+    <div class="navR">
+      <button class="ghost" id="ghostBtn">Use the default</button>
+      <button class="next" id="nextBtn">Next <span aria-hidden="true">→</span></button>
     </div>
   </footer>
 </div>
 
 <script>
+  // ============ data ============
   const REFS = [
     { img:"/sample/1039135314045106126.jpg", pal:["#070d0b","#a5aac4","#1a3e3e","#847d90","#61555c"] },
     { img:"/sample/1039135314045106266.jpg", pal:["#0b0f18","#33202a","#546571","#6e3b3e","#2e424f"] },
@@ -316,6 +452,27 @@
     { img:"/sample/1039135314045105452.jpg", pal:["#f5eee2","#c6cade","#97a9e7","#eba448","#6870db"] },
     { img:"/sample/1039135314045105598.jpg", pal:["#f7f0f5","#e3d5cc","#d1bb71","#c77452","#8b8bca"] },
   ];
+  // NB: single-quoted family names — these strings get injected into double-quoted HTML style="" attributes,
+  // so double quotes here would break the attribute and silently fall every specimen back to one font.
+  // a deliberately VARIED set — editorial serif → slab → grotesque → geometric → condensed → expressive → avant-garde → script → mono
+  const FONTS={
+    fraunces:  {f:"'Fraunces',Georgia,serif",         name:'Fraunces',  char:'Editorial',   cat:'serif'},
+    playfair:  {f:"'Playfair Display',Georgia,serif", name:'Playfair',  char:'Dramatic',    cat:'serif'},
+    dmserif:   {f:"'DM Serif Display',Georgia,serif", name:'DM Serif',  char:'Statement',   cat:'serif'},
+    instrument:{f:"'Instrument Serif',Georgia,serif", name:'Instrument',char:'Refined',     cat:'serif'},
+    zilla:     {f:"'Zilla Slab',Georgia,serif",       name:'Zilla Slab',char:'Sturdy',      cat:'serif'},
+    grotesk:   {f:"'Space Grotesk',sans-serif",       name:'Space Grotesk',char:'Modern',   cat:'sans'},
+    poppins:   {f:"'Poppins',system-ui,sans-serif",   name:'Poppins',   char:'Friendly',    cat:'sans'},
+    oswald:    {f:"'Oswald',sans-serif",              name:'Oswald',    char:'Condensed',   cat:'sans'},
+    bricolage: {f:"'Bricolage Grotesque',sans-serif", name:'Bricolage', char:'Expressive',  cat:'sans'},
+    syne:      {f:"'Syne',sans-serif",                name:'Syne',      char:'Avant-garde', cat:'sans'},
+    caveat:    {f:"'Caveat',cursive",                 name:'Caveat',    char:'Handwritten', cat:'sans'},
+    mono:      {f:"'Space Mono',monospace",           name:'Space Mono',char:'Technical',   cat:'mono'},
+  };
+  const FONT_KEYS=Object.keys(FONTS);
+  const bodyFor=key=>FONTS[key].cat==='serif'?"'Space Grotesk',sans-serif":"'Fraunces',Georgia,serif";
+
+  // ============ color engine (proven; AA guaranteed by construction) ============
   const hex2rgb=h=>{h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16))};
   const rgb2hex=a=>'#'+a.map(x=>Math.max(0,Math.min(255,Math.round(x))).toString(16).padStart(2,'0')).join('');
   const lum=h=>{const v=hex2rgb(h).map(x=>{x/=255;return x<=.03928?x/12.92:Math.pow((x+.055)/1.055,2.4)});return .2126*v[0]+.7152*v[1]+.0722*v[2]};
@@ -323,327 +480,411 @@
   const chroma=h=>{const[r,g,b]=hex2rgb(h);return (Math.max(r,g,b)-Math.min(r,g,b))/255};
   const warmth=h=>{const[r,g,b]=hex2rgb(h);return (r-b)/255};
   const mix=(h,t,a)=>{const x=hex2rgb(h),y=hex2rgb(t);return rgb2hex(x.map((v,i)=>v+(y[i]-v)*a))};
+  const readable=(c,bg,ratio)=>{const toward=lum(bg)<0.5?'#ffffff':'#000000';let o=c,t=0;while(contrast(o,bg)<ratio&&t<18){o=mix(o,toward,0.1);t++;}return o;};
+  const bestOn=bg=>contrast(bg,'#ffffff')>=contrast(bg,'#111111')?'#ffffff':'#111111';
   const rgb2hsl=([r,g,b])=>{r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0,l=(mx+mn)/2;if(mx!==mn){const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h/=6;}return[h*360,s*100,l*100]};
   const hsl2hex=(h,s,l)=>{h=((h%360)+360)%360/360;s=Math.max(0,Math.min(100,s))/100;l=Math.max(0,Math.min(100,l))/100;if(s===0){const v=l*255;return rgb2hex([v,v,v]);}const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q,f=t=>{t=(t+1)%1;return t<1/6?p+(q-p)*6*t:t<1/2?q:t<2/3?p+(q-p)*(2/3-t)*6:p;};return rgb2hex([f(h+1/3)*255,f(h)*255,f(h-1/3)*255])};
   const isHex=h=>/^#?[0-9a-fA-F]{6}$/.test(h);
-  // every face Inkling can wear — the name shown to the user, plus a reading-body it auto-pairs with
-  const FONTS={
-    fraunces:  {f:'"Fraunces",Georgia,serif',           name:'Fraunces'},
-    dmserif:   {f:'"DM Serif Display",Georgia,serif',   name:'DM Serif'},
-    instrument:{f:'"Instrument Serif",Georgia,serif',   name:'Instrument'},
-    grotesk:   {f:'"Space Grotesk",sans-serif',         name:'Grotesk'},
-    poppins:   {f:'"Poppins",system-ui,sans-serif',     name:'Poppins'},
-    notosans:  {f:'"Noto Sans",system-ui,sans-serif',   name:'Noto Sans'},
-    newsreader:{f:'"Newsreader",Georgia,serif',         name:'Newsreader'},
-    mono:      {f:'"Space Mono",ui-monospace,monospace',name:'Space Mono'},
-  };
-  // the six voices you drag through — ordered so every neighbour is a big jump (each scrub feels like a real change).
-  // `char` names the FEELING (taste), `body` is the reading face it pairs with. All six are deliberately distinct.
-  const VOICES=[
-    {key:'fraunces',  char:'Editorial', body:'notosans'},
-    {key:'grotesk',   char:'Modern',    body:'newsreader'},
-    {key:'dmserif',   char:'Dramatic',  body:'notosans'},
-    {key:'poppins',   char:'Friendly',  body:'newsreader'},
-    {key:'instrument',char:'Refined',   body:'notosans'},
-    {key:'mono',      char:'Technical', body:'notosans'},
-  ];
 
-  const state={ step:0, picks:new Set(), dropped:new Set(), edits:{}, history:[], added:[], title:'auto', body:'auto',
-                name:'', weight:500, tracking:0, leading:10, polarity:'auto', seed:0, assign:{}, assignRole:null };
-  // nudge a color toward legibility against bg until it clears `ratio` — keeps its hue, guarantees contrast
-  const readable=(c,bg,ratio)=>{ const toward=lum(bg)<0.5?'#ffffff':'#000000'; let o=c,t=0; while(contrast(o,bg)<ratio&&t<16){o=mix(o,toward,0.1);t++;} return o; };
-  const bestOn=bg=>contrast(bg,'#ffffff')>=contrast(bg,'#111111')?'#ffffff':'#111111'; // legible label color for a colored surface
-  const STEPS=4;
+  // ============ state ============
+  const BEAT={name:0,gather:1,colors:2,type:3,board:4,brand:5,home:6}, BEATS=7;
+  const state={ beat:0, name:'', picks:new Set(), droppedColors:new Set(), edits:{}, history:[], editing:null,
+                typePicks:[], weight:420, typeFilter:'all',
+                items:[], itemsSig:'', homeSig:'',
+                seed:0, assign:{}, polarity:'auto', variations:[], varAt:-1 };
 
-  const poolAll=()=>[...new Set([...state.picks].flatMap(i=>REFS[i].pal))]; // original hexes (stable keys)
-  const disp=h=>state.edits[h]||h;                                          // what a swatch shows after manual adjust
-  const pool=()=>poolAll().filter(h=>!state.dropped.has(h)).map(disp);      // engine reads the adjusted colors
+  const colorPool=()=>{ const seen=new Set(),out=[]; [...state.picks].forEach(i=>REFS[i].pal.forEach(h=>{ if(!seen.has(h)){seen.add(h);out.push(h);} })); return out; };
+  const disp=h=>state.edits[h]||h;                                  // a color's current value after manual adjust
+  const activeOriginals=()=>colorPool().filter(h=>!state.droppedColors.has(h));
+  const activeColors=()=>activeOriginals().map(disp);               // edited values — what the engine + board read
+  const colDist=(a,b)=>{const x=hex2rgb(a),y=hex2rgb(b);return Math.abs(x[0]-y[0])+Math.abs(x[1]-y[1])+Math.abs(x[2]-y[2]);};
+  const dedupeColors=(arr,th=38)=>{const out=[];arr.forEach(h=>{if(!out.some(o=>colDist(o,h)<th))out.push(h);});return out;};
+  // a fuller palette than the old cap of 8 (so your colors are visibly here), but curated:
+  // merge near-identicals, then if still many, keep a luminance-spread set so the board stays composed
+  const boardColorSet=()=>{ const out=[];                          // {orig,hex} so the board can remove by original key
+    activeOriginals().forEach(o=>{ const d=disp(o); if(!out.some(x=>colDist(x.hex,d)<46)) out.push({orig:o,hex:d}); });
+    if(out.length>14){ const s=[...out].sort((a,b)=>lum(a.hex)-lum(b.hex)), step=s.length/14; return Array.from({length:14},(_,i)=>s[Math.floor(i*step)]); }
+    return out; };
+  const boardColors=()=>boardColorSet().map(x=>x.hex);
+  const primaryType=()=>state.typePicks[0]||'fraunces';
 
   function compose(){
-    const p=pool(); if(!p.length) return null;
-    const A=state.assign||{};
-    const byLum=[...p].sort((a,b)=>lum(a)-lum(b));
-    const seed=state.seed||0;
-    // background — pinned value wins; else pick among extreme-luminance colors per polarity, varied by shuffle
+    const p=activeColors(); if(!p.length) return null;
+    const A=state.assign||{}, byLum=[...p].sort((a,b)=>lum(a)-lum(b)), seed=state.seed||0;
     let bg;
     if(A.bg){ bg=A.bg; }
-    else {
-      const avg=p.reduce((s,h)=>s+lum(h),0)/p.length;
-      const pol=(state.polarity&&state.polarity!=='auto')?state.polarity:(avg>0.42?'light':'dark');
-      const lp=pol==='light';
-      const bgCands=lp?byLum.slice(Math.max(0,byLum.length-4)):byLum.slice(0,Math.min(4,byLum.length));
-      const bgBase=bgCands[seed%bgCands.length]||(lp?byLum[byLum.length-1]:byLum[0]);
-      bg=lp?mix(bgBase,'#ffffff',0.42):mix(bgBase,'#000000',0.4);
-    }
-    const polarity=lum(bg)>=0.4?'light':'dark'; // derive from the actual bg so pinned backgrounds behave
-    // accent (button + period) — pinned, else most saturated with usable contrast; clamp to ≥3:1 (large/graphic)
+    else { const avg=p.reduce((s,h)=>s+lum(h),0)/p.length;
+      const pol=(state.polarity&&state.polarity!=='auto')?state.polarity:(avg>0.42?'light':'dark'), lp=pol==='light';
+      const cands=lp?byLum.slice(Math.max(0,byLum.length-4)):byLum.slice(0,Math.min(4,byLum.length));
+      const base=cands[seed%cands.length]||(lp?byLum[byLum.length-1]:byLum[0]);
+      bg=lp?mix(base,'#ffffff',0.42):mix(base,'#000000',0.4); }
+    const polarity=lum(bg)>=0.4?'light':'dark';
     let accent;
-    if(A.accent){ accent=A.accent; }
+    if(A.accent){ accent=readable(A.accent,bg,3); }
     else { const cs=[...p].sort((a,b)=>chroma(b)-chroma(a)).filter(h=>contrast(h,bg)>=2.4); accent=readable(cs.length?cs[seed%cs.length]:[...p].sort((a,b)=>chroma(b)-chroma(a))[0],bg,3); }
-    // ink (title) — pinned, else highest-contrast pool color, guaranteed to clear AA (4.5:1)
     let ink;
-    if(A.ink){ ink=A.ink; }
+    if(A.ink){ ink=readable(A.ink,bg,4.5); }
     else { const c=byLum.filter(h=>h!==accent).sort((a,b)=>contrast(b,bg)-contrast(a,bg))[0]||(polarity==='light'?'#181410':'#f4efe6'); ink=readable(c,bg,4.5); }
-    // subhead — pinned, else best remaining color, also guaranteed AA
     let sub;
-    if(A.sub){ sub=A.sub; }
+    if(A.sub){ sub=readable(A.sub,bg,4.5); }
     else { const c=[...p].filter(h=>h!==ink&&h!==accent).sort((a,b)=>contrast(b,bg)-contrast(a,bg))[0]||mix(ink,bg,0.3); sub=readable(c,bg,4.5); }
-    // title voice — explicit pick, else inferred from palette warmth
-    let titleType=state.title;
-    if(!titleType||titleType==='auto'){const w=p.reduce((s,h)=>s+warmth(h),0)/p.length; titleType=w>0.06?'dmserif':(w<-0.04?'grotesk':'fraunces');}
-    // body voice — explicit pick, else the reading face this voice pairs with
-    let bodyType=state.body;
-    if(!bodyType||bodyType==='auto'){ const v=VOICES.find(v=>v.key===titleType); bodyType=v?v.body:'notosans'; }
-    const titleFont=FONTS[titleType].f, bodyFont=FONTS[bodyType].f;
-    return {bg,ink,accent,sub,font:titleFont,titleFont,bodyFont,titleType,bodyType,type:titleType,polarity};
+    const tk=primaryType();
+    return {bg,ink,accent,sub,polarity,titleFont:FONTS[tk].f,bodyFont:bodyFor(tk),weight:state.weight};
   }
-  function applyPage(r){
-    const s=document.documentElement.style;
-    s.setProperty('--bg',r.bg);s.setProperty('--ink',r.ink);s.setProperty('--accent',r.accent);s.setProperty('--sub',r.sub);
-    s.setProperty('--muted',mix(r.ink,r.bg,0.32));s.setProperty('--faint',mix(r.ink,r.bg,0.48));
-    s.setProperty('--rule',r.ink);s.setProperty('--line',mix(r.ink,r.bg,0.8));s.setProperty('--wm-font',r.font);
+  // paint the whole document in the composed brand (used at Home)
+  function applyBrandGlobal(r){
+    const s=document.documentElement.style, dark=lum(r.bg)<0.42;
+    s.setProperty('--bg',r.bg); s.setProperty('--ink',r.ink); s.setProperty('--accent',r.accent); s.setProperty('--sub',r.sub);
+    s.setProperty('--muted',mix(r.ink,r.bg,0.34)); s.setProperty('--faint',mix(r.ink,r.bg,0.5));
+    s.setProperty('--line',mix(r.ink,r.bg,0.82)); s.setProperty('--rule',r.ink);
+    s.setProperty('--title-font',r.titleFont); s.setProperty('--body-font',r.bodyFont);
+    // derived semantic layer — raised surfaces, legible label-on-accent, ink-tinted elevation
+    s.setProperty('--surface-2', mix(r.bg, dark?'#ffffff':'#ffffff', dark?0.07:0.55));
+    s.setProperty('--surface-3', dark?mix(r.bg,'#ffffff',0.13):'#ffffff');
+    s.setProperty('--on-accent', readable(bestOn(r.accent), r.accent, 4.5));
+    s.setProperty('--focus', r.accent);
+    const sb = dark?'0,0,0':hex2rgb(r.ink).join(',');
+    s.setProperty('--shadow-1',`rgba(${sb},${dark?.45:.07})`);
+    s.setProperty('--shadow-2',`rgba(${sb},${dark?.55:.16})`);
+    s.setProperty('--shadow-3',`rgba(${sb},${dark?.6:.3})`);
   }
+  function clearBrandGlobal(){ const s=document.documentElement.style;
+    ['--bg','--ink','--accent','--sub','--muted','--faint','--line','--rule','--title-font','--body-font',
+     '--surface-2','--surface-3','--on-accent','--focus','--shadow-1','--shadow-2','--shadow-3'].forEach(k=>s.removeProperty(k)); }
 
-  // ---- beat builders ----
+  // ============ beat 0: name ============
+  const nameField=document.getElementById('nameField');
+  nameField.addEventListener('input',()=>{ state.name=nameField.value.replace(/\s+/g,' ').trimStart(); });
+  nameField.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); show(BEAT.gather); } });
+  document.getElementById('nameGo').addEventListener('click',()=>show(BEAT.gather));
+  const poss=()=>state.name?`${state.name}’s`:'Your';
+
+  // ============ beat 1: gather ============
   const wall=document.getElementById('wall');
   REFS.forEach((ref,i)=>{
-    const el=document.createElement('div'); el.className='ref'; el.tabIndex=0; el.setAttribute('role','button');
+    const el=document.createElement('button'); el.className='ref'; el.type='button'; el.setAttribute('aria-pressed','false');
     el.innerHTML=`<img src="${ref.img}" alt="" loading="lazy"/><span class="chk">✓</span>`;
-    const t=()=>{ state.picks.has(i)?state.picks.delete(i):state.picks.add(i); el.classList.toggle('on',state.picks.has(i)); renderGather(); updateNav(); };
-    el.addEventListener('click',t); el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t();}});
+    el.addEventListener('click',()=>{ state.picks.has(i)?state.picks.delete(i):state.picks.add(i);
+      el.classList.toggle('on',state.picks.has(i)); el.setAttribute('aria-pressed',state.picks.has(i)); renderGather(); updateNav(); });
     wall.appendChild(el);
   });
   function renderGather(){
-    const p=poolAll().slice(0,18);
-    const bar=document.getElementById('gatherBar');
-    bar.innerHTML=p.map(h=>`<span style="background:${disp(h)}"></span>`).join('');
-    requestAnimationFrame(()=>bar.querySelectorAll('span').forEach((s,k)=>setTimeout(()=>s.classList.add('f'),k*30)));
+    document.getElementById('gatherH').textContent = state.name?`What feels like you, ${state.name}?`:'What feels like you?';
+    const p=colorPool().slice(0,18), bar=document.getElementById('gatherBar');
+    bar.innerHTML=p.map(h=>`<span style="background:${h}"></span>`).join('');
+    requestAnimationFrame(()=>bar.querySelectorAll('span').forEach((s,k)=>setTimeout(()=>s.classList.add('f'),k*28)));
   }
+
+  // ============ beat 2: colors — see & curate the gathered palette (adjust in context + undo) ============
+  const palette=document.getElementById('palette'), cedit=document.getElementById('cedit'), cePrev=document.getElementById('cePrev'),
+        ceHue=document.getElementById('ceHue'), ceLight=document.getElementById('ceLight'), ceHex=document.getElementById('ceHex'), undoBtn=document.getElementById('undoBtn');
+  const snap=()=>({edits:{...state.edits},dropped:[...state.droppedColors]});
+  function pushHist(s){ state.history.push(s||snap()); refreshUndo(); }
+  function refreshUndo(){ undoBtn.hidden=state.history.length===0; }
+  function doUndo(){ if(!state.history.length)return; const s=state.history.pop(); state.edits=s.edits; state.droppedColors=new Set(s.dropped); renderPalette(); if(cedit.classList.contains('on')) paintEditor(disp(state.editing)); refreshUndo(); }
+  let cPending=null; const beginGesture=()=>{ if(!cPending) cPending=snap(); };
+  const commitGesture=()=>{ if(cPending){ if(JSON.stringify(cPending)!==JSON.stringify(snap())) pushHist(cPending); cPending=null; } };
   function renderPalette(){
-    const box=document.getElementById('palette'); const p=poolAll();
-    box.innerHTML=p.map(h=>{const d=disp(h);return `<div class="pcell ${state.dropped.has(h)?'off':''} ${state.edits[h]?'edited':''}" data-hex="${h}" tabindex="0" role="button" aria-label="Color ${d}, tap to adjust" style="background:${d}"><span class="x" role="button" aria-label="Remove ${d}">✕</span><span class="hex">${d}</span></div>`;}).join('');
-    box.querySelectorAll('.pcell').forEach(c=>{
-      const h=c.dataset.hex;
-      const remove=e=>{e.stopPropagation();pushHist();state.dropped.has(h)?state.dropped.delete(h):state.dropped.add(h);c.classList.toggle('off',state.dropped.has(h));};
+    document.getElementById('colorsH').textContent = state.name?`${state.name}’s colors.`:'Your colors.';
+    const p=colorPool();
+    palette.innerHTML=p.map(h=>{const d=disp(h);return `<button class="pcell ${state.droppedColors.has(h)?'off':''} ${state.edits[h]?'edited':''}" data-hex="${h}" aria-label="Color ${d}, tap to adjust" style="background:${d}"><span class="x" role="button" aria-label="Remove ${d}">✕</span><span class="hex">${d}</span></button>`;}).join('');
+    palette.querySelectorAll('.pcell').forEach(c=>{ const h=c.dataset.hex;
+      const remove=e=>{e.stopPropagation();pushHist();state.droppedColors.has(h)?state.droppedColors.delete(h):state.droppedColors.add(h);c.classList.toggle('off',state.droppedColors.has(h));};
       c.querySelector('.x').addEventListener('click',remove);
-      c.addEventListener('click',()=>{ if(state.dropped.has(h)){pushHist();state.dropped.delete(h);c.classList.remove('off');return;} openEdit(h); });
-      c.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!state.dropped.has(h))openEdit(h);} else if(e.key==='Backspace'||e.key==='Delete'){e.preventDefault();remove(e);} });
-    });
+      c.addEventListener('click',()=>{ if(state.droppedColors.has(h)){pushHist();state.droppedColors.delete(h);c.classList.remove('off');return;} openEdit(h); }); });
     if(cedit.classList.contains('on')) selectCell(state.editing);
     refreshUndo();
   }
-
-  // ---- manual color-adjust: edit in context, with undo ----
-  const cedit=document.getElementById('cedit'), cePrev=document.getElementById('cePrev'),
-        ceHue=document.getElementById('ceHue'), ceLight=document.getElementById('ceLight'), ceHex=document.getElementById('ceHex'),
-        undoBtn=document.getElementById('undoBtn');
-  // history — snapshots of {edits, dropped}; undo steps back through adjusts AND removals
-  const snap=()=>({edits:{...state.edits},dropped:[...state.dropped]});
-  function pushHist(s){ state.history.push(s||snap()); refreshUndo(); }
-  function refreshUndo(){ undoBtn.hidden=state.history.length===0; }
-  function undo(){ if(!state.history.length)return; const s=state.history.pop(); state.edits=s.edits; state.dropped=new Set(s.dropped); renderPalette(); if(cedit.classList.contains('on')) paintEditor(disp(state.editing)); refreshUndo(); }
-  // gesture batching — one undo step per slider drag / hex entry, not per pixel
-  let pending=null;
-  const beginGesture=()=>{ if(!pending) pending=snap(); };
-  const commitGesture=()=>{ if(pending){ if(JSON.stringify(pending)!==JSON.stringify(snap())) pushHist(pending); pending=null; } };
-
-  function selectCell(orig){ document.querySelectorAll('.pcell.sel').forEach(c=>c.classList.remove('sel')); const c=document.querySelector(`.pcell[data-hex="${orig}"]`); if(c)c.classList.add('sel'); }
-  function liveCell(orig){ const c=document.querySelector(`.pcell[data-hex="${orig}"]`); if(!c)return; const d=disp(orig); c.style.background=d; const hx=c.querySelector('.hex'); if(hx)hx.textContent=d; c.classList.toggle('edited',!!state.edits[orig]); }
+  function selectCell(orig){ palette.querySelectorAll('.pcell.sel').forEach(c=>c.classList.remove('sel')); const c=palette.querySelector(`.pcell[data-hex="${orig}"]`); if(c)c.classList.add('sel'); }
+  function liveCell(orig){ const c=palette.querySelector(`.pcell[data-hex="${orig}"]`); if(!c)return; const d=disp(orig); c.style.background=d; const hx=c.querySelector('.hex'); if(hx)hx.textContent=d; c.classList.toggle('edited',!!state.edits[orig]); }
   function paintEditor(h){ cePrev.style.background=h; ceHex.value=h.replace('#',''); const[hue,s,l]=rgb2hsl(hex2rgb(h)); ceHue.value=Math.round(hue); ceLight.value=Math.round(l);
     ceHue.style.background='linear-gradient(90deg,'+[0,60,120,180,240,300,360].map(d=>hsl2hex(d,Math.max(s,55),55)).join(',')+')';
     ceLight.style.background='linear-gradient(90deg,'+[0,25,50,75,100].map(L=>hsl2hex(hue,s,L)).join(',')+')';
     document.getElementById('ceReset').disabled=!state.edits[state.editing]; }
   function setEdit(h){ const orig=state.editing; if(h.toLowerCase()===orig.toLowerCase()) delete state.edits[orig]; else state.edits[orig]=h; paintEditor(h); liveCell(orig); document.getElementById('ceReset').disabled=!state.edits[orig]; }
   function openEdit(orig){ state.editing=orig; selectCell(orig); paintEditor(disp(orig)); cedit.classList.add('on'); setTimeout(()=>ceHue.focus({preventScroll:true}),60); }
-  function closeEdit(){ cedit.classList.remove('on'); document.querySelectorAll('.pcell.sel').forEach(c=>c.classList.remove('sel')); const c=document.querySelector(`.pcell[data-hex="${state.editing}"]`); if(c)c.focus({preventScroll:true}); state.editing=null; }
+  function closeEdit(){ cedit.classList.remove('on'); palette.querySelectorAll('.pcell.sel').forEach(c=>c.classList.remove('sel')); state.editing=null; }
   function fromSliders(){ const[,s]=rgb2hsl(hex2rgb(disp(state.editing))); setEdit(hsl2hex(+ceHue.value,s,+ceLight.value)); }
-  const arrowKeys=['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-  [ceHue,ceLight].forEach(sl=>{ sl.addEventListener('pointerdown',beginGesture); sl.addEventListener('keydown',e=>{if(arrowKeys.includes(e.key))beginGesture();}); sl.addEventListener('input',fromSliders); sl.addEventListener('change',commitGesture); });
+  const cArrows=['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+  [ceHue,ceLight].forEach(sl=>{ sl.addEventListener('pointerdown',beginGesture); sl.addEventListener('keydown',e=>{if(cArrows.includes(e.key))beginGesture();}); sl.addEventListener('input',fromSliders); sl.addEventListener('change',commitGesture); });
   ceHex.addEventListener('focus',beginGesture);
   ceHex.addEventListener('input',()=>{ const v=ceHex.value.trim(); if(isHex(v)) setEdit('#'+v.replace('#','').toLowerCase()); });
   ceHex.addEventListener('blur',commitGesture);
   document.getElementById('ceDone').addEventListener('click',()=>{ commitGesture(); closeEdit(); });
   document.getElementById('ceReset').addEventListener('click',()=>{ if(!state.edits[state.editing])return; pushHist(); delete state.edits[state.editing]; liveCell(state.editing); paintEditor(state.editing); });
-  undoBtn.addEventListener('click',undo);
-  document.addEventListener('keydown',e=>{ if(state.step!==1)return;
-    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){ e.preventDefault(); undo(); }
+  undoBtn.addEventListener('click',doUndo);
+  document.addEventListener('keydown',e=>{ if(state.beat!==BEAT.colors)return;
+    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){ e.preventDefault(); doUndo(); }
     else if(e.key==='Escape'&&cedit.classList.contains('on')){ e.preventDefault(); closeEdit(); } });
-  // ---- beat 3: the playground — anchor on your name, play the letters with your hands ----
-  const playWord=document.getElementById('playWord'), wl1=document.getElementById('wl1'), wl2=document.getElementById('wl2'),
-        leadGrip=document.getElementById('leadGrip'), nameInput=document.getElementById('nameInput');
-  // open on Fraunces — our signature, and fully variable so the weight drag is alive on the first touch
-  function curFace(){ if(state.title==='auto'||!VOICES.some(v=>v.key===state.title)){ state.title='fraunces'; } return state.title; }
-  function applyType(){ // push weight / tracking / leading / face onto the live word
-    const f=FONTS[curFace()].f;
-    playWord.style.fontFamily=f;
-    wl1.style.fontWeight=wl2.style.fontWeight=Math.round(state.weight);
-    wl1.style.letterSpacing=wl2.style.letterSpacing=state.tracking.toFixed(3)+'em';
-    leadGrip.style.setProperty('--leadGap',state.leading+'px');
-  }
-  function renderPlay(){
-    nameInput.value=state.name;
-    wl1.textContent=state.name?`${state.name}’s`:'Your';
-    applyType();
-    const sn=document.getElementById('styleName'); const v=VOICES.find(v=>v.key===curFace());
-    sn.textContent=FONTS[curFace()].name+(v?' · '+v.char:'');
-  }
-  // name — the anchor. live-updates the possessive line.
-  nameInput.addEventListener('input',()=>{ state.name=nameInput.value.replace(/\s+/g,' ').trimStart(); wl1.textContent=state.name?`${state.name}’s`:'Your'; });
-  nameInput.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();nameInput.blur();playWord.focus();} });
-  // shuffle the style — keeps your weight/spacing sculpt, tries it on a different face
-  function shuffleStyle(){ const i=VOICES.findIndex(v=>v.key===curFace()); state.title=VOICES[(i+1+VOICES.length)%VOICES.length].key; state.body='auto';
-    playWord.classList.remove('shuffling'); void playWord.offsetWidth; playWord.classList.add('shuffling'); renderPlay(); }
-  document.getElementById('shuffleStyle').addEventListener('click',shuffleStyle);
-  // weight + spacing — drag the word itself. up/down = weight, left/right = letter-spacing. both at once = play.
-  let pdrag=null;
-  playWord.addEventListener('pointerdown',e=>{ if(state.step!==2||e.target===leadGrip)return; playWord.classList.add('touched','grabbing');
-    pdrag={x:e.clientX,y:e.clientY,w:state.weight,t:state.tracking}; try{playWord.setPointerCapture(e.pointerId);}catch(_){} });
-  playWord.addEventListener('pointermove',e=>{ if(!pdrag)return;
-    state.weight=Math.max(100,Math.min(900,pdrag.w-(e.clientY-pdrag.y)*1.3));      // drag up → heavier
-    state.tracking=Math.max(-0.06,Math.min(0.42,pdrag.t+(e.clientX-pdrag.x)*0.0011)); // drag right → looser
-    applyType(); });
-  const endPDrag=()=>{ if(!pdrag)return; pdrag=null; playWord.classList.remove('grabbing'); };
-  playWord.addEventListener('pointerup',endPDrag); playWord.addEventListener('pointercancel',endPDrag);
-  // leading — the grip between the lines. drag it to open or close the gap.
-  let ldrag=null;
-  leadGrip.addEventListener('pointerdown',e=>{ e.stopPropagation(); ldrag={y:e.clientY,l:state.leading}; playWord.classList.add('touched');
-    try{leadGrip.setPointerCapture(e.pointerId);}catch(_){} });
-  leadGrip.addEventListener('pointermove',e=>{ if(!ldrag)return; state.leading=Math.max(-18,Math.min(120,ldrag.l+(e.clientY-ldrag.y))); applyType(); });
-  const endLDrag=()=>{ ldrag=null; };
-  leadGrip.addEventListener('pointerup',endLDrag); leadGrip.addEventListener('pointercancel',endLDrag);
-  // keyboard play — arrows nudge weight (↑↓) and spacing (←→); space shuffles the style
-  playWord.addEventListener('keydown',e=>{
-    if(e.key==='ArrowUp'){e.preventDefault();playWord.classList.add('touched');state.weight=Math.min(900,state.weight+50);applyType();}
-    else if(e.key==='ArrowDown'){e.preventDefault();playWord.classList.add('touched');state.weight=Math.max(100,state.weight-50);applyType();}
-    else if(e.key==='ArrowRight'){e.preventDefault();playWord.classList.add('touched');state.tracking=Math.min(0.42,state.tracking+0.02);applyType();}
-    else if(e.key==='ArrowLeft'){e.preventDefault();playWord.classList.add('touched');state.tracking=Math.max(-0.06,state.tracking-0.02);applyType();} });
-  document.addEventListener('keydown',e=>{ if(state.step!==2)return;
-    if(e.code==='Space' && e.target!==nameInput){ e.preventDefault(); playWord.classList.add('touched'); shuffleStyle(); } });
-  const ROLE_DEFS=[{k:'bg',label:'Background'},{k:'ink',label:'Title'},{k:'sub',label:'Subhead'},{k:'accent',label:'Button'}];
-  const roleColor=(r,k)=>k==='bg'?r.bg:k==='ink'?r.ink:k==='sub'?r.sub:r.accent;
-  // the contrast each part owes its background — the actual WCAG rule, named so it teaches
-  const ROLE_AA={ ink:{ratio:3,std:'AA Large',note:'The title is large text — it needs 3:1.'},
-                  sub:{ratio:4.5,std:'AA',note:'The subhead is body text — it needs 4.5:1.'},
-                  accent:{ratio:3,std:'AA',note:'The button & accent need 3:1 to stand out.'}, bg:null };
-  function renderReveal(){
-    const r=compose(); if(!r) return;
-    applyPage(r);
-    const wm=document.getElementById('revWm'); wm.style.fontFamily=r.titleFont; wm.style.color=r.ink; wm.style.fontWeight=Math.round(state.weight); // the sculpted weight carries through
-    const rn=document.getElementById('revName'); rn.textContent=state.name?`${state.name}’s`:''; rn.style.fontFamily=r.titleFont; rn.style.color=r.sub; // the name carries through
-    document.getElementById('revDot').style.color=r.accent;
-    const lead=document.querySelector('.revLead'); if(lead) lead.style.fontFamily=r.titleFont;       // title voice
-    const tag=document.getElementById('revTag'); tag.style.color=r.sub; tag.style.fontFamily=r.bodyFont; // body voice
-    const sb=document.getElementById('revSample'); sb.style.background=r.accent; sb.style.color=bestOn(r.accent);
-    // role row — current color per part, pin state, and an honest contrast flag on overrides
-    const roles=document.getElementById('roles');
-    roles.innerHTML=ROLE_DEFS.map(d=>{
-      const c=roleColor(r,d.k), pinned=!!(state.assign&&state.assign[d.k]);
-      const aa=ROLE_AA[d.k]; const warn=aa&&contrast(c,r.bg)<aa.ratio;
-      return `<button class="role ${pinned?'pinned':''}" data-role="${d.k}"><span class="rsw" style="background:${c}"></span><span class="rmeta"><span class="rl">${d.label}${pinned?' <span class="lock">●</span>':''}</span><span class="rhex ${warn?'warn':''}">${warn?'⚠ low contrast':c}</span></span></button>`;
-    }).join('');
-    roles.querySelectorAll('.role').forEach(b=>b.addEventListener('click',()=>openAssign(b.dataset.role)));
-    document.querySelectorAll('#segPolarity button').forEach(b=>b.classList.toggle('on', b.dataset.pol===r.polarity));
-    wm.classList.remove('pop'); void wm.offsetWidth; wm.classList.add('pop');
-  }
-  // assign popover — tap a part, choose a color from the gathered palette, or hand it back to Auto
-  const assignPop=document.getElementById('assignPop');
-  // when a background is the constraint, name what's happening instead of letting a wall of dim swatches read as the user's failure
-  function bgGuidance(bg){ const L=lum(bg);
-    if(L>=0.6) return 'On a light background, text needs to be dark to read clearly. Few mid-tones will qualify.';
-    if(L<=0.16) return 'On a dark background, text needs to be light to read clearly.';
-    return 'On a mid-tone background, only very light or very dark text reads clearly. That’s expected. Keep the bold color here, and use light or dark text.'; }
-  // group labels read differently for text you read vs a fill that must stand out
-  const GROUP_LABELS={ text:{clear:'Reads clearly',faint:'Too faint here'}, fill:{clear:'Stands out',faint:'Blends into the background'} };
-  // a swatch is a *preview*, not a score: text roles show the word in that color on your bg; the button shows the color as a chip on your bg
-  function tile(g,cur,bg,font,kind){
-    const inner = kind==='fill' ? `<span class="chip" style="background:${g.h}"></span>` : `<span class="smp" style="color:${g.h};font-family:${font}">Ag</span>`;
-    return `<button class="apc prev ${cur===g.h?'on':''}" data-hex="${g.h}" style="background:${bg}" title="${g.cr.toFixed(1)}:1" aria-label="${g.h}, contrast ${g.cr.toFixed(1)} to 1, ${g.pass?'reads clearly':'too faint'}">${inner}</button>`;
-  }
-  function openAssign(role){
-    state.assignRole=role; const p=pool(); const cur=state.assign&&state.assign[role];
-    const r=compose(); const bg=r.bg; const aa=ROLE_AA[role]; const label=ROLE_DEFS.find(d=>d.k===role).label;
-    let body;
-    if(aa){
-      const kind=role==='accent'?'fill':'text', L=GROUP_LABELS[kind];
-      const graded=p.map(h=>({h,cr:contrast(h,bg),pass:contrast(h,bg)>=aa.ratio})).sort((a,b)=>b.cr-a.cr);
-      const clear=graded.filter(g=>g.pass), faint=graded.filter(g=>!g.pass);
-      const insight=(clear.length/graded.length<0.4)?`<div class="apInsight">${bgGuidance(bg)}</div>`:'';
-      const group=(title,arr,cls,note)=>arr.length?`<div class="apGroup ${cls}"><div class="apGl">${title}${note?`<span class="apGlNote">${note}</span>`:''}</div><div class="apSw">${arr.map(g=>tile(g,cur,bg,r.font,kind)).join('')}</div></div>`:'';
-      body=insight
-        +group(L.clear,clear,'','Meets accessibility contrast on this background.')
-        +group(L.faint,faint,'faint','Below the accessibility standard with this background. Still usable, not recommended.')
-        +`<div class="apSw apAutoRow"><button class="apAuto ${cur?'':'on'}">Use Auto</button></div>`;
-    } else {
-      body=`<div class="apSw">${p.map(h=>`<button class="apc ${cur===h?'on':''}" data-hex="${h}" style="background:${h}" aria-label="${h}"></button>`).join('')}<button class="apAuto ${cur?'':'on'}">Use Auto</button></div>`;
-    }
-    assignPop.innerHTML=`<div class="apHead">Assign <b>${label}</b>${aa?`<button class="apWhy" type="button">Why?</button>`:''}</div>`
-      +(aa?`<div class="apWhyBox" hidden>Contrast is the lightness gap between text and its background. “Reads clearly” means it meets the WCAG standard for that text size. Large text (the title) needs less contrast than small text (the subhead).</div>`:'')
-      +body+`<div class="apTeach" hidden></div>`;
-    assignPop.querySelectorAll('.apc').forEach(c=>c.addEventListener('click',()=>chooseSwatch(role,c.dataset.hex)));
-    assignPop.querySelector('.apAuto').addEventListener('click',()=>{ if(state.assign)delete state.assign[role]; closeAssign(); renderReveal(); });
-    const why=assignPop.querySelector('.apWhy'); if(why)why.addEventListener('click',()=>{ const b=assignPop.querySelector('.apWhyBox'); b.hidden=!b.hidden; why.classList.toggle('on',!b.hidden); });
-    assignPop.hidden=false; requestAnimationFrame(()=>assignPop.classList.add('on'));
-  }
-  function chooseSwatch(role,hex){
-    const aa=ROLE_AA[role]; const bg=compose().bg; const cr=aa?contrast(hex,bg):99;
-    if(aa && cr<aa.ratio){ // teachable moment — don't block, explain and offer the fix
-      const fixed=readable(hex,bg,aa.ratio); const teach=assignPop.querySelector('.apTeach');
-      assignPop.querySelectorAll('.apc').forEach(c=>c.classList.toggle('on',c.dataset.hex===hex));
-      teach.hidden=false;
-      const verb=role==='accent'?'blends into your background':'is faint on your background';
-      teach.innerHTML=`<div class="apWarn">This color ${verb}.</div>`+
-        `<div class="apTeachBtns"><button class="apFix">Make it readable</button><button class="apAnyway">Use it anyway</button></div>`;
-      teach.querySelector('.apFix').addEventListener('click',()=>{ (state.assign=state.assign||{})[role]=fixed; closeAssign(); renderReveal(); });
-      teach.querySelector('.apAnyway').addEventListener('click',()=>{ (state.assign=state.assign||{})[role]=hex; closeAssign(); renderReveal(); });
-      return;
-    }
-    (state.assign=state.assign||{})[role]=hex; closeAssign(); renderReveal();
-  }
-  function closeAssign(){ assignPop.classList.remove('on'); assignPop.hidden=true; state.assignRole=null; }
-  // tapping the live elements opens that part's picker directly
-  document.getElementById('revWm').addEventListener('click',e=>{ if(e.target.id==='revDot'){openAssign('accent');} else openAssign('ink'); });
-  document.getElementById('revTag').addEventListener('click',()=>openAssign('sub'));
-  document.getElementById('revSample').addEventListener('click',()=>openAssign('accent'));
-  document.addEventListener('click',e=>{ if(state.step===3 && assignPop.classList.contains('on') && !assignPop.contains(e.target) && !e.target.closest('.role,#revWm,#revTag,#revSample')) closeAssign(); });
-  function shuffleBrand(){ if(assignPop.classList.contains('on'))closeAssign(); state.seed=(state.seed||0)+1; renderReveal(); } // keeps the chosen font + pinned roles; reshuffles the rest
-  document.getElementById('shuffleBtn').addEventListener('click',shuffleBrand);
-  document.getElementById('segPolarity').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;state.polarity=b.dataset.pol;renderReveal();});
-  // spacebar shuffles on the reveal regardless of which control holds focus; preventDefault stops a focused button from also firing
-  document.addEventListener('keydown',e=>{
-    if(state.step!==3) return;
-    if(e.key==='Escape' && assignPop.classList.contains('on')){ e.preventDefault(); closeAssign(); return; }
-    if(e.code==='Space' && !/INPUT|TEXTAREA/.test(e.target.tagName||'')){ e.preventDefault(); shuffleBrand(); }
-  });
 
-  // ---- step machine ----
+  // ============ beat 2: type — the specimen wall ============
+  const specWall=document.getElementById('specWall'), weightSlider=document.getElementById('weight'), weightVal=document.getElementById('weightVal');
+  const CATS=[['all','All'],['serif','Serif'],['sans','Sans'],['mono','Mono']];
+  const filterRow=document.getElementById('filterRow');
+  filterRow.innerHTML=CATS.map(([k,l])=>`<button class="fchip ${k==='all'?'on':''}" data-cat="${k}">${l}</button>`).join('');
+  filterRow.querySelectorAll('.fchip').forEach(c=>c.addEventListener('click',()=>{ state.typeFilter=c.dataset.cat;
+    filterRow.querySelectorAll('.fchip').forEach(x=>x.classList.toggle('on',x===c)); renderSpecs(); }));
+  function renderSpecs(){
+    document.getElementById('typeH').textContent = state.name?`Find your voice, ${state.name}.`:'Find your voice.';
+    const word=poss();
+    const keys=FONT_KEYS.filter(k=>state.typeFilter==='all'||FONTS[k].cat===state.typeFilter);
+    const SPANS=[7,5, 4,4,4, 6,6, 5,7, 4,4,4];                  // editorial mosaic rhythm (wraps for any count)
+    const sizeFor=s=>s>=7?58:s>=6?50:s>=5?44:36, hFor=s=>s>=7?172:s>=6?154:s>=5?140:122;
+    specWall.innerHTML=keys.map((k,i)=>{ const F=FONTS[k], on=state.typePicks.includes(k), primary=state.typePicks[0]===k;
+      const span=SPANS[i%SPANS.length], ss=sizeFor(span);
+      return `<button class="spec ${on?'on':''} ${primary?'primary':''}" data-k="${k}" style="grid-column:span ${span};--ss:${ss}px;min-height:${hFor(span)}px;font-family:${F.f}">
+        <span class="specName"><span>${F.name}</span><span class="cat">${F.char}</span></span>
+        <span class="specWord">
+          <span class="specSmall" style="font-weight:${Math.min(state.weight,500)}">${word}</span>
+          <span class="specBig" style="font-weight:${state.weight}">inkling<span class="dot">.</span></span>
+        </span>
+        <span class="keep">＋ keep</span>
+        <span class="pick">✓</span>
+        <span class="star" data-star="${k}" role="button" tabindex="-1">${primary?'★ primary':'set primary'}</span>
+      </button>`; }).join('');
+    specWall.querySelectorAll('.spec').forEach(c=>{
+      c.addEventListener('click',e=>{ if(e.target.closest('.star'))return; toggleType(c.dataset.k); });
+      const star=c.querySelector('.star'); star.addEventListener('click',e=>{ e.stopPropagation(); makePrimary(c.dataset.k); });
+    });
+    renderTypeTray();
+  }
+  function toggleType(k){ const i=state.typePicks.indexOf(k);
+    if(i>=0) state.typePicks.splice(i,1); else if(state.typePicks.length<5) state.typePicks.push(k);
+    renderSpecs(); updateNav(); }
+  function makePrimary(k){ if(!state.typePicks.includes(k)) state.typePicks.unshift(k);
+    else { state.typePicks.splice(state.typePicks.indexOf(k),1); state.typePicks.unshift(k); }
+    renderSpecs(); updateNav(); }
+  function renderTypeTray(){ const t=document.getElementById('typeTray'); const n=state.typePicks.length;
+    t.textContent = n? `${n} face${n>1?'s':''} collected · primary: ${FONTS[primaryType()].name}` : 'Tap a face to collect it. The first becomes your primary.'; }
+  weightSlider.addEventListener('input',()=>{ state.weight=+weightSlider.value; weightVal.textContent=state.weight;
+    specWall.querySelectorAll('.spec').forEach(c=>{ c.querySelector('.specBig').style.fontWeight=state.weight; c.querySelector('.specSmall').style.fontWeight=Math.min(state.weight,500); }); });
+
+  // ============ shared: the draggable item system (moodboard + home) ============
+  function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
+  // tap an item to cycle its shape — contained, but it feels like freedom.
+  // shape sets are per-content: images/colors get the full range; type stays text-safe (no shape that clips the word).
+  const SHAPES={
+    image:['14px','50%','3px','46% 54% 57% 43% / 52% 44% 56% 48%','54% 54% 12px 12px','999px'], // rounded·round·square·blob·arch·capsule
+    color:['14px','50%','3px','46% 54% 57% 43% / 52% 44% 56% 48%','54% 54% 12px 12px','999px'],
+    type: ['14px','3px','54% 54% 14px 14px'],                                                    // rounded·square·arch (text always clears)
+  };
+  const shapesFor=it=>SHAPES[it.kind]||SHAPES.image;
+  function applyShape(it){ const b=it.el&&it.el.querySelector('.body'); if(b) b.style.borderRadius=shapesFor(it)[it.shape||0]; }
+  function cycleShape(it){ const L=shapesFor(it); it.shape=((it.shape||0)+1)%L.length; applyShape(it); }
+  function makeItem(host,it,bounds){
+    const el=document.createElement('button'); el.type='button'; el.className=`it it-${it.kind}`; el.tabIndex=0;
+    el.style.width=it.w+'px'; el.style.height=it.h+'px';
+    let inner='';
+    if(it.kind==='image') inner=`<span class="body"><img src="${it.src}" alt=""/></span>`;
+    else if(it.kind==='color') inner=`<span class="body" style="background:${it.hex}"><span class="hex">${it.hex}</span></span>`;
+    else inner=`<span class="body"><span class="tName">${FONTS[it.key].name}</span><span class="tWord" style="font-family:${FONTS[it.key].f};font-weight:${clamp(it.weight,300,700)};font-size:${Math.round(it.h*0.34)}px">inkling<span class="dot">.</span></span></span>`;
+    el.innerHTML=inner+`<span class="rt" aria-hidden="true">⟳</span><span class="rm" role="button" aria-label="Remove">✕</span><span class="rz" aria-hidden="true"></span>`+(it.kind==='image'?`<span class="rf" aria-hidden="true">✛</span>`:'');
+    el.setAttribute('aria-label',it.label+' Tap to reshape; drag to move; corner to resize; twist to rotate.');
+    host.appendChild(el); it.el=el; place(it); applyShape(it);
+    // reposition + layer (bring to front) + tap-to-reshape (a tap that didn't drag cycles the shape)
+    let d=null;
+    el.addEventListener('pointerdown',e=>{ if(e.target.closest('.rm')||e.target.closest('.rz')||e.target.closest('.rt'))return; bringFront(host,it); it.el.classList.add('grab');
+      d={px:e.clientX,py:e.clientY,x:it.x,y:it.y,moved:false}; try{el.setPointerCapture(e.pointerId);}catch(_){} });
+    el.addEventListener('pointermove',e=>{ if(!d)return; const b=bounds();
+      if(Math.abs(e.clientX-d.px)+Math.abs(e.clientY-d.py)>5) d.moved=true;
+      it.x=clamp(d.x+(e.clientX-d.px),-it.w*0.35,b.w-it.w*0.65); it.y=clamp(d.y+(e.clientY-d.py),-it.h*0.3,b.h-it.h*0.7); place(it); });
+    const end=()=>{ if(!d)return; const tap=!d.moved; d=null; el.classList.remove('grab'); if(tap) cycleShape(it); };
+    el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end);
+    el.querySelector('.rm').addEventListener('click',e=>{ e.stopPropagation(); removeItem(it); });
+    // rotate — twist the top-left handle around the item's center
+    const rt=el.querySelector('.rt'); let td=null;
+    rt.addEventListener('pointerdown',e=>{ e.stopPropagation(); const r=el.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height/2;
+      td={cx,cy,start:Math.atan2(e.clientY-cy,e.clientX-cx)*180/Math.PI,rot:it.rot}; try{rt.setPointerCapture(e.pointerId);}catch(_){} });
+    rt.addEventListener('pointermove',e=>{ if(!td)return; const a=Math.atan2(e.clientY-td.cy,e.clientX-td.cx)*180/Math.PI; it.rot=Math.round(td.rot+(a-td.start)); place(it); });
+    const rtEnd=()=>{ td=null; }; rt.addEventListener('pointerup',rtEnd); rt.addEventListener('pointercancel',rtEnd);
+    // resize — drag the corner; keeps aspect, scales the type card's wordmark with it
+    const rz=el.querySelector('.rz'); let rd=null;
+    rz.addEventListener('pointerdown',e=>{ e.stopPropagation(); rd={px:e.clientX,w:it.w,ratio:it.h/it.w}; try{rz.setPointerCapture(e.pointerId);}catch(_){} });
+    rz.addEventListener('pointermove',e=>{ if(!rd)return; const b=bounds();
+      const nw=clamp(rd.w+(e.clientX-rd.px),56,Math.min(560,b.w-it.x-8)); it.w=Math.round(nw); it.h=Math.round(nw*rd.ratio);
+      el.style.width=it.w+'px'; el.style.height=it.h+'px';
+      if(it.kind==='type'){ const tw=el.querySelector('.tWord'); if(tw) tw.style.fontSize=Math.round(it.h*0.34)+'px'; }
+      place(it); });
+    const rzEnd=()=>{ rd=null; }; rz.addEventListener('pointerup',rzEnd); rz.addEventListener('pointercancel',rzEnd);
+    // reframe (images) — drag to pan the photo inside its shape, so you choose what shows
+    const rf=el.querySelector('.rf');
+    if(rf){ const img=el.querySelector('img'); it.fx=it.fx??50; it.fy=it.fy??50; img.style.objectPosition=`${it.fx}% ${it.fy}%`; let fd=null;
+      rf.addEventListener('pointerdown',e=>{ e.stopPropagation(); fd={px:e.clientX,py:e.clientY,fx:it.fx,fy:it.fy}; try{rf.setPointerCapture(e.pointerId);}catch(_){} });
+      rf.addEventListener('pointermove',e=>{ if(!fd)return; it.fx=clamp(fd.fx-(e.clientX-fd.px)*0.32,0,100); it.fy=clamp(fd.fy-(e.clientY-fd.py)*0.32,0,100); img.style.objectPosition=`${it.fx}% ${it.fy}%`; });
+      const fe=()=>{fd=null;}; rf.addEventListener('pointerup',fe); rf.addEventListener('pointercancel',fe); }
+    el.addEventListener('keydown',e=>{ const S=22, b=bounds();
+      if(e.key==='ArrowUp'){e.preventDefault();it.y=clamp(it.y-S,-it.h*0.3,b.h-it.h*0.7);place(it);}
+      else if(e.key==='ArrowDown'){e.preventDefault();it.y=clamp(it.y+S,-it.h*0.3,b.h-it.h*0.7);place(it);}
+      else if(e.key==='ArrowLeft'){e.preventDefault();it.x=clamp(it.x-S,-it.w*0.35,b.w-it.w*0.65);place(it);}
+      else if(e.key==='ArrowRight'){e.preventDefault();it.x=clamp(it.x+S,-it.w*0.35,b.w-it.w*0.65);place(it);}
+      else if(e.key==='Enter'||e.key===' '){e.preventDefault();bringFront(host,it);cycleShape(it);}     // tap = reshape
+      else if(e.key==='r'||e.key==='R'){e.preventDefault();it.rot=Math.round((it.rot||0)+15);place(it);} // rotate
+      else if(e.key==='Backspace'||e.key==='Delete'){e.preventDefault();removeItem(it);} });
+  }
+  function place(it){ it.el.style.transform=`translate(${it.x}px,${it.y}px) rotate(${it.rot}deg)`; it.el.style.zIndex=it.z; }
+  function bringFront(host,it){ const max=Math.max(0,...state.items.map(x=>x.z||0)); it.z=max+1; it.el.style.zIndex=it.z; }
+  function removeItem(it){ if(it.locked){return;} const i=state.items.indexOf(it); if(i<0)return;
+    if(it.kind==='image'){ state.picks.delete(it.refIndex); }
+    else if(it.kind==='color'){ state.droppedColors.add(it.orig); }
+    else if(it.kind==='type'){ const ti=state.typePicks.indexOf(it.key); if(ti>=0)state.typePicks.splice(ti,1); }
+    state.items.splice(i,1); it.el.remove(); }
+
+  // build the composite moodboard items from everything gathered
+  function buildItems(){
+    const board=document.getElementById('board'); board.querySelectorAll('.it').forEach(e=>e.remove());
+    state.items=[];
+    const W=board.clientWidth||900, H=board.clientHeight||500;
+    const iw=Math.round(Math.min(W*0.135,172)), imgs=[...state.picks], cols=boardColorSet(), types=state.typePicks.slice(0,3);
+    const units=[];
+    imgs.forEach(i=>units.push({kind:'image',refIndex:i,src:REFS[i].img,w:iw,h:Math.round(iw*1.2),label:'Image you gathered'}));
+    cols.forEach(c=>units.push({kind:'color',hex:c.hex,orig:c.orig,w:84,h:84,label:`Color ${c.hex}`}));
+    types.forEach(k=>units.push({kind:'type',key:k,weight:state.weight,w:196,h:Math.round(iw*1.2*0.62),label:`Type: ${FONTS[k].name}`}));
+    units.forEach((u,k)=>u._k=k);
+    // interleave the media so the board MIXES (image · color · type) instead of banding by kind
+    const buck={image:units.filter(u=>u.kind==='image'),color:units.filter(u=>u.kind==='color'),type:units.filter(u=>u.kind==='type')};
+    const order=[]; for(let go=true;go;){ go=false; ['image','color','type'].forEach(kd=>{ if(buck[kd].length){ order.push(buck[kd].shift()); go=true; } }); }
+    // shelf-pack into centered rows — a composed contact sheet, tidy gaps, then a touch of jitter for life
+    const gap=15, margin=16, maxW=W-margin*2, rows=[]; let row=[], rw=0;
+    order.forEach(u=>{ if(rw>0 && rw+gap+u.w>maxW){ rows.push({items:row,w:rw}); row=[]; rw=0; } if(rw>0)rw+=gap; row.push(u); rw+=u.w; });
+    if(row.length) rows.push({items:row,w:rw});
+    const totalH=rows.reduce((s,r)=>s+Math.max(...r.items.map(i=>i.h)),0)+gap*(rows.length-1);
+    let y=Math.max(margin,(H-totalH)/2);
+    rows.forEach(r=>{ const rowH=Math.max(...r.items.map(i=>i.h)); let x=(W-r.w)/2;
+      r.items.forEach(u=>{ const j=u._k;
+        u.x=clamp(x+((j*53)%9)-4, 4, W-u.w-4);
+        u.y=clamp(y+(rowH-u.h)/2+((j*31)%9)-4, 4, H-u.h-4);
+        u.rot=((j*7)%5)-2; u.z=j+1;
+        state.items.push(u); makeItem(board,u,()=>({w:board.clientWidth,h:board.clientHeight}));
+        x+=u.w+gap; });
+      y+=rowH+gap; });
+  }
+  function renderBoard(){ const bh=document.getElementById('boardH'); if(bh) bh.textContent=state.name?`${state.name}’s board.`:'Your board.';
+    const sig=[...state.picks].join(',')+'|'+activeColors().join(',')+'|'+state.typePicks.join(',');
+    if(sig!==state.itemsSig){ state.itemsSig=sig; buildItems(); } }
+
+  // ============ beat 4: perfect & compare ============
+  const ROLE_DEFS=[{k:'bg',label:'Background'},{k:'ink',label:'Title'},{k:'accent',label:'Accent'},{k:'sub',label:'Subhead'}];
+  const roleColor=(r,k)=>k==='bg'?r.bg:k==='ink'?r.ink:k==='accent'?r.accent:r.sub;
+  function renderBrand(){
+    const r=compose(); if(!r) return;
+    applyBrandGlobal(r);                                        // every mockup uses brand tokens → they all reskin live
+    document.querySelectorAll('#b4 .mkName').forEach(e=>e.textContent=state.name?poss():'');
+    document.getElementById('mkInitial').innerHTML=(state.name?state.name[0].toLowerCase():'i')+'<b>.</b>';
+    document.getElementById('specPalette').innerHTML=boardColors().slice(0,9).map(h=>`<span class="sw" style="background:${h}"></span>`).join('');
+    const st=document.getElementById('specTitle'); st.textContent=FONTS[primaryType()].name; st.style.fontFamily=r.titleFont;
+    const sb=document.getElementById('specBody'); sb.textContent=(r.bodyFont.match(/'([^']+)'/)||[,'Sans'])[1]; sb.style.fontFamily=r.bodyFont;
+    // roles — react, not decide: we placed them; tap to swap any
+    const roles=document.getElementById('roles');
+    roles.innerHTML=ROLE_DEFS.map(d=>`<button class="role" data-role="${d.k}"><span class="rsw" style="background:${roleColor(r,d.k)}"></span><span class="rl">${d.label}</span></button>`).join('');
+    roles.querySelectorAll('.role').forEach(b=>b.addEventListener('click',()=>cycleRole(b.dataset.role)));
+    // contrast readout — checked, not hoped (the engine guarantees these clear AA)
+    const cT=contrast(r.ink,r.bg), cS=contrast(r.sub,r.bg), cA=contrast(r.accent,r.bg);
+    const tg=v=>v>=7?'AAA':v>=4.5?'AA':v>=3?'AA·lg':'low', cl=v=>v>=3?'ok':'lo';
+    document.getElementById('ratioReadout').innerHTML=
+      `<span>Title <b class="${cl(cT)}">${cT.toFixed(1)}:1 ${tg(cT)}</b></span>`+
+      `<span>Subhead <b class="${cl(cS)}">${cS.toFixed(1)}:1 ${tg(cS)}</b></span>`+
+      `<span>Accent <b class="${cl(cA)}">${cA.toFixed(1)}:1 ${tg(cA)}</b></span>`;
+  }
+  function cycleRole(role){ const p=activeColors(); if(!p.length)return;
+    const cur=state.assign[role], idx=cur?p.indexOf(cur):-1; state.assign[role]=p[(idx+1)%p.length]; renderBrand(); }
+  function shuffleBrand(){ state.assign={}; state.seed=(state.seed||0)+1; state.polarity=state.polarity==='light'?'dark':(state.polarity==='dark'?'auto':'light'); renderBrand(); }
+  document.getElementById('shuffleBtn').addEventListener('click',shuffleBrand);
+  document.addEventListener('keydown',e=>{ if(state.beat!==BEAT.brand)return;
+    if(e.code==='Space' && !/INPUT|TEXTAREA/.test(e.target.tagName||'')){ e.preventDefault(); shuffleBrand(); } });
+
+  // ============ beat 5: home ============
+  const MOVES=[
+    {no:'01',label:'Gather',blurb:'React to everything you’ve saved. Pull the colors, type, and images that ring true.'},
+    {no:'02',label:'Play',blurb:'Arrange it on your board. Carve a few clear directions out of the overwhelm.'},
+    {no:'03',label:'Build',blurb:'Shuffle a direction into a brand — a palette, a wordmark, a book, an export.'},
+  ];
+  function renderHome(){
+    const r=compose(); if(r) applyBrandGlobal(r);
+    document.getElementById('homeEd').textContent = (state.name?`${state.name}’s edition`:'Your edition')+' · dressed by you';
+    document.getElementById('homeH').innerHTML = `${poss()} taste, <em>made into a brand.</em>`;
+    document.getElementById('homeIndex').innerHTML=MOVES.map(m=>`<div class="move"><div class="moveNo">${m.no}</div><div class="moveLabel">${m.label}</div><div class="moveBlurb">${m.blurb}</div></div>`).join('');
+    requestAnimationFrame(buildHomeArtifact); // build once the panel has real dimensions
+  }
+  // clone the moodboard, scaled, into the hero panel — the always-draggable artifact
+  function buildHomeArtifact(){
+    const host=document.getElementById('artifact'); host.querySelectorAll('.it').forEach(e=>e.remove());
+    if(!state.items.length) return;
+    const board=document.getElementById('board');
+    const bw=board.clientWidth||900, bh=board.clientHeight||500;
+    const hw=host.clientWidth||420, hh=host.clientHeight||380;
+    // faithful: one uniform scale + center, so the artifact IS the board you composed (not a re-scatter)
+    const f=Math.min(hw/bw,hh/bh)*0.94, offX=(hw-bw*f)/2, offY=(hh-bh*f)/2;
+    const clones=state.items.map((it,k)=>({ ...it, el:null, w:Math.round(it.w*f), h:Math.round(it.h*f),
+      x:Math.round(it.x*f+offX), y:Math.round(it.y*f+offY), z:k+1 }));
+    state.homeItems=clones;
+    clones.forEach(c=>makeHomeItem(host,c));
+  }
+  function makeHomeItem(host,it){
+    const el=document.createElement('button'); el.type='button'; el.className=`it it-${it.kind}`; el.tabIndex=0;
+    el.style.width=it.w+'px'; el.style.height=it.h+'px'; el.setAttribute('aria-label',it.label);
+    if(it.kind==='image') el.innerHTML=`<span class="body"><img src="${it.src}" alt=""/></span>`;
+    else if(it.kind==='color') el.innerHTML=`<span class="body" style="background:${it.hex}"></span>`;
+    else el.innerHTML=`<span class="body"><span class="tWord" style="font-family:${FONTS[it.key].f};font-weight:${clamp(it.weight,300,700)};font-size:${Math.round(it.h*0.34)}px">inkling<span class="dot">.</span></span></span>`;
+    host.appendChild(el); it.el=el;
+    el.style.transform=`translate(${it.x}px,${it.y}px) rotate(${it.rot}deg)`; el.style.zIndex=it.z;
+    { const b=el.querySelector('.body'); if(b&&it.shape) b.style.borderRadius=shapesFor(it)[it.shape]; } // carry the shapes you chose
+    const bounds=()=>({w:host.clientWidth,h:host.clientHeight});
+    let d=null;
+    el.addEventListener('pointerdown',e=>{ const max=Math.max(0,...state.homeItems.map(x=>x.z||0)); it.z=max+1; el.style.zIndex=it.z; el.classList.add('grab');
+      d={px:e.clientX,py:e.clientY,x:it.x,y:it.y}; try{el.setPointerCapture(e.pointerId);}catch(_){} });
+    el.addEventListener('pointermove',e=>{ if(!d)return; const b=bounds();
+      it.x=clamp(d.x+(e.clientX-d.px),-it.w*0.3,b.w-it.w*0.7); it.y=clamp(d.y+(e.clientY-d.py),-it.h*0.3,b.h-it.h*0.7);
+      el.style.transform=`translate(${it.x}px,${it.y}px) rotate(${it.rot}deg)`; });
+    const end=()=>{ if(!d)return; d=null; el.classList.remove('grab'); };
+    el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end);
+  }
+  document.getElementById('homeStart').addEventListener('click',()=>alert('→ This is where you start your own brand. Bring in your real inspiration and walk the same path, for keeps.'));
+  document.getElementById('homeDefault').addEventListener('click',()=>{ clearBrandGlobal(); });
+  // the permanent playground — keep shuffling the look right from the home page
+  function shuffleLook(){ state.assign={}; state.seed=(state.seed||0)+1; state.polarity=state.polarity==='light'?'dark':(state.polarity==='dark'?'auto':'light'); const r=compose(); if(r) applyBrandGlobal(r); }
+  document.getElementById('homeShuffle').addEventListener('click',shuffleLook);
+
+  // ============ step machine ============
   function show(n){
-    state.step=Math.max(0,Math.min(STEPS-1,n));
-    document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active',i===state.step));
-    document.querySelectorAll('#progress .p').forEach((p,i)=>{p.classList.toggle('on',i===state.step);p.classList.toggle('done',i<state.step);});
-    document.getElementById('backBtn').style.visibility = state.step>0?'visible':'hidden';
-    const next=document.getElementById('nextBtn');
-    document.getElementById('defaultBtn').style.display = state.step===3?'inline-block':'none';
-    if(state.step!==1 && cedit.classList.contains('on')) closeEdit();
-    if(state.step!==3 && assignPop.classList.contains('on')) closeAssign();
-    if(state.step===0){ renderGather(); }
-    if(state.step===1){ renderPalette(); }
-    if(state.step===2){ renderPlay(); }
-    if(state.step===3){ renderReveal(); next.innerHTML='Now make your own brand <span class="ar">→</span>'; }
-    else { next.innerHTML='Next <span class="ar">→</span>'; }
+    state.beat=clamp(n,0,BEATS-1);
+    document.querySelectorAll('.beat').forEach((s,i)=>s.classList.toggle('active',i===state.beat));
+    document.querySelectorAll('#progress .p').forEach(p=>{ const b=+p.dataset.b; p.classList.toggle('on',b===state.beat); p.classList.toggle('done',b<state.beat); });
+    document.getElementById('backBtn').style.visibility = state.beat>0 && state.beat<BEAT.home ? 'visible':'hidden';
+    if(state.beat<BEAT.brand) clearBrandGlobal(); // beats before Brand stay newsprint; Brand & Home wear the brand
+    if(state.beat!==BEAT.colors && cedit.classList.contains('on')) closeEdit();
+    if(state.beat===BEAT.name){ setTimeout(()=>nameField.focus({preventScroll:true}),120); }
+    if(state.beat===BEAT.gather){ renderGather(); }
+    if(state.beat===BEAT.colors){ renderPalette(); }
+    if(state.beat===BEAT.type){ renderSpecs(); }
+    if(state.beat===BEAT.board){ renderBoard(); }
+    if(state.beat===BEAT.brand){ renderBoard(); renderBrand(); }
+    if(state.beat===BEAT.home){ renderHome(); }
+    // footer
+    const next=document.getElementById('nextBtn'), nameGoBeats=state.beat===BEAT.name;
+    document.querySelector('.nav').style.display = nameGoBeats || state.beat===BEAT.home ? 'none':'flex';
+    next.innerHTML = state.beat===BEAT.brand ? 'Make it home <span aria-hidden="true">→</span>'
+                   : state.beat===BEAT.board ? 'See your brand <span aria-hidden="true">→</span>'
+                   : 'Next <span aria-hidden="true">→</span>';
     updateNav();
   }
   function updateNav(){
-    const next=document.getElementById('nextBtn');
-    next.disabled = (state.step===0 && state.picks.size===0);
-    document.getElementById('navMid').textContent = state.step===0 ? (state.picks.size?`${state.picks.size} chosen`:'pick a few to start') : '';
+    const next=document.getElementById('nextBtn'), mid=document.getElementById('navMid');
+    let disabled=false, label='';
+    if(state.beat===BEAT.gather){ disabled=state.picks.size<1; label=state.picks.size?`${state.picks.size} chosen`:'pick a few to start'; }
+    if(state.beat===BEAT.type){ disabled=state.typePicks.length<1; label=state.typePicks.length?`${state.typePicks.length} collected`:'collect at least one'; }
+    next.disabled=disabled; mid.textContent=label;
   }
-  document.getElementById('nextBtn').addEventListener('click',()=>{ if(state.step<3) show(state.step+1); else { /* hand to real product */ } });
-  document.getElementById('backBtn').addEventListener('click',()=>show(state.step-1));
-  document.getElementById('skipBtn').addEventListener('click',()=>{ /* exit to product */ alert('→ this is where Skip drops you straight into the real product with your own inspiration.'); });
-  document.getElementById('defaultBtn').addEventListener('click',()=>{ const s=document.documentElement.style;['--bg','--ink','--accent','--sub','--muted','--faint','--rule','--line','--wm-font'].forEach(k=>s.removeProperty(k)); });
+  document.getElementById('nextBtn').addEventListener('click',()=>{ if(state.beat===BEAT.brand) show(BEAT.home); else if(state.beat<BEAT.home) show(state.beat+1); });
+  document.getElementById('backBtn').addEventListener('click',()=>show(state.beat-1));
+  document.getElementById('skipBtn').addEventListener('click',()=>{
+    // a fast spine: ensure there's enough to compose, then jump to the brand
+    if(state.picks.size<3){ [0,9,11,4].forEach(i=>state.picks.add(i)); }
+    if(!state.typePicks.length){ state.typePicks=['fraunces']; }
+    state.itemsSig=''; show(BEAT.brand);
+  });
+  window.addEventListener('resize',()=>{ if(state.beat===BEAT.home) buildHomeArtifact(); });
 
   show(0);
 </script>
-</div>
 </body>
 </html>
