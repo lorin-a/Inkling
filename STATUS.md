@@ -8,6 +8,11 @@
 - Run: `npm run dev` → `localhost:3000`. The onboarding prototype is `public/make-inkling.html`.
 - Dogfood signed-out (localStorage); Playwright runs in a separate browser, not yours.
 
+## Page-by-page self-audit (done 2026-06-15)
+Ran Lorin's checklist (grid · color · accessible sizes · hierarchy · balance · clarity · nothing extra/over-complex · +10%) on every page.
+Opening frame → literal doors + story-beat animation. Name → balanced one-line question. Gather → passed. Colors → centered swatch rows.
+Type / Moodboard / Brand / Home → passed (already reworked); poster tagline aligned to "know it when you see it." All console-clean.
+
 ## Master to-do — Track A polish (active; I choose the order)
 Compiled from Lorin's dogfeeding (2026-06-15). Cross-cutting first (they lift every screen), then per-beat, then features.
 
