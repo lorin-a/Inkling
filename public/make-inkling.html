@@ -237,7 +237,7 @@
   .mkapp-mark{font-family:var(--title-font);font-weight:600;font-size:clamp(52px,7vw,84px);line-height:1;letter-spacing:-.04em}
   .mkapp-mark b{color:var(--accent)}
   /* the spec / receipt */
-  .brandSpec{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:20px 22px;display:flex;flex-direction:column;gap:16px;transition:background-color .5s var(--ease),border-color .5s var(--ease)}
+  .brandSpec{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:16px 24px;display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:18px 44px;width:100%;max-width:1180px;margin:0 auto;transition:background-color .5s var(--ease),border-color .5s var(--ease)}
   .specHd{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
   .specRow{display:flex;flex-direction:column;gap:8px}
   .specRow .sw-row{display:flex;flex-wrap:wrap;gap:7px}
@@ -246,13 +246,39 @@
   .specFaceSub{font-size:16px;color:var(--sub);line-height:1.1}
   .specWm{font-family:var(--title-font);font-weight:500;font-size:30px;letter-spacing:-.03em;color:var(--ink)}
   .specWm b{font-style:normal;color:var(--accent)}
-  .brandControls{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:1180px;margin:0 auto}
+  .brandControls{display:flex;flex-direction:column;align-items:stretch;gap:14px;align-self:start}
   .perfectCtl{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center}
   .pbtn{display:inline-flex;align-items:center;gap:11px;font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);background:none;border:1.5px solid var(--ink);border-radius:100px;padding:13px 26px;cursor:pointer;transition:background-color .2s,color .2s}
   .pbtn:hover{background:var(--ink);color:var(--bg)}
   .pbtn .kbd{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;opacity:.6;border:1px solid currentColor;border-radius:4px;padding:2px 7px}
   .roleHint{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:center}
   .roles{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  /* paint-by-number — color the brand in by dropping swatches into role slots */
+  .paintHint{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--muted);text-align:center}
+  .paintWells{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .well{position:relative;width:auto;height:74px;border-radius:14px;border:2px dashed color-mix(in srgb,var(--ink) 30%,transparent);background:none;cursor:pointer;padding:0;overflow:hidden;
+    display:flex;align-items:flex-end;transition:border-color .18s,transform .18s var(--ease),box-shadow .2s}
+  .well:hover{transform:translateY(-2px)}
+  .well.active{border-style:solid;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+  .well.over{border-style:solid;border-color:var(--accent);transform:scale(1.05)}
+  .well.filled{border-style:solid;border-color:color-mix(in srgb,#808080 45%,transparent)}   /* stays visible on any painted bg */
+  .wellFill{position:absolute;inset:0;opacity:0;transition:opacity .35s var(--ease)} .well.filled .wellFill{opacity:1}
+  .wellLabel{position:relative;z-index:2;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:8px 10px;color:var(--muted)}
+  .well.filled .wellLabel{color:#fff;mix-blend-mode:difference}
+  .wellX{position:absolute;top:6px;right:6px;z-index:3;width:20px;height:20px;border-radius:100px;background:rgba(0,0,0,.42);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;opacity:0;transition:opacity .15s}
+  .well.filled:hover .wellX{opacity:1}
+  .paintTray{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:600px}
+  .paintChip{width:42px;height:42px;border-radius:11px;border:none;padding:0;cursor:grab;touch-action:none;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.14);transition:transform .15s var(--ease)}
+  .paintChip:hover{transform:translateY(-3px) scale(1.07)} .paintChip:active{cursor:grabbing}
+  .paintGhost{position:fixed;z-index:300;width:46px;height:46px;border-radius:12px;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 12px 28px rgba(0,0,0,.32);border:2px solid #fff}
+  .paintProgress{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  /* the stencil — mockups read as 'blank' until painted */
+  #b4:not(.painted) .mk{box-shadow:0 6px 18px var(--shadow-2)}
+  /* keep the mockups compact so the paint slots + tray stay in view */
+  #b4 .mk-site{min-height:116px} #b4 .mksite-body{padding:18px 22px;gap:7px}
+  #b4 .mk-poster,#b4 .mk-logo,#b4 .mk-app{aspect-ratio:auto;height:clamp(116px,17vh,168px)}
+  #b4 .perfect{gap:12px}
   /* contrast, checked not hoped — the trust line (merged from the theme-system pass) */
   .ratioReadout{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--muted)}
   .ratioReadout b{font-weight:600;font-variant-numeric:tabular-nums}
@@ -518,7 +544,7 @@
 
     <!-- 4 — brand: applied to real artifacts -->
     <section class="beat" id="b4">
-      <div class="head"><div class="kick">Brand · see it for real</div><div class="H">Here’s your Inkling.</div><div class="sub">Your taste on real designs. Shuffle directions or swap any color.</div></div>
+      <div class="head"><div class="kick">Brand · color it in</div><div class="H">Paint your Inkling.</div><div class="sub">Drop your colors into the slots to bring the brand to life. Or let it fill itself.</div></div>
       <div class="perfect">
         <div class="applied">
           <div class="mockGallery">
@@ -535,18 +561,22 @@
             <div class="mk mk-logo"><span class="mkpre mkName"></span><span class="mklogo-wm">inkling<b>.</b></span></div>
             <div class="mk mk-app"><span class="mkapp-mark" id="mkInitial">i<b>.</b></span></div>
           </div>
-          <aside class="brandSpec">
-            <div class="specRow"><span class="specHd">Palette</span><div class="sw-row" id="specPalette"></div></div>
-            <div class="specRow"><span class="specHd">Type</span><div><div class="specFace" id="specTitle">Fraunces</div><div class="specFaceSub" id="specBody">Space Grotesk</div></div></div>
-            <div class="specRow"><span class="specHd">Wordmark</span><div class="specWm">inkling<b>.</b></div></div>
+          <aside class="brandControls">
+            <div class="paintHint" id="paintHint">Drop a color into each slot — or tap a slot, then a color.</div>
+            <div class="paintWells" id="paintWells"></div>
+            <div class="paintTray" id="paintTray" aria-label="Your colors"></div>
+            <div class="ratioReadout" id="ratioReadout" aria-label="Contrast, checked"></div>
+            <div class="perfectCtl">
+              <button class="pbtn" id="fillBtn">Fill it for me</button>
+              <button class="pbtn" id="shuffleBtn">⤮ Surprise me <span class="kbd">space</span></button>
+            </div>
           </aside>
         </div>
-        <div class="brandControls">
-          <div class="roleHint">We placed your colors. Tap a role to swap one.</div>
-          <div class="roles" id="roles"></div>
-          <div class="ratioReadout" id="ratioReadout" aria-label="Contrast, checked"></div>
-          <button class="pbtn" id="shuffleBtn">⤮ Shuffle the direction <span class="kbd">space</span></button>
-        </div>
+        <aside class="brandSpec">
+          <div class="specRow"><span class="specHd">Palette</span><div class="sw-row" id="specPalette"></div></div>
+          <div class="specRow"><span class="specHd">Type</span><div><div class="specFace" id="specTitle">Fraunces</div><div class="specFaceSub" id="specBody">Space Grotesk</div></div></div>
+          <div class="specRow"><span class="specHd">Wordmark</span><div class="specWm">inkling<b>.</b></div></div>
+        </aside>
       </div>
     </section>
 
@@ -949,29 +979,71 @@
   // ============ beat 4: perfect & compare ============
   const ROLE_DEFS=[{k:'bg',label:'Background'},{k:'ink',label:'Title'},{k:'accent',label:'Accent'},{k:'sub',label:'Subhead'}];
   const roleColor=(r,k)=>k==='bg'?r.bg:k==='ink'?r.ink:k==='accent'?r.accent:r.sub;
+  const ORDER=['bg','ink','accent','sub'];
+  const STENCIL={bg:'#f0ede5',ink:'#bcb6a9',accent:'#d3ccbe',sub:'#ccc5b8'};   // neutral 'blank' until you paint
+  // build the brand from what you've painted in; unassigned roles stay stencil-grey
+  function paintCompose(){
+    const A=state.assign||{};
+    const bg=A.bg||STENCIL.bg;
+    const ink=A.ink?readable(A.ink,bg,4.5):STENCIL.ink;
+    const accent=A.accent?readable(A.accent,bg,3):STENCIL.accent;
+    const sub=A.sub?readable(A.sub,bg,4.5):STENCIL.sub;
+    const tk=primaryType();
+    return {bg,ink,accent,sub,polarity:lum(bg)>=0.4?'light':'dark',titleFont:FONTS[tk].f,bodyFont:bodyFor(tk),weight:state.weight};
+  }
   function renderBrand(){
-    const r=compose(); if(!r) return;
-    applyBrandGlobal(r);                                        // every mockup uses brand tokens → they all reskin live
+    if(!state.assign) state.assign={};
+    if(!state.activeWell || state.assign[state.activeWell]) state.activeWell=ORDER.find(k=>!state.assign[k])||null;
+    const r=paintCompose(); applyBrandGlobal(r);
     document.querySelectorAll('#b4 .mkName').forEach(e=>e.textContent=state.name?poss():'');
     document.getElementById('mkInitial').innerHTML=(state.name?state.name[0].toLowerCase():'i')+'<b>.</b>';
     document.getElementById('specPalette').innerHTML=boardColors().slice(0,9).map(h=>`<span class="sw" style="background:${h}"></span>`).join('');
     const st=document.getElementById('specTitle'); st.textContent=FONTS[primaryType()].name; st.style.fontFamily=r.titleFont;
     const sb=document.getElementById('specBody'); sb.textContent=(r.bodyFont.match(/'([^']+)'/)||[,'Sans'])[1]; sb.style.fontFamily=r.bodyFont;
-    // roles — react, not decide: we placed them; tap to swap any
-    const roles=document.getElementById('roles');
-    roles.innerHTML=ROLE_DEFS.map(d=>`<button class="role" data-role="${d.k}"><span class="rsw" style="background:${roleColor(r,d.k)}"></span><span class="rl">${d.label}</span></button>`).join('');
-    roles.querySelectorAll('.role').forEach(b=>b.addEventListener('click',()=>cycleRole(b.dataset.role)));
-    // contrast readout — checked, not hoped (the engine guarantees these clear AA)
-    const cT=contrast(r.ink,r.bg), cS=contrast(r.sub,r.bg), cA=contrast(r.accent,r.bg);
-    const tg=v=>v>=7?'AAA':v>=4.5?'AA':v>=3?'AA·lg':'low', cl=v=>v>=3?'ok':'lo';
-    document.getElementById('ratioReadout').innerHTML=
-      `<span>Title <b class="${cl(cT)}">${cT.toFixed(1)}:1 ${tg(cT)}</b></span>`+
-      `<span>Subhead <b class="${cl(cS)}">${cS.toFixed(1)}:1 ${tg(cS)}</b></span>`+
-      `<span>Accent <b class="${cl(cA)}">${cA.toFixed(1)}:1 ${tg(cA)}</b></span>`;
+    const painted=ORDER.every(k=>state.assign[k]);
+    document.getElementById('b4').classList.toggle('painted',painted);
+    renderPaintPanel(r,painted);
   }
-  function cycleRole(role){ const p=activeColors(); if(!p.length)return;
-    const cur=state.assign[role], idx=cur?p.indexOf(cur):-1; state.assign[role]=p[(idx+1)%p.length]; renderBrand(); }
-  function shuffleBrand(){ state.assign={}; state.seed=(state.seed||0)+1; state.polarity=state.polarity==='light'?'dark':(state.polarity==='dark'?'auto':'light'); renderBrand(); }
+  function renderPaintPanel(r,painted){
+    const wells=document.getElementById('paintWells');
+    wells.innerHTML=ROLE_DEFS.map(d=>{ const c=state.assign[d.k], active=state.activeWell===d.k;
+      return `<button class="well ${c?'filled':''} ${active?'active':''}" data-role="${d.k}" type="button" aria-label="${d.label}${c?', '+c:', empty'}">
+        <span class="wellFill" style="background:${c||'transparent'}"></span><span class="wellLabel">${d.label}</span>${c?'<span class="wellX" role="button" aria-label="Clear">✕</span>':''}
+      </button>`; }).join('');
+    wells.querySelectorAll('.well').forEach(w=>{ const role=w.dataset.role;
+      w.addEventListener('click',e=>{ if(e.target.closest('.wellX')){ clearRole(role); return; } state.activeWell=role; renderBrand(); }); });
+    const tray=document.getElementById('paintTray'), pal=dedupeColors(activeColors(),34);
+    tray.innerHTML=pal.map(h=>`<button class="paintChip" data-hex="${h}" style="background:${h}" type="button" aria-label="Use ${h}"></button>`).join('');
+    tray.querySelectorAll('.paintChip').forEach(ch=>ch.addEventListener('pointerdown',e=>startChipDrag(ch,ch.dataset.hex,e)));
+    const ro=document.getElementById('ratioReadout');
+    if(painted){ const cT=contrast(r.ink,r.bg),cS=contrast(r.sub,r.bg),cA=contrast(r.accent,r.bg);
+      const tg=v=>v>=7?'AAA':v>=4.5?'AA':v>=3?'AA·lg':'low', cl=v=>v>=3?'ok':'lo';
+      ro.innerHTML=`<span>Title <b class="${cl(cT)}">${cT.toFixed(1)}:1 ${tg(cT)}</b></span><span>Subhead <b class="${cl(cS)}">${cS.toFixed(1)}:1 ${tg(cS)}</b></span><span>Accent <b class="${cl(cA)}">${cA.toFixed(1)}:1 ${tg(cA)}</b></span>`;
+    } else { ro.innerHTML=`<span class="paintProgress">${ORDER.filter(k=>state.assign[k]).length} of 4 painted</span>`; }
+  }
+  function assignRole(role,hex){ state.assign[role]=hex; state.activeWell=ORDER.find(k=>!state.assign[k])||null; renderBrand(); }
+  function clearRole(role){ delete state.assign[role]; state.activeWell=role; renderBrand(); }
+  // drag a swatch onto a slot — the satisfying part. (tap-to-active + tap-chip also works.)
+  function startChipDrag(ch,hex,e){ e.preventDefault(); const sx=e.clientX,sy=e.clientY; let moved=false,ghost=null;
+    const overWell=ev=>{ const el=document.elementFromPoint(ev.clientX,ev.clientY); return el&&el.closest('.well'); };
+    const move=ev=>{ if(!moved && Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)>4){ moved=true; ghost=document.createElement('div'); ghost.className='paintGhost'; ghost.style.background=hex; document.body.appendChild(ghost); }
+      if(ghost){ ghost.style.left=ev.clientX+'px'; ghost.style.top=ev.clientY+'px'; }
+      const well=overWell(ev); document.querySelectorAll('.well').forEach(w=>w.classList.toggle('over',w===well)); };
+    const up=ev=>{ document.removeEventListener('pointermove',move); document.removeEventListener('pointerup',up); if(ghost)ghost.remove();
+      const well=overWell(ev); document.querySelectorAll('.well').forEach(w=>w.classList.remove('over'));
+      if(well) assignRole(well.dataset.role,hex); else if(!moved && state.activeWell) assignRole(state.activeWell,hex); };
+    document.addEventListener('pointermove',move); document.addEventListener('pointerup',up); }
+  // fill it for me — pick sensible palette colors per role (the escape hatch / 'surprise me' base)
+  function fillAuto(){ const p=activeColors(); if(!p.length)return;
+    const byLum=[...p].sort((a,b)=>lum(a)-lum(b)), seed=state.seed||0, avg=p.reduce((s,h)=>s+lum(h),0)/p.length;
+    const pol=(state.polarity&&state.polarity!=='auto')?state.polarity:(avg>0.42?'light':'dark'), dark=pol==='dark';
+    const bgC=dark?byLum.slice(0,Math.min(3,byLum.length)):byLum.slice(Math.max(0,byLum.length-3)); const bg=bgC[seed%bgC.length];
+    const accent=[...p].sort((a,b)=>chroma(b)-chroma(a)).filter(h=>h!==bg&&contrast(h,bg)>=2.2)[0]||[...p].sort((a,b)=>chroma(b)-chroma(a)).filter(h=>h!==bg)[0]||bg;
+    const ink=byLum.filter(h=>h!==accent&&h!==bg).sort((a,b)=>contrast(b,bg)-contrast(a,bg))[0]||(dark?'#f4efe6':'#181410');
+    const sub=p.filter(h=>h!==ink&&h!==accent&&h!==bg).sort((a,b)=>contrast(b,bg)-contrast(a,bg))[0]||ink;
+    state.assign={bg,ink,accent,sub}; state.activeWell=null; renderBrand(); }
+  function shuffleBrand(){ state.seed=(state.seed||0)+1; state.polarity=state.polarity==='light'?'dark':(state.polarity==='dark'?'auto':'light'); fillAuto(); }
+  document.getElementById('fillBtn').addEventListener('click',fillAuto);
   document.getElementById('shuffleBtn').addEventListener('click',shuffleBrand);
   document.addEventListener('keydown',e=>{ if(state.beat!==BEAT.brand)return;
     if(e.code==='Space' && !/INPUT|TEXTAREA/.test(e.target.tagName||'')){ e.preventDefault(); shuffleBrand(); } });
@@ -1074,7 +1146,7 @@
     // a fast spine: ensure there's enough to compose, then jump to the brand
     if(state.picks.size<3){ [0,9,11,4].forEach(i=>state.picks.add(i)); }
     if(!state.typePicks.length){ state.typePicks=['fraunces']; }
-    state.itemsSig=''; show(BEAT.brand);
+    state.itemsSig=''; show(BEAT.brand); fillAuto();   // fast path lands painted, not blank
   });
   window.addEventListener('resize',()=>{ if(state.beat===BEAT.home) buildHomeArtifact(); });
 
