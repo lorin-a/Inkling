@@ -109,7 +109,7 @@
      so you compare letterforms (not sizes) and see your type on your palette */
   .specWall{flex:1 1 auto;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(246px,1fr));gap:16px;padding:4px 4px 12px;align-content:start}
   .specWall::-webkit-scrollbar{width:8px}.specWall::-webkit-scrollbar-thumb{background:var(--line);border-radius:100px}
-  .spec{position:relative;text-align:left;border:none;border-radius:16px;padding:18px 20px 18px;cursor:pointer;overflow:hidden;
+  .spec{position:relative;text-align:center;border:none;border-radius:16px;padding:18px 20px 18px;cursor:pointer;overflow:hidden;
     display:flex;flex-direction:column;gap:14px;min-height:160px;
     box-shadow:inset 0 0 0 1px rgba(0,0,0,.05), 0 6px 18px rgba(0,0,0,.08);
     transition:transform .22s var(--ease),box-shadow .25s}
@@ -119,7 +119,7 @@
   .specNm{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase}
   .specCh{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;opacity:.72}
   .specWd{margin-top:auto;line-height:.95;letter-spacing:-0.03em;white-space:nowrap;font-size:clamp(40px,3.6vw,50px)}
-  .specStar{align-self:flex-start;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  .specStar{align-self:center;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
     color:inherit;background:none;border:1.4px solid currentColor;border-radius:100px;padding:4px 11px;cursor:pointer;opacity:0;transition:opacity .18s}
   .spec:hover .specStar{opacity:.7} .spec.on .specStar{opacity:.85} .spec.primary .specStar{opacity:1;font-weight:700}
   .specChk{position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:100px;display:flex;align-items:center;justify-content:center;
@@ -130,16 +130,19 @@
   /* ===== beat: COLORS — see & curate the palette you gathered (adjust in context + undo) ===== */
   .undoBtn{align-self:flex-end;display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--muted);background:none;border:1.5px solid var(--line);border-radius:100px;padding:8px 16px;cursor:pointer;transition:border-color .15s,color .15s;margin:-4px 2px 4px}
   .undoBtn:hover{border-color:var(--ink);color:var(--ink)} .undoBtn[hidden]{display:none}
-  /* contextual curation — each gathered image beside the colors it gave you */
+  /* contextual curation — each gathered image beside the colors drawn from it */
   .palette{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:16px;max-width:900px;width:100%;margin:0 auto;padding:6px 14px 18px}
   .palette::-webkit-scrollbar{width:8px}.palette::-webkit-scrollbar-thumb{background:var(--line);border-radius:100px}
   .curRow{display:flex;align-items:center;gap:22px;padding:16px;border-radius:18px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
-  .curImg{position:relative;flex:0 0 auto;width:152px;height:158px;border:none;padding:0;cursor:crosshair;background:none;overflow:hidden;border-radius:12px;
+  .curImg{position:relative;flex:0 0 auto;width:152px;height:158px;border:none;padding:0;background:none;overflow:hidden;border-radius:12px;
+    cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m2 22 1-1h3l9-9'/%3E%3Cpath d='M3 21v-3l9-9'/%3E%3Cpath d='m15 6 3.4-3.4a2.1 2.1 0 0 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z'/%3E%3Cpath d='m2 22 1-1h3l9-9' stroke='%231c1810' stroke-width='2'/%3E%3Cpath d='M3 21v-3l9-9' stroke='%231c1810' stroke-width='2'/%3E%3Cpath d='m15 6 3.4-3.4a2.1 2.1 0 0 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z' stroke='%231c1810' stroke-width='2'/%3E%3C/svg%3E") 2 26, crosshair;
     box-shadow:0 10px 26px rgba(0,0,0,.16);transition:transform .2s var(--ease)}
   .curImg:hover{transform:translateY(-3px)} .curImg:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
   .curImg img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
-  .curPick{position:absolute;left:0;right:0;bottom:0;font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  .curPick{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:6px;
+    font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
     color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.6));padding:16px 7px 7px;opacity:0;transition:opacity .18s;pointer-events:none}
+  .curPick svg{flex:0 0 auto}
   .curImg:hover .curPick,.curImg:focus-visible .curPick{opacity:1}
   .curSwatches{flex:1 1 auto;display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-content:center}
   .curSwatches .pcell{width:clamp(78px,9vw,100px)}
@@ -182,6 +185,18 @@
   .ceReset:hover{color:var(--ink)} .ceReset[disabled]{opacity:.3;cursor:default;text-decoration:none}
   .ceDone{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--bg);background:var(--ink);border:none;border-radius:100px;padding:11px 24px;cursor:pointer}
 
+  /* ===== floating color editor — the in-place 'adjust this shade' popover, reused on the board + in Brand ===== */
+  .fce{position:fixed;z-index:160;width:288px;background:var(--surface-3);border:1.5px solid var(--line);border-radius:16px;
+    padding:16px 16px 14px;box-shadow:0 22px 56px rgba(0,0,0,.28);display:flex;flex-direction:column;gap:13px;
+    opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .18s var(--ease),transform .18s var(--ease),visibility .18s}
+  .fce.on{opacity:1;visibility:visible;transform:none}
+  .fce .ceSwatch{align-items:center;gap:13px}
+  .fce .cePrev{width:46px;height:58px}
+  .fce .ceSliders{min-width:0;gap:12px}
+  .fce .ceActions{justify-content:space-between;margin-top:1px}
+  .fce .ceDone{padding:9px 20px;font-size:14px}
+  .fceArrow{position:absolute;width:13px;height:13px;background:var(--surface-3);border-left:1.5px solid var(--line);border-top:1.5px solid var(--line);transform:rotate(45deg);border-radius:2px 0 0 0}
+
   /* ===== shared: draggable cards (moodboard + home artifact) ===== */
   .canvas{position:relative;min-height:0;overflow:hidden;touch-action:none}
   .it{position:absolute;top:0;left:0;cursor:grab;border:none;padding:0;background:none;will-change:transform;transform-origin:center;
@@ -208,7 +223,8 @@
   /* handles — show on hover: stretch (corner) and rotate (twist). tap the body to reshape. */
   .it .rz,.it .rt{position:absolute;width:28px;height:28px;border-radius:100px;background:var(--bg);border:2px solid var(--accent);opacity:0;transform:scale(.5);transition:opacity .18s,transform .25s var(--spring);z-index:3;touch-action:none;box-shadow:0 2px 8px rgba(0,0,0,.22)}
   .it .rz{right:-11px;bottom:-11px;cursor:nwse-resize}
-  .it .rt{left:-11px;top:-11px;cursor:grab;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--accent);line-height:1}
+  .it .rt{left:-11px;top:-11px;cursor:grab;display:flex;align-items:center;justify-content:center;color:var(--accent);line-height:1}
+  .it .rt svg{width:15px;height:15px;display:block}
   .it:hover .rz,.it:focus-within .rz,.it:hover .rt,.it:focus-within .rt{opacity:1;transform:none}
   .it.grab .rz,.it.grab .rt{opacity:0}
   /* recolor handle (type pieces) — a swatch you tap to walk the wordmark through your palette */
@@ -216,6 +232,13 @@
     opacity:0;transform:scale(.5);transition:opacity .18s,transform .25s var(--spring);z-index:3;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.24)}
   .it:hover .rcq,.it:focus-within .rcq{opacity:1;transform:none}
   .it.grab .rcq{opacity:0}
+  /* edit handle (color pieces) — a pencil you tap to adjust the shade in place */
+  .it .ced{position:absolute;left:-11px;bottom:-11px;width:28px;height:28px;border-radius:100px;background:var(--bg);border:2px solid var(--accent);
+    opacity:0;transform:scale(.5);transition:opacity .18s,transform .25s var(--spring);z-index:3;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.24);
+    display:flex;align-items:center;justify-content:center;color:var(--accent)}
+  .it .ced svg{width:14px;height:14px;display:block}
+  .it:hover .ced,.it:focus-within .ced{opacity:1;transform:none}
+  .it.grab .ced{opacity:0}
   /* reframe handle (images only) — drag to pan the photo inside its shape */
   .it .rf{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.6);width:32px;height:32px;border-radius:50%;
     background:color-mix(in srgb,#000 42%,transparent);border:1.5px solid rgba(255,255,255,.9);color:#fff;font-size:14px;
@@ -236,6 +259,12 @@
   .addGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
   .addGrid .ac{aspect-ratio:1;border-radius:7px;cursor:pointer;border:none;padding:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.14);transition:transform .12s var(--ease)}
   .addGrid .ac:hover{transform:scale(1.14)} .addGrid .ac.here{opacity:.32;cursor:default}
+  .addCustom{display:flex;align-items:center;gap:9px}
+  .addCustom input[type=color]{width:38px;height:38px;border:1.5px solid var(--line);border-radius:9px;background:none;padding:2px;cursor:pointer;flex:0 0 auto}
+  .addCustom input[type=color]::-webkit-color-swatch-wrapper{padding:0} .addCustom input[type=color]::-webkit-color-swatch{border:none;border-radius:6px}
+  .addCustom .ceHexRow{flex:1 1 auto} .addCustom .ceHexRow input{width:100%;font-size:15px}
+  .addCustomBtn{flex:0 0 auto;font-family:var(--sans);font-size:13px;font-weight:700;color:var(--bg);background:var(--ink);border:none;border-radius:9px;padding:9px 16px;cursor:pointer}
+  .addCustomBtn:hover{opacity:.9}
 
   /* ===== beat 3 — MOODBOARD ===== */
   /* the workspace surface — a dot grid like the real canvas, with a soft center vignette */
@@ -256,13 +285,14 @@
   .mk{border-radius:14px;overflow:hidden;box-shadow:0 18px 44px var(--shadow-3);position:relative;
     transition:background-color .5s var(--ease),color .5s var(--ease),opacity .55s var(--ease),transform .7s var(--spring)}
   .mk b{font-style:normal;color:var(--accent)}                              /* the dot */
-  /* the arrival: board pieces converge, then the lockup settles in and the controls follow */
-  #b4.assembling .mk,#b4.assembling .brandSpec{opacity:0;transform:translateY(34px) scale(.94)}
-  #b4 .brandSpec{transition:background-color .5s var(--ease),border-color .5s var(--ease),opacity .55s var(--ease),transform .7s var(--spring)}
-  #b4 .mk-site{transition-delay:.04s} #b4 .mk-poster{transition-delay:.13s}
-  #b4 .mk-logo{transition-delay:.22s} #b4 .mk-app{transition-delay:.31s} #b4 .brandSpec{transition-delay:.18s}
-  #b4 .brandControls{transition:opacity .55s var(--ease) .5s,transform .6s var(--ease) .5s}
-  #b4.assembling .brandControls{opacity:0;transform:translateY(14px)}
+  /* the arrival: board pieces converge, then the home settles in and the paint dock follows */
+  #b4.assembling .homeHeroText,#b4.assembling .homeArtWrap,#b4.assembling .mk,#b4.assembling .brandSpec{opacity:0;transform:translateY(34px) scale(.96)}
+  #b4 .homeHeroText,#b4 .homeArtWrap,#b4 .brandSpec{transition:opacity .6s var(--ease),transform .7s var(--spring)}
+  #b4 .homeHeroText{transition-delay:.06s} #b4 .homeArtWrap{transition-delay:.16s}
+  #b4 .mk-site{transition-delay:.30s} #b4 .mk-poster{transition-delay:.36s}
+  #b4 .mk-logo{transition-delay:.42s} #b4 .mk-app{transition-delay:.48s} #b4 .brandSpec{transition-delay:.40s}
+  #b4 .paintDock{transition:opacity .55s var(--ease) .5s,transform .6s var(--ease) .5s,padding .4s var(--ease),background-color .5s var(--ease),max-width .5s var(--ease)}
+  #b4.assembling .paintDock{opacity:0;transform:translateY(14px)}
   /* site */
   .mk-site{grid-column:span 6;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;min-height:150px}
   .mkbar{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--line)}
@@ -301,6 +331,21 @@
   .pbtn{display:inline-flex;align-items:center;gap:11px;font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);background:none;border:1.5px solid var(--ink);border-radius:100px;padding:13px 26px;cursor:pointer;transition:background-color .2s,color .2s}
   .pbtn:hover{background:var(--ink);color:var(--bg)}
   .pbtn .kbd{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;opacity:.6;border:1px solid currentColor;border-radius:4px;padding:2px 7px}
+  /* save / shuffle-saved sets — keep a favorite without losing it, then shuffle just the saved ones */
+  .setRow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
+  .setBtn{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.04em;color:var(--muted);background:none;border:1.5px solid var(--line);border-radius:100px;padding:9px 16px;cursor:pointer;transition:border-color .15s,color .15s}
+  .setBtn:hover{border-color:var(--ink);color:var(--ink)} .setBtn[disabled]{opacity:.34;cursor:default;border-color:var(--line);color:var(--muted)}
+  .setBtn-go{color:var(--ink);border-color:var(--ink)}
+  .savedSets{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .savedSet{position:relative;display:flex;border-radius:9px;overflow:hidden;border:1.5px solid var(--line);cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.1);transition:transform .15s var(--ease),border-color .15s}
+  .savedSet:hover{transform:translateY(-2px);border-color:var(--ink)} .savedSet.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+  .savedSet i{width:17px;height:40px;display:block}
+  .savedSet .ssX{position:absolute;top:-7px;right:-7px;width:19px;height:19px;border-radius:100px;background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;opacity:0;transition:opacity .15s;z-index:2}
+  .savedSet:hover .ssX{opacity:1} .savedSet .ssX:hover{background:var(--spark)}
+  /* a filled well is tappable to adjust its shade; the lock pins it through shuffle */
+  .wellLock{position:absolute;top:6px;left:6px;z-index:3;width:21px;height:21px;border-radius:100px;background:rgba(0,0,0,.42);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;opacity:0;transition:opacity .15s,background-color .15s}
+  .well.filled:hover .wellLock,.well.locked .wellLock{opacity:1} .well.locked .wellLock{background:var(--accent)}
+  .well.locked{border-style:solid;border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)}
   .roleHint{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:center}
   .roles{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
   /* paint-by-number — color the brand in by dropping swatches into role slots */
@@ -359,6 +404,38 @@
   .homePrimary:hover{transform:translateY(-2px)}
   .homeGhost{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
   .homeGhost:hover{color:var(--ink)}
+
+  /* ===== finale: the painted home (Brand + Home merged) — the whole surface wears the brand, stencil → painted → settled ===== */
+  /* everything lives in a centered column so wide screens don't sprawl or collide */
+  .finale .home{display:flex;flex-direction:column;gap:30px;align-items:center;background:var(--bg);color:var(--ink);border-radius:16px;
+    padding:24px clamp(20px,4vw,56px) 34px;transition:background-color .7s var(--ease),color .7s var(--ease)}
+  .finale .home>*{flex:0 0 auto}        /* don't let the tall hero shrink — the surface scrolls instead */
+  .finale .homeHero{display:block;width:100%;max-width:1200px;min-height:0;padding:24px 0 0}
+  .finale .homeHeroText{max-width:760px;min-width:0}
+  /* the living moodboard — a full-width band sized to the board's own aspect (set in JS) so it fills, never strips */
+  .finale .homeArtWrap{width:100%;margin-top:26px}
+  .finale .artifact{aspect-ratio:auto;min-height:0;width:100%}
+  .finale .artifactTag{color:var(--muted)}
+  /* the paint dock — prominent while you bring it to life, then it demotes to a slim studio bar */
+  .paintDock{align-self:center;width:100%;max-width:880px;background:var(--surface-2);border:1.5px solid var(--line);border-radius:18px;
+    padding:18px 22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 16px 44px var(--shadow-2)}
+  .paintDockHead{display:flex;align-items:baseline;gap:12px;justify-content:center;flex-wrap:wrap;text-align:center}
+  .paintDockTag{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+  .paintDock .paintHint{font-family:var(--body-font);font-size:13.5px;line-height:1.4;color:var(--sub);text-align:center}
+  .paintDockMain{display:flex;align-items:center;gap:26px;justify-content:center;flex-wrap:wrap}
+  .paintDock .paintWells{width:316px;max-width:100%}
+  .paintDockAside{display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0}
+  .paintDockCtl{display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap}
+  /* demote — once painted, the dock slims into a studio bar (wells go 1×4, controls compress) */
+  .finale.painted .paintDock{max-width:780px;padding:13px 20px;gap:11px}
+  .finale.painted .paintDockTag{color:var(--muted)}
+  .finale.painted .paintDockMain{gap:18px}
+  .finale.painted .paintDock .paintWells{grid-template-columns:repeat(4,1fr);width:430px}
+  .finale.painted .well{height:50px}
+  .finale.painted .pbtn{font-size:14px;padding:10px 20px}
+  .finaleApplied{width:100%;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:13px}
+  .finaleSectionTag{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:center}
+  .finale .homeIndex{width:100%;max-width:1200px;margin:0 auto}
   .artifact{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:1/0.92;min-height:300px;
     background-color:var(--surface-2);
     background-image:
@@ -460,7 +537,7 @@
   .introLede{font-family:var(--serif);font-style:italic;font-size:clamp(16px,2vw,22px);color:var(--muted);margin-top:16px}
 
   /* the spine — ONE continuous hand-drawn line: Idea bulb → wave through the stations → Identity loop (Lorin's Figma) */
-  .spine{position:relative;width:100%;max-width:1000px;margin:30px auto 0}
+  .spine{position:relative;width:100%;max-width:1000px;margin:20px auto 0}
   .spineArt{width:100%}
   .spineArt svg{display:block;width:100%;height:auto;overflow:visible}
   .spineArt svg path{fill:none;stroke:var(--ink);stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
@@ -472,36 +549,51 @@
   .stationBlurb{font-family:var(--body-font);font-size:14.5px;line-height:1.55;color:var(--sub);margin-top:8px;max-width:23ch}
 
   /* ===== two literal doors — pick one; it swings open and you step through ===== */
-  .doorsKick{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:54px}
-  .doors{display:grid;grid-template-columns:1fr 1fr;gap:30px;width:100%;max-width:680px;margin-top:18px;perspective:1600px}
-  .door{position:relative;height:312px;border:none;background:none;padding:0;cursor:pointer;transform-style:preserve-3d}
-  .doorGlow{position:absolute;inset:6px;border-radius:15px;opacity:0;transition:opacity .45s var(--ease);pointer-events:none;
-    background:radial-gradient(130% 100% at 50% 45%, color-mix(in srgb,var(--accent) 34%,transparent), transparent 72%)}
+  .doorsKick{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:30px}
+  .doors{display:grid;grid-template-columns:1fr 1fr;gap:40px;width:100%;max-width:640px;margin-top:18px;perspective:1500px}
+  /* cute Victorian arched doors — the .door is the arched jamb; both leaves hinge LEFT and swing out to the right.
+     painted in the Gather·Play·Build dot colors with brass hardware. text stays dark on a soft tint = fully legible. */
+  .door{position:relative;height:330px;border:none;padding:0;cursor:pointer;transform-style:preserve-3d;
+    --leaf:color-mix(in srgb,#6675b3 34%,#f8f3ea); --jamb:color-mix(in srgb,#6675b3 50%,#efe6d6); --brass:#9c7f3a;
+    background:var(--jamb);border-radius:46% 46% 13px 13px / 32% 32% 13px 13px;
+    box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--brass) 32%,var(--jamb)), inset 0 0 26px rgba(40,28,10,.16), 0 16px 38px rgba(0,0,0,.12)}
+  .door-primary{--leaf:color-mix(in srgb,#b46d68 38%,#f8f3ea); --jamb:color-mix(in srgb,#b46d68 52%,#efe6d6)}
+  .door::after{content:"";position:absolute;left:9%;right:9%;bottom:6px;height:7px;border-radius:4px;
+    background:color-mix(in srgb,#3a2c14 30%,transparent)}                              /* the threshold underfoot */
+  .doorGlow{position:absolute;inset:4px;border-radius:44% 44% 9px 9px / 30% 30% 9px 9px;opacity:0;transition:opacity .45s var(--ease);pointer-events:none;z-index:0;
+    background:radial-gradient(120% 92% at 50% 42%, color-mix(in srgb,var(--accent) 42%,transparent), transparent 70%)}
   .door:hover .doorGlow,.door:focus-visible .doorGlow{opacity:1}
-  .doorLeaf{position:absolute;inset:0;border-radius:16px;background:var(--surface-2);border:1.5px solid var(--line);
-    box-shadow:0 14px 36px rgba(0,0,0,.12);display:flex;flex-direction:column;justify-content:flex-end;padding:24px 26px;text-align:left;
-    backface-visibility:hidden;will-change:transform;transition:transform .6s var(--ease),box-shadow .45s var(--ease),border-color .2s}
-  .door-left .doorLeaf{transform-origin:left center} .door-right .doorLeaf{transform-origin:right center}
-  .door-primary .doorLeaf{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-  .door:hover .doorLeaf,.door:focus-visible .doorLeaf{box-shadow:0 28px 64px rgba(0,0,0,.26)}
-  .door-left:hover .doorLeaf,.door-left:focus-visible .doorLeaf{transform:rotateY(19deg)}
-  .door-right:hover .doorLeaf,.door-right:focus-visible .doorLeaf{transform:rotateY(-19deg)}
-  .door.opening.door-left .doorLeaf{transform:rotateY(108deg)} .door.opening.door-right .doorLeaf{transform:rotateY(-108deg)}
-  /* the door's own panels + knob make it read as a real door */
-  .doorPanel{position:absolute;border:1.5px solid currentColor;opacity:.16;border-radius:5px;pointer-events:none}
-  .door-left .doorPanel{left:18px;right:38px} .door-right .doorPanel{left:38px;right:18px}
-  .doorPanel:nth-of-type(1){top:18px;height:36%} .doorPanel:nth-of-type(2){top:calc(18px + 36% + 12px);height:30%}
-  .door-primary .doorPanel{opacity:.22}
-  .doorKnob{position:absolute;top:50%;width:11px;height:11px;border-radius:50%;background:currentColor;opacity:.55;box-shadow:0 0 0 4px color-mix(in srgb,currentColor 12%,transparent)}
-  .door-left .doorKnob{right:17px} .door-right .doorKnob{left:17px}
+  /* the leaf — arched, inset so the jamb reads around it; hinges on the LEFT for both */
+  .doorLeaf{position:absolute;inset:10px;bottom:16px;border-radius:45% 45% 9px 9px / 31% 31% 9px 9px;
+    background:var(--leaf);border:1.5px solid color-mix(in srgb,var(--brass) 28%,transparent);
+    box-shadow:0 10px 26px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.45);
+    display:flex;flex-direction:column;justify-content:flex-end;padding:20px 24px 22px;text-align:left;
+    transform-origin:left center;backface-visibility:hidden;will-change:transform;
+    transition:transform .6s var(--ease),box-shadow .45s var(--ease),border-color .2s}
+  /* swing OUTWARD to the right — the free (right) edge lifts toward the viewer */
+  .door:hover .doorLeaf,.door:focus-visible .doorLeaf{transform:rotateY(-16deg);box-shadow:0 30px 66px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.45)}
+  .door.opening .doorLeaf{transform:rotateY(-108deg)}
+  /* brass hinges on the left edge */
+  .doorHinge{position:absolute;left:8px;width:9px;height:30px;border-radius:3px;pointer-events:none;
+    background:linear-gradient(var(--brass),color-mix(in srgb,var(--brass) 58%,#000));
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.22), 0 1px 2px rgba(0,0,0,.32)}
+  .doorHinge-top{top:64px} .doorHinge-bot{bottom:64px}
+  /* one arched, beveled Victorian panel up top; text lives below it, untouched */
+  .doorPanel{position:absolute;left:24px;right:30px;pointer-events:none;
+    border:1.7px solid color-mix(in srgb,#4a3820 42%,transparent);
+    box-shadow:inset 0 1.5px 0 rgba(255,255,255,.5), inset 0 -2px 4px rgba(0,0,0,.12), 0 1px 0 rgba(255,255,255,.32)}
+  .doorPanel-top{top:22px;height:40%;border-radius:50% 50% 7px 7px / 46% 46% 7px 7px}
+  .doorPanel-bot{display:none}
+  /* a round brass knob on the right (latch) side */
+  .doorKnob{position:absolute;top:51%;right:15px;transform:translateY(-50%);width:15px;height:15px;border-radius:50%;
+    background:radial-gradient(circle at 34% 30%, #e6d189, var(--brass) 68%, color-mix(in srgb,var(--brass) 52%,#000));
+    box-shadow:0 0 0 4px color-mix(in srgb,var(--brass) 20%,transparent), 0 2px 3px rgba(0,0,0,.35)}
+  /* text sits below the panel on a soft tint — dark ink throughout so it stays fully legible on both colors */
   .doorFace{position:relative;display:flex;flex-direction:column;gap:7px;align-items:flex-start}
-  .doorKick{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-  .door-primary .doorKick{color:color-mix(in srgb,var(--bg) 64%,transparent)}
-  .doorTitle{font-family:var(--serif);font-weight:600;font-size:clamp(21px,2.6vw,27px);letter-spacing:-0.02em;line-height:1.06}
-  .doorDesc{font-family:var(--body-font);font-size:13.5px;line-height:1.5;color:var(--sub)}
-  .door-primary .doorDesc{color:color-mix(in srgb,var(--bg) 82%,transparent)}
-  .doorGo{margin-top:4px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--accent)}
-  .door-primary .doorGo{color:var(--bg)}
+  .doorKick{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:color-mix(in srgb,#2a1f10 76%,transparent)}
+  .doorTitle{font-family:var(--serif);font-weight:600;font-size:clamp(21px,2.6vw,27px);letter-spacing:-0.02em;line-height:1.06;color:#221a0e}
+  .doorDesc{font-family:var(--body-font);font-size:13.5px;line-height:1.5;color:color-mix(in srgb,#2a1f10 82%,transparent)}
+  .doorGo{margin-top:4px;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.04em;color:#221a0e}
   @media(max-width:680px){
     .intro{padding:78px 22px 40px}                 /* clear the fixed Skip button so it never overlaps the wordmark */
     .introSkip{top:18px;right:18px;padding:7px 13px;font-size:12px}
@@ -533,7 +625,7 @@
           <path class="bulbP" d="M114 126 C117 131 121 131 124 126"/>
           <path class="mainP" d="M125 118 C176 130 244 122 320 112 C392 102 438 84 510 90 C586 96 626 120 700 112 C774 104 814 92 855 80 C902 65 914 26 880 24 C852 22 862 64 899 63 C934 62 938 98 920 124"/>
           <path class="arrowP" d="M904 110 L920 126 L938 106"/>
-          <circle class="spdot" cx="320" cy="112" r="12" fill="#c4a35a"/>
+          <circle class="spdot" cx="320" cy="112" r="12" fill="#C2AE73"/>
           <circle class="spdot" cx="510" cy="90" r="12" fill="#b46d68"/>
           <circle class="spdot" cx="700" cy="112" r="12" fill="#6675b3"/>
         </svg>
@@ -545,7 +637,8 @@
       <button class="door door-left door-primary" id="doorLearn" type="button" aria-label="Co-design Inkling — learn by playing">
         <span class="doorGlow" aria-hidden="true"></span>
         <span class="doorLeaf">
-          <span class="doorPanel"></span><span class="doorPanel"></span>
+          <span class="doorHinge doorHinge-top" aria-hidden="true"></span><span class="doorHinge doorHinge-bot" aria-hidden="true"></span>
+          <span class="doorPanel doorPanel-top" aria-hidden="true"></span><span class="doorPanel doorPanel-bot" aria-hidden="true"></span>
           <span class="doorKnob" aria-hidden="true"></span>
           <span class="doorFace">
             <span class="doorKick">Learn by playing</span>
@@ -558,7 +651,8 @@
       <button class="door door-right" id="doorOwn" type="button" aria-label="Explore on your own">
         <span class="doorGlow" aria-hidden="true"></span>
         <span class="doorLeaf">
-          <span class="doorPanel"></span><span class="doorPanel"></span>
+          <span class="doorHinge doorHinge-top" aria-hidden="true"></span><span class="doorHinge doorHinge-bot" aria-hidden="true"></span>
+          <span class="doorPanel doorPanel-top" aria-hidden="true"></span><span class="doorPanel doorPanel-bot" aria-hidden="true"></span>
           <span class="doorKnob" aria-hidden="true"></span>
           <span class="doorFace">
             <span class="doorKick">Explore</span>
@@ -579,7 +673,7 @@
       <span class="p" data-b="2"><span class="d"></span>Colors</span>
       <span class="p" data-b="3"><span class="d"></span>Type</span>
       <span class="p" data-b="4"><span class="d"></span>Moodboard</span>
-      <span class="p" data-b="5"><span class="d"></span>Brand</span>
+      <span class="p" data-b="5"><span class="d"></span>Home</span>
     </div>
     <div class="topR"><button class="help" id="helpBtn" type="button" aria-label="What is this step?">?</button><button class="skip" id="skipBtn">Skip, take me in →</button></div>
   </header>
@@ -605,7 +699,7 @@
 
     <!-- 2 — colors -->
     <section class="beat" id="bColors">
-      <div class="head"><div class="kick">Colors · from each image</div><div class="H" id="colorsH">Your colors.</div><div class="sub">Each image and the colors it gave you. Keep the ones you want, tap a color to adjust it, <span aria-hidden="true">✕</span> to drop it. Tap an image to pick a color straight from it.</div></div>
+      <div class="head"><div class="kick">Colors · from each image</div><div class="H" id="colorsH">Your colors.</div><div class="sub">Keep the colors you want. Tap one to adjust it, <span aria-hidden="true">✕</span> to drop it. To add a color, eyedrop it straight from any photo.</div></div>
       <button class="undoBtn" id="undoBtn" hidden>↶ Undo</button>
       <div class="palette" id="palette"></div>
       <div class="cedit" id="cedit" role="group" aria-label="Adjust color">
@@ -643,15 +737,57 @@
       <div class="head"><div class="kick">Moodboard · narrow it down</div><div class="H" id="boardH">Your board.</div><div class="sub">Everything you gathered. Drag to move, tap to reshape, twist or stretch from the corners.</div></div>
       <div class="canvas board" id="board" role="application" aria-label="Your moodboard. Tab to an item, arrow keys to move it, Backspace to remove it.">
         <div class="boardTools"><button class="boardToolBtn" id="addNoteBtn" type="button">＋ Note</button><button class="boardToolBtn" id="addColorBtn" type="button">＋ Color</button></div>
-        <div class="addPop" id="addPop"><div class="addPopTtl">Add a color to your board</div><div class="addGrid" id="addGrid"></div></div>
+        <div class="addPop" id="addPop">
+          <div class="addPopTtl">Add a gathered color</div><div class="addGrid" id="addGrid"></div>
+          <div class="addPopTtl" style="margin-top:13px">Or mix your own</div>
+          <div class="addCustom">
+            <input type="color" id="addCustomColor" value="#6a2ee6" aria-label="Pick a custom color" />
+            <span class="ceHexRow"><span class="hash" aria-hidden="true">#</span><input type="text" id="addCustomHex" inputmode="text" autocomplete="off" spellcheck="false" maxlength="6" value="6a2ee6" aria-label="Custom hex" /></span>
+            <button class="addCustomBtn" id="addCustomBtn" type="button">Add</button>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- 4 — brand: applied to real artifacts -->
-    <section class="beat" id="b4">
-      <div class="head"><div class="kick">Brand · color it in</div><div class="H">Paint your Inkling.</div><div class="sub">Drop your colors into the slots to bring the brand to life. Or let it fill itself.</div></div>
-      <div class="perfect">
-        <div class="applied">
+    <!-- finale — paint your home to life (Brand + Home merged: one surface, stencil → painted → settled) -->
+    <section class="beat finale" id="b4">
+      <div class="home" id="land">
+        <div class="homeHero">
+          <div class="homeHeroText">
+            <div class="homeEdition"><span class="rule"></span><span id="homeEd">Your version of Inkling</span><span class="rule"></span></div>
+            <h1 class="homeH" id="homeH">Your taste, <em>made into a brand.</em></h1>
+            <p class="homeLede" id="finaleLede">One place that turns what you gather into a brand you can build with. This one is yours — keep playing with it.</p>
+            <div class="homeCtas" id="finaleCtas">
+              <button class="homePrimary" id="homeStart">Make your own <span aria-hidden="true">→</span></button>
+              <button class="homeGhost" id="homeDefault">Start fresh</button>
+            </div>
+          </div>
+          <div class="homeArtWrap">
+            <div class="canvas artifact" id="artifact" role="application" aria-label="Your living moodboard. Drag a piece to move it, tap to reshape, twist or stretch from the corners.">
+              <span class="artifactTag">Your moodboard</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="paintDock" id="paintDock">
+          <div class="paintDockHead"><span class="paintDockTag" id="paintDockTag">Bring it to life</span><span class="paintHint" id="paintHint"></span></div>
+          <div class="paintDockMain">
+            <div class="paintWells" id="paintWells"></div>
+            <div class="paintDockAside">
+              <div class="paintTray" id="paintTray" aria-label="Your colors"></div>
+              <div class="ratioReadout" id="ratioReadout" aria-label="Contrast, checked"></div>
+            </div>
+          </div>
+          <div class="paintDockCtl">
+            <button class="pbtn" id="fillBtn">Fill it for me <span class="kbd">space</span></button>
+            <button class="setBtn" id="saveSetBtn" type="button" disabled>★ Save this set</button>
+            <button class="setBtn setBtn-go" id="shuffleSavedBtn" type="button" hidden>⤮ Shuffle saved</button>
+          </div>
+          <div class="savedSets" id="savedSets" hidden></div>
+        </aside>
+
+        <div class="finaleApplied">
+          <div class="finaleSectionTag">Your brand, applied</div>
           <div class="mockGallery">
             <div class="mk mk-site">
               <div class="mkbar"><span class="mkdots"><i></i><i></i><i></i></span><span class="mkwm">inkling<b>.</b></span></div>
@@ -666,66 +802,14 @@
             <div class="mk mk-logo"><span class="mkpre mkName"></span><span class="mklogo-wm">inkling<b>.</b></span></div>
             <div class="mk mk-app"><span class="mkapp-mark" id="mkInitial">i<b>.</b></span></div>
           </div>
-          <aside class="brandControls">
-            <div class="paintHint" id="paintHint">Tap a color to fill the glowing slot — they fill in order. Or drag a color onto any slot.</div>
-            <div class="paintWells" id="paintWells"></div>
-            <div class="paintTray" id="paintTray" aria-label="Your colors"></div>
-            <div class="ratioReadout" id="ratioReadout" aria-label="Contrast, checked"></div>
-            <div class="perfectCtl">
-              <button class="pbtn" id="fillBtn">Fill it for me <span class="kbd">space</span></button>
-            </div>
+          <aside class="brandSpec">
+            <div class="specRow"><span class="specHd">Palette</span><div class="sw-row" id="specPalette"></div></div>
+            <div class="specRow"><span class="specHd">Type</span><div><div class="specFace" id="specTitle">Fraunces</div><div class="specFaceSub" id="specBody">Space Grotesk</div></div></div>
+            <div class="specRow"><span class="specHd">Wordmark</span><div class="specWm">inkling<b>.</b></div></div>
           </aside>
         </div>
-        <aside class="brandSpec">
-          <div class="specRow"><span class="specHd">Palette</span><div class="sw-row" id="specPalette"></div></div>
-          <div class="specRow"><span class="specHd">Type</span><div><div class="specFace" id="specTitle">Fraunces</div><div class="specFaceSub" id="specBody">Space Grotesk</div></div></div>
-          <div class="specRow"><span class="specHd">Wordmark</span><div class="specWm">inkling<b>.</b></div></div>
-        </aside>
-      </div>
-    </section>
 
-    <!-- 5 — home (the climax) -->
-    <section class="beat" id="b5">
-      <div class="deliv">
-        <div class="delivHead">
-          <div class="homeEdition"><span class="rule"></span><span id="homeEd">Your version of Inkling</span><span class="rule"></span></div>
-          <h1 class="delivH" id="homeH">Your taste, <em>made into a brand.</em></h1>
-        </div>
-        <div class="bento" id="bento">
-          <div class="bcell cell-board">
-            <span class="bcellTag">Moodboard</span>
-            <div class="canvas artifact" id="artifact" role="application" aria-label="Your living moodboard. Drag a piece to move it, tap to reshape, twist or stretch from the corners."></div>
-          </div>
-          <div class="bcell cell-palette">
-            <span class="bcellTag">Palette</span>
-            <div class="delivPalette" id="delivPalette"></div>
-            <div class="roleHint">Tap a role to swap its color.</div>
-            <div class="roles" id="homeRoles"></div>
-          </div>
-          <div class="bcell cell-type">
-            <span class="bcellTag">Type</span>
-            <div class="delivWm" id="delivWm">inkling<span class="dot">.</span></div>
-            <div class="delivFaces" id="delivFaces"></div>
-            <div class="recolorRow"><span class="recolorLabel">Recolor</span><div class="recolorSwatches" id="recolorSwatches"></div></div>
-          </div>
-          <div class="bcell cell-site mk mk-site">
-            <div class="mkbar"><span class="mkdots"><i></i><i></i><i></i></span><span class="mkwm">inkling<b>.</b></span></div>
-            <div class="mksite-body">
-              <div class="mkkick mkName"></div>
-              <div class="mksite-h">Your taste, made into a brand.</div>
-              <div class="mksite-sub">A studio that turns what you gather into a direction you can build with.</div>
-              <span class="mkbtn">Get started</span>
-            </div>
-          </div>
-          <div class="bcell cell-poster mk mk-poster"><div class="mkposter-wm">inkling<b>.</b></div><div class="mkposter-tag">know it<br>when you see it</div></div>
-          <div class="bcell cell-logo mk mk-logo"><span class="mkpre mkName"></span><span class="mklogo-wm">inkling<b>.</b></span></div>
-          <div class="bcell cell-app mk mk-app"><span class="mkapp-mark" id="delivInitial">i<b>.</b></span></div>
-        </div>
-        <div class="delivCtas">
-          <button class="homeGhost" id="homeShuffle">⤮ Shuffle the look</button>
-          <button class="homePrimary" id="homeStart">Make your own <span aria-hidden="true">→</span></button>
-          <button class="homeGhost" id="homeDefault">Reset to default</button>
-        </div>
+        <div class="homeIndex" id="homeIndex"></div>
       </div>
     </section>
   </div>
@@ -737,6 +821,19 @@
     <button class="coachX" id="coachX" type="button">Got it</button>
   </div>
   <div class="loupe" id="loupe" aria-hidden="true"><div class="loupeLens" id="loupeLens"></div><span class="loupeHex" id="loupeHex"><i></i><span></span></span></div>
+
+  <div class="fce" id="fce" role="group" aria-label="Adjust this color">
+    <span class="fceArrow" aria-hidden="true"></span>
+    <div class="ceSwatch">
+      <span class="cePrev" id="fcePrev"></span>
+      <span class="ceHexRow"><span class="hash" aria-hidden="true">#</span><input type="text" id="fceHex" inputmode="text" autocomplete="off" spellcheck="false" maxlength="6" aria-label="Hex value" /></span>
+    </div>
+    <div class="ceSliders">
+      <div class="ceRow"><label for="fceHue">Hue</label><input type="range" id="fceHue" min="0" max="360" step="1" /></div>
+      <div class="ceRow"><label for="fceLight">Lightness</label><input type="range" id="fceLight" min="0" max="100" step="1" /></div>
+    </div>
+    <div class="ceActions"><button class="ceReset" id="fceReset">Reset</button><button class="ceDone" id="fceDone">Done</button></div>
+  </div>
 
   <footer class="nav">
     <button class="back" id="backBtn">← Back</button>
@@ -808,15 +905,17 @@
   const isHex=h=>/^#?[0-9a-fA-F]{6}$/.test(h);
 
   // ============ state ============
-  const BEAT={name:0,gather:1,colors:2,type:3,board:4,brand:5,home:6}, BEATS=7;
+  const BEAT={name:0,gather:1,colors:2,type:3,board:4,brand:5}, BEATS=6;   // 'brand' is the finale: the painted home (Brand + Home merged)
   const state={ beat:0, name:'', picks:new Set(), droppedColors:new Set(), edits:{}, history:[], editing:null,
                 typePicks:[], weight:420, typeFilter:'all', typeMode:'light',
                 items:[], itemsSig:'', homeSig:'',
-                seed:0, assign:{}, polarity:'auto', variations:[], varAt:-1 };
+                seed:0, assign:{}, polarity:'auto', variations:[], varAt:-1,
+                customColors:[], locked:{}, savedSets:[], savedIdx:-1 };
 
   // every color from each gathered image — its auto-extracted palette PLUS any you eyedropped from the photo
   const imgColors=i=>REFS[i].pal.concat((state.picked&&state.picked[i])||[]);
-  const colorPool=()=>{ const seen=new Set(),out=[]; [...state.picks].forEach(i=>imgColors(i).forEach(h=>{ if(!seen.has(h)){seen.add(h);out.push(h);} })); return out; };
+  const colorPool=()=>{ const seen=new Set(),out=[]; [...state.picks].forEach(i=>imgColors(i).forEach(h=>{ if(!seen.has(h)){seen.add(h);out.push(h);} }));
+    (state.customColors||[]).forEach(h=>{ if(!seen.has(h)){seen.add(h);out.push(h);} }); return out; };   // custom colors join the pool → they flow into the brand too
   const disp=h=>state.edits[h]||h;                                  // a color's current value after manual adjust
   const activeOriginals=()=>colorPool().filter(h=>!state.droppedColors.has(h));
   const activeColors=()=>activeOriginals().map(disp);               // edited values — what the engine + board read
@@ -917,7 +1016,7 @@
     palette.innerHTML=imgs.map(i=>{
       const sw=imgColors(i).map(h=>{const d=disp(h);return `<button class="pcell ${state.droppedColors.has(h)?'off':''} ${state.edits[h]?'edited':''}" data-hex="${h}" aria-label="Color ${d}, tap to adjust" style="background:${d}"><span class="x" role="button" aria-label="Remove ${d}">✕</span><span class="hex">${d}</span></button>`;}).join('');
       return `<div class="curRow">
-        <button class="curImg" data-img="${i}" aria-label="Pick a color from this image"><img src="${REFS[i].img}" alt="" loading="lazy"/><span class="curPick">＋ pick a color</span></button>
+        <button class="curImg" data-img="${i}" aria-label="Pick a color from this image"><img src="${REFS[i].img}" alt="" loading="lazy"/><span class="curPick"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="m15 6 3.4-3.4a2.1 2.1 0 0 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"/></svg>pick a color</span></button>
         <div class="curSwatches">${sw}</div>
       </div>`;}).join('');
     palette.querySelectorAll('.pcell').forEach(c=>{ const h=c.dataset.hex;
@@ -1041,7 +1140,7 @@
     else if(it.kind==='color') inner=`<span class="body" style="background:${it.hex}"><span class="hex">${it.hex}</span></span>`;
     else if(it.kind==='note') inner=`<span class="body"><span class="noteText" contenteditable="true" spellcheck="false" role="textbox" aria-label="Note">${it.text||''}</span></span>`;
     else inner=`<span class="body"><span class="tName">${FONTS[it.key].name}</span><span class="tWord" style="font-family:${FONTS[it.key].f};font-weight:${clamp(it.weight,300,700)};font-size:${Math.round(it.h*0.34)}px">inkling<span class="dot">.</span></span></span>`;
-    el.innerHTML=inner+`<span class="rt" aria-hidden="true">⟳</span><span class="rm" role="button" aria-label="Remove">✕</span><span class="rz" aria-hidden="true"></span>`+(it.kind==='image'?`<span class="rf" aria-hidden="true">✛</span>`:'')+(it.kind==='type'?`<span class="rcq" role="button" aria-label="Recolor the type"></span>`:'');
+    el.innerHTML=inner+`<span class="rt" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></span><span class="rm" role="button" aria-label="Remove">✕</span><span class="rz" aria-hidden="true"></span>`+(it.kind==='image'?`<span class="rf" aria-hidden="true">✛</span>`:'')+(it.kind==='type'?`<span class="rcq" role="button" aria-label="Recolor the type"></span>`:'')+(it.kind==='color'?`<span class="ced" role="button" aria-label="Adjust this color"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>`:'');
     el.setAttribute('aria-label',it.label+' Tap to reshape; drag to move; corner to resize; twist to rotate.');
     host.appendChild(el); it.el=el; place(it); applyShape(it);
     // reposition + layer (bring to front) + tap-to-reshape (a tap that didn't drag cycles the shape)
@@ -1086,6 +1185,14 @@
       applyCol();
       rcq.addEventListener('click',e=>{ e.stopPropagation(); const pal=boardColors(); if(!pal.length)return;
         const ci=it.color?pal.indexOf(it.color):-1; it.color=pal[(ci+1)%pal.length]; applyCol(); }); }
+    // edit (color pieces) — tap the pencil to adjust this color's shade in place; the edit flows back into the brand
+    const ced=el.querySelector('.ced');
+    if(ced){ const paintTile=h=>{ const b=el.querySelector('.body'); if(b){ b.style.background=h; const hx=b.querySelector('.hex'); if(hx)hx.textContent=h; } };
+      ced.addEventListener('click',e=>{ e.stopPropagation(); openColorEditor(ced,{
+        get:()=>it.hex,
+        set:h=>{ if(h.toLowerCase()===(it.orig||'').toLowerCase()){ if(it.orig)delete state.edits[it.orig]; } else if(it.orig){ state.edits[it.orig]=h; } it.hex=h; paintTile(h); },
+        reset:it.orig?(()=>{ delete state.edits[it.orig]; it.hex=it.orig; paintTile(it.orig); }):null,
+        resettable:()=>!!(it.orig&&state.edits[it.orig]) }); }); }
     // note pieces — save typed text; clicking the text shouldn't reshape
     const nt=el.querySelector('.noteText');
     if(nt){ nt.addEventListener('input',()=>{ it.text=nt.textContent; });
@@ -1098,6 +1205,7 @@
       else if(e.key==='ArrowRight'){e.preventDefault();it.x=clamp(it.x+S,-it.w*0.35,b.w-it.w*0.65);place(it);}
       else if(e.key==='Enter'||e.key===' '){e.preventDefault();bringFront(coll,it);cycleShape(it);}     // tap = reshape
       else if(e.key==='r'||e.key==='R'){e.preventDefault();it.rot=Math.round((it.rot||0)+15);place(it);} // rotate
+      else if((e.key==='e'||e.key==='E')&&it.kind==='color'){e.preventDefault();const ced=el.querySelector('.ced');if(ced)ced.click();} // edit shade
       else if(e.key==='Backspace'||e.key==='Delete'){e.preventDefault();removeItem(it,coll);} });
   }
   function place(it){ it.el.style.transform=`translate(${it.x}px,${it.y}px) rotate(${it.rot}deg)`; it.el.style.zIndex=it.z; }
@@ -1158,6 +1266,13 @@
     // sync the signature to current state so we DON'T rebuild (which would wipe the manual add + arrangement)
     state.itemsSig=[...state.picks].join(',')+'|'+activeColors().join(',')+'|'+state.typePicks.join(','); }
   addColorBtn.addEventListener('click',e=>{ e.stopPropagation(); const on=addPop.classList.toggle('on'); if(on) renderAddGrid(); });
+  // mix your own — a custom hex/picker color that joins the pool (so it counts into the brand) and lands on the board
+  const addCustomColor=document.getElementById('addCustomColor'), addCustomHex=document.getElementById('addCustomHex'), addCustomBtn=document.getElementById('addCustomBtn');
+  addCustomColor.addEventListener('input',()=>{ addCustomHex.value=addCustomColor.value.replace('#','').toLowerCase(); });
+  addCustomHex.addEventListener('input',()=>{ const v=addCustomHex.value.trim(); if(isHex(v)) addCustomColor.value='#'+v.replace('#','').toLowerCase(); });
+  addCustomBtn.addEventListener('click',e=>{ e.stopPropagation(); const v=addCustomHex.value.trim(); if(!isHex(v))return; const hex='#'+v.replace('#','').toLowerCase();
+    if(!state.customColors.includes(hex)) state.customColors.push(hex);
+    addColorToBoard(hex); addPop.classList.remove('on'); });
   // add a note — a draggable, editable text card (the "more than color/type/image" piece)
   function addNoteToBoard(){ const board=document.getElementById('board'), W=board.clientWidth||900, H=board.clientHeight||500, n=state.items.length;
     const u={kind:'note',text:'',w:152,h:96,shape:0,rot:((n*5)%7)-3,label:'Note',
@@ -1168,6 +1283,34 @@
     setTimeout(()=>{ const t=u.el&&u.el.querySelector('.noteText'); if(t)t.focus(); },60); }
   document.getElementById('addNoteBtn').addEventListener('click',e=>{ e.stopPropagation(); addPop.classList.remove('on'); addNoteToBoard(); });
   document.addEventListener('click',e=>{ if(addPop.classList.contains('on') && !e.target.closest('#addPop') && !e.target.closest('#addColorBtn')) addPop.classList.remove('on'); });
+
+  // ============ in-place color editor — a floating 'adjust this shade' popover, reused on the board + in Brand ============
+  const fce=document.getElementById('fce'), fcePrev=document.getElementById('fcePrev'), fceHex=document.getElementById('fceHex'),
+        fceHue=document.getElementById('fceHue'), fceLight=document.getElementById('fceLight'),
+        fceReset=document.getElementById('fceReset'), fceArrow=document.querySelector('.fceArrow');
+  let fceCtx=null;
+  const fceCanReset=()=>fceCtx&&(typeof fceCtx.resettable==='function'?fceCtx.resettable():fceCtx.resettable);
+  function fcePaint(h){ fcePrev.style.background=h; fceHex.value=h.replace('#',''); const[hue,s,l]=rgb2hsl(hex2rgb(h)); fceHue.value=Math.round(hue); fceLight.value=Math.round(l);
+    fceHue.style.background='linear-gradient(90deg,'+[0,60,120,180,240,300,360].map(d=>hsl2hex(d,Math.max(s,55),55)).join(',')+')';
+    fceLight.style.background='linear-gradient(90deg,'+[0,25,50,75,100].map(L=>hsl2hex(hue,s,L)).join(',')+')';
+    fceReset.style.display=fceCtx&&fceCtx.reset?'':'none'; fceReset.disabled=!fceCanReset(); }
+  function fceSet(h){ if(!fceCtx)return; fceCtx.set(h); fcePaint(h); }
+  function positionFce(a){ const r=a.getBoundingClientRect(), cw=fce.offsetWidth||288, ch=fce.offsetHeight||210, vw=innerWidth, gap=12;
+    let top=r.bottom+gap, below=true; if(top+ch>innerHeight-12){ top=r.top-ch-gap; below=false; }
+    let left=r.left+r.width/2-cw/2; left=Math.max(12,Math.min(vw-cw-12,left));
+    fce.style.left=left+'px'; fce.style.top=Math.max(12,top)+'px';
+    const ax=Math.max(12,Math.min(cw-24,r.left+r.width/2-left-6)); fceArrow.style.left=ax+'px';
+    fceArrow.style.top=below?'-7px':(ch-6)+'px'; fceArrow.style.transform=below?'rotate(45deg)':'rotate(225deg)'; }
+  function openColorEditor(anchor,ctx){ fceCtx=ctx; fce.classList.add('on'); fcePaint(ctx.get());
+    requestAnimationFrame(()=>positionFce(anchor)); setTimeout(()=>fceHue.focus({preventScroll:true}),60); }
+  function closeColorEditor(){ fce.classList.remove('on'); fceCtx=null; }
+  function fceFromSliders(){ if(!fceCtx)return; const[,s]=rgb2hsl(hex2rgb(fceCtx.get())); fceSet(hsl2hex(+fceHue.value,s,+fceLight.value)); }
+  [fceHue,fceLight].forEach(sl=>sl.addEventListener('input',fceFromSliders));
+  fceHex.addEventListener('input',()=>{ const v=fceHex.value.trim(); if(isHex(v)) fceSet('#'+v.replace('#','').toLowerCase()); });
+  fceReset.addEventListener('click',()=>{ if(fceCtx&&fceCtx.reset){ fceCtx.reset(); fcePaint(fceCtx.get()); } });
+  document.getElementById('fceDone').addEventListener('click',closeColorEditor);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&fce.classList.contains('on')){ e.preventDefault(); closeColorEditor(); } });
+  document.addEventListener('pointerdown',e=>{ if(fce.classList.contains('on') && !e.target.closest('#fce') && !e.target.closest('.ced') && !e.target.closest('.well')) closeColorEditor(); },true);
 
   // ============ beat 4: perfect & compare ============
   const ROLE_DEFS=[{k:'bg',label:'Background'},{k:'ink',label:'Title'},{k:'accent',label:'Accent'},{k:'sub',label:'Subhead'}];
@@ -1187,35 +1330,73 @@
   function renderBrand(){
     if(!state.assign) state.assign={};
     if(!state.activeWell || state.assign[state.activeWell]) state.activeWell=ORDER.find(k=>!state.assign[k])||null;
-    const r=paintCompose(); applyBrandScoped(document.querySelector('#b4 .mockGallery'),r);  // only the mockups paint; page chrome stays readable
+    const r=paintCompose();
+    applyBrandScoped(document.getElementById('land'),r);     // the WHOLE finale wears the brand — stencil until painted, then it comes alive
+    // hero
+    document.getElementById('homeEd').textContent = state.name?`${state.name}’s version of Inkling`:'Your version of Inkling';
+    document.getElementById('homeH').innerHTML = `${poss()} taste, <em>made into a brand.</em>`;
+    // applied artifacts + the spec receipt
     document.querySelectorAll('#b4 .mkName').forEach(e=>e.textContent=state.name?poss():'');
     document.getElementById('mkInitial').innerHTML=(state.name?state.name[0].toLowerCase():'i')+'<b>.</b>';
     document.getElementById('specPalette').innerHTML=boardColors().slice(0,9).map(h=>`<span class="sw" style="background:${h}"></span>`).join('');
     const st=document.getElementById('specTitle'); st.textContent=FONTS[primaryType()].name; st.style.fontFamily=r.titleFont;
     const sb=document.getElementById('specBody'); sb.textContent=(r.bodyFont.match(/'([^']+)'/)||[,'Sans'])[1]; sb.style.fontFamily=r.bodyFont;
+    // state: stencil → painted → settled
     const painted=ORDER.every(k=>state.assign[k]);
     document.getElementById('b4').classList.toggle('painted',painted);
     renderPaintPanel(r,painted);
+    document.getElementById('saveSetBtn').disabled=!painted;
+    renderSavedSets();
+    document.getElementById('paintDockTag').textContent = painted ? 'Your studio' : 'Bring it to life';
+    document.getElementById('paintHint').textContent = painted
+      ? 'Keep playing — shuffle, lock a slot (🔒), save a set, or tap a slot to fine‑tune.'
+      : 'Drop a color into each slot to bring your home to life — or let it fill itself.';
+    // the living moodboard, rebuilt once the artifact cell has real dimensions
+    requestAnimationFrame(buildHomeArtifact);
   }
+  function ratioHTML(r){ const cT=contrast(r.ink,r.bg),cS=contrast(r.sub,r.bg),cA=contrast(r.accent,r.bg);
+    const tg=v=>v>=7?'AAA':v>=4.5?'AA':v>=3?'AA·lg':'low', cl=v=>v>=3?'ok':'lo';
+    return `<span>Title <b class="${cl(cT)}">${cT.toFixed(1)}:1 ${tg(cT)}</b></span><span>Subhead <b class="${cl(cS)}">${cS.toFixed(1)}:1 ${tg(cS)}</b></span><span>Accent <b class="${cl(cA)}">${cA.toFixed(1)}:1 ${tg(cA)}</b></span>`; }
   function renderPaintPanel(r,painted){
-    const wells=document.getElementById('paintWells');
-    wells.innerHTML=ROLE_DEFS.map(d=>{ const c=state.assign[d.k], active=state.activeWell===d.k;
-      return `<button class="well ${c?'filled':''} ${active?'active':''}" data-role="${d.k}" type="button" aria-label="${d.label}${c?', '+c:', empty'}">
-        <span class="wellFill" style="background:${c||'transparent'}"></span><span class="wellLabel">${d.label}</span>${c?'<span class="wellX" role="button" aria-label="Clear">✕</span>':''}
+    const wells=document.getElementById('paintWells'), L=state.locked||{};
+    wells.innerHTML=ROLE_DEFS.map(d=>{ const c=state.assign[d.k], active=state.activeWell===d.k, lk=!!L[d.k];
+      return `<button class="well ${c?'filled':''} ${active?'active':''} ${lk?'locked':''}" data-role="${d.k}" type="button" aria-label="${d.label}${c?', '+c+(lk?', locked':''):', empty'}">
+        <span class="wellFill" style="background:${c||'transparent'}"></span><span class="wellLabel">${d.label}</span>${c?`<span class="wellLock" role="button" aria-label="${lk?'Unlock':'Lock for shuffle'}">${lk?'🔒':'🔓'}</span><span class="wellX" role="button" aria-label="Clear">✕</span>`:''}
       </button>`; }).join('');
     wells.querySelectorAll('.well').forEach(w=>{ const role=w.dataset.role;
-      w.addEventListener('click',e=>{ if(e.target.closest('.wellX')){ clearRole(role); return; } state.activeWell=role; renderBrand(); }); });
+      w.addEventListener('click',e=>{ if(e.target.closest('.wellX')){ clearRole(role); return; }
+        if(e.target.closest('.wellLock')){ toggleLock(role); return; }
+        if(state.assign[role]){ openColorEditor(w,{ get:()=>state.assign[role], set:h=>paintLiveUpdate(role,h), reset:null, resettable:false }); return; }
+        state.activeWell=role; renderBrand(); }); });
     const tray=document.getElementById('paintTray'), pal=dedupeColors(activeColors(),34);
     tray.innerHTML=pal.map(h=>`<button class="paintChip" data-hex="${h}" style="background:${h}" type="button" aria-label="Use ${h}"></button>`).join('');
     tray.querySelectorAll('.paintChip').forEach(ch=>ch.addEventListener('pointerdown',e=>startChipDrag(ch,ch.dataset.hex,e)));
     const ro=document.getElementById('ratioReadout');
-    if(painted){ const cT=contrast(r.ink,r.bg),cS=contrast(r.sub,r.bg),cA=contrast(r.accent,r.bg);
-      const tg=v=>v>=7?'AAA':v>=4.5?'AA':v>=3?'AA·lg':'low', cl=v=>v>=3?'ok':'lo';
-      ro.innerHTML=`<span>Title <b class="${cl(cT)}">${cT.toFixed(1)}:1 ${tg(cT)}</b></span><span>Subhead <b class="${cl(cS)}">${cS.toFixed(1)}:1 ${tg(cS)}</b></span><span>Accent <b class="${cl(cA)}">${cA.toFixed(1)}:1 ${tg(cA)}</b></span>`;
-    } else { ro.innerHTML=`<span class="paintProgress">${ORDER.filter(k=>state.assign[k]).length} of 4 painted</span>`; }
+    ro.innerHTML = painted ? ratioHTML(r) : `<span class="paintProgress">${ORDER.filter(k=>state.assign[k]).length} of 4 painted</span>`;
   }
-  function assignRole(role,hex){ state.assign[role]=hex; state.activeWell=ORDER.find(k=>!state.assign[k])||null; renderBrand(); }
-  function clearRole(role){ delete state.assign[role]; state.activeWell=role; renderBrand(); }
+  // edit a painted role's shade in place — updates the mockups + readout live without rebuilding the panel
+  function paintLiveUpdate(role,hex){ state.assign[role]=hex; state.savedIdx=-1; const r=paintCompose();
+    applyBrandScoped(document.querySelector('#b4 .mockGallery'),r);
+    const wf=document.querySelector(`#paintWells .well[data-role="${role}"] .wellFill`); if(wf)wf.style.background=hex;
+    document.getElementById('specPalette').innerHTML=boardColors().slice(0,9).map(h=>`<span class="sw" style="background:${h}"></span>`).join('');
+    if(ORDER.every(k=>state.assign[k])) document.getElementById('ratioReadout').innerHTML=ratioHTML(r); }
+  function assignRole(role,hex){ state.assign[role]=hex; state.savedIdx=-1; state.activeWell=ORDER.find(k=>!state.assign[k])||null; renderBrand(); }
+  function clearRole(role){ delete state.assign[role]; if(state.locked)delete state.locked[role]; state.savedIdx=-1; state.activeWell=role; renderBrand(); }
+  function toggleLock(role){ if(!state.locked)state.locked={}; if(!state.assign[role])return; state.locked[role]=!state.locked[role]; renderBrand(); }
+  // save the current set so you can keep playing without losing it; later, shuffle just the saved ones
+  function renderSavedSets(){ const wrap=document.getElementById('savedSets'), sets=state.savedSets||[];
+    wrap.hidden=!sets.length;
+    wrap.innerHTML=sets.map((s,i)=>`<button class="savedSet ${i===state.savedIdx?'on':''}" data-i="${i}" type="button" aria-label="Apply saved set ${i+1}">${ORDER.map(k=>`<i style="background:${s[k]}"></i>`).join('')}<span class="ssX" role="button" aria-label="Remove this set">✕</span></button>`).join('');
+    wrap.querySelectorAll('.savedSet').forEach(b=>{ const i=+b.dataset.i;
+      b.addEventListener('click',e=>{ if(e.target.closest('.ssX')){ removeSet(i); return; } applySet(i); }); });
+    document.getElementById('shuffleSavedBtn').hidden = sets.length<2; }
+  function saveSet(){ if(!ORDER.every(k=>state.assign[k]))return; const a=state.assign;
+    state.savedSets.push({bg:a.bg,ink:a.ink,accent:a.accent,sub:a.sub}); state.savedIdx=state.savedSets.length-1; renderSavedSets(); }
+  function applySet(i){ const s=state.savedSets[i]; if(!s)return; state.assign={bg:s.bg,ink:s.ink,accent:s.accent,sub:s.sub}; state.savedIdx=i; state.activeWell=null; renderBrand(); }
+  function removeSet(i){ state.savedSets.splice(i,1); if(state.savedIdx>=state.savedSets.length)state.savedIdx=state.savedSets.length-1; renderSavedSets(); }
+  function shuffleSaved(){ if((state.savedSets||[]).length<2)return; state.savedIdx=((state.savedIdx<0?0:state.savedIdx)+1)%state.savedSets.length; applySet(state.savedIdx); }
+  document.getElementById('saveSetBtn').addEventListener('click',saveSet);
+  document.getElementById('shuffleSavedBtn').addEventListener('click',shuffleSaved);
   // drag a swatch onto a slot — the satisfying part. (tap-to-active + tap-chip also works.)
   function startChipDrag(ch,hex,e){ e.preventDefault(); const sx=e.clientX,sy=e.clientY; let moved=false,ghost=null;
     const overWell=ev=>{ const el=document.elementFromPoint(ev.clientX,ev.clientY); return el&&el.closest('.well'); };
@@ -1226,57 +1407,43 @@
       const well=overWell(ev); document.querySelectorAll('.well').forEach(w=>w.classList.remove('over'));
       if(well) assignRole(well.dataset.role,hex); else if(!moved && state.activeWell) assignRole(state.activeWell,hex); };
     document.addEventListener('pointermove',move); document.addEventListener('pointerup',up); }
-  // fill it for me — pick sensible palette colors per role (the escape hatch / 'surprise me' base)
+  // fill it for me — pick sensible palette colors per role (the escape hatch / 'surprise me' base).
+  // locked roles are pinned: shuffle keeps them and re-rolls only the rest.
   function fillAuto(){ const p=activeColors(); if(!p.length)return;
+    const L=state.locked||{}, A=state.assign||{}, keep=k=>L[k]&&A[k]?A[k]:null;
     const byLum=[...p].sort((a,b)=>lum(a)-lum(b)), seed=state.seed||0, avg=p.reduce((s,h)=>s+lum(h),0)/p.length;
     const pol=(state.polarity&&state.polarity!=='auto')?state.polarity:(avg>0.42?'light':'dark'), dark=pol==='dark';
-    const bgC=dark?byLum.slice(0,Math.min(3,byLum.length)):byLum.slice(Math.max(0,byLum.length-3)); const bg=bgC[seed%bgC.length];
-    const accent=[...p].sort((a,b)=>chroma(b)-chroma(a)).filter(h=>h!==bg&&contrast(h,bg)>=2.2)[0]||[...p].sort((a,b)=>chroma(b)-chroma(a)).filter(h=>h!==bg)[0]||bg;
-    const ink=byLum.filter(h=>h!==accent&&h!==bg).sort((a,b)=>contrast(b,bg)-contrast(a,bg))[0]||(dark?'#f4efe6':'#181410');
-    const sub=p.filter(h=>h!==ink&&h!==accent&&h!==bg).sort((a,b)=>contrast(b,bg)-contrast(a,bg))[0]||ink;
-    state.assign={bg,ink,accent,sub}; state.activeWell=null; renderBrand(); }
+    const bgC=dark?byLum.slice(0,Math.min(3,byLum.length)):byLum.slice(Math.max(0,byLum.length-3));
+    const bg=keep('bg')||bgC[seed%bgC.length];
+    const accent=keep('accent')||[...p].sort((a,b)=>chroma(b)-chroma(a)).filter(h=>h!==bg&&contrast(h,bg)>=2.2)[0]||[...p].sort((a,b)=>chroma(b)-chroma(a)).filter(h=>h!==bg)[0]||bg;
+    const ink=keep('ink')||byLum.filter(h=>h!==accent&&h!==bg).sort((a,b)=>contrast(b,bg)-contrast(a,bg))[0]||(dark?'#f4efe6':'#181410');
+    const sub=keep('sub')||p.filter(h=>h!==ink&&h!==accent&&h!==bg).sort((a,b)=>contrast(b,bg)-contrast(a,bg))[0]||ink;
+    state.assign={bg,ink,accent,sub}; state.savedIdx=-1; state.activeWell=null; renderBrand(); }
   function shuffleBrand(){ state.seed=(state.seed||0)+1; state.polarity=state.polarity==='light'?'dark':(state.polarity==='dark'?'auto':'light'); fillAuto(); }
   // one button: first press fills, each press after re-rolls a fresh direction (fill + surprise, merged)
   document.getElementById('fillBtn').addEventListener('click',shuffleBrand);
   document.addEventListener('keydown',e=>{ if(state.beat!==BEAT.brand)return;
     if(e.code==='Space' && !/INPUT|TEXTAREA/.test(e.target.tagName||'')){ e.preventDefault(); shuffleBrand(); } });
 
-  // ============ beat 5: home ============
+  // ============ finale: the painted home — the three moves index + the living artifact ============
   const MOVES=[
     {no:'01',label:'Gather',blurb:'Look through everything you’ve saved. Pull the colors, type, and images you like.'},
     {no:'02',label:'Play',blurb:'Arrange it on your board. Sort it into a few clear directions.'},
     {no:'03',label:'Build',blurb:'Turn a direction into a brand: a palette, a wordmark, a book, and an export.'},
   ];
-  function renderHome(){
-    const r=compose(); if(r) applyBrandScoped(document.getElementById('bento'),r);  // the bento wears the brand; the page stays calm + readable
-    document.getElementById('homeEd').textContent = state.name?`${state.name}’s version of Inkling`:'Your version of Inkling';
-    document.getElementById('homeH').innerHTML = `${poss()} taste, <em>made into a brand.</em>`;
-    // palette tile
-    document.getElementById('delivPalette').innerHTML=boardColors().slice(0,12).map(h=>`<span class="sw" style="background:${h}"></span>`).join('');
-    renderHomeRoles();
-    // type tile — primary wordmark + faces + recolor swatches
-    const tk=primaryType(), wm=document.getElementById('delivWm'); wm.style.fontFamily=FONTS[tk].f;
-    document.getElementById('delivFaces').textContent = r ? `${FONTS[tk].name} · ${(r.bodyFont.match(/'([^']+)'/)||[,'Sans'])[1]}` : FONTS[tk].name;
-    const rc=document.getElementById('recolorSwatches'), rpal=boardColors().slice(0,10);
-    rc.innerHTML=rpal.map(h=>`<button class="rc ${state.wmColor===h?'on':''}" data-h="${h}" style="background:${h}" type="button" aria-label="Recolor the wordmark ${h}"></button>`).join('');
-    rc.querySelectorAll('.rc').forEach(b=>b.addEventListener('click',()=>{ state.wmColor=(state.wmColor===b.dataset.h?null:b.dataset.h);
-      applyWmColor(); rc.querySelectorAll('.rc').forEach(x=>x.classList.toggle('on',x.dataset.h===state.wmColor)); }));
-    applyWmColor();
-    // applied mockups
-    document.querySelectorAll('#bento .mkName').forEach(e=>e.textContent=state.name?poss():'');
-    document.getElementById('delivInitial').innerHTML=(state.name?state.name[0].toLowerCase():'i')+'<b>.</b>';
-    requestAnimationFrame(buildHomeArtifact); // build once the cell has real dimensions
-  }
-  function applyWmColor(){ const d=document.querySelector('.deliv'); if(d) d.style.setProperty('--wm', state.wmColor||''); }
-  // clone the moodboard, scaled, into the hero panel — the always-draggable artifact
+  document.getElementById('homeIndex').innerHTML = MOVES.map(m=>`<div class="move"><div class="moveNo">${m.no}</div><div class="moveLabel">${m.label}</div><div class="moveBlurb">${m.blurb}</div></div>`).join('');
+  // clone the moodboard, scaled, into the hero panel — the always-draggable living artifact
   function buildHomeArtifact(){
     const host=document.getElementById('artifact'); host.querySelectorAll('.it').forEach(e=>e.remove());
     if(!state.items.length) return;
     const board=document.getElementById('board');
     const bw=board.clientWidth||900, bh=board.clientHeight||500;
-    const hw=host.clientWidth||420, hh=host.clientHeight||380;
+    const hw=host.clientWidth||900;
+    // size the band to the board's OWN aspect so the composition fills it (no thin strip), capped to a sane height
+    host.style.height=Math.min(Math.round(hw*bh/bw), Math.round(innerHeight*0.52))+'px';
+    const hh=host.clientHeight||Math.round(hw*bh/bw);
     // faithful: one uniform scale + center, so the artifact IS the board you composed (not a re-scatter)
-    const f=Math.min(hw/bw,hh/bh)*0.94, offX=(hw-bw*f)/2, offY=(hh-bh*f)/2;
+    const f=Math.min(hw/bw,hh/bh)*0.96, offX=(hw-bw*f)/2, offY=(hh-bh*f)/2;
     const clones=state.items.map((it,k)=>({ ...it, el:null, w:Math.round(it.w*f), h:Math.round(it.h*f),
       x:Math.round(it.x*f+offX), y:Math.round(it.y*f+offY), z:k+1 }));
     state.homeItems=clones;
@@ -1285,38 +1452,26 @@
     if(typeof dragNudge==='function') dragNudge(host);
   }
   document.getElementById('homeStart').addEventListener('click',()=>alert('→ This is where you’d start your own brand. Bring in your own images and do it for real.'));
-  document.getElementById('homeDefault').addEventListener('click',()=>{ state.assign={}; state.wmColor=null; renderHome(); });
-  // manual color choice on the living artifact — react, not random: tap a role to walk your gathered colors through it
-  function renderHomeRoles(){ const r=compose(); if(!r)return; const el=document.getElementById('homeRoles'); if(!el)return;
-    el.innerHTML=ROLE_DEFS.map(d=>`<button class="role" data-role="${d.k}" type="button"><span class="rsw" style="background:${roleColor(r,d.k)}"></span><span class="rl">${d.label}</span></button>`).join('');
-    el.querySelectorAll('.role').forEach(b=>b.addEventListener('click',()=>cycleRoleHome(b.dataset.role))); }
-  function cycleRoleHome(role){ const p=activeColors(); if(!p.length)return;
-    const cur=state.assign[role], idx=cur?p.indexOf(cur):-1; state.assign[role]=p[(idx+1)%p.length];
-    const r=compose(); if(r) applyBrandScoped(document.getElementById('bento'),r); renderHomeRoles(); }
-  // the permanent playground — keep shuffling the look right from the home page
-  function shuffleLook(){ state.assign={}; state.seed=(state.seed||0)+1; state.polarity=state.polarity==='light'?'dark':(state.polarity==='dark'?'auto':'light'); renderHome(); }
-  document.getElementById('homeShuffle').addEventListener('click',shuffleLook);
+  document.getElementById('homeDefault').addEventListener('click',()=>{ state.assign={}; state.locked={}; state.savedIdx=-1; renderBrand(); }); // back to the stencil, ready to repaint
 
   // ============ step machine ============
   function show(n){
     state.beat=clamp(n,0,BEATS-1);
     document.querySelectorAll('.beat').forEach((s,i)=>s.classList.toggle('active',i===state.beat));
     document.querySelectorAll('#progress .p').forEach(p=>{ const b=+p.dataset.b; p.classList.toggle('on',b===state.beat); p.classList.toggle('done',b<state.beat); });
-    document.getElementById('backBtn').style.visibility = state.beat>0 && state.beat<BEAT.home ? 'visible':'hidden';
-    clearBrandGlobal(); // the page chrome stays newsprint throughout; the brand is scoped to the artifacts (mockups / bento)
+    document.getElementById('backBtn').style.visibility = state.beat>0 && state.beat<BEAT.brand ? 'visible':'hidden';
+    clearBrandGlobal(); // the page chrome stays newsprint; the brand is scoped to the finale surface
     if(state.beat!==BEAT.colors && cedit.classList.contains('on')) closeEdit();
     if(state.beat===BEAT.name){ setTimeout(()=>nameField.focus({preventScroll:true}),120); }
     if(state.beat===BEAT.gather){ renderGather(); }
     if(state.beat===BEAT.colors){ renderPalette(); }
     if(state.beat===BEAT.type){ renderSpecs(); }
     if(state.beat===BEAT.board){ renderBoard(); }
-    if(state.beat===BEAT.brand){ renderBoard(); renderBrand(); }
-    if(state.beat===BEAT.home){ renderHome(); }
-    // footer
+    if(state.beat===BEAT.brand){ renderBoard(); renderBrand(); }   // the finale: paint the home to life
+    // footer — the finale is a landing, so the step nav steps aside for its own CTAs
     const next=document.getElementById('nextBtn'), nameGoBeats=state.beat===BEAT.name;
-    document.querySelector('.nav').style.display = nameGoBeats || state.beat===BEAT.home ? 'none':'flex';
-    next.innerHTML = state.beat===BEAT.brand ? 'Make it home <span aria-hidden="true">→</span>'
-                   : state.beat===BEAT.board ? 'See your brand <span aria-hidden="true">→</span>'
+    document.querySelector('.nav').style.display = nameGoBeats || state.beat===BEAT.brand ? 'none':'flex';
+    next.innerHTML = state.beat===BEAT.board ? 'See your home <span aria-hidden="true">→</span>'
                    : 'Next <span aria-hidden="true">→</span>';
     updateNav();
     hideCoach(); if(GUIDE[state.beat]) setTimeout(()=>{ if(state.beat===n) showCoachFor(state.beat); }, 720); // first-visit guidance
@@ -1327,12 +1482,11 @@
         coachTag=document.getElementById('coachTag'), coachArrow=document.querySelector('.coachArrow');
   state.coached=new Set();
   const GUIDE={
-    [BEAT.gather]:{tag:'Gather',text:'Tap the images that ring true — 3 to 6. Your colors gather as you go.',at:()=>document.querySelector('#wall .ref')},
-    [BEAT.colors]:{tag:'Colors',text:'Each image and the colors it gave you. Tap a swatch to adjust it, ✕ to drop it — or tap the photo to eyedrop a new color.',at:()=>document.querySelector('#palette .curImg')},
+    [BEAT.gather]:{tag:'Gather',text:'Tap the images you’re drawn to — 3 to 6. Your colors gather as you go.',at:()=>document.querySelector('#wall .ref')},
+    [BEAT.colors]:{tag:'Colors',text:'✕ drops a color you don’t want. To add one, eyedrop it straight from a photo.',at:()=>document.querySelector('#palette .curImg')},
     [BEAT.type]:{tag:'Type',text:'Tap the faces you like. Slide the weight, star a primary, and toggle Light/Dark to see them in context.',at:()=>document.querySelector('#specWall .spec')},
     [BEAT.board]:{tag:'Moodboard',text:'Drag any piece to move it. Tap a piece to reshape it; use the corner handles to resize or rotate.',at:()=>document.querySelector('#board .it')},
-    [BEAT.brand]:{tag:'Paint it in',text:'Drop a color into each slot to paint your brand — or tap a slot, then a color. Fill all four.',at:()=>document.querySelector('#paintWells .well')},
-    [BEAT.home]:{tag:'Your brand',text:'Your brand, all in one place. Drag the moodboard, tap a palette role to swap a color, or recolor the type.',at:()=>document.querySelector('#artifact .it')||document.getElementById('bento')},
+    [BEAT.brand]:{tag:'Bring it to life',text:'This is your home — paint it in. Drop a color into each slot, or hit “Fill it for me.” Then keep playing.',at:()=>document.querySelector('#paintWells .well')},
   };
   function positionCoach(a){
     if(!a){ coach.style.left='50%'; coach.style.top='120px'; coach.style.transform='translateX(-50%)'; coachArrow.style.display='none'; return; }
@@ -1380,9 +1534,8 @@
     setTimeout(()=>{ items.forEach(it=>{ const el=it.el; if(!el)return; el.style.transition=''; el.style.opacity=''; place(it); }); }, 1300);
   }
   document.getElementById('nextBtn').addEventListener('click',()=>{
-    if(state.beat===BEAT.brand) show(BEAT.home);
-    else if(state.beat===BEAT.board) assembleToBrand();
-    else if(state.beat<BEAT.home) show(state.beat+1); });
+    if(state.beat===BEAT.board) assembleToBrand();          // the one arrival → the painted home
+    else if(state.beat<BEAT.brand) show(state.beat+1); });
   document.getElementById('backBtn').addEventListener('click',()=>show(state.beat-1));
   document.getElementById('skipBtn').addEventListener('click',()=>{
     // a fast spine: ensure there's enough to compose, then jump to the brand
@@ -1390,14 +1543,14 @@
     if(!state.typePicks.length){ state.typePicks=['fraunces']; }
     state.itemsSig=''; show(BEAT.brand); fillAuto();   // fast path lands painted, not blank
   });
-  window.addEventListener('resize',()=>{ if(state.beat===BEAT.home) buildHomeArtifact(); });
+  window.addEventListener('resize',()=>{ if(state.beat===BEAT.brand) buildHomeArtifact(); });
 
   // ============ opening frame: load → the hand-drawn spine → two doors (GSAP) ============
   const intro=document.getElementById('intro'), app=document.querySelector('.app');
   const reduceMo=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hasG=typeof gsap!=='undefined';
   // the felt explanation is the arc itself — labels positioned under the one-line drawing's dots
-  const LBLX=[32,51,70], DOTCOL=['#c4a35a','#b46d68','#6675b3'];   // align under the new dots; numbers match their dot color
+  const LBLX=[32,51,70], DOTCOL=['#C2AE73','#b46d68','#6675b3'];   // align under the new dots; numbers match their dot color
   document.getElementById('spineLabels').innerHTML=
     `<div class="lbl bookLabel" data-l="idea" style="left:11.8%">Idea</div>`+
     MOVES.map((m,i)=>`<div class="lbl station" style="left:${LBLX[i]}%"><span class="stationNo" style="color:${DOTCOL[i]}">${m.no}</span><span class="stationLabel">${m.label}</span><span class="stationBlurb">${m.blurb}</span></div>`).join('')+
@@ -1464,7 +1617,7 @@
   doorOwnEl.addEventListener('click',()=>chooseDoor(doorOwnEl,()=>{
     if(state.picks.size<3){ [0,9,11,4].forEach(i=>state.picks.add(i)); }
     if(!state.typePicks.length){ state.typePicks=['fraunces','grotesk']; }
-    state.itemsSig=''; renderBoard(); show(BEAT.home);
+    state.itemsSig=''; renderBoard(); show(BEAT.brand); fillAuto();   // land in the living, already-painted home (the playground)
     setTimeout(()=>{const h=document.getElementById('homeStart'); if(h)h.focus({preventScroll:true});}, reduceMo?0:120);
   }));
 
