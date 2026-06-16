@@ -4,24 +4,24 @@
 (`project_product_direction`, `project_onboarding_genesis`); the journey lives in git. Keep this short.
 
 ## Right now
-- **Branch `v2`** (`main` = frozen OG standalone). **Track A prototype** (`public/make-inkling.html`). Lorin's full walk-through EDIT QUEUE is **shipped — incl. the big Home rethink.** Verified desktop / 1366 / mobile, keyboard, reduced-motion-safe, 0 console errors. **Not pushed.**
-- Run: `npm run dev` → `localhost:3000` → `/make-inkling.html`. Dogfood signed-out (localStorage); Playwright runs in a separate browser, not hers. **Test gotcha:** clicking a door fires a *delayed* `show(BEAT.name)` ~640ms later — scripted nav must wait or it clobbers your steps.
+- **Branch `v2`** (`main` = frozen OG standalone). **Not pushed.** Track A prototype = `public/make-inkling.html` (the full flow, demo-ready — **unchanged this session**).
+- **The OPENING is being redesigned** in `public/opening-*.html` — current best = **`public/opening-draft.html`** (the "pour the ink" annotated draft). `opening-core.js` + `public/marks/` hold shared data. Direction is **locked** (see `project_onboarding_genesis`); **not yet integrated into `make-inkling.html`.**
+- Run: `npm run dev` → `localhost:3000` → `/opening-draft.html` (new opening) or `/make-inkling.html` (full flow). Playwright runs in a separate browser; headless forces `prefers-reduced-motion`, so the ink-pour ripple reads best in a real browser.
 
-## Shipped this session (2026-06-15 — the walk-through edit queue)
-- **Quick wins:** Gather "drawn to" copy; Colors de-fluffed + a real **eyedropper icon + cursor** (was a "+"); gold spine dot → **#C2AE73**; Brand "Drop"→"Drag"; **Type specimens centered**; **rotate glyph** fixed (clean single-arc, was the repeat-looking ⟳).
-- **Doors → cute Victorian.** Arched, recessed beveled panel + brass hinges/knob, painted in the dot colors (dusty-rose "Co-design" + powder-blue "Wander in", not black/white); **both hinge left / open right / swing outward** toward the viewer; door text stays AA.
-- **In-place color editing everywhere** — one reusable floating editor (hex + hue/lightness), opened from a pencil handle on board color tiles (or `e`) and by tapping a filled Brand slot; live, AA still enforced. Plus **custom hex/picker color add** on the board (flows into the brand pool).
-- **Lock + save-a-set for shuffle** — 🔒 pin a role (held through shuffle), ★ save a SET, ⤮ shuffle only saved sets.
-- **BIG — Brand + Home merged into the "paint the home to life" finale (Option C).** One surface, three states: newsprint **stencil → painted → settled.** You paint the real home in (4 role slots, or "Fill it for me"); once painted the surface comes alive and the paint UI **demotes** to a slim studio dock; it ends as a centered editorial landing (hero · full-width moodboard band · applied artifacts · spec receipt · Gather·Play·Build index). Bento home deleted; `brand` is now the last beat (progress dot renamed "Home"). Fixed two wide-screen bugs Lorin caught: section collapse/overlap (`flex:0 0 auto`) and the moodboard letterbox (band sized to the board's own aspect).
+## Shipped this session (2026-06-16 — opening redesign explorations)
+- Explored the make-Inkling **opening** as an immersive **studio, not a centered landing page** (she rejected the centered AI-app column, the 3D doors, and a meek "play with it" reveal). Committed the full journey (`public/opening-*.html`): the concept A/B/C sets, the touchable color-in `opening-live`, the asymmetric `opening-canvas`, the schematic trio (`-a-blueprint` / `-b-cursor` / `-c-assembly`).
+- **Landed direction = `opening-draft.html`:** an **annotated working-draft** where the verbs live ON the artifact. Hero = a real **liquid INK pour** — the SVG wordmark floods from the floor up behind a rippling waterline (the `g`'s descender fills first). Drag the letters ↕ = weight, tap = voice, tap the dot = mark; the panels demote to thin **live read-outs** wired by **orthogonal** (right-angle) leaders; grid/baseline/registration + surface options (dots/grid/grain/blank).
+- **10 Figma-curated marks** pulled to `public/marks/m01–10.svg` (normalized to one optical size, `currentColor`-recolorable). EPS→SVG toolchain (`ghostscript` + `pdf2svg`) installed via brew.
+- (Prior **2026-06-15** walk-through edit queue + the Brand/Home "paint the home to life" merge — done, in git.)
 
-## Still open (small)
-- **Reconsider the ultraviolet "Inkling purple" accent** — Lorin no longer sure (open brand question).
-- Finale polish (optional): the moodboard band carries some vertical air (the board itself is short/wide); the stencil hero is *intentionally* ghosted (could lift legibility); the onboarding top bar stays above the branded landing (could hide on the finale for full immersion).
-- Moodboard **send-to-back** (explicit z-order) not added — tap/drag brings-to-front only.
-- **Hand-drawn SVGs** — swap Lorin's own drawings into the intro spine (bulb/loop) when she provides them.
+## Still open
+- **Polish the ink-pour opening to the groundbreaking-2026 WOW bar** (ink-like waterline / meniscus, drag-weight feel, the cursor-as-director that always names the next move) — then **integrate it into `make-inkling.html`** and carry the *manipulate-the-artifact* language into the rest of the flow.
+- **Accent:** ultraviolet → leaning a single quiet **ink-violet `#4b3f73`** (chrome quiet; the user's gathered color is the only saturated thing). Confirm.
+- Moodboard **send-to-back** (explicit z-order) still not added — brings-to-front only.
+- **Hand-drawn SVGs** — swap Lorin's own drawings in when provided (the new opening may not reuse the old spine).
 
 ## Next move (do this first)
-**Lorin walks the new end-to-end flow on her screen** (doors → Name → Gather → Colors → Type → Moodboard → the painted-home finale) and reacts. Then either: polish the finale (band air / stencil intensity / immersion), settle the **ultraviolet accent** question, or pivot to **Track B** (the color engine — see `project_smart_color_engine`, `project_color_theory_research`).
+**Open `localhost:3000/opening-draft.html` and push the "pour the ink" annotated draft to the bar** — polish the ink physics + the direct-manipulation feel, refine the cursor-as-director. Then carry the *manipulate-the-artifact* language into the rest of the flow (Gather → Colors → Type → Moodboard → finale) and fold the opening into `make-inkling.html`. (Track B color engine still queued — `project_smart_color_engine`, `project_color_theory_research`.)
 
 ## What it is
 **Inkling — the intuitive's creative home base.** One place that replaces the 5 apps + 10 tabs a visual
@@ -35,9 +35,9 @@ editorial rigor. Locked decisions + brand → memory.
 
 **Track A — the prototype (`public/make-inkling.html`). The reference.** Job: *prove the
 experience + thesis*, Inkling as the subject. Don't add real-product features here; build those in
-Track B. The full flow: **Opening frame** (load → the Gather·Play·Build spine as the felt explanation
-→ two Victorian doors: "Co-design Inkling" guided · "Wander in on your own" straight to the living
-canvas) → Name → Gather → Colors → Type → Moodboard → **the painted-home finale** (the board
+Track B. The full flow: **Opening frame** (being redesigned — see "Right now" + `project_onboarding_genesis`;
+two entries: "Co-design Inkling" guided · "Start fresh / wander in" straight to the living canvas)
+→ Name → Gather → Colors → Type → Moodboard → **the painted-home finale** (the board
 *assembles* in — the one arrival — then you paint the home to life and it settles into the landing;
 Brand + Home merged). Verified desktop + mobile, keyboard (tab order, Enter, focus, the intro holds
 `inert` over the flow), reduced-motion (content stays visible, climax goes instant), 0 console errors.
