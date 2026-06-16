@@ -4,9 +4,47 @@
 (`project_product_direction`, `project_onboarding_genesis`); the journey lives in git. Keep this short.
 
 ## Right now
-- **Branch `v2`** (`main` = frozen OG standalone). **Track A — polished + demo-ready.** Full page-by-page self-audit done, literal doors + story-beat animation, contextual curation/dropper-loupe/notes/recolor, paint-by-number Brand, calm bento Home, guidance coach layer, legibility/contrast fixed, QA-swept (mobile · reduced-motion · keyboard · 0 console errors). Effectively re-frozen as the reference. Not pushed.
-- **Two open, both non-blocking:** D/J — swap in Lorin's own hand-drawn spine SVG when she sends it; B — micro-breathing if she spots a dense spot on a walk-through.
-- **Next chapter = Track B** (real Next.js product, color engine first) — a deliberate pivot; start on Lorin's go.
+- **Branch `v2`** (`main` = frozen OG standalone). **Track A — in a focused edit pass** (Lorin walked the whole flow 2026-06-15 PM and gave a detailed review; NOT demo-ready yet). Work the EDIT QUEUE below next session. Not pushed.
+
+## EDIT QUEUE — from Lorin's full walk-through (2026-06-15, do next session)
+Grouped by page. Voice rule throughout: **direct + practical, scrub AI fluff** (no "gave you," "ring true," poetic CTAs).
+
+**Opening frame / doors**
+- [ ] Doors **don't read as doors** — redesign so they're unmistakably doors (frame, hinge, handle, proportion). "You can make these better."
+- [ ] Door opens **inward → should open OUTWARD** (toward the viewer). Keep the open animation (she loves it), flip the hinge direction.
+- [ ] Gold spine dot color is **too yellow** — she wants **#C2AE73** (greener). Update the muted dot set accordingly.
+
+**Gather**
+- [ ] Copy: "images that ring true" is **too poetic** → "images you're drawn to" / "that fit your taste." Direct.
+
+**Colors**
+- [ ] Coach should say **only**: you can delete colors, and add more with the magnifier. Trim the rest.
+- [ ] The **＋ icon doesn't read as an eyedropper** → use a real eyedropper icon/cursor affordance.
+- [ ] Remove the sub **"Each image and the colors it gave you."** — AI fluff. Replace with a direct line; scrub similar phrasing site-wide.
+
+**Type**
+- [ ] **Center** the specimen card content (currently left-aligned), especially once filtering narrows the grid.
+
+**Moodboard**
+- [ ] **Tap image to change shape** — restore/ensure for image pieces.
+- [ ] **Z-order control** — bring an item to front / send to back.
+- [ ] **Rotate icon is wrong** (⟳ reads as repeat/undo) → use a real rotate glyph (curved/arched arrows, ↻-style).
+- [ ] **Custom color add** (hex/picker) + **edit colors in place** on the board (tap a tile → adjust the shade — she may want slightly different shades in context).
+
+**Brand (paint)**
+- [ ] **Cramped up top, empty below** — use the space; rebalance.
+- [ ] Copy: **"Drop" → "Drag"** in the instruction.
+- [ ] **Light vs dark choice** at this stage (she knows her preference by now).
+- [ ] **Lock features for shuffle** — pin e.g. a background color, shuffle the rest (bring back role-pinning).
+- [ ] **Edit colors manually in place** here too (she may dislike the set once seen together).
+- [ ] **Star / save a SET** so she can keep playing without losing a favorite; then shuffle just saved sets for the final decision.
+- [ ] **"Make it home" CTA** is poetic/AI → practical wording.
+- [ ] **Reconsider the ultraviolet (Inkling purple) accent** — she's no longer sure she likes it. Open brand question.
+
+**Home / end-state — BIG RETHINK**
+- [ ] The bento Home **reads as a repeated step, not a landing page** — colorful bg makes the moodboard look weird; **no resonance**. The earlier full-screen hero versions had it.
+- [ ] Likely **merge Brand + Home** (the bento step feels redundant with Brand).
+- [ ] **Fully rethink where the user lands** after designing their own — it must feel like a real, resonant landing page / home, not a flow step.
 - Run: `npm run dev` → `localhost:3000`. The onboarding prototype is `public/make-inkling.html`.
 - Dogfood signed-out (localStorage); Playwright runs in a separate browser, not yours.
 
@@ -68,8 +106,12 @@ console errors.
    retention moat. (Connects to `project_community_publishing`.)
 
 ## Next move (do this first)
-**Work the Master to-do above, cross-cutting first** (A legibility → B spacing → C guidance), then the
-per-beat fixes, then features. Track B (color engine, below) waits until the prototype polish lands.
+**Work the EDIT QUEUE near the top** (Lorin's full walk-through, 2026-06-15). Suggested order: quick
+copy/icon/color fixes first (gather "drawn to," colors fluff + eyedropper icon, gold→#C2AE73, Drop→Drag,
+type centered, rotate icon), then the doors (read-as-doors + open outward), then the meatier ones
+(in-place color editing, lock/star-a-set for shuffle), and **last the big one: rethink the end-state /
+Home as a real resonant landing page (likely merging Brand + Home).** The Master to-do below is the
+prior polish pass (mostly shipped); Track B (color engine) still waits.
 
 ## Locked decisions (→ memory for the why)
 - **Two surfaces:** workspace = neutral container (your brand is the color inside it); home/onboarding
