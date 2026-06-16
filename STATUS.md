@@ -44,7 +44,7 @@ Brand + Home merged). Verified desktop + mobile, keyboard (tab order, Enter, foc
 
 **Track B — the real Next.js product.** Where the durable architecture is built, in dependency order:
 1. **Color engine** (make-or-break): OKLCH harmony + hue-cluster detection → "you gathered two
-   directions" + ramp snapping. Foundation; also powers the curation beat. (See `project_smart_color_engine`, `project_color_theory_research` — Sanzo Wada dataset ready.)
+   directions" + ramp snapping. Foundation; also powers the curation beat. (See `project_smart_color_engine`, `project_color_theory_research` — Sanzo Wada dataset ready.) **Output contract** (from the Untitled UI teardown, in `project_color_theory_research` §G): snap each role's OKLCH ramp to the 12-step `25→950` shape, pull neutrals from the brand hue, and emit a *two-layer* token set (primitive + semantic aliases like `text-primary` / `bg-brand-solid`) with a per-step contrast verdict — not a flat hex list.
 2. **Neutral workspace + empty-canvas import** (3 sources as the empty state; first item lands & stays)
    + **adaptive curation beat** (lay out under ~20; cluster-first over ~20).
 3. **Taste database** — persistent, taggable, queryable library; naming an upload = the first tag.
