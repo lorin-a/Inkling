@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inkling — opening · pour the ink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,300..600&family=Young+Serif&family=Space+Grotesk:wght@300..700&family=Archivo+Black&family=Borel&family=DM+Mono:wght@300;400;500&family=Noto+Sans:wght@100..900&family=Noto+Sans+Mono:wght@400..700&family=Caveat:wght@500;600&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="/opening-core.js"></script>
+<style>
+  :root{ --bg:#f4f2ea; --ink:#1b1710; --sub:#5f5546; --muted:#6a5e4c; --faint:#9a8e78; --accent:#4b3f73; --line:rgba(40,32,18,.16); --grid:rgba(40,32,18,.07); --taste:#c4795a;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif; --mono:"Noto Sans Mono",ui-monospace,monospace; --hand:"Caveat",cursive; --ease:cubic-bezier(.22,1,.36,1); --spring:cubic-bezier(.34,1.56,.64,1); }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);background-color:var(--bg);color:var(--ink);height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;transition:background-color .8s var(--ease)}
+  body.s-grid{background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:34px 34px}
+  body.s-dots{background-image:radial-gradient(circle, rgba(40,32,18,.06) 1.1px, transparent 1.4px);background-size:26px 26px}
+  body.s-grain{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");background-size:140px}
+  body.s-plain{background-image:none}
+
+  .sheet{position:absolute;inset:24px;border:1.5px solid var(--ink);pointer-events:none}
+  .reg{position:absolute;width:18px;height:18px}.reg::before,.reg::after{content:"";position:absolute;background:var(--ink)}
+  .reg::before{width:18px;height:1.5px}.reg::after{width:1.5px;height:18px}
+  .reg.tl{top:-1px;left:-1px}.reg.tr{top:-1px;right:-1px}.reg.tr::before{right:0}.reg.tr::after{right:0}
+  .reg.bl{bottom:-1px;left:-1px}.reg.bl::before{bottom:0}.reg.bl::after{bottom:0}.reg.br{bottom:-1px;right:-1px}.reg.br::before{bottom:0;right:0}.reg.br::after{bottom:0;right:0}
+  .hdr{position:absolute;top:13px;left:20px;right:20px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+  .surfCtl{position:absolute;top:48px;left:44px;z-index:4;display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+  .surfCtl button{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);background:none;border:1.25px solid var(--line);border-radius:4px;padding:5px 11px;cursor:pointer}
+  .surfCtl button:hover{border-color:var(--ink);color:var(--ink)} .surfCtl button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+  .baseRule{position:fixed;left:44px;right:44px;height:0;border-top:1.5px solid var(--accent);z-index:1;pointer-events:none;opacity:.85}
+  .baseRule span{position:absolute;left:0;top:-9px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);background:var(--bg);padding:0 6px}
+
+  .leaders{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+  .leaders polyline{fill:none;stroke:rgba(40,32,18,.32);stroke-width:1.25}
+  .leaders .dot{fill:rgba(40,32,18,.32)}
+
+  .stage{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);z-index:3;cursor:ns-resize}
+  #wordsvg{display:block;overflow:visible;width:min(70vw,1020px);height:auto;touch-action:none}
+  .wOut{fill:none;stroke:rgba(40,32,18,.52);stroke-width:3.4;stroke-linejoin:round}
+  .wText{font-family:var(--serif);font-weight:600;font-size:200px;letter-spacing:-7px}
+  .markHit{cursor:pointer}
+
+  /* ink wells — grab and pour */
+  .wells{position:absolute;left:46px;bottom:120px;z-index:4}
+  .wells .lt{display:block;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:11px}
+  .wrow{display:flex;gap:11px;align-items:center}
+  .well{width:42px;height:42px;border-radius:100px;border:3px solid rgba(255,255,255,.65);box-shadow:inset 0 0 0 1px rgba(40,32,18,.2),0 4px 12px rgba(28,24,16,.2);cursor:grab;padding:0;touch-action:none;transition:transform .15s var(--spring)}
+  .well:hover{transform:translateY(-5px) scale(1.06)} .well:active{cursor:grabbing}
+  .wAdd{width:42px;height:42px;border-radius:100px;border:1.6px dashed var(--line);background:none;color:var(--muted);font-size:20px;cursor:pointer;position:relative;overflow:hidden}
+  .blob{position:fixed;z-index:80;width:46px;height:46px;border-radius:60% 40% 55% 45%/55% 45% 60% 40%;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 8px 20px rgba(28,24,16,.32);border:2px solid #fff}
+
+  /* live read-outs */
+  .ann{position:absolute;z-index:4;border:1.5px solid var(--ink);background:var(--bg);border-radius:6px;min-width:182px}
+  .ann .t{padding:8px 12px;border-bottom:1.25px solid var(--line);font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between}
+  .ann .v{padding:10px 12px;font-family:var(--serif);font-size:18px;font-weight:560}
+  .ann .h{padding:0 12px 10px;font-family:var(--mono);font-size:10.5px;color:var(--accent)}
+  .a-voice{right:46px;top:21%} .a-weight{left:50px;bottom:20%} .a-mark{right:52px;bottom:20%}
+
+  .note{position:absolute;left:50%;bottom:118px;transform:translateX(-50%);font-family:var(--hand);font-size:32px;color:var(--sub);z-index:3}
+  .entries{position:absolute;left:50%;bottom:46px;transform:translateX(-50%);display:flex;gap:14px;z-index:4}
+  .door{display:flex;flex-direction:column;gap:1px;text-align:left;min-width:244px;border:1.5px solid var(--ink);border-radius:6px;padding:14px 19px;background:var(--bg);font-family:inherit;cursor:pointer;transition:transform .16s var(--ease)}
+  .door .dk{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+  .door .dt{font-family:var(--serif);font-size:19px;font-weight:560} .door.primary{background:color-mix(in srgb,var(--taste) 13%,var(--bg))} .door:hover{transform:translateY(-2px)}
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
+</style>
+</head>
+<body class="s-grid">
+  <div class="sheet"><span class="reg tl"></span><span class="reg tr"></span><span class="reg bl"></span><span class="reg br"></span></div>
+  <div class="hdr"><span>Inkling — Idea → Inspiration → Identity</span><span>Sheet 01 / Opening · Pour the ink</span></div>
+  <div class="surfCtl" id="surfCtl"><span>Surface</span></div>
+
+  <div class="baseRule" id="baseRule"><span>baseline</span></div>
+  <svg class="leaders" id="leaders"></svg>
+
+  <div class="stage" id="stage">
+    <svg id="wordsvg" viewBox="0 0 1000 300" aria-label="inkling.">
+      <defs><mask id="liq"><path id="liqPath" fill="#fff"/></mask></defs>
+      <text id="wOut" class="wText wOut" x="0" y="220">inkling</text>
+      <text id="wFill" class="wText" x="0" y="220" mask="url(#liq)" fill="var(--taste)">inkling</text>
+      <g id="markG" class="markHit"></g>
+    </svg>
+  </div>
+
+  <div class="wells"><span class="lt">Ink — grab a color, pour it on the word</span><div class="wrow" id="wrow"></div></div>
+
+  <div class="ann a-voice" id="aVoice"><div class="t"><span>02 · Voice</span><span>typeface</span></div><div class="v" id="vVoice">Fraunces</div><div class="h">tap the word to change →</div></div>
+  <div class="ann a-weight" id="aWeight"><div class="t"><span>03 · Weight</span><span id="vW">600</span></div><div class="v">drag the letters</div><div class="h">↕ pull up / down on the word</div></div>
+  <div class="ann a-mark" id="aMark"><div class="t"><span>04 · Mark</span><span>signature</span></div><div class="v">tap the dot</div><div class="h">cycles 10 marks</div></div>
+
+  <div class="note">know it when you see it.</div>
+  <div class="entries">
+    <button class="door primary" type="button"><span class="dk">Learn through play</span><span class="dt">Co-design Inkling →</span></button>
+    <button class="door" type="button"><span class="dk">Start fresh</span><span class="dt">Bring your own idea →</span></button>
+  </div>
+
+<script>
+  const I=window.INK;
+  const svg=document.getElementById('wordsvg'),wOut=document.getElementById('wOut'),wFill=document.getElementById('wFill'),liqPath=document.getElementById('liqPath'),markG=document.getElementById('markG'),
+        stage=document.getElementById('stage'),baseRule=document.getElementById('baseRule'),leaders=document.getElementById('leaders'),wrow=document.getElementById('wrow'),surfCtl=document.getElementById('surfCtl'),
+        vVoice=document.getElementById('vVoice'),vW=document.getElementById('vW');
+  let faceI=0,markI=0,weightV=600,surfI=0;
+  const SURF=[['s-grid','Grid'],['s-dots','Dots'],['s-grain','Grain'],['s-plain','Blank']];
+  const hasGsap=typeof gsap!=='undefined';
+  let VB={x:0,y:0,w:1000,h:300}, baseY=220, liq={level:0,phase:0}, poured=false, curHex='#c4795a';
+
+  function measure(){
+    wOut.setAttribute('font-weight',weightV); wFill.setAttribute('font-weight',weightV);
+    const b=wOut.getBBox();
+    VB={x:b.x-14,y:b.y-14,w:b.width+28,h:b.height+28};
+    svg.setAttribute('viewBox',`${VB.x} ${VB.y} ${VB.w} ${VB.h}`);
+    // place the mark just after the word, on the baseline
+    const mw=b.height*0.2;
+    markG.setAttribute('transform',`translate(${b.x+b.width+b.height*0.02}, ${baseY-mw})`);
+    setMark();
+    drawLiquid(); positionBaseline(); drawLeaders();
+  }
+  function setMark(){ const b=wOut.getBBox(); const mw=b.height*0.2;
+    markG.innerHTML=I.MARKS[markI].replace('<svg','<svg width="'+mw+'" height="'+mw+'"').replace('currentColor','var(--accent)'); }
+
+  // ---- liquid ink ----
+  function drawLiquid(){ const {y,h,x,w}=VB; const top=y, bot=y+h;
+    const surfaceY = bot - h*liq.level;
+    const amp = 7*Math.max(0,Math.min(1,(1-liq.level)))*Math.min(1,liq.level*6+0.0);
+    let d=`M${x} ${bot} L${x} ${surfaceY}`;
+    const steps=26; for(let i=0;i<=steps;i++){ const px=x+w*i/steps; const py=surfaceY+Math.sin(liq.phase+i*0.55)*amp; d+=` L${px.toFixed(1)} ${py.toFixed(1)}`; }
+    d+=` L${x+w} ${bot} Z`; liqPath.setAttribute('d',d);
+  }
+  (function loop(){ liq.phase+=0.07; if(liq.level>0&&liq.level<1) drawLiquid(); requestAnimationFrame(loop); })();
+  function pour(hex){ curHex=hex; wFill.setAttribute('fill',hex); document.documentElement.style.setProperty('--taste',hex);
+    document.body.style.backgroundColor='color-mix(in srgb,'+hex+' 5%, #f4f2ea)'; poured=true;
+    if(hasGsap&&!matchMedia('(prefers-reduced-motion: reduce)').matches){ liq.level=0; gsap.to(liq,{level:1,duration:1.25,ease:'power2.out',onUpdate:drawLiquid,onComplete:drawLiquid}); }
+    else { liq.level=1; drawLiquid(); }
+  }
+
+  function setFace(i){ faceI=(i+I.FACES.length)%I.FACES.length; const f=I.FACES[faceI][0]; wOut.style.fontFamily=f; wFill.style.fontFamily=f;
+    vVoice.textContent=f.replace(/"/g,'').split(',')[0]+' · '+I.FACES[faceI][1]; requestAnimationFrame(measure); }
+  function setWeight(w){ weightV=Math.max(200,Math.min(800,Math.round(w/10)*10)); vW.textContent=weightV; wOut.setAttribute('font-weight',weightV); wFill.setAttribute('font-weight',weightV); }
+  function cycleMark(){ markI=(markI+1)%I.MARKS.length; setMark(); }
+  function setSurface(i){ surfI=(i+SURF.length)%SURF.length; document.body.classList.remove('s-grid','s-dots','s-grain','s-plain'); document.body.classList.add(SURF[surfI][0]); surfCtl.querySelectorAll('button').forEach((b,k)=>b.classList.toggle('on',k===surfI)); }
+
+  function positionBaseline(){ const r=svg.getBoundingClientRect(); const sc=r.height/VB.h; const bY=r.top+(baseY-VB.y)*sc; baseRule.style.top=bY+'px'; }
+  // orthogonal leaders from read-outs to the artifact
+  const MAP=[['aVoice','type',()=>{const r=svg.getBoundingClientRect();return [r.left+r.width*0.62,r.top+r.height*0.3];}],
+             ['aWeight','weight',()=>{const r=svg.getBoundingClientRect();return [r.left+r.width*0.3,r.top+r.height*0.55];}],
+             ['aMark','mark',()=>{const r=markG.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2];}]];
+  function drawLeaders(){ leaders.innerHTML='';
+    MAP.forEach(([id,t,target])=>{ const m=document.getElementById(id); if(!m)return; const mr=m.getBoundingClientRect();
+      const leftSide=mr.left+mr.width/2<innerWidth/2; const ax=leftSide?mr.right:mr.left, ay=mr.top+mr.height/2; const [bx,by]=target();
+      const turnX=leftSide?ax+Math.max(26,(bx-ax)*0.4):ax-Math.max(26,(ax-bx)*0.4);
+      const pl=document.createElementNS('http://www.w3.org/2000/svg','polyline'); pl.setAttribute('points',`${ax},${ay} ${turnX},${ay} ${turnX},${by} ${bx},${by}`); leaders.appendChild(pl);
+      const d=document.createElementNS('http://www.w3.org/2000/svg','circle'); d.setAttribute('cx',bx);d.setAttribute('cy',by);d.setAttribute('r',3.5);d.setAttribute('class','dot'); leaders.appendChild(d); });
+  }
+
+  // ---- ink wells: grab + pour (drag blob onto word), or click to pour ----
+  function makeWell(hex){ const b=document.createElement('button'); b.className='well'; b.type='button'; b.style.background=hex; b.setAttribute('aria-label','Pour '+hex);
+    let d=null;
+    b.addEventListener('pointerdown',e=>{ e.preventDefault(); d={x:e.clientX,y:e.clientY,m:false,g:null}; try{b.setPointerCapture(e.pointerId);}catch(_){} });
+    b.addEventListener('pointermove',e=>{ if(!d)return; if(!d.m&&Math.abs(e.clientX-d.x)+Math.abs(e.clientY-d.y)>5){ d.m=true; const g=document.createElement('div'); g.className='blob'; g.style.background=hex; document.body.appendChild(g); d.g=g; } if(d.g){ d.g.style.left=e.clientX+'px'; d.g.style.top=e.clientY+'px'; } });
+    const end=e=>{ if(!d)return; if(d.g)d.g.remove(); if(d.m){ const r=svg.getBoundingClientRect(); if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom) pour(hex); } else pour(hex); d=null; };
+    b.addEventListener('pointerup',end); b.addEventListener('pointercancel',()=>{ if(d&&d.g)d.g.remove(); d=null; });
+    return b;
+  }
+  I.TASTE.forEach(hex=>wrow.appendChild(makeWell(hex)));
+  const add=document.createElement('label'); add.className='wAdd'; add.textContent='+'; const ci=document.createElement('input'); ci.type='color'; ci.value='#4b3f73'; ci.style.cssText='position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none'; add.appendChild(ci);
+  ci.addEventListener('input',e=>{ wrow.insertBefore(makeWell(e.target.value),add); pour(e.target.value); }); wrow.appendChild(add);
+  SURF.forEach(([cls,label],i)=>{ const b=document.createElement('button'); b.type='button'; b.textContent=label; if(i===0)b.classList.add('on'); b.addEventListener('click',()=>setSurface(i)); surfCtl.appendChild(b); });
+
+  // ---- direct manipulation on the word: drag ↕ = weight, tap = voice ----
+  let wd=null;
+  stage.addEventListener('pointerdown',e=>{ if(e.target.closest('#markG'))return; e.preventDefault(); wd={y:e.clientY,startW:weightV,moved:false}; try{stage.setPointerCapture(e.pointerId);}catch(_){} });
+  stage.addEventListener('pointermove',e=>{ if(!wd)return; const dy=wd.y-e.clientY; if(Math.abs(dy)>4){ wd.moved=true; setWeight(wd.startW+dy*1.4); } });
+  stage.addEventListener('pointerup',e=>{ if(!wd)return; const moved=wd.moved; wd=null; if(moved){ requestAnimationFrame(measure); } else setFace(faceI+1); });
+  markG.addEventListener('click',e=>{ e.stopPropagation(); cycleMark(); });
+
+  MAP.forEach(([id])=>{}); // hover highlight optional
+  window.addEventListener('resize',()=>{ positionBaseline(); drawLeaders(); });
+  (document.fonts&&document.fonts.ready||Promise.resolve()).then(()=>{ setSurface(0); measure(); setTimeout(()=>{measure();},200); });
+</script>
+</body>
+</html>

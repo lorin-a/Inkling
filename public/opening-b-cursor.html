@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inkling — B · Cursor is the Tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,300..600&family=Young+Serif&family=Space+Grotesk:wght@300..700&family=Archivo+Black&family=Borel&family=DM+Mono:wght@300;400;500&family=Noto+Sans:wght@100..900&family=Noto+Sans+Mono:wght@400..700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="/opening-core.js"></script>
+<style>
+  :root{ --bg:#f6f4ee; --ink:#1b1710; --sub:#5f5546; --muted:#6a5e4c; --faint:#9a8e78; --accent:#4b3f73; --line:rgba(40,32,18,.14); --taste:#c4795a;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif; --mono:"Noto Sans Mono",ui-monospace,monospace; --ease:cubic-bezier(.22,1,.36,1); --spring:cubic-bezier(.34,1.56,.64,1); }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased;cursor:none;
+    background-image:repeating-linear-gradient(transparent,transparent 47px,var(--line) 47px,var(--line) 48px);transition:background-color .8s var(--ease)}
+  .crumb{position:fixed;top:34px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+
+  .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+  .stencil{font-family:var(--serif);font-weight:600;font-size:clamp(96px,16vw,232px);line-height:1;letter-spacing:-.04em;white-space:nowrap}
+  .word{position:relative;display:inline-block;cursor:none}
+  .out{display:inline-block;white-space:nowrap;padding:.24em .2em .44em;color:transparent;-webkit-text-stroke:2.4px rgba(40,32,18,.46)}
+  .fill{position:absolute;inset:0;white-space:nowrap;padding:.24em .2em .44em;color:var(--taste)}
+  .mark{position:relative;top:.165em;display:inline-block;margin-left:-.02em;cursor:none;line-height:0;vertical-align:baseline;color:var(--accent)}
+  .mark svg{display:block;width:.2em;height:.2em;overflow:visible}
+  .tag{font-family:var(--serif);font-style:italic;font-size:clamp(18px,2vw,26px);color:var(--sub);margin-top:24px}
+
+  /* the palette — a row of pigment wells */
+  .palette{position:fixed;left:50%;bottom:54px;transform:translateX(-50%);display:flex;gap:14px;align-items:center}
+  .well{width:46px;height:46px;border-radius:100px;cursor:none;border:3px solid rgba(255,255,255,.7);box-shadow:inset 0 0 0 1px rgba(40,32,18,.18),0 4px 12px rgba(28,24,16,.18);transition:transform .18s var(--spring)}
+  .well:hover{transform:translateY(-8px) scale(1.08)}
+  .palLabel{position:fixed;left:50%;bottom:114px;transform:translateX(-50%);font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+
+  /* THE CURSOR — carries the instruction and the paint */
+  .cur{position:fixed;left:0;top:0;z-index:90;pointer-events:none;transform:translate(-50%,-50%);will-change:transform}
+  .curDot{width:14px;height:14px;border-radius:100px;border:2px solid var(--ink);background:transparent;transition:width .18s var(--ease),height .18s var(--ease),background-color .18s,border-color .18s}
+  .cur.load .curDot{width:30px;height:30px;border-color:transparent;box-shadow:0 6px 16px rgba(28,24,16,.28)}
+  .cur.tool .curDot{width:9px;height:9px;background:var(--ink);border-color:var(--ink)}
+  .curLabel{position:absolute;left:24px;top:50%;transform:translateY(-50%);white-space:nowrap;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.04em;
+    color:var(--ink);background:color-mix(in srgb,var(--bg) 84%,transparent);padding:4px 10px;border-radius:100px;border:1px solid var(--line);opacity:0;transition:opacity .15s}
+  .cur.show .curLabel{opacity:1}
+  @media (prefers-reduced-motion: reduce){ body{cursor:auto} .cur{display:none} }
+</style>
+</head>
+<body>
+  <div class="crumb">Inkling → Idea → Inspiration → Identity</div>
+  <div class="center">
+    <div class="stencil" id="stencil" aria-label="inkling.">
+      <span class="word" id="word"><span class="out" aria-hidden="true">inkling</span><span class="fill" id="fill" aria-hidden="true">inkling</span></span><span class="mark" id="mark" role="button" tabindex="0" aria-label="Change the mark"></span>
+    </div>
+    <p class="tag">know it when you see it.</p>
+  </div>
+
+  <div class="palLabel">your taste</div>
+  <div class="palette" id="palette"></div>
+
+  <div class="cur" id="cur"><span class="curDot" id="curDot"></span><span class="curLabel" id="curLabel">explore</span></div>
+
+<script>
+  const I=window.INK;
+  const stencil=document.getElementById('stencil'),word=document.getElementById('word'),fill=document.getElementById('fill'),out=document.querySelector('.out'),
+        mark=document.getElementById('mark'),palette=document.getElementById('palette'),
+        cur=document.getElementById('cur'),curDot=document.getElementById('curDot'),curLabel=document.getElementById('curLabel');
+  let markI=0, loaded=null;
+  const hasGsap=typeof gsap!=='undefined';
+  function setMark(){ mark.innerHTML=I.MARKS[markI]; }
+  if(hasGsap){ gsap.set(fill,{clipPath:'inset(100% 0 0 0)'}); gsap.set(out,{clipPath:'inset(0 0 0 0)'}); } else fill.style.clipPath='inset(100% 0 0 0)';
+  function pour(hex){ fill.style.color=hex; document.documentElement.style.setProperty('--taste',hex); document.body.style.backgroundColor='color-mix(in srgb,'+hex+' 5%, #f6f4ee)'; out.style.webkitTextStrokeColor='var(--ink)';
+    if(hasGsap){ gsap.fromTo(fill,{clipPath:'inset(100% 0 0 0)'},{clipPath:'inset(0% 0 0 0)',duration:1,ease:'power2.inOut'}); gsap.to(out,{clipPath:'inset(0 0 100% 0)',duration:1,ease:'power2.inOut'}); }
+    else { fill.style.clipPath='inset(0 0 0 0)'; out.style.clipPath='inset(0 0 100% 0)'; } }
+
+  // build the wells
+  I.TASTE.forEach(hex=>{ const w=document.createElement('button'); w.className='well'; w.type='button'; w.style.background=hex; w.dataset.hex=hex; w.setAttribute('aria-label','Pick '+hex);
+    w.addEventListener('mouseenter',()=>setMode('pick',hex));
+    w.addEventListener('click',()=>{ loaded=hex; setMode('loaded',hex); });
+    palette.appendChild(w); });
+  setMark();
+
+  // ---- the cursor follows + reads context ----
+  let tx=window.innerWidth/2,ty=window.innerHeight/2,cx=tx,cy=ty;
+  window.addEventListener('pointermove',e=>{ tx=e.clientX; ty=e.clientY; });
+  function raf(){ cx+=(tx-cx)*0.35; cy+=(ty-cy)*0.35; cur.style.transform=`translate(${cx}px,${cy}px) translate(-50%,-50%)`; requestAnimationFrame(raf); } raf();
+
+  function setMode(mode,hex){
+    cur.classList.remove('load','tool'); cur.classList.add('show');
+    if(mode==='pick'){ cur.classList.add('tool'); curLabel.textContent='pick this color'; curDot.style.background=hex; curDot.style.borderColor=hex; }
+    else if(mode==='loaded'){ cur.classList.add('load'); curLabel.textContent='pour it on the word →'; curDot.style.background=hex; }
+    else if(mode==='pour'){ cur.classList.add('load'); curLabel.textContent='click to fill'; if(loaded){curDot.style.background=loaded;} }
+    else if(mode==='mark'){ cur.classList.add('tool'); curLabel.textContent='tap to change the mark'; curDot.style.background='var(--accent)'; curDot.style.borderColor='var(--accent)'; }
+    else { curLabel.textContent= loaded?'pour it on the word':'explore'; if(loaded){cur.classList.add('load');curDot.style.background=loaded;} else {curDot.style.background='transparent';curDot.style.borderColor='var(--ink)';} }
+  }
+  word.addEventListener('mouseenter',()=>setMode(loaded?'pour':'idle'));
+  word.addEventListener('mouseleave',()=>setMode('idle'));
+  word.addEventListener('click',()=>{ if(loaded){ pour(loaded); } });
+  mark.addEventListener('mouseenter',()=>setMode('mark'));
+  mark.addEventListener('click',e=>{ e.stopPropagation(); markI=(markI+1)%I.MARKS.length; setMark(); });
+  document.addEventListener('mouseleave',()=>cur.classList.remove('show'));
+  document.addEventListener('mousemove',e=>{ if(!e.target.closest('.well,.word,.mark')) { if(cur.classList.contains('show')&&!loaded) setMode('idle'); cur.classList.add('show'); } });
+  setMode('idle');
+</script>
+</body>
+</html>

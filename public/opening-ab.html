@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inkling — opening (new direction)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,300..600&family=Noto+Sans:wght@100..900&family=Noto+Sans+Mono:wght@400..700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f7f6f2; --paper:#fcfbf7; --ink:#1c1810; --sub:#5f5546; --muted:#6a5e4c; --faint:#8a7d68;
+    /* ONE quiet accent — ink-violet, reads as ink not neon. The signature lives in the line, not the color. */
+    --accent:#4b3f73;
+    --line:rgba(40,32,18,.18); --hair:rgba(40,32,18,.12);
+    /* the demo "taste" color — the only saturated thing on screen, and it lives INSIDE the stencil */
+    --taste:#c4795a; --taste-soft:rgba(196,121,90,.16);
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif; --mono:"Noto Sans Mono",ui-monospace,monospace;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;
+    /* faint paper tooth so flat never reads as sterile */
+    background-image:radial-gradient(circle, rgba(40,32,18,.025) .7px, transparent .8px);background-size:20px 20px;}
+
+  .skip{position:fixed;top:26px;right:34px;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink);
+    background:none;border:1.5px solid var(--line);border-radius:100px;padding:9px 18px;cursor:pointer;transition:border-color .15s,background-color .15s}
+  .skip:hover{border-color:var(--ink);background:color-mix(in srgb,var(--ink) 6%,transparent)}
+
+  .wrap{max-width:1040px;margin:0 auto;padding:84px 40px 80px;display:flex;flex-direction:column;align-items:center}
+
+  /* ---- wordmark ---- */
+  .mark{font-family:var(--serif);font-size:74px;font-weight:580;letter-spacing:-.025em;line-height:1}
+  .mark .dot{color:var(--accent)}
+  .lede{font-family:var(--serif);font-style:italic;font-size:21px;font-weight:340;color:var(--sub);margin-top:14px;letter-spacing:.005em}
+
+  /* ---- the spine: ONE drawn line · hollow stencil dots waiting for color ---- */
+  .spine{width:100%;margin-top:54px}
+  .spineArt{width:100%}
+  .spineArt svg{width:100%;height:auto;display:block;overflow:visible}
+  .mainP,.bulbP,.arrowP{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .bulbP{stroke-width:2.2}
+  /* the dots are OUTLINES — empty rings. the color is yours to pour in. */
+  .spdot{fill:var(--paper);stroke:var(--ink);stroke-width:2.4}
+  .endLbl{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;fill:var(--faint)}
+
+  /* ---- three stations under the dots ---- */
+  .stations{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;width:100%;max-width:760px;margin:26px auto 0}
+  .station{text-align:center}
+  .stNum{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.18em;color:var(--faint)}
+  .stName{font-family:var(--serif);font-size:26px;font-weight:560;letter-spacing:-.01em;margin-top:3px}
+  .stBlurb{font-family:var(--sans);font-size:14.5px;line-height:1.5;color:var(--muted);margin-top:7px;max-width:24ch;margin-left:auto;margin-right:auto}
+
+  .rule{width:64px;height:1px;background:var(--line);margin:52px 0 0}
+
+  .doorsKick{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-top:34px}
+
+  /* ---- doors: flat line-art arches. one is being colored in; one is a blank page. ---- */
+  .doors{display:grid;grid-template-columns:1fr 1fr;gap:30px;width:100%;max-width:720px;margin-top:22px}
+  .door{position:relative;display:flex;gap:20px;align-items:stretch;text-align:left;background:var(--paper);
+    border:1.5px solid var(--line);border-radius:18px;padding:24px 24px 24px 22px;cursor:pointer;
+    transition:border-color .2s var(--ease),transform .2s var(--ease),box-shadow .2s var(--ease);font-family:inherit}
+  .door:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(28,24,16,.10);border-color:color-mix(in srgb,var(--ink) 34%,transparent)}
+  .door:focus-visible{outline:2.5px solid var(--accent);outline-offset:3px}
+  .doorArt{flex:0 0 86px;display:flex;align-items:center;justify-content:center}
+  .doorArt svg{width:86px;height:auto;display:block;overflow:visible}
+  .archOutline{fill:none;stroke:var(--ink);stroke-width:2.6;stroke-linejoin:round}
+  .archPanel{fill:none;stroke:var(--ink);stroke-width:1.8;opacity:.5}
+  .archKnob{fill:none;stroke:var(--ink);stroke-width:2}
+  /* primary door — the stencil filled with YOUR taste, washing up from the floor */
+  .archFill{fill:url(#tasteWash)}
+  .doorText{display:flex;flex-direction:column;gap:5px;justify-content:center}
+  .doorKick{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+  .doorTitle{font-family:var(--serif);font-size:23px;font-weight:560;letter-spacing:-.01em;line-height:1.08}
+  .doorDesc{font-family:var(--sans);font-size:14px;line-height:1.5;color:var(--muted)}
+  .doorCap{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.04em;margin-top:6px}
+  .door-primary .doorCap{color:var(--taste)}
+  .door-own .doorCap{color:var(--faint)}
+  .doorGo{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.03em;color:var(--ink);margin-top:8px}
+
+  @media(max-width:680px){
+    .wrap{padding:72px 22px 60px}
+    .mark{font-size:54px}
+    .stations{grid-template-columns:1fr;gap:22px;max-width:340px}
+    .doors{grid-template-columns:1fr;max-width:420px}
+  }
+</style>
+</head>
+<body>
+  <button class="skip" type="button">Skip intro <span aria-hidden="true">→</span></button>
+  <main class="wrap">
+    <div class="mark">inkling<span class="dot">.</span></div>
+    <p class="lede">know it when you see it.</p>
+
+    <!-- the spine: one continuous hand line; the three dots are hollow rings waiting to be colored in -->
+    <div class="spine">
+      <div class="spineArt">
+        <svg viewBox="0 0 1000 150" aria-hidden="true">
+          <text class="endLbl" x="34" y="138" text-anchor="middle">Idea</text>
+          <text class="endLbl" x="966" y="138" text-anchor="middle">Identity</text>
+          <!-- bulb -->
+          <path class="bulbP" d="M88 40 L77 24"/>
+          <path class="bulbP" d="M118 31 L118 13"/>
+          <path class="bulbP" d="M148 40 L159 24"/>
+          <path class="bulbP" d="M105 110 C92 102 84 88 84 72 C84 53 99 39 118 39 C137 39 152 53 152 72 C152 88 144 102 131 110"/>
+          <path class="bulbP" d="M107 113 H129"/><path class="bulbP" d="M110 118 H126"/>
+          <path class="bulbP" d="M114 122 C117 127 121 127 124 122"/>
+          <!-- the wave through the three stations, then loop + arrow into Identity -->
+          <path class="mainP" d="M125 108 C176 120 244 112 320 102 C392 92 438 74 510 80 C586 86 626 110 700 102 C774 94 814 82 855 70 C902 55 914 16 880 14 C852 12 862 54 899 53 C934 52 938 88 920 114"/>
+          <path class="arrowP" d="M904 100 L920 116 L938 96"/>
+          <!-- hollow stencil dots -->
+          <circle class="spdot" cx="320" cy="102" r="11"/>
+          <circle class="spdot" cx="510" cy="80" r="11"/>
+          <circle class="spdot" cx="700" cy="102" r="11"/>
+        </svg>
+      </div>
+      <div class="stations">
+        <div class="station"><div class="stNum">01</div><div class="stName">Gather</div><div class="stBlurb">Pull the colors, type, and images you’re drawn to.</div></div>
+        <div class="station"><div class="stNum">02</div><div class="stName">Play</div><div class="stBlurb">Arrange it on your board. Sort it into a few directions.</div></div>
+        <div class="station"><div class="stNum">03</div><div class="stName">Build</div><div class="stBlurb">Turn a direction into a brand — and color in the home.</div></div>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+    <div class="doorsKick">Pick a door</div>
+    <div class="doors">
+      <!-- PRIMARY: the stencil being colored in with your taste -->
+      <button class="door door-primary" type="button" aria-label="Co-design Inkling — learn by playing">
+        <span class="doorArt" aria-hidden="true">
+          <svg viewBox="0 0 140 168">
+            <defs>
+              <linearGradient id="tasteWash" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0" stop-color="var(--taste)" stop-opacity=".34"/>
+                <stop offset=".62" stop-color="var(--taste)" stop-opacity=".12"/>
+                <stop offset="1" stop-color="var(--taste)" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path class="archFill" d="M14 160 L14 62 Q14 12 70 12 Q126 12 126 62 L126 160 Z"/>
+            <path class="archOutline" d="M14 160 L14 62 Q14 12 70 12 Q126 12 126 62 L126 160 Z"/>
+            <path class="archPanel" d="M30 150 L30 66 Q30 30 70 30 Q110 30 110 66 L110 150"/>
+            <circle class="archKnob" cx="105" cy="108" r="4.5"/>
+          </svg>
+        </span>
+        <span class="doorText">
+          <span class="doorKick">Learn by playing</span>
+          <span class="doorTitle">Co-design Inkling</span>
+          <span class="doorDesc">Make your version of Inkling.</span>
+          <span class="doorCap">↑ your taste, poured in</span>
+          <span class="doorGo">Open this door <span aria-hidden="true">→</span></span>
+        </span>
+      </button>
+      <!-- SECONDARY: a blank outline, a page to wander -->
+      <button class="door door-own" type="button" aria-label="Wander in on your own">
+        <span class="doorArt" aria-hidden="true">
+          <svg viewBox="0 0 140 168">
+            <path class="archOutline" d="M14 160 L14 62 Q14 12 70 12 Q126 12 126 62 L126 160 Z"/>
+            <path class="archPanel" d="M30 150 L30 66 Q30 30 70 30 Q110 30 110 66 L110 150"/>
+            <circle class="archKnob" cx="105" cy="108" r="4.5"/>
+          </svg>
+        </span>
+        <span class="doorText">
+          <span class="doorKick">Explore</span>
+          <span class="doorTitle">Wander in on your own</span>
+          <span class="doorDesc">Poke around and find out.</span>
+          <span class="doorCap">a blank page, still yours</span>
+          <span class="doorGo">Open this door <span aria-hidden="true">→</span></span>
+        </span>
+      </button>
+    </div>
+  </main>
+</body>
+</html>

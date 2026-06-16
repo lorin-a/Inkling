@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inkling — opening C · Stencil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,300..600&family=Noto+Sans:wght@100..900&family=Noto+Sans+Mono:wght@400..700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f6f4ee; --ink:#1b1710; --sub:#5f5546; --muted:#6a5e4c; --faint:#8a7d68;
+    --accent:#4b3f73; --line:rgba(40,32,18,.18); --taste:#c4795a;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif; --mono:"Noto Sans Mono",ui-monospace,monospace;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background-image:radial-gradient(circle, rgba(40,32,18,.03) .7px, transparent .8px);background-size:18px 18px;}
+  .top{position:fixed;top:28px;left:0;right:0;display:flex;justify-content:center}
+  .kick{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--faint)}
+  .stage{display:flex;flex-direction:column;align-items:center;padding:40px 24px}
+  /* the wordmark as a stencil — outline waiting for color, filled partway from the floor */
+  .stencil{position:relative;font-family:var(--serif);font-weight:600;font-size:clamp(74px,17vw,232px);line-height:.9;letter-spacing:-.035em}
+  .stencil span{display:block}
+  .out{color:transparent;-webkit-text-stroke:2.4px var(--ink);}
+  .fill{position:absolute;inset:0;color:var(--taste);-webkit-text-stroke:2.4px var(--ink);clip-path:inset(46% 0 0 0)}
+  .fill .dot{color:var(--accent);-webkit-text-stroke:2.4px var(--accent)}
+  .say{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.4vw,28px);font-weight:340;color:var(--sub);margin-top:26px}
+  /* legend: blank → yours */
+  .legend{display:flex;align-items:center;gap:22px;margin-top:34px}
+  .legend svg{display:block;overflow:visible}
+  .lo{fill:none;stroke:var(--ink);stroke-width:2.4}
+  .lf{fill:var(--taste);opacity:.5}
+  .legArrow{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+  /* entry as two stencil states */
+  .acts{display:flex;gap:16px;margin-top:42px;flex-wrap:wrap;justify-content:center}
+  .chip{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:210px;text-align:left;
+    border-radius:16px;padding:16px 20px;cursor:pointer;font-family:inherit;transition:transform .18s var(--ease),box-shadow .18s,border-color .18s,background-color .18s}
+  .chip .ct{font-family:var(--serif);font-size:19px;font-weight:560;letter-spacing:-.01em}
+  .chip .cd{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--muted)}
+  .chip.fill-in{background:color-mix(in srgb,var(--taste) 16%,var(--bg));border:1.5px solid color-mix(in srgb,var(--taste) 60%,transparent)}
+  .chip.fill-in .cd{color:color-mix(in srgb,var(--taste) 75%,#3a2a1e)}
+  .chip.blank{background:none;border:1.5px solid var(--line)}
+  .chip:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(28,24,16,.12)}
+  .chip.blank:hover{border-color:var(--ink)}
+  @media(max-width:680px){.legend{display:none}.acts{flex-direction:column}}
+</style>
+</head>
+<body>
+  <div class="top"><span class="kick">An outline, waiting for your color</span></div>
+  <main class="stage">
+    <div class="stencil" aria-label="inkling">
+      <span class="out" aria-hidden="true">inkling.</span>
+      <span class="fill" aria-hidden="true">inkling<span class="dot">.</span></span>
+    </div>
+    <p class="say">color it in.</p>
+
+    <div class="legend" aria-hidden="true">
+      <svg width="38" height="38" viewBox="0 0 38 38"><rect class="lo" x="3" y="3" width="32" height="32" rx="8"/></svg>
+      <svg width="38" height="38" viewBox="0 0 38 38"><rect class="lf" x="4" y="4" width="30" height="30" rx="8"/><rect class="lo" x="3" y="3" width="32" height="32" rx="8"/></svg>
+      <span class="legArrow">blank → yours</span>
+    </div>
+
+    <div class="acts">
+      <button class="chip fill-in" type="button">
+        <span class="ct">Color it in</span>
+        <span class="cd">co-design inkling →</span>
+      </button>
+      <button class="chip blank" type="button">
+        <span class="ct">Start blank</span>
+        <span class="cd">wander in on your own →</span>
+      </button>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inkling — opening A · Cover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,300..600&family=Noto+Sans:wght@100..900&family=Noto+Sans+Mono:wght@400..700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f5f3ee; --ink:#1b1710; --sub:#5f5546; --muted:#6a5e4c; --faint:#8a7d68;
+    --accent:#4b3f73; --line:rgba(40,32,18,.16); --taste:#c4795a;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif; --mono:"Noto Sans Mono",ui-monospace,monospace;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;
+    min-height:100vh;display:flex;flex-direction:column}
+  /* masthead */
+  .mast{display:flex;align-items:baseline;justify-content:space-between;padding:30px 48px;flex:0 0 auto}
+  .mast .wm{font-family:var(--serif);font-size:21px;font-weight:600;letter-spacing:-.02em}
+  .mast .wm .dot{color:var(--accent)}
+  .mast .vol{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+  /* hero */
+  .hero{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;padding:0 48px 40px;max-width:1180px;margin:0 auto;width:100%}
+  .kick{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--faint);margin-bottom:30px}
+  .display{font-family:var(--serif);font-weight:560;font-size:clamp(56px,9.2vw,132px);line-height:.96;letter-spacing:-.035em;max-width:15ch}
+  .display em{font-style:italic;font-weight:420}
+  .display .dot{color:var(--accent)}
+  .sub{font-family:var(--serif);font-style:italic;font-weight:340;font-size:clamp(19px,2.1vw,27px);color:var(--sub);margin-top:30px;max-width:34ch;line-height:1.35}
+  .acts{display:flex;align-items:center;gap:26px;margin-top:46px}
+  .primary{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.02em;color:#fff;background:var(--ink);
+    border:none;border-radius:100px;padding:16px 30px;cursor:pointer;transition:transform .18s var(--ease),background-color .18s}
+  .primary:hover{transform:translateY(-2px);background:#000}
+  .ghost{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.02em;color:var(--muted);background:none;border:none;cursor:pointer;
+    border-bottom:1.5px solid var(--line);padding:3px 1px;transition:color .15s,border-color .15s}
+  .ghost:hover{color:var(--ink);border-color:var(--ink)}
+  /* footer rule with a single quiet color bleed */
+  .footrule{flex:0 0 auto;height:6px;display:flex}
+  .footrule i{flex:1}
+  .footrule i.c{flex:0 0 120px;background:var(--taste);opacity:.85}
+  .footrule i.l{border-top:1px solid var(--line)}
+  @media(max-width:680px){.mast{padding:22px 24px}.hero{padding:0 24px 30px}.acts{flex-direction:column;align-items:flex-start;gap:18px}}
+</style>
+</head>
+<body>
+  <header class="mast">
+    <span class="wm">inkling<span class="dot">.</span></span>
+    <span class="vol">Vol. 01 — make it yours</span>
+  </header>
+  <main class="hero">
+    <div class="kick">An intuitive’s creative home</div>
+    <h1 class="display">know it when you <em>see it<span class="dot">.</span></em></h1>
+    <p class="sub">Pull what you’re drawn to, play with it, and watch it become a brand you can build with.</p>
+    <div class="acts">
+      <button class="primary" type="button">Co-design Inkling <span aria-hidden="true">→</span></button>
+      <button class="ghost" type="button">or wander in on your own</button>
+    </div>
+  </main>
+  <div class="footrule"><i class="l"></i><i class="c"></i><i class="l"></i></div>
+</body>
+</html>

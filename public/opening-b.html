@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inkling — opening B · Living canvas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,300..600&family=Noto+Sans:wght@100..900&family=Noto+Sans+Mono:wght@400..700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f3f1ea; --paper:#fdfcf9; --ink:#1b1710; --sub:#5f5546; --muted:#6a5e4c; --faint:#8a7d68;
+    --accent:#4b3f73; --line:rgba(40,32,18,.16); --taste:#c4795a;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif; --mono:"Noto Sans Mono",ui-monospace,monospace;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;overflow:hidden;height:100vh;
+    background-image:radial-gradient(circle, rgba(40,32,18,.05) 1.1px, transparent 1.3px);background-size:24px 24px;}
+  .canvas{position:relative;width:100%;height:100vh}
+  /* the scattered, half-assembled board behind the welcome */
+  .tile{position:absolute;border-radius:13px;box-shadow:0 12px 30px rgba(28,24,16,.13);overflow:hidden}
+  .ph{width:200px;height:248px}
+  .ph.foliage{background:linear-gradient(150deg,#2f3d24,#5c7038 55%,#9fb06a);left:7%;top:20%;transform:rotate(-6deg)}
+  .ph.coral{background:linear-gradient(150deg,#7c9bb0,#c97b5a 60%,#e0a06f);width:176px;height:214px;left:24.5%;top:46%;transform:rotate(4deg)}
+  .ph.dusk{background:linear-gradient(150deg,#3a3550,#6a5e7e 60%,#b08a86);width:188px;height:150px;right:8%;top:18%;transform:rotate(5deg)}
+  .ph.bloom{background:linear-gradient(150deg,#7a3b3f,#c4795a 60%,#e7c49a);width:150px;height:188px;right:20%;top:52%;transform:rotate(-5deg)}
+  .typecard{position:absolute;background:var(--paper);width:158px;height:104px;display:flex;align-items:center;justify-content:center;
+    font-family:var(--serif);font-size:34px;font-weight:560;letter-spacing:-.02em;left:40%;top:14%;transform:rotate(-3deg)}
+  .typecard .dot{color:var(--accent)}
+  .chips{position:absolute;display:flex;gap:0;border-radius:100px;overflow:hidden;box-shadow:0 8px 20px rgba(28,24,16,.14)}
+  .chips i{width:34px;height:34px}
+  .chips.row1{left:31%;top:73%;transform:rotate(-4deg)}
+  .chips.row2{right:13%;top:70%;transform:rotate(3deg)}
+  .tag{position:absolute;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);
+    left:7%;top:14%}
+  /* the welcome card, floating over the living board */
+  .welcome{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,86vw);
+    background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    border:1.5px solid color-mix(in srgb,var(--ink) 12%,transparent);border-radius:22px;padding:38px 38px 34px;
+    box-shadow:0 30px 70px rgba(28,24,16,.18);text-align:center}
+  .welcome .wm{font-family:var(--serif);font-size:46px;font-weight:580;letter-spacing:-.025em;line-height:1}
+  .welcome .wm .dot{color:var(--accent)}
+  .welcome .lede{font-family:var(--serif);font-style:italic;font-size:18px;font-weight:340;color:var(--sub);margin-top:10px}
+  .welcome .say{font-family:var(--sans);font-size:14.5px;line-height:1.55;color:var(--muted);margin-top:16px;max-width:32ch;margin-left:auto;margin-right:auto}
+  .welcome .acts{display:flex;flex-direction:column;gap:11px;margin-top:24px}
+  .primary{font-family:var(--mono);font-size:14.5px;font-weight:700;letter-spacing:.02em;color:#fff;background:var(--ink);
+    border:none;border-radius:100px;padding:15px 24px;cursor:pointer;transition:transform .18s var(--ease),background-color .18s}
+  .primary:hover{transform:translateY(-2px);background:#000}
+  .ghost{font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--muted);background:none;border:1.5px solid var(--line);
+    border-radius:100px;padding:13px 24px;cursor:pointer;transition:color .15s,border-color .15s}
+  .ghost:hover{color:var(--ink);border-color:var(--ink)}
+  @media(max-width:680px){.ph,.typecard,.chips{display:none}.tag{display:none}}
+</style>
+</head>
+<body>
+  <div class="canvas">
+    <span class="tag">Your board · already alive</span>
+    <div class="tile ph foliage"></div>
+    <div class="tile ph coral"></div>
+    <div class="tile ph dusk"></div>
+    <div class="tile ph bloom"></div>
+    <div class="tile typecard">inkling<span class="dot">.</span></div>
+    <div class="chips row1"><i style="background:#5c7038"></i><i style="background:#c4795a"></i><i style="background:#3a3550"></i><i style="background:#e7c49a"></i></div>
+    <div class="chips row2"><i style="background:#7a3b3f"></i><i style="background:#7c9bb0"></i><i style="background:#9fb06a"></i></div>
+
+    <div class="welcome">
+      <div class="wm">inkling<span class="dot">.</span></div>
+      <p class="lede">know it when you see it.</p>
+      <p class="say">This is a canvas for everything you’re drawn to. Pour your taste in and it becomes a brand you can build with.</p>
+      <div class="acts">
+        <button class="primary" type="button">Co-design Inkling <span aria-hidden="true">→</span></button>
+        <button class="ghost" type="button">Wander in on your own</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

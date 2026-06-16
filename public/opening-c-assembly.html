@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inkling — C · Exploded Assembly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,300..600&family=Young+Serif&family=Space+Grotesk:wght@300..700&family=Archivo+Black&family=Borel&family=DM+Mono:wght@300;400;500&family=Noto+Sans:wght@100..900&family=Noto+Sans+Mono:wght@400..700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="/opening-core.js"></script>
+<style>
+  :root{ --bg:#f4f2ec; --ink:#1b1710; --sub:#5f5546; --muted:#6a5e4c; --faint:#9a8e78; --accent:#4b3f73; --line:rgba(40,32,18,.16); --taste:#c4795a;
+    --serif:"Fraunces",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif; --mono:"Noto Sans Mono",ui-monospace,monospace; --ease:cubic-bezier(.22,1,.36,1); --spring:cubic-bezier(.34,1.56,.64,1); }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle, rgba(40,32,18,.045) 1px, transparent 1.2px);background-size:26px 26px;transition:background-color .8s var(--ease)}
+  .crumb{position:fixed;top:34px;left:46px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+  .sheetNo{position:fixed;top:34px;right:46px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+
+  .leaders{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+  .leaders line{stroke:var(--line);stroke-width:1.5}
+  .leaders .dot{fill:var(--faint)}
+  .leaders .ln.active{stroke:var(--accent);stroke-width:2} .leaders .ln.active+.dot{fill:var(--accent)}
+
+  .word-wrap{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);z-index:2}
+  .stencil{font-family:var(--serif);font-weight:600;font-size:clamp(90px,13vw,196px);line-height:1;letter-spacing:-.04em;white-space:nowrap}
+  .word{position:relative;display:inline-block;transition:font-weight .2s}
+  .out{display:inline-block;white-space:nowrap;padding:.24em .2em .44em;color:transparent;-webkit-text-stroke:2.2px rgba(40,32,18,.48);transition:-webkit-text-stroke-color .3s}
+  .fill{position:absolute;inset:0;white-space:nowrap;padding:.24em .2em .44em;color:var(--taste)}
+  .mark{position:relative;top:.165em;display:inline-block;margin-left:-.02em;cursor:pointer;line-height:0;vertical-align:baseline;color:var(--accent);transition:transform .3s var(--spring)}
+  .mark svg{display:block;width:.2em;height:.2em;overflow:visible}
+  .word.hl-color .out{-webkit-text-stroke-color:var(--accent)}
+  .word.hl-mark .mark{transform:scale(1.5) translateY(-.04em)}
+  .baseRule{position:absolute;left:-40px;right:-40px;border-top:1.5px dashed var(--accent);opacity:0;transition:opacity .25s;z-index:1}
+  .baseRule.show{opacity:1}
+
+  /* spec modules */
+  .mod{position:fixed;z-index:3;width:210px;border:1.5px solid var(--line);background:color-mix(in srgb,#fff 46%,var(--bg));border-radius:12px;padding:13px 15px;cursor:pointer;
+    transition:border-color .2s,transform .2s var(--ease),box-shadow .2s}
+  .mod:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 12px 28px rgba(28,24,16,.12)}
+  .mod .mk{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between}
+  .mod .mv{font-family:var(--serif);font-size:19px;font-weight:560;margin-top:5px}
+  .mod .mh{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:4px}
+  .mod .swrow{display:flex;gap:6px;margin-top:9px}
+  .mod .sw{width:22px;height:22px;border-radius:100px;border:1.5px solid rgba(255,255,255,.7);box-shadow:inset 0 0 0 1px rgba(40,32,18,.16);cursor:pointer;padding:0}
+  .m-color{left:60px;top:24%} .m-type{right:60px;top:20%} .m-mark{right:80px;bottom:24%} .m-base{left:70px;bottom:24%}
+  .tagline{position:fixed;left:50%;bottom:46px;transform:translateX(-50%);font-family:var(--serif);font-style:italic;font-size:20px;color:var(--sub)}
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
+</style>
+</head>
+<body>
+  <div class="crumb">Inkling → Idea → Inspiration → Identity</div>
+  <div class="sheetNo">Assembly 01 · Opening</div>
+  <svg class="leaders" id="leaders"></svg>
+
+  <div class="word-wrap" id="wrap">
+    <div class="baseRule" id="baseRule"></div>
+    <div class="stencil" id="stencil" aria-label="inkling.">
+      <span class="word" id="word"><span class="out" aria-hidden="true">inkling</span><span class="fill" id="fill" aria-hidden="true">inkling</span></span><span class="mark" id="mark" role="button" tabindex="0" aria-label="Change the mark"></span>
+    </div>
+  </div>
+
+  <div class="mod m-color" id="modColor" data-t="color"><div class="mk"><span>01 · Color</span><span>the fill</span></div><div class="mv" id="vColor">your taste</div><div class="swrow" id="cSw"></div></div>
+  <div class="mod m-type" id="modType" data-t="type"><div class="mk"><span>02 · Typeface</span><span>the voice</span></div><div class="mv" id="vType">Fraunces · Editorial</div><div class="mh">click to shuffle the voice →</div></div>
+  <div class="mod m-mark" id="modMark" data-t="mark"><div class="mk"><span>03 · Mark</span><span>the signature</span></div><div class="mv" id="vMark">★ tap to cycle</div><div class="mh">10 marks · click to change</div></div>
+  <div class="mod m-base" id="modBase" data-t="base"><div class="mk"><span>04 · Baseline</span><span>the structure</span></div><div class="mv">grid · aligned</div><div class="mh">hover to reveal the line</div></div>
+
+  <div class="tagline">know it when you see it.</div>
+
+<script>
+  const I=window.INK;
+  const stencil=document.getElementById('stencil'),word=document.getElementById('word'),fill=document.getElementById('fill'),out=document.querySelector('.out'),
+        mark=document.getElementById('mark'),leaders=document.getElementById('leaders'),wrap=document.getElementById('wrap'),baseRule=document.getElementById('baseRule'),
+        vType=document.getElementById('vType'),vColor=document.getElementById('vColor'),cSw=document.getElementById('cSw');
+  let faceI=0,markI=0,colorI=0;
+  const hasGsap=typeof gsap!=='undefined';
+  function setMark(){ mark.innerHTML=I.MARKS[markI]; }
+  if(hasGsap){ gsap.set(fill,{clipPath:'inset(100% 0 0 0)'}); gsap.set(out,{clipPath:'inset(0 0 0 0)'}); } else fill.style.clipPath='inset(100% 0 0 0)';
+  function pour(hex){ fill.style.color=hex; document.documentElement.style.setProperty('--taste',hex); vColor.textContent=hex.toUpperCase();
+    if(hasGsap){ gsap.fromTo(fill,{clipPath:'inset(100% 0 0 0)'},{clipPath:'inset(0% 0 0 0)',duration:1,ease:'power2.inOut'}); gsap.to(out,{clipPath:'inset(0 0 100% 0)',duration:1,ease:'power2.inOut'}); }
+    else { fill.style.clipPath='inset(0 0 0 0)'; out.style.clipPath='inset(0 0 100% 0)'; } }
+  function setFace(i){ faceI=(i+I.FACES.length)%I.FACES.length; stencil.style.fontFamily=I.FACES[faceI][0]; vType.textContent=I.FACES[faceI][0].replace(/"/g,'').split(',')[0]+' · '+I.FACES[faceI][1]; drawLeaders(); }
+  setMark();
+
+  I.TASTE.slice(0,5).forEach(hex=>{ const b=document.createElement('button'); b.className='sw'; b.type='button'; b.style.background=hex; b.addEventListener('click',e=>{e.stopPropagation();pour(hex);}); cSw.appendChild(b); });
+
+  // ---- leader lines from each module to a target on the word ----
+  const MODS=[['modColor','color',()=>{const r=word.getBoundingClientRect();return [r.left+r.width*0.18, r.top+r.height*0.55];}],
+              ['modType','type',()=>{const r=word.getBoundingClientRect();return [r.left+r.width*0.55, r.top+r.height*0.18];}],
+              ['modMark','mark',()=>{const r=mark.getBoundingClientRect();return [r.left+r.width/2, r.top+r.height/2];}],
+              ['modBase','base',()=>{const r=word.getBoundingClientRect();return [r.left+r.width*0.4, r.bottom-r.height*0.22];}]];
+  function drawLeaders(){
+    leaders.innerHTML='';
+    MODS.forEach(([id,t,target])=>{ const m=document.getElementById(id); const mr=m.getBoundingClientRect();
+      const ax=mr.left+mr.width/2 < window.innerWidth/2 ? mr.right : mr.left; const ay=mr.top+mr.height/2;
+      const [bx,by]=target();
+      const ln=document.createElementNS('http://www.w3.org/2000/svg','line'); ln.setAttribute('x1',ax);ln.setAttribute('y1',ay);ln.setAttribute('x2',bx);ln.setAttribute('y2',by);
+      ln.setAttribute('class','ln'); ln.dataset.t=t; leaders.appendChild(ln);
+      const d=document.createElementNS('http://www.w3.org/2000/svg','circle'); d.setAttribute('cx',bx);d.setAttribute('cy',by);d.setAttribute('r',4);d.setAttribute('class','dot');d.dataset.t=t; leaders.appendChild(d);
+    });
+    const wr=word.getBoundingClientRect(); const cs=getComputedStyle(stencil); const fpx=parseFloat(cs.fontSize);
+    const ctx=document.createElement('canvas').getContext('2d'); ctx.font=`${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const baseY = wr.top + fpx*0.24 + ctx.measureText('inkling').fontBoundingBoxAscent - wrap.getBoundingClientRect().top;
+    baseRule.style.top=baseY+'px';
+  }
+  function hl(t,on){ leaders.querySelectorAll('[data-t="'+t+'"]').forEach(e=>e.classList.toggle('active',on));
+    word.classList.toggle('hl-'+t,on&&(t==='color'||t==='mark'));
+    if(t==='base') baseRule.classList.toggle('show',on);
+  }
+  MODS.forEach(([id,t])=>{ const m=document.getElementById(id);
+    m.addEventListener('mouseenter',()=>hl(t,true)); m.addEventListener('mouseleave',()=>hl(t,false));
+    m.addEventListener('click',()=>{ if(t==='type')setFace(faceI+1); else if(t==='mark'){markI=(markI+1)%I.MARKS.length;setMark();} else if(t==='color'){colorI=(colorI+1)%I.TASTE.length;pour(I.TASTE[colorI]);} });
+  });
+  mark.addEventListener('click',e=>{e.stopPropagation();markI=(markI+1)%I.MARKS.length;setMark();});
+  setFace(0); drawLeaders(); window.addEventListener('resize',drawLeaders); setTimeout(drawLeaders,300);
+</script>
+</body>
+</html>
