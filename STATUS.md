@@ -49,6 +49,14 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 38 | "I like the idea of cards you carry from activities." | Confirmed — cards are the single grammar. |
 | 39 | "Maybe some kind of status setting per aspect, like locking a particular color or font etc sometimes carrying something you know works forward and locking other things as you go?" | **Load-bearing — this is the missing mechanic.** Lock = the inkling→structure state change. It constrains the generator, fills the spec, and measures progress. |
 | 40 | "idk we could think of more features like that as we play test" | Open — noted the playtest threshold: the smallest playable thing, not the full system. |
+| 41 | The shopping anecdote: "I tour the entire store with a big basket, i collect anything that catches my eye and only once I have seen everything do I sit down… if it fits (try on), if it has potential, if it is worth the money, but most of all if it makes me SING inside… 20 to 20 to 5 to 2." | **The process model.** Collapses gut-pass and head-to-head into ONE repeatable **narrowing round**. Gather without judgment; judge only when everything is in. |
+| 42 | "most of all if it makes me SING inside" | **Her word — preserve verbatim.** Proposed as the tool's final criterion. Copy is hers to accept or replace. |
+| 43 | "Direction is NOT working for 'brand direction' it is not intuitive to understand." | **Retired.** Replacement proposed: **outfit card** (from her own try-on metaphor); plain fallback: combination card. Her call. |
+| 44 | "i liked the idea of types of cards like activity card, moodboard card, note card, collection card whatever the purpose may be" | Adopted — cards named by **purpose**, in plain language, and they **nest** (a board reads as a card when you zoom out). |
+| 45 | "it would be cute to have all the pins upload in as a pile that looks intentionally messy and organic then the user says to 'organize and sort' or something and 'extract colors' and each step has these beautiful satisfying animations/motion effects" | **Answers "what is the first board."** A messy organic pile; every transformation is user-triggered, never automatic; motion is the payoff. |
+| 46 | "they may need to start with a step by step like 1. Do you have inspiration to upload?… if they have it they upload it if they dont maybe the start with the activities" | **Two doors, one room.** Bring material, or *make* material with a generative activity. Both converge on a pile. One question, not a wizard. |
+| 47 | "any other sourcing we can make easy through API or inventing a scraper" | Answered — bookmarklet now (the user acting on their own data), **browser extension** later, Are.na API, drag/paste for everything else. **No server-side scraper** (`RIGHTS.md` Phase 0). |
+| 48 | "it might need to be flexible and obnboarding will be key in showing them how to use it per their circumstance" | Open — onboarding is not a tour: a persistent quiet "what now?" that always offers the next 2–3 moves given your actual state. |
 
 ## The reframe (2026-08-21) — tool first, for one real project
 
@@ -56,6 +64,70 @@ Track A (the `make-inkling.html` prototype + the ink-pour opening) is **parked**
 live work is making the **real Next.js app in `app/`** usable end-to-end for Lorin's own brand
 project, with one remote collaborator. The product question gets answered by whether the tool
 generalizes — not by designing the product first.
+
+## The process, from Lorin's shopping anecdote (2026-08-21)
+
+> "when I shop I tour the entire store with a big basket, i collect anything that catches my eye and
+> only once I have seen everything do I sit down with everything i collected and start thinking more
+> seriously about what to buy… if it fits (try on), if it has potential, if it is worth the money, but
+> most of all if it makes me SING inside. But I will likely do 2-3 more rounds of decisions narrowing
+> it down again and again from 20 to 20 to 5 to 2."
+
+**This shrinks the system.** Gut pass and head-to-head were the same move at different bars, so the
+five activities collapse into **two phases and one loop**:
+
+1. **Gather — no judgment allowed.** The basket. The tool must not ask you to rate, sort, or react
+   while you are still collecting. You collect until you have seen everything.
+2. **Narrow — a repeatable round.** Run it as many times as it takes. Each round asks a sharper
+   question and the bar rises:
+   - round 1 — *does it still catch your eye?*
+   - round 2 — *does it fit what you've named?* (the locked cards are the fit test)
+   - round 3 — *does it make you sing?* (her word, note 42)
+   - throughout — *try it on* · *does it have potential* · *is it worth it*
+
+**Three piles, not two: keep · maybe · no.** The maybe pile is what makes "20 to 20" possible — a
+round that reorders without losing anything is a legitimate round, and rounds 2 and 3 draw from it.
+"Try it on" stops being a final stage and interleaves with the rounds, exactly as it does in a fitting
+room.
+
+### Naming: cards by purpose, and they nest
+
+"Direction card" is retired (note 43). Cards are named for what they are *for*, in plain language:
+**reference · swatch · type · note · word · texture · mark · collection · activity · board**. They
+**nest** — a collection card holds cards, and at studio zoom a whole board reads as a card. One
+grammar, all the way up.
+
+The composed color + type + imagery card is proposed as an **outfit card**: it comes from her own
+try-on metaphor, it makes "try it on" literal, and it explains in one word why you never judge a
+typeface alone. Plain fallback: *combination card*. **Copy is hers.**
+
+### The opening: a pile, and the user's hand on every transformation
+
+Pins land as an **intentionally messy, organic pile** — material, not data. Nothing is arranged,
+counted, or analysed. Then the user triggers each transformation and each one is a satisfying piece of
+motion: *"spread them out"* · *"extract the colors"* · *"start a round."* The tool never does any of
+it unasked. (This is note 31's no-auto-promotion rule reaching all the way back to the first screen.)
+
+### Two doors, one room
+
+Onboarding is **one question**, not a wizard: *do you have inspiration to bring?*
+
+- **Yes** → drop it (Pinterest bookmarklet · Are.na API · drag/paste files, links, hexes, fonts) → the pile.
+- **No** → a **generative activity makes the material**: projective questions whose answers become word
+  cards, and those word cards are your starting pile.
+
+Both paths converge on the same room with a pile in it, so nothing downstream forks. Ongoing
+onboarding is not a tour — it is a quiet, persistent **"what now?"** that offers the next two or three
+moves given your actual state.
+
+### Sourcing, honestly
+
+Pinterest has no public read API for your own boards, so the **bookmarklet is the correct
+architecture**, not a workaround: the user runs it in their own browser on their own board, which is
+the user acting on their own data rather than our server scraping. A proper **browser extension** is
+the durable version and generalises to any site. **Are.na** has a real, friendly public API. Everything
+else is drag, paste, or upload. **Do not build a server-side scraper** — that is exactly the
+`RIGHTS.md` Phase 0 landmine, and it is fragile besides.
 
 ## Cards and locking (2026-08-21) — the mechanic that makes it a process
 
