@@ -20,6 +20,11 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 9 | "The logo is important to me" | Open — marks exist in the prototype; no logo workspace in the real app. |
 | 10 | "the design system is important to me as in the type faces, sizes, use cases, etc." | Open — `/brand` + export is brand-toy level, not a spec. |
 | 11 | "my remote collaborator who may also want to bring things into the mix" | Open — no members model, no invite, no presence. |
+| 12 | "I think what we have built is already too overly complicated. I want to brainstorm how to radically simplify this process" | **Open — 2026-08-21.** Accepted; see "The sort" below. |
+| 13 | "in my next meeting I can do a live session with my creative partner" — "the whole upload, canvas, etc needs to be SO simple" | Open — this is the deadline and the scope test. Upload leaves the session entirely (pre-load before the meeting). |
+| 14 | "still designing for people who have an 'inkling' of what they want but need structure to get closer to a deliverable brand identity" | Open — audience unchanged. |
+| 15 | "im not sure what final outcome would be best" | Open — my call: a one-page **taste spec** (a brief), not a brand guide. Awaiting her verdict. |
+| 16 | "the main function is moving from inkling to something more solid through the process but the process is what needs attention the 'how' of getting from inkling to structured taste" | Open — the "how" = **sort, then name**. Sorting produces the language. |
 
 ## The reframe (2026-08-21) — tool first, for one real project
 
@@ -27,6 +32,29 @@ Track A (the `make-inkling.html` prototype + the ink-pour opening) is **parked**
 live work is making the **real Next.js app in `app/`** usable end-to-end for Lorin's own brand
 project, with one remote collaborator. The product question gets answered by whether the tool
 generalizes — not by designing the product first.
+
+## The sort (2026-08-21) — the "how" of inkling → structured taste
+
+**The conversion event is naming a pile you just made.** You cannot answer "what is your brand?"
+You *can* answer "why are these six together?" — and that answer is a brand value, born already
+attached to the references that earned it. So the tool's one job is to force sorting, then ask for
+the name. Everything else is downstream.
+
+Five beats, in order:
+
+1. **Pre-loaded** — the board is imported *before* the meeting. Import is not a step.
+2. **Fast pass** — one reference at a time, keep or pass, gut speed. ~100 → ~25.
+3. **Sort** — the kept ones into piles, one at a time. Pile or new pile. No canvas, no coordinates.
+4. **Name + not-this** — each pile gets a name and a rejected pole ("warm, *not* cozy").
+5. **Read-back** — the taste spec: each pile's name, its not-this, its references, the colors that
+   actually recur in them.
+
+**The freeform canvas isn't wrong — it's premature.** Infinite space is a deferral: it's a good tool
+for arranging what you already know, and a bad one for producing knowledge. It stays in the repo for
+a later beat. The sort is a new, small surface that reuses only `pins` + palette extraction.
+
+**Deliverable = a brief, not a brand.** Inkling gets you to a taste spec you can trust and hand to
+whoever makes the identity — including yourself. That is what "structured taste" cashes out as.
 
 ## Right now
 - **Branch `v2`** (`main` = frozen OG standalone). **Not pushed.** Track A prototype = `public/make-inkling.html` (the full flow, demo-ready — **unchanged this session**).
