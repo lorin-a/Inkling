@@ -25,6 +25,18 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 14 | "still designing for people who have an 'inkling' of what they want but need structure to get closer to a deliverable brand identity" | Open — audience unchanged. |
 | 15 | "im not sure what final outcome would be best" | Open — my call: a one-page **taste spec** (a brief), not a brand guide. Awaiting her verdict. |
 | 16 | "the main function is moving from inkling to something more solid through the process but the process is what needs attention the 'how' of getting from inkling to structured taste" | Open — the "how" = **sort, then name**. Sorting produces the language. |
+| 17 | "should me and my collaborator upload to the same pinterest board or should there be the option to upload multiple?" | **Answered — multiple, merged into one pool, every item stamped with who brought it.** Attribution is the feature; a shared Pinterest board destroys it. |
+| 18 | "My concern about what is build is that it is too many features, overdesigned, and overly complicated." | Open — real diagnosis: not feature *count*, but **six destinations with six interaction models**. Fix = one surface, one grammar. |
+| 19 | "People love figma because it is like a white board with organic movement. Designers use whiteboards, Miro and Figjam are built to mirror the ideation process." | **Corrects my "cut the canvas" call.** Canvas is the substrate; forced-choice moments layer on top of it as activities. |
+| 20 | "Figma has no pinterest import free option and I want this to be the difference" | Open — the wedge. Keeps collaboration inside Inkling, not inside Pinterest. |
+| 21 | "I also want this to follow and learn from explicit design tool processes like affinity mapping and generative research questions, and prototyping etc." | Open — the activity library. |
+| 22 | "I like being able to identify No or vote to sort by intuition. I think centering on intuition is still my core but it needs the support of a design system." | Open — the NOs become a first-class output, not discarded state. |
+| 23 | "I personally cannot explore font without the color, imagery combined it is a unified system." | **Structural.** The atom of comparison is the **system tile** (type + color + image together), not the ingredient. Collapses `/type` and `/colors`. |
+| 24 | "It can be fun to give your brand a persona that could be a fun 'activity' or feature for example generative. Those questions could be really fun too. Things like that to help you reveal your values." | Open — generative/projective questions as an activity; output = voice. |
+| 25 | "Many people also get to a point where there are 5-10 options they need to compare so the shuffling and side by side and voting is also important." | Open — the head-to-head activity, run on system tiles. |
+| 26 | "other tools out there have design system making capabilities we just need to know what to bring to that step or to a graphic designer" | **Scope cut.** Inkling does NOT generate the design system. It produces the brief that a designer or a system tool consumes. |
+| 27 | "The current pinterest board has more than 50 less than 100." | Answered — that size earns the gut pass. |
+| 28 | "don't build yet keep working out the SYSTEM and the features and the function" | Open — no code until the system is settled. |
 
 ## The reframe (2026-08-21) — tool first, for one real project
 
@@ -32,6 +44,67 @@ Track A (the `make-inkling.html` prototype + the ink-pour opening) is **parked**
 live work is making the **real Next.js app in `app/`** usable end-to-end for Lorin's own brand
 project, with one remote collaborator. The product question gets answered by whether the tool
 generalizes — not by designing the product first.
+
+## The system (2026-08-21) — one canvas, many activities
+
+**The diagnosis of "overdesigned" is not feature count.** Figma is enormous and feels simple because
+it is one surface with one interaction grammar: everything is an object, everything moves and selects
+the same way, complexity is additive rather than modal. What is built here is *six destinations with
+six interaction models* (`/import`, `/library`, `/moodboard`, `/colors`, `/type`, `/brand`, plus
+spikes). That is the thing to kill. **One surface, one grammar, many verbs.**
+
+**Correction to the previous entry:** cutting the canvas was wrong. The canvas is the substrate — the
+whiteboard with organic movement that designers already trust. What pure freeform lacks is a forcing
+function, because Figma's users arrive already knowing and Inkling's users do not. So:
+
+> **The canvas is the room. Activities are the exercises you run in it.**
+
+An activity = a prompt + a constrained interaction + an **output that lands on the canvas as objects**
+and flows into the taste spec. When it ends, the canvas is free again. This is FigJam's model
+(stickies, voting, timers, templates) pointed at brand definition.
+
+### The structural move: the atom is the combination, not the ingredient
+
+Type cannot be judged without color and imagery. So the unit you shuffle, compare, and vote on is a
+**system tile** — a small live composition holding a type pairing, a palette, and a reference image
+together. This is why `/colors` and `/type` collapse: the ingredient pages were solving the wrong
+problem. Revives `BrandShuffle` / `DirectionCard` / the color engine as tile generators.
+
+### The activity library (each maps to a real method)
+
+| Activity | Method | Output object |
+|---|---|---|
+| **Gut pass** — one reference at a time, keep or pass | card sort, first pass | a cut pool + a **No pile** (kept, not discarded) |
+| **Affinity map** — pile them, name the pile, name the *not*-this | affinity mapping | values, each attached to its references |
+| **Generative questions** — persona, "if this brand were a place", "what would it never do" | generative / projective research | voice + values |
+| **Head to head** — 5–10 system tiles side by side, vote and rank | preference testing | decisions **and the rejected options with reasons** |
+| **Try it on** — the current system applied to a real artifact | prototyping | confidence, or a redo |
+
+### Three anti-bloat rules
+
+1. **No new destinations, ever.** Every activity outputs onto the same canvas. If a feature needs its
+   own page, it is a different product.
+2. **Activities are offered, never imposed.** You can ignore all of them and just move things around.
+   The whiteboard feeling is the floor. (Matches "no silent narrowing; cultivate intuition, don't
+   supply it.")
+3. **Every activity must produce something that survives in the taste spec.** If its output does not
+   reach the spec, cut the activity. This is the hard filter.
+
+### The taste spec (the deliverable) — and the NOs
+
+Inkling does not build design systems. It produces the **brief** a graphic designer or a
+system-making tool consumes: values with their rejected pole and their references · the palette with
+roles · the type pairing with a reason · the persona / voice lines · and — the part nobody ships —
+**the rejected options and why.** "We looked at these eight and said no to six, because…" is more
+useful to a designer than the winner alone, and the head-to-head activity produces it for free.
+
+### Sourcing: many sources, one pool, attributed
+
+Not a shared Pinterest board. Multiple imports from both people (Pinterest, Are.na, uploads, links)
+merged into one project pool, **every item stamped with who brought it**. A shared Pinterest board
+would flatten both people into an anonymous pool, put the collaboration layer inside Pinterest, and
+destroy the compare-where-we-disagree artifact that is the most valuable thing two people can make
+here. Needs `brought_by` on pins/atoms + a `project_members` table.
 
 ## The sort (2026-08-21) — the "how" of inkling → structured taste
 
