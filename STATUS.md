@@ -43,6 +43,12 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 32 | "I suppose you could choose activities based on where you are in the process and they appear on the board?" | Answered — **a board is born from an activity.** Offered in stage order, never enforced; "Blank" always present. |
 | 33 | "taste spec in but exportable in a format" | Answered — the spec is a live board that is also an export: a print one-pager (`app/print` + puppeteer already there) and a JSON + CSS-custom-properties bundle. |
 | 34 | "I like in figma that we see the others' mouse, they can do all the same things as us (add, move, type, etc.) multiple users as equals" | **Accepted, with the cost named.** Real co-editing, not async. Presence is cheap; document sync is the expensive part and is required the moment two people share a board regardless. |
+| 35 | "It is impressive to see colors extracted from the pins. It might be nice to witness that process." | Open — truthful ornament (real work, made visible), plus the **aggregate moment**: what you actually keep reaching for. |
+| 36 | "What else might a user come prepared with beside inspo? They might have fonts and colors they already like, the might have textures or photos" | **Answered — one drop, two temperatures.** Intake stops being typed by source; everything becomes a card. The one real distinction is *material* vs *committed*. |
+| 37 | "what do you mean by tile?" | **Answered — dropping the word.** Everything is a **card**; a **direction card** is a composed card holding color + type + image together (`components/DirectionCard.js` already exists). |
+| 38 | "I like the idea of cards you carry from activities." | Confirmed — cards are the single grammar. |
+| 39 | "Maybe some kind of status setting per aspect, like locking a particular color or font etc sometimes carrying something you know works forward and locking other things as you go?" | **Load-bearing — this is the missing mechanic.** Lock = the inkling→structure state change. It constrains the generator, fills the spec, and measures progress. |
+| 40 | "idk we could think of more features like that as we play test" | Open — noted the playtest threshold: the smallest playable thing, not the full system. |
 
 ## The reframe (2026-08-21) — tool first, for one real project
 
@@ -50,6 +56,55 @@ Track A (the `make-inkling.html` prototype + the ink-pour opening) is **parked**
 live work is making the **real Next.js app in `app/`** usable end-to-end for Lorin's own brand
 project, with one remote collaborator. The product question gets answered by whether the tool
 generalizes — not by designing the product first.
+
+## Cards and locking (2026-08-21) — the mechanic that makes it a process
+
+### One grammar: everything is a card
+
+"Tile" is retired — it was a second word for the same thing. **Every object on every board is a card.**
+Kinds: *reference* (image) · *swatch* · *type specimen* · *word* (value / voice line / name) ·
+*texture* · *mark* · and the composed one, the **direction card** — color set + type pairing +
+reference image held together, because type cannot be judged without color and imagery (note 23).
+`components/DirectionCard.js` and `BrandShuffle.js` already are this. Head-to-head runs on direction
+cards; everything else is an ingredient card you carry.
+
+### Locking is the inkling → structure state change
+
+Cards start **liquid** and you **lock** them one at a time. A lock is not a badge. It does three jobs:
+
+1. **It constrains the generator.** Lock a color and every direction card afterwards keeps that color
+   and varies only what is still liquid. This is how 5–10 options actually converge instead of
+   reshuffling forever — each lock shrinks the search space.
+2. **It writes the spec.** The taste-spec board is simply *everything locked so far.* The brief fills
+   in as you commit, so you can always see the inkling becoming solid. No generation pass.
+3. **It measures the process.** "Locked 3 of 6 aspects" is the honest progress reading, and the six
+   aspects are the spec's own sections: color · type · imagery · voice/words · mark · texture.
+
+Rules: the tool **never locks anything itself**; a lock is always reversible; and **locking shows what
+just fell out of contention** ("this removed 4 type pairings from play") so narrowing is never silent.
+
+### Intake: one drop, two temperatures
+
+People arrive with more than inspiration — fonts they already love, a hex, an old logo, textures,
+their own photos, a name or tagline, brands they admire, a paint chip, a book cover. So the four-tab
+source picker in `/import` is the wrong shape. **One drop target; the tool identifies what it got and
+makes it a card.** The only distinction worth keeping is temperature:
+
+- **Material** — "I like this." Enters liquid, gets sorted and argued with.
+- **Committed** — "I'm already using this." Enters **pre-locked**, and constrains everything from the
+  first direction card onward.
+
+That single toggle replaces a taxonomy, and it is why a rebrand and a from-scratch brand are the same
+flow at different starting temperatures.
+
+### Witnessing extraction
+
+Palette extraction is real background work (`kickPaletteExtraction`), so showing it is truthful
+ornament, not theatre: as each reference lands, its colors **lift off the image** and settle into a
+strip beneath it. Then the payoff worth designing for — the **aggregate moment**: when the pool
+finishes, every extracted color pools into one spectrum and you see *what you keep reaching for*
+across 50–100 references. Structured taste surfacing from intuition with the tool naming nothing.
+Honours `prefers-reduced-motion` (colors present instantly, no lift).
 
 ## The spatial model (2026-08-21) — studio, boards, carrying
 
