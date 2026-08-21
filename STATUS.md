@@ -379,6 +379,12 @@ whoever makes the identity — including yourself. That is what "structured tast
 
 - **Branch `v2`. The live work is `/studio`** — the playtest 01 build (`app/studio/`,
   `lib/studio/spectrum.js`, `app/api/studio/log/`). Run `npm run dev` → `localhost:3000/studio`.
+- **Second pass (notes 50–62) landed:** references *arrive* on first load; a **step strip** (1–5) names
+  where you are and what the step is for; **Tidy ↔ Loosen** makes the grid opt-in and the mess the
+  default; once voting starts the board becomes **four framed, headed columns** and *Not looked at yet*
+  visibly shrinks; **keep** spreads, **maybe** fans, **no** collapses to a deck (Spread/Stack toggles);
+  **clicking a card opens the vote for it** (change it, or undecide); when everything is voted, one
+  explicit **Carry the keeps over** gesture moves them; board 2 states its job in writing.
 - Loads the real library (252 references, palettes already extracted) as a **messy organic pile**;
   *Pull the colors out* reveals each card's strip and blooms the **aggregate spectrum** in two
   readings (everything · setting the neutrals aside); *Start a round* deals one card at a time into
