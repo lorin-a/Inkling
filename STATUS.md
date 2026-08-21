@@ -57,7 +57,7 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 46 | "they may need to start with a step by step like 1. Do you have inspiration to upload?… if they have it they upload it if they dont maybe the start with the activities" | **Two doors, one room.** Bring material, or *make* material with a generative activity. Both converge on a pile. One question, not a wizard. |
 | 47 | "any other sourcing we can make easy through API or inventing a scraper" | Answered — bookmarklet now (the user acting on their own data), **browser extension** later, Are.na API, drag/paste for everything else. **No server-side scraper** (`RIGHTS.md` Phase 0). |
 | 48 | "it might need to be flexible and obnboarding will be key in showing them how to use it per their circumstance" | Open — onboarding is not a tour: a persistent quiet "what now?" that always offers the next 2–3 moves given your actual state. |
-| 49 | "I think its time to play test, so work on building BUT make sure that before you do you have in mind what questions this play test should answer (i.e. is it one process or a series of repeated processes per fascet?)… We should always know what we are testing and make everything included in the build have a purpose" | **In progress — 2026-08-21.** Plan below; build gated on it. Every element maps to a question, and the cut list names what tests nothing. |
+| 49 | "I think its time to play test, so work on building BUT make sure that before you do you have in mind what questions this play test should answer (i.e. is it one process or a series of repeated processes per fascet?)… We should always know what we are testing and make everything included in the build have a purpose" | **Built — 2026-08-21.** Plan below; `/studio` ships against it. Every element maps to a question; the cut list names what tests nothing. |
 
 ## The reframe (2026-08-21) — tool first, for one real project
 
@@ -363,6 +363,21 @@ a later beat. The sort is a new, small surface that reuses only `pins` + palette
 whoever makes the identity — including yourself. That is what "structured taste" cashes out as.
 
 ## Right now
+
+- **Branch `v2`. The live work is `/studio`** — the playtest 01 build (`app/studio/`,
+  `lib/studio/spectrum.js`, `app/api/studio/log/`). Run `npm run dev` → `localhost:3000/studio`.
+- Loads the real library (252 references, palettes already extracted) as a **messy organic pile**;
+  *Pull the colors out* reveals each card's strip and blooms the **aggregate spectrum** in two
+  readings (everything · setting the neutrals aside); *Start a round* deals one card at a time into
+  **keep · maybe · no** (keys 1/2/3), and the results settle back into lanes on the board; carrying
+  to *What it's about* is a **real drag across the canvas** (no "send to board" button — that
+  absence is the Q1 instrument); groups take a name and a *"…but not ______"*.
+- Every action writes to `data/playtest/<session>.jsonl`. **Read the log, not your memory.**
+- Verified: build clean, 0 console errors/warnings, zoom-to-fit frames the whole pile on arrival,
+  keyboard round (1/2/3) and keyboard carry (arrows) both work, `prefers-reduced-motion` honored.
+- **Not in it, on purpose:** locking, outfit cards, the taste spec, multiplayer, the second door.
+
+## Previously
 - **Branch `v2`** (`main` = frozen OG standalone). **Not pushed.** Track A prototype = `public/make-inkling.html` (the full flow, demo-ready — **unchanged this session**).
 - **The OPENING is being redesigned** in `public/opening-*.html` — current best = **`public/opening-draft.html`** (the "pour the ink" annotated draft). `opening-core.js` + `public/marks/` hold shared data. Direction is **locked** (see `project_onboarding_genesis`); **not yet integrated into `make-inkling.html`.**
 - Run: `npm run dev` → `localhost:3000` → `/opening-draft.html` (new opening) or `/make-inkling.html` (full flow). Playwright runs in a separate browser; headless forces `prefers-reduced-motion`, so the ink-pour ripple reads best in a real browser.

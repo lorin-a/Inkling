@@ -1,0 +1,13 @@
+{"type":"zoom_fit","to":"pile","zoom":0.72,"at":"2026-08-21T18:09:41.602Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.72,"at":"2026-08-21T18:09:53.437Z"}
+{"type":"round_start","number":1,"source":"all","size":252,"at":"2026-08-21T18:09:54.609Z"}
+{"type":"decide","round":1,"card":"1039135314044509507","tag":"keep","index":0,"at":"2026-08-21T18:09:55.103Z"}
+{"type":"decide","round":1,"card":"1039135314044509492","tag":"maybe","index":1,"at":"2026-08-21T18:09:55.250Z"}
+{"type":"decide","round":1,"card":"1039135314044509489","tag":"no","index":2,"at":"2026-08-21T18:09:55.355Z"}
+{"type":"decide","round":1,"card":"1039135314044509471","tag":"keep","index":3,"at":"2026-08-21T18:09:55.460Z"}
+{"type":"decide","round":1,"card":"1039135314044509440","tag":"maybe","index":4,"at":"2026-08-21T18:09:55.562Z"}
+{"type":"decide","round":1,"card":"1039135314044509426","tag":"no","index":5,"at":"2026-08-21T18:09:55.664Z"}
+{"type":"round_abandon","number":1,"at":"2026-08-21T18:09:55.846Z"}
+{"type":"group_add","group":"g-mt39l2q6","at":"2026-08-21T18:09:56.238Z"}
+{"type":"zoom_fit","to":"both","zoom":0.43,"at":"2026-08-21T18:09:56.255Z"}
+{"type":"carry","card":"1039135314044511817","kind":"reference","from":"pile","to":"groups","group":"g-mt39l2q6","tag":null,"at":"2026-08-21T18:09:57.531Z"}

@@ -1,0 +1,373 @@
+/* Playtest 01. The ground stays neutral newsprint — the workspace is a
+   container, the color belongs to the material inside it (locked decision,
+   STATUS.md). Chrome is quiet so the pile is the only loud thing. */
+
+.shell {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* ---- bar ---------------------------------------------------------------- */
+.bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 10px var(--space-md);
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  z-index: 40;
+}
+.barLeft { display: flex; align-items: baseline; gap: var(--space-xs); }
+.wordmark { font-family: var(--font-serif); font-size: 1.05rem; letter-spacing: -0.01em; }
+.period { color: var(--accent); }
+.sessionTag {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.02em;
+}
+
+.actions { display: flex; align-items: center; gap: var(--space-2xs); flex-wrap: wrap; }
+.sep { width: 1px; height: 20px; background: var(--hairline); margin: 0 var(--space-3xs); }
+
+.action, .actionQuiet {
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out);
+}
+.action { border: 1px solid var(--ink); background: var(--ink); color: var(--bg-elevated); }
+.action:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); }
+.actionQuiet { border: 1px solid var(--hairline); background: transparent; color: var(--ink); }
+.actionQuiet:hover:not(:disabled) { border-color: var(--ink); background: var(--bg-warm); }
+.action:disabled, .actionQuiet:disabled { opacity: 0.35; cursor: default; }
+
+.counts {
+  margin-left: auto;
+  display: flex;
+  gap: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.count_keep { color: var(--ink); }
+.count_maybe { color: var(--ink-muted); }
+.count_no { color: var(--ink-faint); }
+.countCarried { color: var(--accent); }
+
+/* ---- the spectrum (Q7) --------------------------------------------------- */
+.spectrum {
+  flex: none;
+  padding: var(--space-sm) var(--space-md) var(--space-xs);
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  z-index: 30;
+}
+.spectrumRow { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: 6px; }
+.spectrumLabel {
+  flex: none;
+  width: 15ch;
+  margin: 0;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.spectrumBar {
+  flex: 1;
+  display: flex;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: var(--elev-1);
+}
+.band {
+  display: block;
+  min-width: 4px;
+  animation: bandIn var(--motion-slow) var(--ease-out) backwards;
+}
+@keyframes bandIn { from { transform: scaleY(0.1); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
+.spectrumNote {
+  margin: var(--space-2xs) 0 0 calc(15ch + var(--space-sm));
+  font-size: 0.74rem;
+  color: var(--ink-muted);
+  text-wrap: pretty;
+}
+
+/* ---- canvas -------------------------------------------------------------- */
+.viewport {
+  flex: 1;
+  overflow: auto;
+  cursor: grab;
+  overscroll-behavior: contain;
+  background-image: radial-gradient(circle at 1px 1px, var(--hairline-soft) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+.panning { cursor: grabbing; }
+.canvas { position: relative; }
+
+.board {
+  position: absolute;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.5);
+}
+.boardTitle {
+  position: absolute;
+  top: -30px; left: 2px;
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+.boardHint {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 22ch;
+  margin: 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+  text-wrap: pretty;
+}
+.lanes {
+  position: absolute;
+  inset: 40px 0 auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.lane {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* ---- groups (Q5) --------------------------------------------------------- */
+.group {
+  position: absolute;
+  border: 1px dashed var(--ink-faint);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.42);
+  z-index: 1;
+  padding: 10px 12px;
+}
+.groupName, .groupNot {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  padding: 2px 0;
+}
+.groupName { font-family: var(--font-serif); font-size: 1.15rem; }
+.groupNot { font-size: 0.8rem; color: var(--ink-muted); }
+.groupName::placeholder, .groupNot::placeholder { color: var(--ink-faint); }
+.groupName:focus-visible, .groupNot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+.groupCount {
+  position: absolute;
+  right: 10px; bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--ink-faint);
+}
+
+/* ---- cards --------------------------------------------------------------- */
+.card {
+  position: absolute;
+  border-radius: 3px;
+  background: var(--bg-elevated);
+  padding: 4px 4px 0;
+  box-shadow: var(--elev-1);
+  cursor: grab;
+  touch-action: none;
+  transition: box-shadow var(--motion-fast) var(--ease-out), transform var(--motion-medium) var(--ease-out), left var(--motion-slow) var(--ease-out), top var(--motion-slow) var(--ease-out);
+}
+.card:hover { box-shadow: var(--elev-2); }
+.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.dragging {
+  cursor: grabbing;
+  box-shadow: var(--elev-float);
+  transition: box-shadow var(--motion-fast) var(--ease-out);
+  z-index: 9999 !important;
+}
+.selected { box-shadow: var(--elev-2), 0 0 0 2px var(--accent); }
+
+.reference img {
+  display: block;
+  width: 100%;
+  height: calc(100% - 12px);
+  object-fit: cover;
+  border-radius: 2px;
+  background: var(--bg-warm);
+}
+.strip {
+  display: flex;
+  height: 8px;
+  margin-top: 2px;
+  border-radius: 1px;
+  overflow: hidden;
+}
+.strip i {
+  flex: 1;
+  transform: translateY(9px);
+  opacity: 0;
+  transition: transform var(--motion-medium) var(--ease-spring), opacity var(--motion-fast) linear;
+}
+.stripIn i { transform: translateY(0); opacity: 1; }
+
+.swatch { padding: 0; border-radius: 3px; overflow: hidden; }
+.swatchFill { display: block; height: calc(100% - 18px); width: 100%; }
+.swatchHex {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  text-align: center;
+  line-height: 18px;
+  color: var(--ink-muted);
+}
+
+.tag_keep { box-shadow: var(--elev-1), inset 0 0 0 2px var(--ink); }
+.tag_maybe { opacity: 0.9; }
+.tag_no { opacity: 0.42; filter: saturate(0.35); }
+
+/* ---- the round ----------------------------------------------------------- */
+.round {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  background: rgba(247, 246, 242, 0.94);
+  backdrop-filter: blur(6px);
+  animation: roundIn var(--motion-medium) var(--ease-out);
+}
+@keyframes roundIn { from { opacity: 0; } to { opacity: 1; } }
+
+.roundHead { text-align: center; }
+.roundQ {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 400;
+  text-wrap: balance;
+}
+.roundCount {
+  margin: var(--space-3xs) 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--ink-faint);
+}
+
+.roundCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 48vh;
+}
+.roundCard img {
+  max-height: 48vh;
+  max-width: min(560px, 82vw);
+  border-radius: var(--radius);
+  box-shadow: var(--elev-float);
+  background: var(--bg-warm);
+}
+.roundSwatch {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: min(360px, 70vw);
+  height: 40vh;
+  padding-bottom: var(--space-sm);
+  border-radius: var(--radius);
+  box-shadow: var(--elev-float);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.9);
+  mix-blend-mode: normal;
+}
+
+.roundActions { display: flex; gap: var(--space-sm); }
+.roundBtn {
+  min-width: 132px;
+  min-height: 48px;
+  padding: 0 var(--space-md);
+  border-radius: 999px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  transition: background var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out);
+}
+.roundBtn kbd {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  opacity: 0.55;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 0 4px;
+}
+.btn_keep:hover { background: var(--ink); color: var(--bg-elevated); }
+.btn_maybe:hover { background: var(--bg-warm); }
+.btn_no:hover { background: var(--ink-faint); color: var(--bg-elevated); border-color: var(--ink-faint); }
+.roundBtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.roundLeave {
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card, .strip i, .band, .round { transition: none !important; animation: none !important; }
+  .strip i { transform: none; }
+}
+
+/* ---- zoom ---------------------------------------------------------------- */
+/* The canvas is scaled, so an outer element carries the scaled dimensions and
+   keeps the scrollbars honest. */
+.canvasScroll { position: relative; }
+
+.zoomer { display: flex; gap: 2px; }
+.zoomBtn {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--hairline);
+  background: transparent;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.zoomBtn:hover { border-color: var(--ink); color: var(--ink); }
+.zoomBtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
