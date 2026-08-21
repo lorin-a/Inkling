@@ -57,6 +57,7 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 46 | "they may need to start with a step by step like 1. Do you have inspiration to upload?… if they have it they upload it if they dont maybe the start with the activities" | **Two doors, one room.** Bring material, or *make* material with a generative activity. Both converge on a pile. One question, not a wizard. |
 | 47 | "any other sourcing we can make easy through API or inventing a scraper" | Answered — bookmarklet now (the user acting on their own data), **browser extension** later, Are.na API, drag/paste for everything else. **No server-side scraper** (`RIGHTS.md` Phase 0). |
 | 48 | "it might need to be flexible and obnboarding will be key in showing them how to use it per their circumstance" | Open — onboarding is not a tour: a persistent quiet "what now?" that always offers the next 2–3 moves given your actual state. |
+| 49 | "I think its time to play test, so work on building BUT make sure that before you do you have in mind what questions this play test should answer (i.e. is it one process or a series of repeated processes per fascet?)… We should always know what we are testing and make everything included in the build have a purpose" | **In progress — 2026-08-21.** Plan below; build gated on it. Every element maps to a question, and the cut list names what tests nothing. |
 
 ## The reframe (2026-08-21) — tool first, for one real project
 
@@ -64,6 +65,51 @@ Track A (the `make-inkling.html` prototype + the ink-pour opening) is **parked**
 live work is making the **real Next.js app in `app/`** usable end-to-end for Lorin's own brand
 project, with one remote collaborator. The product question gets answered by whether the tool
 generalizes — not by designing the product first.
+
+## Playtest 01 — what we are testing (2026-08-21)
+
+Build target: `/studio`. **A playtest that tests everything tests nothing**, so this build answers
+seven questions and nothing else. Each has a signal we can actually observe and a consequence if it
+fails.
+
+| # | Question | Signal to watch | If it fails |
+|---|---|---|---|
+| **Q1** | **Does carrying feel embodied?** (note 31 — load-bearing) | Does she drag board-to-board unprompted? Does she ever wish for a button instead? | If she asks for "send to board" / multi-select-move inside the first ~10 carries, the gesture is not the point and the spatial model loses its justification. |
+| **Q2** | **One process, or repeated per facet?** (her question) | Seed the pile with extracted **swatch cards mixed among references**. Does she sort them together, or immediately separate colors from images? | Together → one narrowing loop over everything. Separate → per-facet loops, locking becomes per-facet, and the board structure changes. |
+| **Q3** | **Does the maybe pile do work, or become a landfill?** | Size of *maybe* after round 1 vs *keep*. Does round 2 actually draw from it? | If *maybe* holds >50% of the pool, the round is not forcing anything: cap it, or change the question. |
+| **Q4** | **Does gather-without-judgment hold?** | Does she try to react / star / sort *during* the pile stage? | If she wants to react while gathering, the no-judgment law is wrong and reaction belongs inside gathering. |
+| **Q5** | **Do names emerge from piles?** (the conversion event — the thesis) | Time-to-name after a group forms. Are the names words she would defend, or filler? Is *not-this* easy or hard? | If she cannot name groups without prompting, "sorting produces the language" is wrong, and generative questions must come **first**, not second. |
+| **Q6** | **Two people on one screen: equals, or driver + watcher?** | How often control changes hands. Does her partner disengage? | Decides whether **multiplayer is urgent** (the biggest single item in the system) or can wait. |
+| **Q7** | **Does the aggregate spectrum land?** | Does it produce a sentence about her taste she did not have before, or a shrug? | Cheap desirability check; changes nothing structural. |
+
+### In the build, and why (every element maps to a question)
+
+| Element | Serves |
+|---|---|
+| Her real board, **pre-loaded** as a messy organic pile | Q4, Q7 — and note 13 (import leaves the session) |
+| **Extract colors**, user-triggered and watchable | Q7 |
+| The **aggregate spectrum** ("what you keep reaching for") | Q7 |
+| Swatch cards **mixed into** the pile | **Q2** |
+| A **narrowing round**: one card at a time, **keep · maybe · no** | Q3, Q4 |
+| **Round 2 drawing from *maybe*** | Q3 |
+| A **second board**, reached only by dragging | **Q1** |
+| **Group + name + not-this** on board 2 | **Q5** |
+| An **event log** (JSONL, timestamped) | all — review by record, not memory |
+
+### Deliberately NOT in this build
+
+- **Locking** — its only real job is constraining a generator, and there is no generator here yet. It
+  would be a badge, which is exactly what note 39 says it must not be. Tests nothing.
+- **Outfit cards** — the atom of a *later* round.
+- **The taste spec** — assembles from carries across more rounds than one session holds.
+- **Multiplayer** — Q6 is the thing that decides whether to build it.
+- **The generative-questions door** — build it only if Q5 fails.
+- **Collections · boards-as-cards · the activities menu · "what now?"** — no question depends on them.
+
+### Session shape (~45 min)
+
+pre-loaded pile → *extract the colors* (watch) → the spectrum → **round 1** → carry to board 2 →
+group + name + not-this → **round 2 from the maybe pile**.
 
 ## The process, from Lorin's shopping anecdote (2026-08-21)
 
