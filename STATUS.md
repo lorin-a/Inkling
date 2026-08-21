@@ -3,6 +3,31 @@
 **Read this first.** Current state + the plan. The *why* lives in memory
 (`project_product_direction`, `project_onboarding_genesis`); the journey lives in git. Keep this short.
 
+## Open notes ledger
+
+Every note Lorin gives, in her words, with status. Nothing closes silently.
+
+| # | Note (her words) | Status |
+|---|---|---|
+| 1 | "I was trying to design a product but what I need is a tool. I have a real usecase RIGHT now that I need it for and I think we should design for THAT and see if what we make also works as a general template for a product." | **Open — 2026-08-21.** Reframe accepted; see "The reframe" below. |
+| 2 | "I have a pinterest board made for my project but I have not yet defined in language what matters to me about the brand." | Open — words/values/mission are the missing first-class surface. |
+| 3 | "I want a collaborative space where I can moodboard from my existing pinterest board." | Open — import + canvas exist; *collaborative* does not (`projects` is single-owner). |
+| 4 | "I want to be able to customize my brainstorming space." | Open — argues for one canvas over fixed routes. |
+| 5 | "start putting in words, brand values and principles, mission statement" | Open. |
+| 6 | "I would extract colors from my pins." | Mostly built (per-pin palette extraction, `/colors`) — verify on her real board. |
+| 7 | "drag and sort and compile/curate my pins into affinity groups related to what I like about them" | Mostly built (moodboard sections + reflective note) — verify. |
+| 8 | "It would still be great to explore different fonts." | Mostly built (`/type`, Google/Fontshare/upload, pairings). |
+| 9 | "The logo is important to me" | Open — marks exist in the prototype; no logo workspace in the real app. |
+| 10 | "the design system is important to me as in the type faces, sizes, use cases, etc." | Open — `/brand` + export is brand-toy level, not a spec. |
+| 11 | "my remote collaborator who may also want to bring things into the mix" | Open — no members model, no invite, no presence. |
+
+## The reframe (2026-08-21) — tool first, for one real project
+
+Track A (the `make-inkling.html` prototype + the ink-pour opening) is **parked**, not deleted. The
+live work is making the **real Next.js app in `app/`** usable end-to-end for Lorin's own brand
+project, with one remote collaborator. The product question gets answered by whether the tool
+generalizes — not by designing the product first.
+
 ## Right now
 - **Branch `v2`** (`main` = frozen OG standalone). **Not pushed.** Track A prototype = `public/make-inkling.html` (the full flow, demo-ready — **unchanged this session**).
 - **The OPENING is being redesigned** in `public/opening-*.html` — current best = **`public/opening-draft.html`** (the "pour the ink" annotated draft). `opening-core.js` + `public/marks/` hold shared data. Direction is **locked** (see `project_onboarding_genesis`); **not yet integrated into `make-inkling.html`.**
