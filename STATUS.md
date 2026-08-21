@@ -58,6 +58,19 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 47 | "any other sourcing we can make easy through API or inventing a scraper" | Answered — bookmarklet now (the user acting on their own data), **browser extension** later, Are.na API, drag/paste for everything else. **No server-side scraper** (`RIGHTS.md` Phase 0). |
 | 48 | "it might need to be flexible and obnboarding will be key in showing them how to use it per their circumstance" | Open — onboarding is not a tour: a persistent quiet "what now?" that always offers the next 2–3 moves given your actual state. |
 | 49 | "I think its time to play test, so work on building BUT make sure that before you do you have in mind what questions this play test should answer (i.e. is it one process or a series of repeated processes per fascet?)… We should always know what we are testing and make everything included in the build have a purpose" | **Built — 2026-08-21.** Plan below; `/studio` ships against it. Every element maps to a question; the cut list names what tests nothing. |
+| 50 | "nav bar looks too small and not accessible in size/color etc." | **Fixed** — 44px targets, ink-contrast labels, larger type. |
+| 51 | "The boards and colors are a little too faint and close together to know where one thing starts and another ends." | **Fixed** — real board frames, headed lanes, stronger separation. |
+| 52 | "I did not get to witness the upload process." | **Fixed** — the references now *arrive*: staggered settle into the pile on first load. |
+| 53 | "I LOVE the pile but we need an optional organize for those who don't want the mess to snap into grid." | **Fixed** — Tidy ↔ Loosen. The mess is the default; the grid is opt-in. |
+| 54 | "It also might help to see something like 'Step 1/5' and the theme of that step." | **Fixed** — a step strip derived from actual state, with a caption saying what this step is for. |
+| 55 | "I started dragging before noticing 'start a round' no clue what that meant." | **Fixed** — the step caption names the move; the round button is primary and labelled with what it does. |
+| 56 | "its all too crowded in the pile, I would like to see the pile go down and not overwhelm" | **Fixed** — once voting starts the board becomes columns and the **unsorted column visibly shrinks** as she votes. |
+| 57 | "board 1 is all of the pins pile or organized, user starts voting round to narrow down, all votes finished auto move to board 2 in their respective groups" | **Partly taken, with one pushback.** Sorted piles stay on board 1 (they are states of the same material). When every card is voted, one explicit gesture carries the keeps over — not automatic, because auto-promotion is the law we set (note 31). |
+| 58 | "this also needs more design i just see the word 'no' with no frame or visual differentiation" | **Fixed** — each lane is framed and headed with its count; keep spreads, maybe fans, no collapses into a deck. |
+| 59 | "the fade out is a nice touch" | Kept. |
+| 60 | "I may want to unfade something." | **Fixed** — any vote is changeable, including back to undecided. |
+| 61 | "It would be good if I clicked on something and it opened the vote for that item." | **Fixed** — click (without dragging) opens the vote for that card. |
+| 62 | "Idk what to do in your second board" | **Fixed** — board 2 is named for its job, carries a written prompt, and the step strip says when you are meant to be there. |
 
 ## The reframe (2026-08-21) — tool first, for one real project
 
