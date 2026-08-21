@@ -37,6 +37,12 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 26 | "other tools out there have design system making capabilities we just need to know what to bring to that step or to a graphic designer" | **Scope cut.** Inkling does NOT generate the design system. It produces the brief that a designer or a system tool consumes. |
 | 27 | "The current pinterest board has more than 50 less than 100." | Answered — that size earns the gut pass. |
 | 28 | "don't build yet keep working out the SYSTEM and the features and the function" | Open — no code until the system is settled. |
+| 29 | "when I work in figma, I make boards and within those boards I house activities, collections, notes, thoughts, etc. maybe that can inform how this happens?" | **Answered — the spatial model.** One studio canvas; **boards** are framed regions on it. Zoom out = the whole journey. |
+| 30 | "It is good to be able to witness the progression, to go back and look at things, etc." | Answered — boards persist; carrying forward never empties the board behind you. |
+| 31 | "I like the idea of manually taking things from one stage to the next, the act of dragging them can feel embodied." | **Load-bearing.** Nothing is ever auto-promoted. Drag = **carry a linked copy**; the gesture IS the data model. |
+| 32 | "I suppose you could choose activities based on where you are in the process and they appear on the board?" | Answered — **a board is born from an activity.** Offered in stage order, never enforced; "Blank" always present. |
+| 33 | "taste spec in but exportable in a format" | Answered — the spec is a live board that is also an export: a print one-pager (`app/print` + puppeteer already there) and a JSON + CSS-custom-properties bundle. |
+| 34 | "I like in figma that we see the others' mouse, they can do all the same things as us (add, move, type, etc.) multiple users as equals" | **Accepted, with the cost named.** Real co-editing, not async. Presence is cheap; document sync is the expensive part and is required the moment two people share a board regardless. |
 
 ## The reframe (2026-08-21) — tool first, for one real project
 
@@ -44,6 +50,60 @@ Track A (the `make-inkling.html` prototype + the ink-pour opening) is **parked**
 live work is making the **real Next.js app in `app/`** usable end-to-end for Lorin's own brand
 project, with one remote collaborator. The product question gets answered by whether the tool
 generalizes — not by designing the product first.
+
+## The spatial model (2026-08-21) — studio, boards, carrying
+
+**One studio canvas. Boards are framed regions on it, not separate pages.** Zoom out and you see the
+whole journey laid end to end; zoom in and you are working. New boards default to the right of the
+last one so the default reading is a timeline — a default order, never an enforced one. This is the
+"witness the progression / go back and look at things" requirement, and it beats Figma pages here
+because the arc is visible in a single view.
+
+### Carrying — the gesture is the data model
+
+**Nothing is ever auto-promoted.** The tool never analyses your board and advances things for you. You
+carry material forward by hand, board to board, and that drag is the whole commitment mechanic.
+
+- A carry creates a **linked copy**. The original stays on the source board (marked as carried), so
+  the board behind you remains a record of the stage, not a record of loss.
+- The link is **provenance**. Because the spec is assembled from carries, every claim in it can show
+  its work — this value ← these six references ← these pins. "Synthesis from *your* taste, you stay
+  the author" stops being a slogan and becomes a mechanism.
+- What you did **not** carry stays visibly behind. The No pile is a place, not a deletion.
+
+### Activities: a board is born from an activity
+
+New board → *Gut pass · Affinity map · Questions · Head to head · Try it on · **Blank***. The board
+takes the shape of what you chose. Activities are **offered in the order of where you are** in the
+process, but every one is always available and Blank is always present (rule 2: offered, never
+imposed). An activity fills its board and then relaxes into it — the results stay exactly where they
+landed and the scaffolding dissolves. You never leave the room.
+
+### The taste spec
+
+A board like any other, that is also an export. Two formats: a **print one-pager** for a human or a
+graphic designer (`app/print` + `puppeteer-core` + `@sparticuz/chromium` already in the repo,
+`app/api/brand/export` is the seam), and a **JSON + CSS custom properties** bundle for a
+system-making tool. No Figma plugin.
+
+### Multiplayer — accepted, with the cost stated plainly
+
+Requirement: live cursors, everyone equal, everyone can add / move / type. Two separable pieces:
+
+- **Presence** (cursors, who is here, selection halos) is ephemeral broadcast. Cheap.
+- **Document sync** is the expensive part — and it is **required anyway** the moment two people share
+  a board. Today `moodboards` saves by whole-document `PUT` of a JSONB blob: last write wins, so two
+  people editing silently destroy each other's work. Migration 008 already anticipated this
+  ("object-per-block granularity is a later (Liveblocks) concern this shape already maps onto").
+
+Recommendation: **Liveblocks** (presence + conflict-free storage + threads, generous free tier) over
+self-hosted Yjs, even though Vercel Functions now support WebSockets — the goal is not to own this
+infrastructure. Cost: a vendor dependency, and the block model must be remodeled from one JSONB blob
+to per-object granularity.
+
+**Sequencing warning:** real multiplayer is the largest single item in this system and it is not a
+"before the next meeting" build. For a first live session, one shared screen costs nothing. Building
+multiplayer first delays every activity.
 
 ## The system (2026-08-21) — one canvas, many activities
 
