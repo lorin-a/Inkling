@@ -322,3 +322,89 @@
 {"type":"carry_keeps","count":63,"at":"2026-08-21T18:26:02.281Z"}
 {"type":"zoom_fit","to":"groups","zoom":0.54,"at":"2026-08-21T18:26:02.429Z"}
 {"type":"group_add","group":"g-mt3a5th8","at":"2026-08-21T18:26:04.028Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:27:33.833Z"}
+{"type":"zoom_fit","to":"both","zoom":0.48,"at":"2026-08-27T22:27:49.865Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:32:49.738Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:32:50.876Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:33:07.954Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:34:16.054Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:36:21.156Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:36:23.619Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:36:29.858Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:36:38.427Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:37:27.003Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:37:43.976Z"}
+{"type":"carry_keeps","count":60,"at":"2026-08-27T22:37:50.947Z"}
+{"type":"zoom_fit","to":"groups","zoom":0.76,"at":"2026-08-27T22:37:51.055Z"}
+{"type":"group_create","group":"g-mtc3t6jz28814","via":"lasso","members":4,"at":"2026-08-27T22:38:12.335Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:39:23.041Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:39:26.813Z"}
+{"type":"carry_keeps","count":60,"at":"2026-08-27T22:39:29.360Z"}
+{"type":"zoom_fit","to":"groups","zoom":0.76,"at":"2026-08-27T22:39:29.446Z"}
+{"type":"group_create","group":"g-mtc3uvfb4761","via":"lasso","members":4,"at":"2026-08-27T22:39:31.223Z"}
+{"type":"group_name","group":"g-mtc3uvfb4761","name":"Handmade, not designed","members":4,"at":"2026-08-27T22:39:32.855Z"}
+{"type":"group_not","group":"g-mtc3uvfb4761","notThis":"slick or corporate","members":4,"at":"2026-08-27T22:39:33.191Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:40:44.256Z"}
+{"type":"move","card":"1039135314044527110","board":"pile","at":"2026-08-27T22:40:47.219Z"}
+{"type":"lasso_empty","at":"2026-08-27T22:40:48.901Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:41:13.708Z"}
+{"type":"zoom_fit","to":"groups","zoom":0.76,"at":"2026-08-27T22:41:16.074Z"}
+{"type":"move","card":"1039135314044658559","board":"groups","at":"2026-08-27T22:41:17.616Z"}
+{"type":"move","card":"1039135314044658554","board":"groups","at":"2026-08-27T22:41:18.582Z"}
+{"type":"move","card":"1039135314044658551","board":"groups","at":"2026-08-27T22:41:19.540Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:41:38.841Z"}
+{"type":"zoom_fit","to":"groups","zoom":0.76,"at":"2026-08-27T22:41:41.477Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:42:13.687Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:42:17.683Z"}
+{"type":"carry_keeps","count":60,"at":"2026-08-27T22:42:20.318Z"}
+{"type":"zoom_fit","to":"groups","zoom":0.76,"at":"2026-08-27T22:42:20.400Z"}
+{"type":"group_create","group":"g-mtc3yjfw5129","via":"lasso","members":4,"at":"2026-08-27T22:42:22.316Z"}
+{"type":"group_name","group":"g-mtc3yjfw5129","name":"Handmade, not designed","members":4,"at":"2026-08-27T22:42:23.585Z"}
+{"type":"group_not","group":"g-mtc3yjfw5129","notThis":"slick or corporate","members":4,"at":"2026-08-27T22:42:23.872Z"}
+{"type":"group_move","group":"g-mtc3yjfw5129","members":8,"at":"2026-08-27T22:42:41.702Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:43:20.715Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:43:31.246Z"}
+{"type":"zoom_fit","to":"groups","zoom":0.76,"at":"2026-08-27T22:43:33.890Z"}
+{"type":"group_move","group":"g-mtc3yjfw5129","members":8,"at":"2026-08-27T22:43:35.401Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:43:47.905Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:43:51.621Z"}
+{"type":"carry_keeps","count":60,"at":"2026-08-27T22:43:54.258Z"}
+{"type":"zoom_fit","to":"groups","zoom":0.76,"at":"2026-08-27T22:43:54.404Z"}
+{"type":"group_create","group":"g-mtc40jww4977","via":"lasso","members":4,"at":"2026-08-27T22:43:56.240Z"}
+{"type":"group_name","group":"g-mtc40jww4977","name":"Handmade, not designed","members":4,"at":"2026-08-27T22:43:57.347Z"}
+{"type":"group_not","group":"g-mtc40jww4977","notThis":"slick or corporate","members":4,"at":"2026-08-27T22:43:57.540Z"}
+{"type":"group_displace","group":"g-mtc40jww4977","count":4,"at":"2026-08-27T22:43:58.831Z"}
+{"type":"group_move","group":"g-mtc40jww4977","members":4,"at":"2026-08-27T22:43:58.831Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:44:39.394Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:44:43.219Z"}
+{"type":"carry_keeps","count":60,"at":"2026-08-27T22:44:45.775Z"}
+{"type":"zoom_fit","to":"groups","zoom":0.76,"at":"2026-08-27T22:44:45.853Z"}
+{"type":"group_create","group":"g-mtc41n9o","via":"button","members":0,"at":"2026-08-27T22:44:47.244Z"}
+{"type":"name_prompt","group":"g-mtc41n9o","prompt":"If these were one place, where are you standing?","at":"2026-08-27T22:44:48.007Z"}
+{"type":"group_release","group":"g-mtc41n9o","members":0,"at":"2026-08-27T22:44:48.480Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:45:08.162Z"}
+{"type":"zoom_fit","to":"groups","zoom":0.76,"at":"2026-08-27T22:45:10.639Z"}
+{"type":"group_create","group":"g-mtc426d94281","via":"lasso","members":4,"at":"2026-08-27T22:45:11.997Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:46:07.469Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"at":"2026-08-27T22:46:11.224Z"}
+{"type":"carry_keeps","count":60,"at":"2026-08-27T22:46:13.711Z"}
+{"type":"zoom_fit","to":"groups","zoom":0.76,"at":"2026-08-27T22:46:13.859Z"}
+{"type":"group_create","group":"g-mtc43jhq4835","via":"lasso","members":4,"at":"2026-08-27T22:46:15.662Z"}
+{"type":"group_name","group":"g-mtc43jhq4835","name":"Handmade, not designed","members":4,"at":"2026-08-27T22:46:16.781Z"}
+{"type":"group_not","group":"g-mtc43jhq4835","notThis":"slick or corporate","members":4,"at":"2026-08-27T22:46:16.994Z"}
+{"type":"group_create","group":"g-mtc43l576977","via":"lasso","members":4,"at":"2026-08-27T22:46:17.803Z"}
+{"type":"name_prompt","group":"g-mtc43l576977","prompt":"If these were one place, where are you standing?","at":"2026-08-27T22:46:18.583Z"}
+{"type":"move","card":"1039135314044527798","board":"pile","at":"2026-08-27T22:48:37.771Z"}
+{"type":"vote_open","card":"1039135314044527798","at":"2026-08-27T22:48:38.660Z"}
+{"type":"decide","round":0,"mode":"single","card":"1039135314044527798","tag":"keep","index":0,"at":"2026-08-27T22:48:46.148Z"}
+{"type":"vote_close","number":0,"size":1,"at":"2026-08-27T22:48:46.148Z"}
+{"type":"vote_open","card":"1039135314044562259","at":"2026-08-27T22:48:53.959Z"}
+{"type":"decide","round":0,"mode":"single","card":"1039135314044562259","tag":"keep","index":0,"at":"2026-08-27T22:48:58.061Z"}
+{"type":"vote_close","number":0,"size":1,"at":"2026-08-27T22:48:58.062Z"}
+{"type":"vote_open","card":"1039135314044511817","at":"2026-08-27T22:49:01.234Z"}
+{"type":"decide","round":0,"mode":"single","card":"1039135314044511817","tag":"keep","index":0,"at":"2026-08-27T22:49:02.641Z"}
+{"type":"vote_close","number":0,"size":1,"at":"2026-08-27T22:49:02.641Z"}
+{"type":"spectrum_toggle","open":true,"at":"2026-08-27T22:49:11.070Z"}
+{"type":"mix_swatches","count":20,"at":"2026-08-27T22:49:12.860Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"who":"lorin","at":"2026-08-27T23:30:47.589Z"}
+{"type":"zoom_fit","to":"pile","zoom":0.76,"who":"lorin","at":"2026-08-27T23:31:18.669Z"}

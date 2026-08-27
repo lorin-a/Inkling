@@ -57,3 +57,6 @@ review-*.png
 smart-shuffle-*.png
 phase*-*.png
 .claude/
+
+# Tester sessions (Playwright / Claude) are noise, not the record.
+data/playtest/_claude/
