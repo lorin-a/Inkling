@@ -32,7 +32,18 @@ Keep this file short — it is state, not a log.
   prompt asks a projective question and never proposes a word; every reveal is logged, because
   *needing* it is the Q5 signal. **Release** frees a group without deleting anything, and the step
   strip carries `N of M named`.
-- Every action writes to `data/playtest/<session>.jsonl`. **Read the log, not your memory.**
+- **Phase 0 landed (2026-08-27, `JOURNEY.md` §6).** The log stamps `who` on every event and
+  any tester (`/studio?tester=claude`) writes to `data/playtest/_claude/`, never beside hers.
+  **Dropping a card in a lane votes.** **A carry makes a linked copy:** the original stays on
+  board 1, ghosted with a `→ 2` mark; the copy carries `from` and an ultraviolet dot; dragging
+  a copy back releases it. **Note cards** (`+ Note`, or `N`): a word anywhere, sorted and carried
+  like a reference. **Undo** (`⌘Z`) for every gesture. Spring easing is gone from the studio.
+  "Show the spectrum" is the control; the line is the panel's title. Every line of copy that is
+  mine carries a `[provisional]` comment for Lorin to accept or replace.
+- **Projects:** `data/projects/whelm/` is the 252-pin *test* board; **`data/projects/mc/` is her
+  live project, empty until she imports** (`whelm` stays active until then; switch on `/import`).
+- Every action writes to `data/playtest/<session>.jsonl` (hers) or `_claude/` (mine). **Read
+  the log, not your memory.**
 - Verified: build clean, 0 console errors/warnings, zoom-to-fit frames the whole pile on arrival,
   keyboard round (1/2/3) and keyboard carry (arrows) both work, `prefers-reduced-motion` honored.
 - **Not in it, on purpose:** locking, outfit cards, the taste spec, multiplayer, the second door.
@@ -47,9 +58,10 @@ state on the server and a second member. The plan there has two cut lines set by
 
 1. **Get Lorin's answers to `JOURNEY.md` §7** (which board, own devices or one screen, what must
    be on screen by the end of the meeting, the date, link or account, the words).
-2. **Phase 0** (small, before any meeting): `who` + tester stamp on the log; drop-to-vote on the
-   lanes; carry *copies*; note cards; undo; spring → ease-out; import the real board.
-3. **Phase 1** if the date allows: studio state on the server, a second member by link, private
+2. ~~**Phase 0**~~ **Done 2026-08-27** except the import, which is her hands: on `/import`,
+   switch the project to `mc`, drag the bookmarklet to the bookmarks bar, open
+   `pinterest.com/lorinanderberg1/mc/`, click it, drop the JSON it downloads back on `/import`.
+3. **Phase 1** (no date; cut line B): studio state on the server, a second member by link, private
    rounds, the reveal (both kept · both cut · split).
 
 **Then:** run playtest 01 for real, read `data/playtest/*.jsonl` (hers, not `_claude/`), and let
@@ -143,7 +155,7 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 68 | "It needs to balance freedom with structure. It should always make it easier for the user to get closer to their intuition." | **Open — 2026-08-27.** The design law for every surface. `JOURNEY.md` finding 9 (the freedom side is thin: no note cards, no words outside a group header). |
 | 69 | "We likely need a user journey map." | **Done — 2026-08-27.** `JOURNEY.md` + the published artifact. |
 | 70 | "If I have not clarified anythign enough, do not make assumptions, ask and help me figure it out. You are the expert, guide me." | **Open — 2026-08-27.** Six questions at the end of `JOURNEY.md`, each with my recommendation. Nothing in the plan assumes an answer. |
-| 71 | "this is the project board but the one you have now is technically the mood builder test board. Here is my project: https://www.pinterest.com/lorinanderberg1/mc/" | **Answered — 2026-08-27.** Test 1 = the `mc` board. Import it before the meeting (see JOURNEY.md → Decisions). |
+| 71 | "this is the project board but the one you have now is technically the mood builder test board. Here is my project: https://www.pinterest.com/lorinanderberg1/mc/" | **Answered — 2026-08-27.** Test 1 = the `mc` board. Project `mc` exists in the registry; the import is hers to run (steps under "Next move"). |
 | 72 | "We want to do it all together. It could be interesting to have each of us do votes alone or without the other seeing to organically see where there is overlap?" | **Answered — 2026-08-27.** Together, on two devices, with private votes and a reveal. Phase 1 is in scope for the meeting. |
 | 73 | "describe in plain text what the brand voice, feel, and values are as context copy, then have a pool of color pallettes that are approved, then a set of typefaces that feel close to right, they may want to include a few key references of an ideal state or perhaps even design a little mood board that combines all of this into a nice neat or messy collage to show a graphic design collaborator." | **Answered — 2026-08-27.** This is the brief, in her words: voice/feel/values copy · an approved palette pool · typefaces close to right · key references · optionally a collage. Stage 7 is designed to this. |
 | 74 | "just build smart don't rush no stress." | **Answered — 2026-08-27.** No date; cut line B; dependency order. |

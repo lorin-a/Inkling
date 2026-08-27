@@ -28,9 +28,13 @@ export async function POST(request) {
   const events = Array.isArray(body?.events) ? body.events : [body];
   if (!session) return NextResponse.json({ error: "Missing session" }, { status: 400 });
 
-  await mkdir(DIR, { recursive: true });
+  // A tester's sessions (Playwright, Claude) are prefixed `claude-` by the
+  // client and land in their own directory, so the record of her sessions is
+  // never mixed with mine again.
+  const dir = session.startsWith("claude-") ? path.join(DIR, "_claude") : DIR;
+  await mkdir(dir, { recursive: true });
   const line = events.map((e) => JSON.stringify({ ...e, at: e?.at || new Date().toISOString() })).join("\n");
-  await appendFile(path.join(DIR, `${session}.jsonl`), line + "\n", "utf8");
+  await appendFile(path.join(dir, `${session}.jsonl`), line + "\n", "utf8");
 
   return NextResponse.json({ ok: true, written: events.length });
 }

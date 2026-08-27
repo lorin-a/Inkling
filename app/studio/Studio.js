@@ -23,6 +23,8 @@ import {
 const TAGS = ["keep", "maybe", "no"];
 const TAG_LABEL = { keep: "Keep", maybe: "Maybe", no: "No" };
 
+// [provisional] Claude's words. Only "Does it make you sing?" is Lorin's (note 42);
+// the rest are hers to accept or replace once she has heard them in a real session.
 const ROUND_QUESTIONS = [
   "Does it still catch your eye?",
   "Does it fit what you’ve named?",
@@ -32,6 +34,7 @@ const ROUND_QUESTIONS = [
 
 // The step strip: where you are, and what this step is FOR. Derived from actual
 // state, never advanced by hand — you are wherever your material says you are.
+// [provisional] the titles and captions are Claude's words; Lorin to accept or replace.
 const STEPS = [
   { n: 1, title: "Gather", caption: "Everything you found, with no judgment yet. Look at all of it before you decide anything." },
   { n: 2, title: "See the color", caption: "Pull the color out of what you gathered, and see what you keep reaching for." },
@@ -49,6 +52,7 @@ const STEPS = [
  * produces the language" is weaker than we think and the generative-questions
  * door has to open before the sort, not after it. So every reveal is logged.
  */
+// [provisional] Claude's words; Lorin to accept or replace.
 const NAME_PROMPTS = [
   "If these were one place, where are you standing?",
   "What do these have that the ones you cut didn’t?",
@@ -63,14 +67,25 @@ function useEventLog() {
   const session = useRef(null);
   const [sessionId, setSessionId] = useState(null);
 
+  const who = useRef(null);
+
   useEffect(() => {
-    const key = "inkling-playtest-session";
+    // A tester (Playwright, me) announces itself with ?tester=<name>. Its
+    // sessions get their own key and a prefix the server routes to a separate
+    // directory, so the record STATUS says to trust never carries my test
+    // strings next to hers again.
+    const tester = new URLSearchParams(window.location.search).get("tester");
+    const key = tester ? "inkling-playtest-session-tester" : "inkling-playtest-session";
     let s = window.localStorage.getItem(key);
-    if (!s) {
-      s = `pt01-${new Date().toISOString().slice(0, 10)}-${Math.random().toString(36).slice(2, 6)}`;
+    if (!s || (tester && !s.startsWith("claude-"))) {
+      const stamp = `${new Date().toISOString().slice(0, 10)}-${Math.random().toString(36).slice(2, 6)}`;
+      s = tester ? `claude-${stamp}` : `pt01-${stamp}`;
       window.localStorage.setItem(key, s);
     }
     session.current = s;
+    // Who is acting. Phase 1 replaces this with the member identity; until
+    // then it is a name she can set once, so two browsers read as two people.
+    who.current = tester ? `tester:${tester}` : (window.localStorage.getItem("inkling-who") || "lorin");
     setSessionId(s);
   }, []);
 
@@ -86,7 +101,7 @@ function useEventLog() {
   }, []);
 
   const log = useCallback((type, payload = {}) => {
-    queue.current.push({ type, ...payload, at: new Date().toISOString() });
+    queue.current.push({ type, ...payload, who: who.current, at: new Date().toISOString() });
     if (queue.current.length >= 12) flush();
   }, [flush]);
 
@@ -135,6 +150,7 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
   const [prompts, setPrompts] = useState({});
   const [dismissed, setDismissed] = useState([]);
 
+
   // Nothing may log from inside a setState updater: React double-invokes them
   // in development, which would double every number the playtest is read from.
   const cardsRef = useRef(cards);
@@ -143,6 +159,13 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
   useEffect(() => { cardsRef.current = cards; }, [cards]);
   useEffect(() => { roundRef.current = round; }, [round]);
   useEffect(() => { groupsRef.current = groups; }, [groups]);
+  // Undo. Every gesture that changes the material pushes the state before it;
+  // ⌘Z restores it. Arrays are immutable here, so a snapshot is two pointers.
+  const history = useRef([]);
+  const snapshot = useCallback(() => {
+    history.current.push({ cards: cardsRef.current, groups: groupsRef.current });
+    if (history.current.length > 60) history.current.shift();
+  }, []);
 
   const reduced = useRef(false);
   useEffect(() => { reduced.current = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false; }, []);
@@ -164,8 +187,16 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
         setCards((cur) => {
           const byId = new Map(saved.cards.map((c) => [c.id, c]));
           const merged = cur.map((c) => (byId.has(c.id) ? { ...c, ...byId.get(c.id) } : c));
-          const swatches = saved.cards.filter((c) => c.kind === "swatch" && !merged.some((m) => m.id === c.id));
-          return [...merged, ...swatches];
+          // Cards the library did not supply: swatches and notes are saved
+          // whole; a carried copy is rebuilt from the original it links to.
+          const extra = saved.cards
+            .filter((c) => !merged.some((m) => m.id === c.id))
+            .map((c) => {
+              if (c.from) { const base = merged.find((b) => b.id === c.from); return base ? { ...base, ...c, carried: false } : null; }
+              return c.kind === "swatch" || c.kind === "note" ? c : null;
+            })
+            .filter(Boolean);
+          return [...merged, ...extra];
         });
       }
       if (saved?.groups) setGroups(saved.groups);
@@ -180,10 +211,13 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
     const id = setTimeout(() => {
       try {
         window.localStorage.setItem("inkling-playtest-01", JSON.stringify({
-          cards: cards.map(({ id: cid, kind, x, y, rot, board, tag, revealed, hex, z, pinned }) =>
-            kind === "swatch"
-              ? { id: cid, kind, x, y, rot, board, tag, hex, z, pinned }
-              : { id: cid, x, y, rot, board, tag, revealed, z, pinned }),
+          cards: cards.map(({ id: cid, kind, x, y, rot, board, tag, revealed, hex, z, pinned, from, carried, text }) => {
+            const base = { id: cid, x, y, rot, board, tag, z, pinned };
+            if (kind === "swatch") return { ...base, kind, hex };
+            if (kind === "note") return { ...base, kind, text };
+            if (from) return { ...base, kind, from };
+            return { ...base, revealed, carried };
+          }),
           groups, colorsPulled, swatchesMixed, tidied, expanded,
         }));
       } catch { /* quota — the session continues, the draft does not */ }
@@ -290,6 +324,7 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
     const r = roundRef.current;
     if (!r) return;
     const id = r.queue[r.index];
+    snapshot();
     log("decide", { round: r.number, mode: r.mode, card: id, tag, index: r.index });
     setCards((cs) => cs.map((c) => (c.id === id ? { ...c, tag, pinned: false } : c)));
     const next = r.index + 1;
@@ -300,9 +335,43 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
       return;
     }
     setRound({ ...r, index: next });
-  }, [log, relayout]);
+  }, [log, relayout, snapshot]);
 
   /* --- carrying (Q1) ------------------------------------------------------ */
+  /**
+   * A carry makes a linked copy. The original stays where it was, marked, so the
+   * board behind her is a record of the stage rather than of loss (note 30);
+   * the copy carries `from`, which is the provenance the brief is assembled
+   * from. Dragging a copy back to board 1 releases it: the copy goes, the
+   * original is unmarked. Nothing is ever lost by carrying in either direction.
+   */
+  const makeCopy = (c, pos, z) => ({ ...c, id: `${c.id}~c`, from: c.id, carried: false, ...pos, board: "groups", pinned: true, z });
+
+  const carryTo = useCallback((card, board, pos, { via, group = null, origin = null } = {}) => {
+    if (board === "groups") {
+      if (card.from) return; // already a copy; a plain move handled by the caller
+      const exists = cardsRef.current.some((c) => c.from === card.id);
+      log(exists ? "carry_again" : "carry", { card: card.id, kind: card.kind, from: "pile", to: "groups", group, tag: card.tag, via, copy: true });
+      topZ.current += 1;
+      const z = topZ.current;
+      setCards((cs) => {
+        const back = origin ? { x: origin.x, y: origin.y } : {};
+        const marked = cs.map((c) => (c.id === card.id ? { ...c, ...back, carried: true } : c));
+        return exists ? marked : [...marked, makeCopy(card, pos, z)];
+      });
+      return;
+    }
+    // Back to board 1.
+    if (card.from) {
+      log("carry_back", { card: card.from, kind: card.kind, from: "groups", to: "pile", via });
+      setCards((cs) => cs.filter((c) => c.id !== card.id).map((c) => (c.id === card.from ? { ...c, carried: false } : c)));
+      return;
+    }
+    // Something born on board 2 (a note, a swatch) simply moves.
+    log("carry", { card: card.id, kind: card.kind, from: "groups", to: "pile", via });
+    setCards((cs) => cs.map((c) => (c.id === card.id ? { ...c, ...pos, board: "pile", pinned: true } : c)));
+  }, [log]);
+
   const toCanvas = useCallback((clientX, clientY) => {
     const vp = viewportRef.current;
     const r = vp.getBoundingClientRect();
@@ -317,8 +386,9 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
     topZ.current += 1;
     setCards((cs) => cs.map((c) => (c.id === card.id ? { ...c, z: topZ.current } : c)));
     setSelected(card.id);
-    setDrag({ id: card.id, dx: p.x - card.x, dy: p.y - card.y, moved: false, from: card.board, pointer: e.pointerId });
-  }, [toCanvas, round]);
+    snapshot();
+    setDrag({ id: card.id, dx: p.x - card.x, dy: p.y - card.y, ox: card.x, oy: card.y, moved: false, from: card.board, pointer: e.pointerId });
+  }, [toCanvas, round, snapshot]);
 
   const onCardPointerMove = useCallback((e) => {
     if (!drag || e.pointerId !== drag.pointer) return;
@@ -344,7 +414,7 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
     if (!card) return;
 
     // A click that never moved is a request to vote on this one thing.
-    if (!drag.moved) { openVote(card.id); return; }
+    if (!drag.moved) { history.current.pop(); openVote(card.id); return; }
 
     const size = cardSize(card);
     const cx = card.x + size.w / 2;
@@ -354,33 +424,87 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
 
     if (board !== drag.from) {
       const landedIn = inGroups ? groups.find((g) => cx > g.x && cx < g.x + g.w && cy > g.y && cy < g.y + g.h) : null;
-      log("carry", { card: card.id, kind: card.kind, from: drag.from, to: board, group: landedIn?.id || null, tag: card.tag });
-    } else {
-      log("move", { card: card.id, board });
+      carryTo(card, board, { x: card.x, y: card.y }, { via: "drag", group: landedIn?.id || null, origin: { x: drag.ox, y: drag.oy } });
+      return;
     }
+
+    // Dropped inside a lane on board 1: that is a vote, made by hand. The frame
+    // is the promise; a framed column you cannot put things in is a lie.
+    if (board === "pile") {
+      const lane = LANES.find((l) => boxes[l] && inBox({ x: cx, y: cy }, boxes[l]));
+      if (lane) {
+        const tag = lane === "unsorted" ? null : lane;
+        if (tag !== card.tag) {
+          log("decide", { round: 0, mode: "drop", card: card.id, tag, from: card.tag });
+          setCards((cs) => cs.map((c) => (c.id === drag.id ? { ...c, tag, pinned: true } : c)));
+          return;
+        }
+      }
+    }
+    log("move", { card: card.id, board });
     setCards((cs) => cs.map((c) => (c.id === drag.id ? { ...c, board, pinned: true } : c)));
-  }, [drag, groups, log, openVote]);
+  }, [drag, groups, boxes, log, openVote, carryTo]);
 
   // Every card voted → one explicit gesture takes the keeps across. Deliberately
   // NOT automatic: auto-promotion is the thing this tool does not do.
   const carryKeeps = useCallback(() => {
-    const keeps = cardsRef.current.filter((c) => c.board === "pile" && c.tag === "keep");
+    const keeps = cardsRef.current.filter((c) => c.board === "pile" && c.tag === "keep" && !c.carried);
     if (!keeps.length) return;
+    snapshot();
     log("carry_keeps", { count: keeps.length });
-    // They land in a legible grid, not another pile. Board 1's mess is an
+    // Copies land in a legible grid, not another pile. Board 1's mess is an
     // invitation to rummage; board 2 asks her to see a pattern, and sixty
-    // overlapping cards hide one.
+    // overlapping cards hide one. The originals stay behind, marked, so board 1
+    // remains a record of the stage rather than of loss.
     setCards((cs) => {
+      const copies = [];
       let i = 0;
-      return cs.map((c) => {
-        if (c.board !== "pile" || c.tag !== "keep") return c;
+      const marked = cs.map((c) => {
+        if (c.board !== "pile" || c.tag !== "keep" || c.carried) return c;
         const pos = gridPlace(i, FIELD, cardSize(c, "groups"), 12, BOARD2_ROW);
         i += 1;
-        return { ...c, ...pos, board: "groups", pinned: false };
+        topZ.current += 1;
+        copies.push(makeCopy(c, pos, topZ.current));
+        return { ...c, carried: true };
       });
+      return [...marked, ...copies];
     });
     setTimeout(() => fitTo({ x: GROUPS.x, y: GROUPS.y, w: GROUPS.w, h: GROUPS.h }, "groups"), 40);
   }, [log]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* --- notes: a word anywhere --------------------------------------------- */
+  // The smallest thing that makes "freedom" real on the canvas, and the home
+  // for word play: any word or sentence, on either board, sorted and carried
+  // like everything else. Blank is always present.
+  const addNote = useCallback((text = "") => {
+    const vp = viewportRef.current;
+    if (!vp) return;
+    const cx = (vp.scrollLeft + vp.clientWidth / 2) / zoom;
+    const cy = (vp.scrollTop + vp.clientHeight / 2) / zoom;
+    const board = inBox({ x: cx, y: cy }, GROUPS) ? "groups" : "pile";
+    const id = `note-${Date.now().toString(36)}`;
+    const size = cardSize({ kind: "note" }, board);
+    snapshot();
+    topZ.current += 1;
+    const note = { id, kind: "note", text, x: Math.round(cx - size.w / 2), y: Math.round(cy - size.h / 2), rot: 0, board, tag: null, pinned: true, z: topZ.current };
+    log("note_add", { note: id, board });
+    setCards((cs) => [...cs, note]);
+    setSelected(id);
+    setTimeout(() => document.querySelector(`[data-note="${id}"] textarea`)?.focus(), 30);
+  }, [zoom, log, snapshot]);
+
+  const setNoteText = useCallback((id, text) => {
+    setCards((cs) => cs.map((c) => (c.id === id ? { ...c, text } : c)));
+  }, []);
+
+  /* --- undo ---------------------------------------------------------------- */
+  const undo = useCallback(() => {
+    const prev = history.current.pop();
+    if (!prev) return;
+    log("undo", { depth: history.current.length });
+    setCards(prev.cards);
+    setGroups(prev.groups);
+  }, [log]);
 
   /* --- groups + naming (Q5) ---------------------------------------------- */
   /**
@@ -408,11 +532,12 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
     }
 
     const g = { id: `g-${Date.now().toString(36)}${Math.round(performance.now())}`, ...box, x: box.x + dx, y: box.y + dy, name: "", notThis: "" };
+    snapshot();
     log("group_create", { group: g.id, via, members: members.length });
     setGroups((gs) => [...gs, g]);
     setNaming(g.id);
     return g;
-  }, [log]);
+  }, [log, snapshot]);
 
   // The fallback for anyone who does not discover the drag. Placed under the
   // grid rather than over it, so it never lands on top of her material.
@@ -424,27 +549,30 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
       y: FIELD.y + FIELD.h - GROUP_MIN.h - 20 - Math.floor(used / 3) * (GROUP_MIN.h + 30),
       w: GROUP_MIN.w + 80, h: GROUP_MIN.h + 40, name: "", notThis: "",
     };
+    snapshot();
     log("group_create", { group: g.id, via: "button", members: 0 });
     setGroups((gs) => [...gs, g]);
     setNaming(g.id);
-  }, [groups.length, log]);
+  }, [groups.length, log, snapshot]);
 
   // Releasing a group frees its cards; it never deletes material. Lassoing the
   // wrong five things has to be a one-click mistake or she will not lasso.
   const releaseGroup = useCallback((g) => {
+    snapshot();
     log("group_release", { group: g.id, members: membersOf(g, cardsRef.current, (c) => cardSize(c, "groups")).length });
     setGroups((gs) => gs.filter((x) => x.id !== g.id));
     setNaming((n) => (n === g.id ? null : n));
-  }, [log]);
+  }, [log, snapshot]);
 
   const onGroupPointerDown = useCallback((e, g, mode) => {
     if (e.button !== 0) return;
     e.stopPropagation();
     e.currentTarget.setPointerCapture(e.pointerId);
     const p = toCanvas(e.clientX, e.clientY);
+    snapshot();
     const members = membersOf(g, cardsRef.current, (c) => cardSize(c, "groups")).map((c) => ({ id: c.id, x: c.x, y: c.y }));
     setGroupDrag({ id: g.id, mode, pointer: e.pointerId, dx: p.x - g.x, dy: p.y - g.y, x0: g.x, y0: g.y, w0: g.w, h0: g.h, members, moved: false });
-  }, [toCanvas]);
+  }, [toCanvas, snapshot]);
 
   const onGroupPointerMove = useCallback((e) => {
     if (!groupDrag || e.pointerId !== groupDrag.pointer) return;
@@ -626,6 +754,21 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
 
   /* --- keyboard ----------------------------------------------------------- */
   useEffect(() => {
+    const typing = (e) => /^(INPUT|TEXTAREA)$/.test(e.target?.tagName || "");
+    const onKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z" && !e.shiftKey) {
+        if (typing(e)) return;
+        e.preventDefault(); undo(); return;
+      }
+      if (e.key === "n" && !e.metaKey && !e.ctrlKey && !e.altKey && !round && !typing(e)) {
+        e.preventDefault(); addNote();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [undo, addNote, round]);
+
+  useEffect(() => {
     if (!round) return;
     const onKey = (e) => {
       const i = ["1", "2", "3"].indexOf(e.key);
@@ -645,12 +788,13 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
     const fields = groups.map(groupField);
     const loose = cardsRef.current.filter((c) => c.board === "groups" && !fields.some((f) => inBox(centerOf(c, b2(c)), f)));
     if (!loose.length) return;
+    snapshot();
     log("tidy_carried", { count: loose.length });
     const order = new Map(loose.map((c, i) => [c.id, i]));
     setCards((cs) => cs.map((c) => (order.has(c.id)
       ? { ...c, ...gridPlace(order.get(c.id), FIELD, b2(c), 12, BOARD2_ROW), pinned: false }
       : c)));
-  }, [groups, b2, log]);
+  }, [groups, b2, log, snapshot]);
 
   // What her hands have already clustered, offered back to her as a frame she
   // can draw with one click. Held back mid-gesture so nothing flickers under
@@ -697,7 +841,7 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
   const namedGroups = groups.filter((g) => g.name.trim()).length;
   const roundCard = round ? cards.find((c) => c.id === round.queue[round.index]) : null;
   const allVoted = counts.unsorted === 0 && counts.keep + counts.maybe + counts.no > 0;
-  const keepsOnPile = cards.some((c) => c.board === "pile" && c.tag === "keep");
+  const keepsOnPile = cards.some((c) => c.board === "pile" && c.tag === "keep" && !c.carried);
 
   const toggleLane = useCallback((lane) => {
     const next = { ...expanded, [lane]: !expanded[lane] };
@@ -724,7 +868,7 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
           ) : (
             <>
               <button type="button" className={styles.actionQuiet} onClick={() => { setSpectrumOpen((v) => !v); log("spectrum_toggle", { open: !spectrumOpen }); }}>
-                {spectrumOpen ? "Hide the spectrum" : "What you keep reaching for"}
+                {spectrumOpen ? "Hide the spectrum" : "Show the spectrum"}
               </button>
               {!swatchesMixed && <button type="button" className={styles.actionQuiet} onClick={mixSwatches}>Drop the colors in</button>}
             </>
@@ -743,6 +887,11 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
           <button type="button" className={styles.actionQuiet} onClick={toggleTidy} aria-pressed={tidied}>
             {tidied ? "Loosen the pile" : "Tidy the pile"}
           </button>
+
+          <span className={styles.sep} aria-hidden="true" />
+
+          <button type="button" className={styles.actionQuiet} onClick={() => addNote()} disabled={!!round} title="A note, anywhere (N)">+ Note</button>
+          <button type="button" className={styles.actionQuiet} onClick={undo} title="Undo (⌘Z)" aria-label="Undo">Undo</button>
         </div>
 
         <div className={styles.zoomer}>
@@ -776,6 +925,7 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
 
       {spectrumOpen && (
         <div className={styles.spectrum} role="region" aria-label="What you keep reaching for">
+          <p className={styles.spectrumTitle}>What you keep reaching for</p>
           <div className={styles.spectrumRow}>
             <p className={styles.spectrumLabel}>Everything</p>
             <div className={styles.spectrumBar}>
@@ -870,8 +1020,9 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
                   data-card
                   tabIndex={0}
                   role="button"
-                  aria-label={card.kind === "swatch" ? `Color ${card.hex}${card.tag ? `, ${TAG_LABEL[card.tag]}` : ""}` : `${card.alt || "Reference"}${card.tag ? `, ${TAG_LABEL[card.tag]}` : ""}`}
-                  className={`${styles.card} ${styles[card.kind]} ${isDragging ? styles.dragging : ""} ${selected === card.id ? styles.selected : ""} ${card.tag ? styles[`tag_${card.tag}`] : ""} ${arriving ? styles.arrive : ""}`}
+                  data-note={card.kind === "note" ? card.id : undefined}
+                  aria-label={card.kind === "swatch" ? `Color ${card.hex}${card.tag ? `, ${TAG_LABEL[card.tag]}` : ""}` : card.kind === "note" ? `Note: ${card.text || "empty"}${card.tag ? `, ${TAG_LABEL[card.tag]}` : ""}` : `${card.alt || "Reference"}${card.tag ? `, ${TAG_LABEL[card.tag]}` : ""}${card.carried ? ", carried to board 2" : ""}`}
+                  className={`${styles.card} ${styles[card.kind]} ${isDragging ? styles.dragging : ""} ${selected === card.id ? styles.selected : ""} ${card.tag ? styles[`tag_${card.tag}`] : ""} ${arriving && !card.from && card.kind === "reference" ? styles.arrive : ""} ${card.carried ? styles.carriedOut : ""} ${card.from ? styles.copy : ""}`}
                   style={{
                     left: card.x, top: card.y, width: size.w, height: size.h, zIndex: card.z,
                     transform: `rotate(${isDragging ? 0 : card.rot}deg)`,
@@ -893,7 +1044,8 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
                     const s = cardSize(live);
                     const inG = nx + s.w / 2 > GROUPS.x && ny + s.h / 2 > GROUPS.y && ny + s.h / 2 < GROUPS.y + GROUPS.h;
                     const board = inG ? "groups" : "pile";
-                    if (board !== live.board) log("carry", { card: live.id, kind: live.kind, from: live.board, to: board, via: "keyboard" });
+                    snapshot();
+                    if (board !== live.board) { carryTo(live, board, { x: nx, y: ny }, { via: "keyboard", origin: { x: live.x, y: live.y } }); return; }
                     setCards((cs) => cs.map((c) => (c.id === card.id ? { ...c, x: nx, y: ny, board, pinned: true } : c)));
                   }}
                 >
@@ -905,12 +1057,27 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
                         {card.palette.slice(0, 6).map((hex, j) => <i key={hex + j} style={{ background: hex, transitionDelay: `${j * 45}ms` }} />)}
                       </span>
                     </>
+                  ) : card.kind === "note" ? (
+                    <>
+                      <span className={styles.noteHandle} aria-hidden="true">note</span>
+                      <textarea
+                        className={styles.noteText}
+                        value={card.text}
+                        placeholder="A word, a line…"
+                        aria-label="Note text"
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}
+                        onChange={(e) => setNoteText(card.id, e.target.value)}
+                        onBlur={(e) => log("note_edit", { note: card.id, text: e.target.value })}
+                      />
+                    </>
                   ) : (
                     <>
                       <span className={styles.swatchFill} style={{ background: card.hex }} />
                       <span className={styles.swatchHex}>{card.hex}</span>
                     </>
                   )}
+                  {card.carried && <span className={styles.carriedMark} aria-hidden="true">→ 2</span>}
                 </div>
               );
             })}
@@ -1064,6 +1231,8 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
             {roundCard.kind === "reference" ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={roundCard.src} alt={roundCard.alt} />
+            ) : roundCard.kind === "note" ? (
+              <p className={styles.roundNote}>{roundCard.text || "…"}</p>
             ) : (
               <span className={styles.roundSwatch} style={{ background: roundCard.hex }}>{roundCard.hex}</span>
             )}
