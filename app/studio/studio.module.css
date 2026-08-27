@@ -47,7 +47,7 @@
 
 .zoomer { margin-left: auto; display: flex; gap: 2px; }
 .zoomBtn {
-  min-height: 44px; min-width: 52px;
+  min-height: 44px; min-width: 52px; padding: 0 10px;
   border: 1px solid var(--ink-muted);
   background: transparent;
   color: var(--ink);
@@ -89,6 +89,8 @@
 .count_maybe { color: var(--ink-muted); }
 .count_no { color: var(--ink-faint); }
 .countCarried { color: var(--accent); font-weight: 600; }
+/* The Q5 number, kept in front of her: piles are easy, names are the event. */
+.countNamed { color: var(--ink); font-weight: 600; }
 
 /* ---- the spectrum -------------------------------------------------------- */
 .spectrum { flex: none; padding: var(--space-sm) var(--space-md) var(--space-xs); border-bottom: 1px solid var(--rule); background: var(--bg-elevated); z-index: 30; }
@@ -106,6 +108,9 @@
 /* ---- canvas -------------------------------------------------------------- */
 .viewport {
   flex: 1; overflow: auto; cursor: grab; overscroll-behavior: contain;
+  /* Every gesture on this canvas is a drag. Without this, drawing a group
+     paints a text selection across every label it crosses. */
+  user-select: none; -webkit-user-select: none;
   background-image: radial-gradient(circle at 1px 1px, var(--hairline-soft) 1px, transparent 0);
   background-size: 28px 28px;
 }
@@ -130,15 +135,6 @@
 }
 .boardHint p { margin: 0 0 var(--space-2xs); font-size: 0.95rem; text-wrap: pretty; }
 .boardHint strong { color: var(--ink); font-weight: 600; }
-.boardAction {
-  position: absolute; top: 14px; right: 14px;
-  min-height: 44px; padding: 0 var(--space-sm);
-  border: 1px solid var(--ink-muted); border-radius: 999px;
-  background: var(--bg-elevated); color: var(--ink);
-  font-size: 0.86rem; cursor: pointer;
-}
-.boardAction:hover { border-color: var(--ink); background: var(--bg-warm); }
-
 /* ---- lanes --------------------------------------------------------------- */
 /* Each verdict gets a frame and a head, so "no" is a place rather than a word
    floating over the board. */
@@ -163,18 +159,161 @@
 .lane_maybe { border: 1.5px dashed var(--ink-muted); background: rgba(255,255,255,0.44); }
 .lane_no { border: 1.5px solid var(--hairline-soft); background: rgba(40,32,18,0.035); }
 
-/* ---- groups -------------------------------------------------------------- */
-.group {
-  position: absolute; z-index: 1; padding: 12px 14px;
-  border: 1.5px dashed var(--ink-muted); border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.55);
+/* ---- board 2 ------------------------------------------------------------- */
+/* A group is a card with a header. The frame is the body and takes no pointer
+   events, so cards read as being INSIDE it and a drag through it still draws a
+   new frame. The header lives in .overLayer, above every card, because a
+   container whose label can be buried by its own contents is not a container. */
+
+.boardTools { position: absolute; top: 12px; right: 14px; display: flex; gap: var(--space-3xs); }
+.boardAction {
+  min-height: 44px; padding: 0 var(--space-sm);
+  border: 1px solid var(--ink-muted); border-radius: 999px;
+  background: var(--bg-elevated); color: var(--ink);
+  font-size: 0.86rem; cursor: pointer; white-space: nowrap;
 }
-.groupName, .groupNot { display: block; width: 100%; border: 0; background: transparent; color: var(--ink); padding: 2px 0; }
-.groupName { font-family: var(--font-serif); font-size: 1.25rem; }
-.groupNot { font-size: 0.86rem; color: var(--ink-muted); }
-.groupName::placeholder, .groupNot::placeholder { color: var(--ink-faint); }
+.boardAction:hover { border-color: var(--ink); background: var(--bg-warm); }
+.boardLegend {
+  position: absolute; left: 16px; bottom: 12px; margin: 0;
+  font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
+  color: var(--ink-muted);
+}
+.boardLegend kbd {
+  font-family: var(--font-mono); font-size: 0.68rem;
+  border: 1px solid var(--hairline); border-radius: 3px; padding: 1px 4px; background: var(--bg-elevated);
+}
+
+.overLayer { position: absolute; inset: 0; z-index: 5000; pointer-events: none; }
+.overLayer > * { pointer-events: auto; }
+
+.groupFrame {
+  /* z-index 0, never higher: card z starts at 1, and a frame that paints over
+     its own first card is worse than no frame at all. */
+  position: absolute; z-index: 0; pointer-events: none;
+  border: 2px dashed var(--ink-muted);
+  border-top: 0;
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: rgba(253, 253, 251, 0.88);
+  box-shadow: var(--elev-1);
+  transition: border-color var(--motion-medium) var(--ease-out), background var(--motion-medium) var(--ease-out);
+}
+/* A named group has done its job, and the frame says so by going solid. */
+.groupFrameNamed { border: 2px solid var(--ink); border-top: 0; background: var(--bg-elevated); box-shadow: var(--elev-2); }
+
+.panelAnchor { position: absolute; transform: translateY(-100%); pointer-events: none; }
+.groupPanel {
+  position: relative; pointer-events: auto;
+  border: 1.5px dashed var(--ink-muted); border-bottom: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--bg-elevated);
+  box-shadow: var(--elev-1);
+  padding-bottom: 6px;
+  animation: panelIn var(--motion-medium) var(--ease-spring);
+}
+.groupPanelNamed { border: 2px solid var(--ink); border-bottom: 0; }
+@keyframes panelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* The colours this group is actually made of — what she names FROM — doubling
+   as the handle you pick the whole group up by. */
+.groupGrab {
+  display: block; padding: 8px 8px 6px; cursor: grab; touch-action: none;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.groupGrab:active { cursor: grabbing; }
+.groupGrab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.groupStrip { display: flex; height: 14px; border-radius: 2px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(40,32,18,0.10); }
+.groupStrip i { display: block; min-width: 3px; }
+.stripEmpty { flex: 1; background: repeating-linear-gradient(135deg, var(--bg-warm) 0 6px, var(--bg-elevated) 6px 12px); }
+
+.groupFields { padding: 0 12px; }
+.groupName, .groupNot { user-select: text; -webkit-user-select: text; display: block; width: calc(100% - 84px); border: 0; background: transparent; color: var(--ink); padding: 2px 0; }
+.groupName { font-family: var(--font-serif); font-size: 1.2rem; line-height: 1.25; }
+.groupNot { font-size: 0.84rem; color: var(--ink-muted); }
+.groupName::placeholder { color: var(--ink-faint); font-size: 1rem; }
+.groupNot::placeholder { color: var(--ink-faint); }
 .groupName:focus-visible, .groupNot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
-.groupCount { position: absolute; right: 12px; bottom: 10px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-muted); }
+.groupCount {
+  position: absolute; right: 46px; top: 30px;
+  font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-muted);
+}
+.groupRelease {
+  position: absolute; right: 0; top: 22px;
+  width: 44px; height: 44px; display: grid; place-items: center;
+  border: 0; background: transparent; color: var(--ink-faint);
+  font-size: 1.1rem; line-height: 1; cursor: pointer;
+  transition: color var(--motion-fast) var(--ease-out);
+}
+.groupRelease:hover { color: var(--ink); }
+.groupRelease:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; border-radius: var(--radius-sm); }
+
+/* Not a suggestion, a question. The tool never proposes the word. */
+.groupPromptRow { display: flex; align-items: center; gap: var(--space-2xs); margin: 2px 12px 0; min-height: 30px; }
+.promptBtn {
+  flex: none; min-height: 30px; padding: 0 10px;
+  border: 1px solid var(--hairline); border-radius: 999px;
+  background: transparent; color: var(--ink-muted);
+  font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.05em; text-transform: uppercase;
+  cursor: pointer;
+}
+.promptBtn:hover { border-color: var(--accent); color: var(--accent); }
+.promptBtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.promptText { font-family: var(--font-serif); font-size: 0.9rem; color: var(--ink); text-wrap: pretty; }
+
+.groupResize {
+  position: absolute; width: 44px; height: 44px; z-index: 5001;
+  cursor: nwse-resize; touch-action: none; display: grid; place-items: end;
+  padding: 8px;
+}
+.groupResize span {
+  width: 13px; height: 13px;
+  border-right: 2px solid var(--ink-muted); border-bottom: 2px solid var(--ink-muted);
+  border-bottom-right-radius: 3px;
+}
+.groupResize:hover span { border-color: var(--ink); }
+.groupResize:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; border-radius: var(--radius-sm); }
+
+/* ---- the lasso, and what it is answering --------------------------------- */
+.lassoing { cursor: crosshair; }
+.lasso {
+  position: absolute; z-index: 5002; pointer-events: none;
+  border: 1.5px dashed var(--accent);
+  background: var(--accent-soft);
+  opacity: 0.55;
+  border-radius: var(--radius-sm);
+}
+
+/* The tool noticing what her hands already did, and offering to draw it. It
+   never draws it itself: that would be auto-promotion wearing a friendly face. */
+.halo {
+  position: absolute; z-index: 0; pointer-events: none;
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-lg);
+  background: var(--accent-soft);
+  opacity: 0.34;
+  animation: haloIn var(--motion-slow) var(--ease-out);
+}
+@keyframes haloIn { from { opacity: 0; transform: scale(0.985); } to { opacity: 0.34; } }
+
+.offer {
+  position: absolute; transform: translate(-50%, -100%);
+  display: flex; align-items: center; gap: 2px;
+  padding: 2px; border-radius: 999px;
+  background: var(--bg-elevated); border: 1px solid var(--accent);
+  box-shadow: var(--elev-2);
+  animation: panelIn var(--motion-medium) var(--ease-spring);
+}
+.offerYes {
+  min-height: 40px; padding: 0 var(--space-sm);
+  border: 0; border-radius: 999px; background: var(--accent); color: #fff;
+  font-size: 0.84rem; font-weight: 500; cursor: pointer; white-space: nowrap;
+}
+.offerYes:hover { background: var(--ink); }
+.offerNo {
+  min-width: 40px; min-height: 40px; border: 0; border-radius: 999px;
+  background: transparent; color: var(--ink-muted); font-size: 1rem; cursor: pointer;
+}
+.offerNo:hover { color: var(--ink); background: var(--bg-warm); }
+.offerYes:focus-visible, .offerNo:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 /* ---- cards --------------------------------------------------------------- */
 .card {
@@ -266,6 +405,8 @@
 .roundLeave:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .card, .strip i, .band, .round, .prompt, .arrive { transition: none !important; animation: none !important; }
+  .card, .strip i, .band, .round, .prompt, .arrive,
+  .groupPanel, .groupFrame, .halo, .offer { transition: none !important; animation: none !important; }
+  .halo { opacity: 0.34; }
   .strip i { transform: none; opacity: 1; }
 }

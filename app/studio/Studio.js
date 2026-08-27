@@ -3,9 +3,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./studio.module.css";
 import {
-  PILE, GROUPS, CANVAS, LANES, LANE_LABEL,
+  PILE, GROUPS, FIELD, CANVAS, LANES, LANE_LABEL, BOARD2_ROW,
   cardSize, scatter, tidy, laneBoxes, placeInLane,
 } from "../../lib/studio/geometry";
+import {
+  GROUP_HEAD, GROUP_MIN, groupField, centerOf, inBox, membersOf,
+  gridPlace, looseClusters, hugBox, boundsOf, groupStrip,
+} from "../../lib/studio/grouping";
 
 /**
  * Playtest 01 — gather, narrow, carry, name. Questions in STATUS.md.
@@ -32,8 +36,25 @@ const STEPS = [
   { n: 1, title: "Gather", caption: "Everything you found, with no judgment yet. Look at all of it before you decide anything." },
   { n: 2, title: "See the color", caption: "Pull the color out of what you gathered, and see what you keep reaching for." },
   { n: 3, title: "Narrow it down", caption: "A round shows you one thing at a time. Keep, maybe, or no — as many rounds as it takes." },
-  { n: 4, title: "Say what it’s about", caption: "Carry what survived to the second board, gather what belongs together, and name it." },
+  { n: 4, title: "Say what it’s about", caption: "Move what belongs together near each other, drag a frame around it, and say what it is. And what it is not." },
   { n: 5, title: "The brief", caption: "Not in this build yet — it assembles from what you carried." },
+];
+
+/**
+ * Naming prompts (playtest Q5).
+ *
+ * They are questions, never suggested words: the moment a tool proposes the
+ * name, the name stops being hers and the spec stops being evidence of her
+ * taste. They are also the instrument — if she reaches for these, "sorting
+ * produces the language" is weaker than we think and the generative-questions
+ * door has to open before the sort, not after it. So every reveal is logged.
+ */
+const NAME_PROMPTS = [
+  "If these were one place, where are you standing?",
+  "What do these have that the ones you cut didn’t?",
+  "Say it to someone who can’t see the images.",
+  "What would this group never do?",
+  "What’s the feeling, before the adjective?",
 ];
 
 /* ---------- event log ---------------------------------------------------- */
@@ -105,12 +126,23 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
   const [arriving, setArriving] = useState(false);
   const topZ = useRef(pins.length + 1);
 
+  // Board 2. The lasso is the grouping gesture; naming is what a new group
+  // opens into; dismissed remembers the clusters she has already said no to,
+  // so an offer she declined never comes back and nags.
+  const [lasso, setLasso] = useState(null);
+  const [groupDrag, setGroupDrag] = useState(null);
+  const [naming, setNaming] = useState(null);
+  const [prompts, setPrompts] = useState({});
+  const [dismissed, setDismissed] = useState([]);
+
   // Nothing may log from inside a setState updater: React double-invokes them
   // in development, which would double every number the playtest is read from.
   const cardsRef = useRef(cards);
   const roundRef = useRef(round);
+  const groupsRef = useRef(groups);
   useEffect(() => { cardsRef.current = cards; }, [cards]);
   useEffect(() => { roundRef.current = round; }, [round]);
+  useEffect(() => { groupsRef.current = groups; }, [groups]);
 
   const reduced = useRef(false);
   useEffect(() => { reduced.current = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false; }, []);
@@ -335,11 +367,14 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
     const keeps = cardsRef.current.filter((c) => c.board === "pile" && c.tag === "keep");
     if (!keeps.length) return;
     log("carry_keeps", { count: keeps.length });
+    // They land in a legible grid, not another pile. Board 1's mess is an
+    // invitation to rummage; board 2 asks her to see a pattern, and sixty
+    // overlapping cards hide one.
     setCards((cs) => {
       let i = 0;
       return cs.map((c) => {
         if (c.board !== "pile" || c.tag !== "keep") return c;
-        const pos = scatter(c.id + "carried", i, keeps.length, { x: GROUPS.x + 40, y: GROUPS.y + 60, w: GROUPS.w - 80, h: GROUPS.h - 120 }, cardSize(c));
+        const pos = gridPlace(i, FIELD, cardSize(c, "groups"), 12, BOARD2_ROW);
         i += 1;
         return { ...c, ...pos, board: "groups", pinned: false };
       });
@@ -348,23 +383,129 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
   }, [log]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* --- groups + naming (Q5) ---------------------------------------------- */
+  /**
+   * This is the conversion event. Everything on this board exists so that a
+   * pile turns into a sentence she would defend — which is the one thing the
+   * playtest cannot fake and the whole thesis rests on.
+   */
+
+  const makeGroup = useCallback((members, via) => {
+    if (!members.length) return null;
+    const box = hugBox(members.map((c) => {
+      const s = cardSize(c, "groups");
+      return { x: c.x, y: c.y, w: s.w, h: s.h };
+    }));
+
+    // A group that cannot show its own name is not a group. If the frame would
+    // hang off the board, the whole cluster shifts back on — cards and all, so
+    // that nothing she just circled quietly falls out of it.
+    const M = 12;
+    const dx = Math.round(Math.min(0, GROUPS.x + GROUPS.w - M - (box.x + box.w)) + Math.max(0, GROUPS.x + M - box.x));
+    const dy = Math.round(Math.min(0, GROUPS.y + GROUPS.h - M - (box.y + box.h)) + Math.max(0, GROUPS.y + M - box.y));
+    if (dx || dy) {
+      const ids = new Set(members.map((m) => m.id));
+      setCards((cs) => cs.map((c) => (ids.has(c.id) ? { ...c, x: c.x + dx, y: c.y + dy, pinned: true } : c)));
+    }
+
+    const g = { id: `g-${Date.now().toString(36)}${Math.round(performance.now())}`, ...box, x: box.x + dx, y: box.y + dy, name: "", notThis: "" };
+    log("group_create", { group: g.id, via, members: members.length });
+    setGroups((gs) => [...gs, g]);
+    setNaming(g.id);
+    return g;
+  }, [log]);
+
+  // The fallback for anyone who does not discover the drag. Placed under the
+  // grid rather than over it, so it never lands on top of her material.
   const addGroup = useCallback(() => {
-    const i = groups.length;
+    const used = groups.length;
     const g = {
       id: `g-${Date.now().toString(36)}`,
-      x: GROUPS.x + 40 + (i % 3) * 452,
-      y: GROUPS.y + 60 + Math.floor(i / 3) * 470,
-      w: 420, h: 430, name: "", notThis: "",
+      x: FIELD.x + (used % 3) * (GROUP_MIN.w + 40),
+      y: FIELD.y + FIELD.h - GROUP_MIN.h - 20 - Math.floor(used / 3) * (GROUP_MIN.h + 30),
+      w: GROUP_MIN.w + 80, h: GROUP_MIN.h + 40, name: "", notThis: "",
     };
-    log("group_add", { group: g.id });
+    log("group_create", { group: g.id, via: "button", members: 0 });
     setGroups((gs) => [...gs, g]);
-  }, [groups, log]);
+    setNaming(g.id);
+  }, [groups.length, log]);
 
-  const memberCount = useCallback((g) => cards.filter((c) => {
-    if (c.board !== "groups") return false;
-    const s = cardSize(c);
-    return c.x + s.w / 2 > g.x && c.x + s.w / 2 < g.x + g.w && c.y + s.h / 2 > g.y && c.y + s.h / 2 < g.y + g.h;
-  }).length, [cards]);
+  // Releasing a group frees its cards; it never deletes material. Lassoing the
+  // wrong five things has to be a one-click mistake or she will not lasso.
+  const releaseGroup = useCallback((g) => {
+    log("group_release", { group: g.id, members: membersOf(g, cardsRef.current, (c) => cardSize(c, "groups")).length });
+    setGroups((gs) => gs.filter((x) => x.id !== g.id));
+    setNaming((n) => (n === g.id ? null : n));
+  }, [log]);
+
+  const onGroupPointerDown = useCallback((e, g, mode) => {
+    if (e.button !== 0) return;
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    const p = toCanvas(e.clientX, e.clientY);
+    const members = membersOf(g, cardsRef.current, (c) => cardSize(c, "groups")).map((c) => ({ id: c.id, x: c.x, y: c.y }));
+    setGroupDrag({ id: g.id, mode, pointer: e.pointerId, dx: p.x - g.x, dy: p.y - g.y, x0: g.x, y0: g.y, w0: g.w, h0: g.h, members, moved: false });
+  }, [toCanvas]);
+
+  const onGroupPointerMove = useCallback((e) => {
+    if (!groupDrag || e.pointerId !== groupDrag.pointer) return;
+    const p = toCanvas(e.clientX, e.clientY);
+    if (groupDrag.mode === "move") {
+      const nx = Math.round(p.x - groupDrag.dx);
+      const ny = Math.round(p.y - groupDrag.dy);
+      const ddx = nx - groupDrag.x0;
+      const ddy = ny - groupDrag.y0;
+      setGroups((gs) => gs.map((x) => (x.id === groupDrag.id ? { ...x, x: nx, y: ny } : x)));
+      // A group that moved without its cards would be a frame, not a container.
+      const by = new Map(groupDrag.members.map((m) => [m.id, m]));
+      setCards((cs) => cs.map((c) => (by.has(c.id)
+        ? { ...c, x: by.get(c.id).x + ddx, y: by.get(c.id).y + ddy, pinned: true }
+        : c)));
+    } else {
+      const w = Math.max(GROUP_MIN.w, Math.round(groupDrag.w0 + (p.x - groupDrag.dx - groupDrag.x0)));
+      const h = Math.max(GROUP_MIN.h, Math.round(groupDrag.h0 + (p.y - groupDrag.dy - groupDrag.y0)));
+      setGroups((gs) => gs.map((x) => (x.id === groupDrag.id ? { ...x, w, h } : x)));
+    }
+    if (!groupDrag.moved) setGroupDrag((d) => (d ? { ...d, moved: true } : d));
+  }, [groupDrag, toCanvas]);
+
+  /**
+   * A frame that lands on other cards must not quietly absorb them.
+   *
+   * Membership here is spatial, which is what makes dragging a card into a
+   * group work at all — but the same rule means sliding a frame across the
+   * board would swallow whatever it crossed, and she would find things in a
+   * group she never put there. So the frame behaves like a tray on a table:
+   * what it lands on gets nudged out, visibly, below it.
+   */
+  const displaceIntruders = useCallback((g, keepIds) => {
+    const inside = membersOf(g, cardsRef.current, (c) => cardSize(c, "groups"));
+    const out = inside.filter((c) => !keepIds.has(c.id));
+    if (!out.length) return;
+    // Straight out along the short axis, keeping each card's column. Re-gridding
+    // them somewhere tidy would move them further than the shove requires, and
+    // she would lose track of where the thing she was looking at went.
+    const field = groupField(g);
+    const below = field.y + field.h + 14;
+    const fits = below + 130 < GROUPS.y + GROUPS.h;
+    const ids = new Set(out.map((c) => c.id));
+    log("group_displace", { group: g.id, count: out.length });
+    setCards((cs) => cs.map((c) => (ids.has(c.id)
+      ? { ...c, y: fits ? below : Math.max(GROUPS.y + 16, g.y - cardSize(c, "groups").h - 14), pinned: true }
+      : c)));
+  }, [log]);
+
+  const onGroupPointerUp = useCallback((e) => {
+    if (!groupDrag || e.pointerId !== groupDrag.pointer) return;
+    const g = groupsRef.current.find((x) => x.id === groupDrag.id);
+    if (groupDrag.moved && g) {
+      displaceIntruders(g, new Set(groupDrag.members.map((m) => m.id)));
+      log(groupDrag.mode === "move" ? "group_move" : "group_resize", {
+        group: g.id,
+        members: groupDrag.members.length,
+      });
+    }
+    setGroupDrag(null);
+  }, [groupDrag, log, displaceIntruders]);
 
   /* --- zoom / pan --------------------------------------------------------- */
   const zoomTo = useCallback((next, ax0, ay0) => {
@@ -433,20 +574,55 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
     return () => vp.removeEventListener("wheel", onWheel);
   }, [zoom, zoomTo]);
 
+  /* --- lasso: the grouping gesture (Q5) ---------------------------------- */
+  // Board 2's primary verb is "draw a frame around these", so on board 2 a
+  // plain drag draws rather than pans. Panning is still there under Alt, and
+  // everywhere outside the boards it is unchanged.
   const [panning, setPanning] = useState(null);
+
+  const commitLasso = useCallback((box) => {
+    setLasso(null);
+    if (!box) return;
+    const rect = {
+      x: Math.min(box.x0, box.x1), y: Math.min(box.y0, box.y1),
+      w: Math.abs(box.x1 - box.x0), h: Math.abs(box.y1 - box.y0),
+    };
+    // A twitch is a click on the board, not an attempt to draw.
+    if (rect.w < 26 && rect.h < 26) return;
+    const inside = cardsRef.current.filter((c) => c.board === "groups" && inBox(centerOf(c, cardSize(c, "groups")), rect));
+    if (!inside.length) { log("lasso_empty", {}); return; }
+    makeGroup(inside, "lasso");
+  }, [log, makeGroup]);
+
   const onCanvasPointerDown = useCallback((e) => {
     if (e.button !== 0 || e.target.closest("[data-card],[data-group],[data-lane],input,textarea,button")) return;
     setSelected(null);
     const vp = viewportRef.current;
-    setPanning({ x: e.clientX, y: e.clientY, left: vp.scrollLeft, top: vp.scrollTop, pointer: e.pointerId });
     e.currentTarget.setPointerCapture(e.pointerId);
-  }, []);
+    const p = toCanvas(e.clientX, e.clientY);
+    if (!e.altKey && inBox(p, GROUPS)) {
+      setLasso({ x0: p.x, y0: p.y, x1: p.x, y1: p.y, pointer: e.pointerId });
+      return;
+    }
+    setPanning({ x: e.clientX, y: e.clientY, left: vp.scrollLeft, top: vp.scrollTop, pointer: e.pointerId });
+  }, [toCanvas]);
+
   const onCanvasPointerMove = useCallback((e) => {
+    if (lasso && e.pointerId === lasso.pointer) {
+      const p = toCanvas(e.clientX, e.clientY);
+      setLasso((l) => (l ? { ...l, x1: p.x, y1: p.y } : l));
+      return;
+    }
     if (!panning || e.pointerId !== panning.pointer) return;
     const vp = viewportRef.current;
     vp.scrollLeft = panning.left - (e.clientX - panning.x);
     vp.scrollTop = panning.top - (e.clientY - panning.y);
-  }, [panning]);
+  }, [panning, lasso, toCanvas]);
+
+  const onCanvasPointerUp = useCallback(() => {
+    setPanning(null);
+    if (lasso) commitLasso(lasso);
+  }, [lasso, commitLasso]);
 
   /* --- keyboard ----------------------------------------------------------- */
   useEffect(() => {
@@ -461,9 +637,64 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [round, decide, closeRound]);
 
+  /* --- board 2 derived ---------------------------------------------------- */
+  const b2 = useCallback((c) => cardSize(c, "groups"), []);
+
+  // Put the leftovers back in order without touching what she has framed.
+  const tidyCarried = useCallback(() => {
+    const fields = groups.map(groupField);
+    const loose = cardsRef.current.filter((c) => c.board === "groups" && !fields.some((f) => inBox(centerOf(c, b2(c)), f)));
+    if (!loose.length) return;
+    log("tidy_carried", { count: loose.length });
+    const order = new Map(loose.map((c, i) => [c.id, i]));
+    setCards((cs) => cs.map((c) => (order.has(c.id)
+      ? { ...c, ...gridPlace(order.get(c.id), FIELD, b2(c), 12, BOARD2_ROW), pinned: false }
+      : c)));
+  }, [groups, b2, log]);
+
+  // What her hands have already clustered, offered back to her as a frame she
+  // can draw with one click. Held back mid-gesture so nothing flickers under
+  // the cursor, and never re-offered once declined.
+  const clusters = useMemo(() => {
+    if (counts.carried < 3 || drag || groupDrag || lasso) return [];
+    return looseClusters(cards, groups, b2)
+      .map((rects) => ({ key: rects.map((r) => r.id).sort().join("|"), rects }))
+      .filter((c) => !dismissed.includes(c.key))
+      .slice(0, 2);
+  }, [cards, groups, counts.carried, drag, groupDrag, lasso, dismissed, b2]);
+
+  const acceptCluster = useCallback((c) => {
+    const ids = new Set(c.rects.map((r) => r.id));
+    const members = cardsRef.current.filter((k) => ids.has(k.id));
+    log("cluster_accept", { members: members.length });
+    makeGroup(members, "cluster");
+  }, [log, makeGroup]);
+
+  const moveGroupBy = useCallback((g, dx, dy) => {
+    const members = membersOf(g, cardsRef.current, b2);
+    const ids = new Set(members.map((m) => m.id));
+    setGroups((gs) => gs.map((x) => (x.id === g.id ? { ...x, x: x.x + dx, y: x.y + dy } : x)));
+    setCards((cs) => cs.map((c) => (ids.has(c.id) ? { ...c, x: c.x + dx, y: c.y + dy, pinned: true } : c)));
+  }, [b2]);
+
+  const cyclePrompt = useCallback((gid) => {
+    setPrompts((p) => {
+      const next = p[gid] == null ? 0 : p[gid] + 1;
+      return { ...p, [gid]: next };
+    });
+    const shown = prompts[gid] == null ? 0 : prompts[gid] + 1;
+    log("name_prompt", { group: gid, prompt: NAME_PROMPTS[shown % NAME_PROMPTS.length] });
+  }, [prompts, log]);
+
+  const nameRefs = useRef({});
+  useEffect(() => {
+    if (naming && nameRefs.current[naming]) nameRefs.current[naming].focus();
+  }, [naming, groups.length]);
+
   /* --- derived ------------------------------------------------------------ */
   const step = counts.carried > 0 ? 4 : (sorting || round) ? 3 : colorsPulled ? 2 : 1;
   const stepInfo = STEPS[step - 1];
+  const namedGroups = groups.filter((g) => g.name.trim()).length;
   const roundCard = round ? cards.find((c) => c.id === round.queue[round.index]) : null;
   const allVoted = counts.unsorted === 0 && counts.keep + counts.maybe + counts.no > 0;
   const keepsOnPile = cards.some((c) => c.board === "pile" && c.tag === "keep");
@@ -515,7 +746,8 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
         </div>
 
         <div className={styles.zoomer}>
-          <button type="button" className={styles.zoomBtn} onClick={() => fitTo(PILE, "pile")}>Fit</button>
+          <button type="button" className={styles.zoomBtn} onClick={() => fitTo(PILE, "pile")}>Board 1</button>
+          <button type="button" className={styles.zoomBtn} onClick={() => fitTo(GROUPS, "groups")}>Board 2</button>
           <button type="button" className={styles.zoomBtn} onClick={() => fitTo({ x: PILE.x, y: PILE.y, w: GROUPS.x + GROUPS.w - PILE.x, h: PILE.h }, "both")}>Both</button>
           <button type="button" className={styles.zoomBtn} onClick={() => zoomTo(1)}>{Math.round(zoom * 100)}%</button>
         </div>
@@ -538,6 +770,7 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
           {counts.unsorted > 0 && <span>{counts.unsorted} to look at</span>}
           {TAGS.map((t) => counts[t] > 0 && <span key={t} className={styles[`count_${t}`]}>{counts[t]} {TAG_LABEL[t].toLowerCase()}</span>)}
           {counts.carried > 0 && <span className={styles.countCarried}>{counts.carried} carried</span>}
+          {groups.length > 0 && <span className={styles.countNamed}>{namedGroups} of {groups.length} named</span>}
         </p>
       </div>
 
@@ -563,11 +796,11 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
 
       <div
         ref={viewportRef}
-        className={`${styles.viewport} ${panning ? styles.panning : ""}`}
+        className={`${styles.viewport} ${panning ? styles.panning : ""} ${lasso ? styles.lassoing : ""}`}
         onPointerDown={onCanvasPointerDown}
         onPointerMove={onCanvasPointerMove}
-        onPointerUp={() => setPanning(null)}
-        onPointerCancel={() => setPanning(null)}
+        onPointerUp={onCanvasPointerUp}
+        onPointerCancel={() => { setPanning(null); setLasso(null); }}
       >
         <div className={styles.canvasScroll} style={{ width: CANVAS.w * zoom, height: CANVAS.h * zoom }}>
           <div className={styles.canvas} style={{ width: CANVAS.w, height: CANVAS.h, transform: `scale(${zoom})`, transformOrigin: "0 0" }}>
@@ -592,26 +825,41 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
 
             <section className={styles.board} style={{ left: GROUPS.x, top: GROUPS.y, width: GROUPS.w, height: GROUPS.h }} aria-label="What it’s about">
               <h2 className={styles.boardTitle}>2 · What it’s about</h2>
-              {!groups.length && counts.carried === 0 && (
+              {counts.carried === 0 ? (
                 <div className={styles.boardHint}>
                   <p><strong>This board is for meaning, not material.</strong></p>
-                  <p>Carry a few things over that belong together. Make a group around them, and say what they have in common in your own words — that sentence is the first thing your brand actually knows about itself.</p>
+                  <p>Carry over a few things that belong together. Draw a frame around them, and say what they have in common in your own words. Then say what they are not. Those two sentences are the first thing your brand actually knows about itself.</p>
                 </div>
+              ) : (
+                <>
+                  <div className={styles.boardTools}>
+                    <button type="button" className={styles.boardAction} onClick={tidyCarried}>Tidy what is loose</button>
+                    <button type="button" className={styles.boardAction} onClick={addGroup}>+ Empty group</button>
+                  </div>
+                  <p className={styles.boardLegend}>Drag across the board to frame a group. Hold <kbd>⌥</kbd> to pan instead.</p>
+                </>
               )}
-              <button type="button" className={styles.boardAction} onClick={addGroup}>+ New group</button>
             </section>
 
-            {groups.map((g) => (
-              <div key={g.id} data-group className={styles.group} style={{ left: g.x, top: g.y, width: g.w, height: g.h }}>
-                <input className={styles.groupName} value={g.name} placeholder="Name this group" aria-label="Group name"
-                  onChange={(e) => setGroups((gs) => gs.map((x) => (x.id === g.id ? { ...x, name: e.target.value } : x)))}
-                  onBlur={(e) => e.target.value && log("group_name", { group: g.id, name: e.target.value, members: memberCount(g) })} />
-                <input className={styles.groupNot} value={g.notThis} placeholder="…but not ______" aria-label="What this group is not"
-                  onChange={(e) => setGroups((gs) => gs.map((x) => (x.id === g.id ? { ...x, notThis: e.target.value } : x)))}
-                  onBlur={(e) => e.target.value && log("group_not", { group: g.id, notThis: e.target.value })} />
-                <span className={styles.groupCount}>{memberCount(g)}</span>
-              </div>
-            ))}
+            {/* Frames sit UNDER the cards and take no pointer events, so the
+                cards read as being inside them and a drag through a group still
+                draws a new frame. */}
+            {groups.map((g) => {
+              const f = groupField(g);
+              return (
+                <div
+                  key={g.id}
+                  className={`${styles.groupFrame} ${g.name.trim() ? styles.groupFrameNamed : ""}`}
+                  style={{ left: f.x, top: f.y, width: f.w, height: f.h }}
+                  aria-hidden="true"
+                />
+              );
+            })}
+
+            {clusters.map((c) => {
+              const b = boundsOf(c.rects, 16);
+              return <div key={c.key} className={styles.halo} style={{ left: b.x, top: b.y, width: b.w, height: b.h }} aria-hidden="true" />;
+            })}
 
             {cards.map((card, i) => {
               const size = cardSize(card);
@@ -666,6 +914,134 @@ export default function Studio({ pins, spectrum, chromatic, swatchTotal }) {
                 </div>
               );
             })}
+
+            {/* Everything that must stay ABOVE the cards: the group panels
+                (a group is a card with a header, and its header can never be
+                buried by its own contents), the cluster offers, and the lasso. */}
+            <div className={styles.overLayer}>
+              {clusters.map((c) => {
+                const b = boundsOf(c.rects, 16);
+                return (
+                  <div key={c.key} className={styles.offer} style={{ left: b.x + b.w / 2, top: b.y - 14 }}>
+                    <button type="button" className={styles.offerYes} onClick={() => acceptCluster(c)}>
+                      Frame these {c.rects.length}
+                    </button>
+                    <button type="button" className={styles.offerNo} aria-label="Not a group" onClick={() => { log("cluster_dismiss", { members: c.rects.length }); setDismissed((d) => [...d, c.key]); }}>
+                      ×
+                    </button>
+                  </div>
+                );
+              })}
+
+              {groups.map((g) => {
+                const members = membersOf(g, cards, b2);
+                const strip = groupStrip(members);
+                const named = g.name.trim();
+                const pi = prompts[g.id];
+                return (
+                  <div key={g.id}>
+                    <div className={styles.panelAnchor} style={{ left: g.x, top: g.y + GROUP_HEAD, width: g.w }}>
+                      <div data-group className={`${styles.groupPanel} ${named ? styles.groupPanelNamed : ""}`}>
+                        <div
+                          className={styles.groupGrab}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`Move the group ${named || "not yet named"}. Arrow keys move it and everything in it.`}
+                          onPointerDown={(e) => onGroupPointerDown(e, g, "move")}
+                          onPointerMove={onGroupPointerMove}
+                          onPointerUp={onGroupPointerUp}
+                          onPointerCancel={() => setGroupDrag(null)}
+                          onKeyDown={(e) => {
+                            const px = e.shiftKey ? 48 : 12;
+                            const d = { ArrowLeft: [-px, 0], ArrowRight: [px, 0], ArrowUp: [0, -px], ArrowDown: [0, px] }[e.key];
+                            if (!d) return;
+                            e.preventDefault();
+                            moveGroupBy(g, d[0], d[1]);
+                          }}
+                        >
+                          <span className={styles.groupStrip} aria-hidden="true">
+                            {strip.length
+                              ? strip.map((b) => <i key={b.hex} style={{ background: b.hex, flexGrow: b.count }} />)
+                              : <i className={styles.stripEmpty} />}
+                          </span>
+                        </div>
+
+                        <div className={styles.groupFields}>
+                          <input
+                            ref={(el) => { nameRefs.current[g.id] = el; }}
+                            className={styles.groupName}
+                            value={g.name}
+                            placeholder="What do these have in common?"
+                            aria-label="What these have in common"
+                            onChange={(e) => setGroups((gs) => gs.map((x) => (x.id === g.id ? { ...x, name: e.target.value } : x)))}
+                            onBlur={(e) => e.target.value && log("group_name", { group: g.id, name: e.target.value, members: members.length })}
+                          />
+                          <input
+                            className={styles.groupNot}
+                            value={g.notThis}
+                            placeholder="…but not ______"
+                            aria-label="What this group is not"
+                            onChange={(e) => setGroups((gs) => gs.map((x) => (x.id === g.id ? { ...x, notThis: e.target.value } : x)))}
+                            onBlur={(e) => e.target.value && log("group_not", { group: g.id, notThis: e.target.value, members: members.length })}
+                          />
+                        </div>
+
+                        <span className={styles.groupCount}>{members.length}</span>
+                        <button type="button" className={styles.groupRelease} onClick={() => releaseGroup(g)} aria-label={`Release the group ${named || "not yet named"}. The cards stay.`}>
+                          <span aria-hidden="true">×</span>
+                        </button>
+
+                        {!named && (
+                          <p className={styles.groupPromptRow}>
+                            <button type="button" className={styles.promptBtn} onClick={() => cyclePrompt(g.id)}>
+                              {pi == null ? "Stuck?" : "Ask another"}
+                            </button>
+                            {pi != null && <span className={styles.promptText}>{NAME_PROMPTS[pi % NAME_PROMPTS.length]}</span>}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div
+                      data-group
+                      className={styles.groupResize}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Resize the group ${named || "not yet named"}`}
+                      style={{ left: g.x + g.w - 44, top: g.y + g.h - 44 }}
+                      onPointerDown={(e) => onGroupPointerDown(e, g, "resize")}
+                      onPointerMove={onGroupPointerMove}
+                      onPointerUp={onGroupPointerUp}
+                      onPointerCancel={() => setGroupDrag(null)}
+                      onKeyDown={(e) => {
+                        const px = e.shiftKey ? 48 : 12;
+                        const d = { ArrowLeft: [-px, 0], ArrowRight: [px, 0], ArrowUp: [0, -px], ArrowDown: [0, px] }[e.key];
+                        if (!d) return;
+                        e.preventDefault();
+                        setGroups((gs) => gs.map((x) => (x.id === g.id
+                          ? { ...x, w: Math.max(GROUP_MIN.w, x.w + d[0]), h: Math.max(GROUP_MIN.h, x.h + d[1]) }
+                          : x)));
+                      }}
+                    >
+                      <span aria-hidden="true" />
+                    </div>
+                  </div>
+                );
+              })}
+
+              {lasso && (
+                <div
+                  className={styles.lasso}
+                  aria-hidden="true"
+                  style={{
+                    left: Math.min(lasso.x0, lasso.x1),
+                    top: Math.min(lasso.y0, lasso.y1),
+                    width: Math.abs(lasso.x1 - lasso.x0),
+                    height: Math.abs(lasso.y1 - lasso.y0),
+                  }}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -20,6 +20,18 @@ Keep this file short — it is state, not a log.
   **keep · maybe · no** (keys 1/2/3), and the results settle back into lanes on the board; carrying
   to *What it's about* is a **real drag across the canvas** (no "send to board" button — that
   absence is the Q1 instrument); groups take a name and a *"…but not ______"*.
+- **Board 2 built (2026-08-27).** Carried keeps arrive as a **legible grid**, not a second pile,
+  and read smaller than on board 1 because this board is for seeing a pattern across sixty things,
+  not judging one. The gesture is **draw a frame**: drag anywhere on board 2 and whatever you
+  encircle becomes a group (hold ⌥ to pan instead). A group is **a card with a header** — its own
+  aggregate color strip, the member count, and two *equal* fields: *What do these have in common?*
+  and *…but not ______* (the NOs are the differentiator, so they are not a footnote). Groups
+  **move and resize**, carry their cards with them, and **shove non-members out** rather than
+  silently swallowing them. Loose cards sitting together get a soft halo and a **"Frame these N"**
+  offer — the tool reflects the cluster her hands made and never draws it itself. A **"Stuck?"**
+  prompt asks a projective question and never proposes a word; every reveal is logged, because
+  *needing* it is the Q5 signal. **Release** frees a group without deleting anything, and the step
+  strip carries `N of M named`.
 - Every action writes to `data/playtest/<session>.jsonl`. **Read the log, not your memory.**
 - Verified: build clean, 0 console errors/warnings, zoom-to-fit frames the whole pile on arrival,
   keyboard round (1/2/3) and keyboard carry (arrows) both work, `prefers-reduced-motion` honored.
@@ -31,10 +43,7 @@ Keep this file short — it is state, not a log.
 — gather → pull the colors → a round → carry the keeps → make a group and name it. Not to check
 the work: to find what the next pass should fix before her collaborator sees it. Then:
 
-1. **Design board 2 properly.** It is the weakest surface and Lorin said so (*"Idk what to do in
-   your second board"*). Group frames cannot be moved or resized, and nothing helps her *see* a
-   grouping forming. This is the step where the language is born (Q5) — it deserves the attention
-   the round got.
+1. ~~**Design board 2 properly.**~~ **Done 2026-08-27** — see "Board 2" below.
 2. **Decide the session board.** Whelm (252 refs, loaded, a harder case) or her current 50–100
    board — which needs a bookmarklet import **before** the meeting, never during it.
 3. **The meeting date is still unknown.** It sets whether anything else fits.
@@ -121,7 +130,7 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 59 | "the fade out is a nice touch" | Kept. |
 | 60 | "I may want to unfade something." | **Fixed** — any vote is changeable, including back to undecided. |
 | 61 | "It would be good if I clicked on something and it opened the vote for that item." | **Fixed** — click (without dragging) opens the vote for that card. |
-| 62 | "Idk what to do in your second board" | **Fixed** — board 2 is named for its job, carries a written prompt, and the step strip says when you are meant to be there. |
+| 62 | "Idk what to do in your second board" | **Fixed properly — 2026-08-27.** The first pass only *named* the board; the board still had no gesture. Now it has one: keeps arrive as a legible grid, a drag draws a frame around whatever it encircles, the frame carries the group's own colors and its two equal fields (what these have in common · …but not ______), groups move and resize and carry their cards, the tool notices a cluster her hands already made and offers to frame it, and a "Stuck?" prompt asks a question without ever proposing the word. |
 
 ## Playtest 01 — what we are testing (2026-08-21)
 
@@ -150,7 +159,7 @@ fails.
 | A **narrowing round**: one card at a time, **keep · maybe · no** | Q3, Q4 |
 | **Round 2 drawing from *maybe*** | Q3 |
 | A **second board**, reached only by dragging | **Q1** |
-| **Group + name + not-this** on board 2 | **Q5** |
+| **Draw-a-frame grouping, name + not-this, the naming prompt** on board 2 | **Q5** |
 | An **event log** (JSONL, timestamped) | all — review by record, not memory |
 
 ### Deliberately NOT in this build
