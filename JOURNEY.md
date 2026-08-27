@@ -6,8 +6,9 @@ the purpose of every interaction"). Replaces `FLOW_AUDIT.md` (2026-06-09), which
 product model two reframes ago.
 
 **Read order:** §1 the use case in her words → §2 what the record actually shows → §3 the
-journey map → §4 findings → §5 the interaction audit → §6 the plan → §7 the questions.
-Nothing in §6 assumes an answer to §7.
+journey map → §4 findings → §5 the interaction audit → §6 the plan → §7 the questions →
+**§8 her answers, as decisions → §9 beyond: what would make it the best tool.** §6 was written
+before §7 was answered; §8 says what the answers changed.
 
 Everything below traces to something opened this session: `STATUS.md`, `VISION.md`,
 `PRODUCT.md`, `PITCH.md`, `DESIGN.md`, `RIGHTS.md`, the memory files (`project_studio_system`,
@@ -357,3 +358,120 @@ Each with my recommendation. None of them blocks Phase 0.
    and the others) are mine. Accept, rewrite, or mark `[LORIN TO WRITE]`; and the stage names
    themselves (gather · look · react · reveal · name · try it on · the brief) are proposals for
    your words, not decisions.
+
+---
+
+## 8. Decisions (2026-08-27, from her answers to §7)
+
+| # | Her answer | Decision | What it changes |
+|---|---|---|---|
+| 1 | "this is the project board but the one you have now is technically the mood builder test board. Here is my project: https://www.pinterest.com/lorinanderberg1/mc/" | **Test 1 runs on the `mc` board.** The 252-pin library at `data/projects/whelm/` is the test board and stays as its own project. | Phase 0 gains: create project `mc` in the registry, she runs the bookmarklet on the `mc` board in her own browser, drops the JSON on `/import` (signed-out, it lands in `data/projects/mc/library.json`; palettes extract in the background). The studio reads whichever project is active. |
+| 2 | "We want to do it all together. It could be interesting to have each of us do votes alone or without the other seeing to organically see where there is overlap?" | **Together, on two devices, with private votes and a reveal.** | Phase 1 is in scope for the meeting, not after it. The round overlay becomes the phone surface. The reveal (both kept · both cut · split) opens the meeting. |
+| 3 | "describe in plain text what the brand voice, feel, and values are as context copy, then have a pool of color pallettes that are approved, then a set of typefaces that feel close to right, they may want to include a few key references of an ideal state or perhaps even design a little mood board that combines all of this into a nice neat or messy collage to show a graphic design collaborator." | **The brief has her shape:** voice · feel · values as plain copy → an approved palette pool → typefaces close to right → key references → optionally a collage. | Stage 7 is designed to exactly this list. Stage 5 (Try it on) exists to produce the approved pool and the close-to-right faces. The collage reuses the existing board surface (`/moodboard`, sections, comment pins), summoned onto the canvas, not linked out to. **Her copy becomes the type specimen** (§9, no. 2). |
+| 4 | "just build smart don't rush no stress." | **No date. Cut line B. Dependency order.** | Phases 0 → 1 → 2 → 3 in order, each shown working before the next. |
+| 5 | "link" | **Partner joins by link, no account.** | Phase 1 uses the `invites` token pattern from migration 001. |
+| 6 | "hmm not sure on this" + the inner-vision gauge idea | **The words stay provisional** on the surface until she hears them in a real session; nothing is locked. **The gauge becomes the fit map** (§9, no. 1). | Add a `provisional` marker in the code next to every line that is mine, so the wrapup can list them for her. |
+
+---
+
+## 9. Beyond: what would make it the best tool for this
+
+Her ask (note 77): *"come up with important features or processes that I have not thought of or is
+completely beyond my capabilities that would make this the BEST tool to use to get your ideas
+molded into artifacts for brand designers and creatives."*
+
+Ranked. Each one says what it produces, which law it has to pass, and what it costs. The test
+for every entry is the system's own: **if its output does not survive into the brief, cut it.**
+
+### 1. The fit map (her idea, made into a system)
+
+Six aspects, the ones locking already measures: **color · type · imagery · voice · mark ·
+texture.** On any candidate (an outfit, a palette, a face, a mark) she sets, by hand, how close
+it is to the thing in her head: a dial that reads as a number ("hits home: 72") and a note in
+her words ("colors are good, the logo is too corporate, the typeface is 50% there but not
+quite"). Two things fall out of that without any extra work from her:
+
+- **The whole-brand reading.** Six aspects, each at its best candidate's closeness. It rises
+  as locks land: *color 90 · type 50 · mark 20 · voice 80.* This is the progress instrument
+  note 39 asked locking to be, and it answers "how far are we" at a glance across sessions.
+- **The NOs with reasons.** "Too corporate" goes straight into the brief as an avoid, next to
+  the thing it was said about.
+
+With two people, each sets their own; the gap between the two readings, per aspect, is the
+tension map again, one level down. *Law it passes:* the number is hers, never computed. The
+tool never says how close anything is. *Cost:* M. *Lands in:* stage 5 and 7.
+
+### 2. Your words are the specimen
+
+The voice · feel · values copy she writes (decision 3) is what every typeface is set in, on
+every outfit, from the first try-on. No lorem, no fox, no sample sentence of ours. She judges
+a face reading her own line about her brand, in her palette, next to her reference. The
+specimen engine splits her paragraph into title · subhead · body roles on its own. The same
+copy fills the mini brand preview (her project name, her line).
+
+This inverts the order she might expect: rough words first, even three of them, then try on.
+It is also what makes note 23 true in practice: color, type, and imagery judged together, and
+now *voice* with them. *Law:* synthesis from her material only. *Cost:* S once stage 5 exists.
+
+### 3. Rapid words (the generative activity that writes the copy)
+
+The word-association exercise from design workshops, run on her own pile. A kept reference
+appears for five seconds; she types the first word; the next appears. Twenty to thirty words in
+two minutes. Both people do it alone; the reveal shows the overlap. The words become note
+cards, sorted with the same round as everything else; the survivors become the *feel* line of
+the brief and, for a project without a name, the candidate names. *Law:* activities are
+offered never imposed; output survives into the spec (it *is* the copy). *Cost:* S–M.
+
+### 4. The provenance thread
+
+Every item in the brief is a link back to its trail: this palette ← the group "…" ← six
+references ← who brought each ← kept in round 2 by both ← rated 90 by her, 60 by him. For the
+designer receiving the brief, it is the *why* without a meeting. For her, it is "you stay the
+author" as evidence, not a slogan. *Law:* the carry makes a linked copy (finding 4); private
+votes are per person (Phase 1). Both are prerequisites, so this is nearly free once they land.
+*Cost:* M. *Beyond:* no tool she could pick up records the why; this one does it as a
+by-product of using it.
+
+### 5. The advocate round on the split
+
+After the reveal, every split card gets one line from each of them: *why I kept it · why I cut
+it.* Then a re-vote. The lines land in the brief either as a keep with two voices or as a NO
+with a reason. It turns disagreement into language, which is the point of putting two people
+in a room. *Law:* the tool asks, never decides. *Cost:* S after Phase 1.
+
+### 6. The round on a phone, and for a third person
+
+The one-card-at-a-time overlay is already phone-shaped. Her partner reacts in five minutes on
+a phone before the call. The same link, with a `react only` scope, lets a third person (the
+designer, a friend) run a round without an account and without seeing the board. Their votes
+show up as a third column on the reveal. *Cost:* S after Phase 1 (a responsive pass on the
+round overlay + the scope flag).
+
+### 7. The handoff page
+
+The brief as a read-only link the designer opens: the copy, the approved pool with roles and
+contrast verdicts, the faces with their reason, the key references, the NOs. **Rights-aware**
+by construction: references that are not publishable appear as palette + credit, never as
+pixels (`RIGHTS.md`). **Tokens as Figma variables** in the two-layer contract (primitive ramps
++ semantic aliases), and a print PDF through the existing seam. The designer can leave comment
+pins on it (the schema exists); comments come back onto the canvas as cards. *Cost:* M–L.
+*Beyond:* the token export and the rights gating are the parts she could not build herself,
+and they are what make the handoff professional rather than a screenshot.
+
+### Later, only if the evidence asks for them
+
+- **The session film.** Everything is logged, so the narrowing can be replayed: cards moving,
+  names appearing, the split resolving. "Witness the progression" (note 30) as a story to show
+  a client or a team. Its output is a process artifact, not spec content, so it waits.
+- **Siblings in the pile.** "More like this" *within her own pool*: by palette distance now
+  (OKLab exists, cheap), by image embedding later (a local model; L). Offered as a halo of
+  suggested neighbors while naming, never auto-grouped. Passes synthesis-from-your-taste
+  because it never leaves her material.
+
+### What this does to the plan
+
+Phase 0 adds the `mc` project and its import. Phase 1 adds the advocate round and the phone
+pass (5, 6). Phase 2 is Try it on with her words as the specimen and the fit map (1, 2).
+Phase 3 is the brief in her shape with the provenance thread (4) and the handoff page (7).
+Rapid words (3) slots beside stage 4 whenever she wants a name or the copy; it does not block
+anything.
