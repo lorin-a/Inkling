@@ -39,17 +39,21 @@ Keep this file short — it is state, not a log.
 
 ## Next move (do this first)
 
-**Open `localhost:3000/studio` in a real browser and run the flow yourself for twenty minutes**
-— gather → pull the colors → a round → carry the keeps → make a group and name it. Not to check
-the work: to find what the next pass should fix before her collaborator sees it. Then:
+**Read `JOURNEY.md`.** The 2026-08-27 review found: no real playtest has happened yet (her one
+session was four minutes; the other log is Playwright's), the build stops at named groups while
+the deliverable she named (color scheme, typeface options) is off the surface, and the
+collaborative mechanic her own decisions call for (react alone, then reveal) needs the studio
+state on the server and a second member. The plan there has two cut lines set by the meeting date.
 
-1. ~~**Design board 2 properly.**~~ **Done 2026-08-27** — see "Board 2" below.
-2. **Decide the session board.** Whelm (252 refs, loaded, a harder case) or her current 50–100
-   board — which needs a bookmarklet import **before** the meeting, never during it.
-3. **The meeting date is still unknown.** It sets whether anything else fits.
+1. **Get Lorin's answers to `JOURNEY.md` §7** (which board, own devices or one screen, what must
+   be on screen by the end of the meeting, the date, link or account, the words).
+2. **Phase 0** (small, before any meeting): `who` + tester stamp on the log; drop-to-vote on the
+   lanes; carry *copies*; note cards; undo; spring → ease-out; import the real board.
+3. **Phase 1** if the date allows: studio state on the server, a second member by link, private
+   rounds, the reveal (both kept · both cut · split).
 
-**Then:** run playtest 01, read `data/playtest/*.jsonl`, and let Q1–Q7 decide what gets built —
-locking and outfit cards only once there is a generator for them to constrain.
+**Then:** run playtest 01 for real, read `data/playtest/*.jsonl` (hers, not `_claude/`), and let
+Q1–Q7 decide stage 5 (Try it on) and the brief.
 
 ## The system (locked — the full why is in `project_studio_system`)
 
@@ -131,6 +135,14 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 60 | "I may want to unfade something." | **Fixed** — any vote is changeable, including back to undecided. |
 | 61 | "It would be good if I clicked on something and it opened the vote for that item." | **Fixed** — click (without dragging) opens the vote for that card. |
 | 62 | "Idk what to do in your second board" | **Fixed properly — 2026-08-27.** The first pass only *named* the board; the board still had no gesture. Now it has one: keeps arrive as a legible grid, a drag draws a frame around whatever it encircles, the frame carries the group's own colors and its two equal fields (what these have in common · …but not ______), groups move and resize and carry their cards, the tool notices a cluster her hands already made and offers to frame it, and a "Stuck?" prompt asks a question without ever proposing the word. |
+| 63 | "I am really excited about how this is looking but we need to do a deep check on the why and how. Put on your design systems hat and revisit the entire structure, the why of the build, the user flow, and the purpose of every interaction to make sure we are on track." | **Open — 2026-08-27.** The review is `JOURNEY.md` (replaces `FLOW_AUDIT.md`). |
+| 64 | "The use case for the first test is this: me and my collaborator have both been adding inspiration to a moodboard for our project's brand. Now we want to play with that in a productive way." | **Open — 2026-08-27.** This is the test. Not Whelm: her live project, with a partner. See `JOURNEY.md` → the questions. |
+| 65 | "Inkling needs to provide us the structure to go from a pool of undefined inspiration to a collaborative decision making process that helps translate the inspiration from an inkling to a solid deliverable, into what we need which is a color scheme, typeface options, etc." | **Open — 2026-08-27.** The build stops at named groups; the deliverable she names (color scheme, typeface options) is not on the surface yet. `JOURNEY.md` finding 1. |
+| 66 | "The point of Inkling and why it is different than just a rebuild of figma is that it uses design workshop thinking to make the process of narrowing down a hunch playful and collaborative. It provides the step by step structure needed to achieve this. It is a process a tool and a workspace." | **Open — 2026-08-27.** The differentiator, in her words. The workshop mechanic the build is missing is *silent independent reaction, then reveal*. `JOURNEY.md` finding 2. |
+| 67 | "Our project happens to have a name already but not every project will, some amount of brainstorming, word play, rapid fire, card sorting, generative exercises, shuffling, previewing, will all be helpful." | **Open — 2026-08-27.** The activity library, named. Mapped to the journey in `JOURNEY.md`; only card sorting exists today. |
+| 68 | "It needs to balance freedom with structure. It should always make it easier for the user to get closer to their intuition." | **Open — 2026-08-27.** The design law for every surface. `JOURNEY.md` finding 9 (the freedom side is thin: no note cards, no words outside a group header). |
+| 69 | "We likely need a user journey map." | **Done — 2026-08-27.** `JOURNEY.md` + the published artifact. |
+| 70 | "If I have not clarified anythign enough, do not make assumptions, ask and help me figure it out. You are the expert, guide me." | **Open — 2026-08-27.** Six questions at the end of `JOURNEY.md`, each with my recommendation. Nothing in the plan assumes an answer. |
 
 ## Playtest 01 — what we are testing (2026-08-21)
 
@@ -211,6 +223,8 @@ Unsplash. Read `RIGHTS.md` before touching import.
 - **Why / locked decisions** → `memory/` (`project_studio_system` first, then
   `project_product_direction`; `project_repo_tripwires` before touching routes or state).
 - **This file** → live state, the ledger, the next move.
-- `RIGHTS.md` (sourcing/rights — read before touching import), `FLOW_AUDIT.md` (per-surface
-  keep/cut, now largely superseded by the retire list above), `PITCH.md` (the claim + diagram).
+- **`JOURNEY.md` (2026-08-27) — the journey map, the structural review of `/studio`, the plan in
+  dependency order, and the six open questions.** Read it before building anything on the studio.
+- `RIGHTS.md` (sourcing/rights — read before touching import), `PITCH.md` (the claim + diagram;
+  two reframes stale, kept for the diagram).
 - Live surface: `app/studio/` + `lib/studio/`. Parked prototype: `public/make-inkling.html`.
