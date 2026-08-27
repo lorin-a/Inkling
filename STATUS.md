@@ -6,66 +6,40 @@ Keep this file short — it is state, not a log.
 
 ## Right now
 
-- **Branch `v2`. The live work is `/studio`** — the playtest 01 build (`app/studio/`,
-  `lib/studio/spectrum.js`, `app/api/studio/log/`). Run `npm run dev` → `localhost:3000/studio`.
-- **Second pass (notes 50–62) landed:** references *arrive* on first load; a **step strip** (1–5) names
-  where you are and what the step is for; **Tidy ↔ Loosen** makes the grid opt-in and the mess the
-  default; once voting starts the board becomes **four framed, headed columns** and *Not looked at yet*
-  visibly shrinks; **keep** spreads, **maybe** fans, **no** collapses to a deck (Spread/Stack toggles);
-  **clicking a card opens the vote for it** (change it, or undecide); when everything is voted, one
-  explicit **Carry the keeps over** gesture moves them; board 2 states its job in writing.
-- Loads the real library (252 references, palettes already extracted) as a **messy organic pile**;
-  *Pull the colors out* reveals each card's strip and blooms the **aggregate spectrum** in two
-  readings (everything · setting the neutrals aside); *Start a round* deals one card at a time into
-  **keep · maybe · no** (keys 1/2/3), and the results settle back into lanes on the board; carrying
-  to *What it's about* is a **real drag across the canvas** (no "send to board" button — that
-  absence is the Q1 instrument); groups take a name and a *"…but not ______"*.
-- **Board 2 built (2026-08-27).** Carried keeps arrive as a **legible grid**, not a second pile,
-  and read smaller than on board 1 because this board is for seeing a pattern across sixty things,
-  not judging one. The gesture is **draw a frame**: drag anywhere on board 2 and whatever you
-  encircle becomes a group (hold ⌥ to pan instead). A group is **a card with a header** — its own
-  aggregate color strip, the member count, and two *equal* fields: *What do these have in common?*
-  and *…but not ______* (the NOs are the differentiator, so they are not a footnote). Groups
-  **move and resize**, carry their cards with them, and **shove non-members out** rather than
-  silently swallowing them. Loose cards sitting together get a soft halo and a **"Frame these N"**
-  offer — the tool reflects the cluster her hands made and never draws it itself. A **"Stuck?"**
-  prompt asks a projective question and never proposes a word; every reveal is logged, because
-  *needing* it is the Q5 signal. **Release** frees a group without deleting anything, and the step
-  strip carries `N of M named`.
-- **Phase 0 landed (2026-08-27, `JOURNEY.md` §6).** The log stamps `who` on every event and
-  any tester (`/studio?tester=claude`) writes to `data/playtest/_claude/`, never beside hers.
-  **Dropping a card in a lane votes.** **A carry makes a linked copy:** the original stays on
-  board 1, ghosted with a `→ 2` mark; the copy carries `from` and an ultraviolet dot; dragging
-  a copy back releases it. **Note cards** (`+ Note`, or `N`): a word anywhere, sorted and carried
-  like a reference. **Undo** (`⌘Z`) for every gesture. Spring easing is gone from the studio.
-  "Show the spectrum" is the control; the line is the panel's title. Every line of copy that is
-  mine carries a `[provisional]` comment for Lorin to accept or replace.
-- **Projects:** `data/projects/whelm/` is the 252-pin *test* board; **`data/projects/mc/` is her
-  live project, empty until she imports** (`whelm` stays active until then; switch on `/import`).
-- Every action writes to `data/playtest/<session>.jsonl` (hers) or `_claude/` (mine). **Read
-  the log, not your memory.**
-- Verified: build clean, 0 console errors/warnings, zoom-to-fit frames the whole pile on arrival,
-  keyboard round (1/2/3) and keyboard carry (arrows) both work, `prefers-reduced-motion` honored.
-- **Not in it, on purpose:** locking, outfit cards, the taste spec, multiplayer, the second door.
+- **Branch `v2`, on GitHub as `lorin-a/Inkling` (pushed 2026-08-27; it never had been).** The live
+  work is `/studio` (`app/studio/`, `lib/studio/`, `app/api/studio/log/`). `npm run dev` →
+  `localhost:3000/studio`. **Read `JOURNEY.md` before building anything on it:** the journey map,
+  the structural review, the plan, her decisions, and the seven "beyond" features.
+- **What `/studio` does today:** the real library arrives as a messy pile (Tidy ↔ Loosen); *Pull
+  the colors out* reveals each strip and the aggregate spectrum; a **round** deals one card at a
+  time into keep · maybe · no (1/2/3), **or drop a card in a lane**; click a card to change its
+  vote; **carry** is a real drag or one explicit *Carry the keeps over*, and **a carry makes a
+  linked copy** (original ghosted `→ 2`, copy carries `from`); **board 2**: draw a frame, name it,
+  *…but not ______*, the group's own colors, a cluster halo with *Frame these N*, a *Stuck?* prompt;
+  **note cards** (`N`); **undo** (`⌘Z`); a step strip derived from state. Every control's purpose
+  and verdict is in `JOURNEY.md` §5.
+- **Projects:** `data/projects/whelm/` is the 252-pin *test* board (active); **`data/projects/mc/`
+  is her live project, empty until she imports.**
+- **The record:** hers in `data/playtest/pt01-*.jsonl`; mine in `_claude/` (git-ignored). Every
+  event carries `who`. **No real playtest has happened yet** (her one session was four minutes).
+- Verified 2026-08-27 in a separate browser: build clean, 0 console errors, drop-to-vote + undo,
+  the full carry cycle (copy, back, undo, no duplicate), notes persisting, reduced motion honored.
+- **Not in it, on purpose:** a second person, the reveal, Try it on, locking, the brief, multiplayer.
 
 ## Next move (do this first)
 
-**Read `JOURNEY.md`.** The 2026-08-27 review found: no real playtest has happened yet (her one
-session was four minutes; the other log is Playwright's), the build stops at named groups while
-the deliverable she named (color scheme, typeface options) is off the surface, and the
-collaborative mechanic her own decisions call for (react alone, then reveal) needs the studio
-state on the server and a second member. The plan there has two cut lines set by the meeting date.
+1. **Her import (five minutes, her browser):** `/import` → project switcher → **mc** → drag the
+   bookmarklet to the bookmarks bar → open `pinterest.com/lorinanderberg1/mc/` → click it → drop
+   the JSON on `/import`. Then `/studio` shows her board; palettes extract in the background.
+2. **Phase 1 — the second person** (`JOURNEY.md` §6, no date, cut line B): studio state on the
+   server (project-scoped; replaces `localStorage["inkling-playtest-01"]`), a second member by
+   invite link, private per-person votes, **the reveal** (both kept · both cut · split) as the
+   first thing on screen when the meeting opens. Then the advocate round and the phone pass.
+3. **The words:** every line that is mine carries `[provisional]` in `Studio.js`; list them for
+   her once she has heard them in a real session.
 
-1. **Get Lorin's answers to `JOURNEY.md` §7** (which board, own devices or one screen, what must
-   be on screen by the end of the meeting, the date, link or account, the words).
-2. ~~**Phase 0**~~ **Done 2026-08-27** except the import, which is her hands: on `/import`,
-   switch the project to `mc`, drag the bookmarklet to the bookmarks bar, open
-   `pinterest.com/lorinanderberg1/mc/`, click it, drop the JSON it downloads back on `/import`.
-3. **Phase 1** (no date; cut line B): studio state on the server, a second member by link, private
-   rounds, the reveal (both kept · both cut · split).
-
-**Then:** run playtest 01 for real, read `data/playtest/*.jsonl` (hers, not `_claude/`), and let
-Q1–Q7 decide stage 5 (Try it on) and the brief.
+**Then:** Phase 2, Try it on (outfits from a named group, her copy as the specimen, the fit map,
+locking) → Phase 3, the brief in her shape with the provenance thread and the handoff page.
 
 ## The system (locked — the full why is in `project_studio_system`)
 
