@@ -182,6 +182,8 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 98 | "I love the restructure." | **Confirmed — 2026-09-06.** |
 | 99 | "Let's call partner collaborator and allow me to name them by their actual name when desired" | **Built — 2026-09-06.** "Collaborator" everywhere. The owner names each one when adding them and can rename by clicking the name; each person can rename themselves. |
 | 100 | "make it possible to add up to 5 collaborators" | **Built — 2026-09-06.** Up to five, each with their own link and a Remove; Compare reads everyone who has finished ("you both" becomes "all of you" past two). |
+| 101 | "It would also be good to be able to scroll up and down vertically between steps." | **Open — 2026-09-06.** Two readings (steps stacked as one long page vs. a next/previous scroll at a step's edge); my recommendation is in the session reply, awaiting her call. |
+| 102 | "We should be able to see who added a note (author) and maybe even reply to it? Not sure yet the best way to add collaborative notes, comments, etc." | **Partly built — 2026-09-06.** Notes now carry their author (shown on the sticky and in the tray). Replies and comments on cards are an open design question; options in the session reply. |
 
 ## Playtest 01 — what we are testing (2026-08-21)
 

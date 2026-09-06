@@ -68,6 +68,7 @@ export default function Card({
       {card.kind === "note" && (
         <>
           <span className={styles.noteBar} data-ui>
+            {card.by && <span className={styles.noteBy}>{card.by}</span>}
             <span className={styles.noteColors} role="group" aria-label="Note color">
               {NOTE_COLOR_KEYS.map((k) => (
                 <button

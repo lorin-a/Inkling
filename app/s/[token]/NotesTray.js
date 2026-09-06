@@ -36,7 +36,7 @@ export default function NotesTray({ notes, onAdd, onChange, onColor, onRemove, o
                   <button key={k} type="button" className={`${styles.noteDot} ${n.color === k ? styles.noteDotOn : ""}`} style={{ background: NOTE_COLORS[k] }} aria-label={`${k} note`} aria-pressed={n.color === k} onClick={() => onColor(n.id, k)} />
                 ))}
               </span>
-              <span className={styles.trayWhere}>{n.board === "groups" ? "Group board" : "Look board"}</span>
+              <span className={styles.trayWhere}>{n.by ? `${n.by} · ` : ""}{n.board === "groups" ? "Group board" : "Bring it in"}</span>
               <button type="button" className={styles.trayLink} onClick={() => onJump(n)}>Show</button>
               <button type="button" className={styles.trayLink} onClick={() => onRemove(n.id)}>Delete</button>
             </div>

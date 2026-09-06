@@ -95,10 +95,10 @@ export default function Studio({ token, initial }) {
     if (firstSave.current) { firstSave.current = false; return; }
     const id = setTimeout(() => {
       const state = {
-        cards: cards.filter((c) => c.pinned || c.board !== "pile" || c.kind !== "reference" || c.revealed || c.carried).map(({ id, kind, x, y, rot, board: b, z, pinned, from, carried, hex, text, color, revealed }) => {
+        cards: cards.filter((c) => c.pinned || c.board !== "pile" || c.kind !== "reference" || c.revealed || c.carried).map(({ id, kind, x, y, rot, board: b, z, pinned, from, carried, hex, text, color, by, revealed }) => {
           const base = { id, x, y, rot, board: b, z, pinned };
           if (kind === "swatch") return { ...base, kind, hex };
-          if (kind === "note") return { ...base, kind, text, color };
+          if (kind === "note") return { ...base, kind, text, color, by };
           if (from) return { ...base, kind, from };
           return { ...base, revealed, carried };
         }),
@@ -238,14 +238,14 @@ export default function Studio({ token, initial }) {
     const id = `note-${Date.now().toString(36)}`;
     snapshot();
     topZ.current += 1;
-    const note = { id, kind: "note", text, color, x: Math.round(x), y: Math.round(y), rot: 0, board: boardKey, pinned: true, z: topZ.current };
+    const note = { id, kind: "note", text, color, by: me.name, x: Math.round(x), y: Math.round(y), rot: 0, board: boardKey, pinned: true, z: topZ.current };
     log("note_add", { note: id, board: boardKey, color });
     setCards((cs) => [...cs, note]);
     setSelected(id);
     setAddOpen(false);
     if (!onCanvas) setNotesOpen(true);
     setTimeout(() => document.querySelector(`[data-id="${id}"] textarea, [data-tray="${id}"] textarea`)?.focus(), 40);
-  }, [step, notes.length, snapshot, log, kept.length, total]);
+  }, [step, notes.length, snapshot, log, kept.length, total, me.name]);
 
   const setNoteText = useCallback((id, text) => setCards((cs) => cs.map((c) => (c.id === id ? { ...c, text } : c))), []);
   const setNoteColor = useCallback((id, color) => { log("note_color", { note: id, color }); setCards((cs) => cs.map((c) => (c.id === id ? { ...c, color } : c))); }, [log]);
