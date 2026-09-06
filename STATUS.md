@@ -45,6 +45,10 @@ Keep this file short — it is state, not a log.
   dragging, the reveal opening only after both finished, first words revealed, color cards
   opening with copy, lasso → named group, notes from the tray landing on the board, undo.
   Then the test votes, words and layout were wiped so her first session starts clean.
+- **Shipped 2026-09-06, all verified in a separate browser:** the eight-step studio on the
+  server; collaborators by name (up to five) with their own links; First words first, revealed
+  word by word; import steps on step 2; comments on cards as shared threads; notes with authors;
+  Back and Next plus edge-scroll paging; the mc board seeded with 25 pins.
 - **Not built, on purpose:** the brief, try-it-on, locking, live cursors, the phone pass.
   **Not done:** deploy (the Vercel CLI is not logged in on this machine).
 - Lint baseline: five `set-state-in-effect` notices in `app/s/[token]/` (localStorage
@@ -52,19 +56,26 @@ Keep this file short — it is state, not a log.
 
 ## Next move (do this first)
 
-1. **Finish the import (five minutes, her browser):** `/import` → project switcher → **mc** →
+1. **First words as a generative exercise (note 103).** She asked for a brainstorm first; it is
+   in the 2026-09-06 session reply and summarized in the ledger row: six sentence starters
+   alone → word magnets per person → an overlap table where exact matches slide to the center
+   and near matches (thesaurus) draw a line → a fridge-magnet sentence line composed together →
+   a lexicon that reads chosen words into six pole-to-pole dials (warm/cool, loud/quiet,
+   handmade/precise, old/new, dense/airy, serious/playful) that later feed palette harmony and
+   type-pairing moods. **Wait for her direction, then build that.**
+2. **Finish the import (five minutes, her browser):** `/import` → project switcher → **mc** →
    drag the bookmarklet to the bookmarks bar → open `pinterest.com/lorinanderberg1/mc/` → click
-   it → drop the JSON on `/import` → click *Add to library*. Then open `/studio`: the door
-   merges the new pins into the board. (The import page now writes to the server when it can;
-   it used to keep signed-out imports in the browser only, which the studio never read.)
-2. **Deploy, so the collaborator links work off this machine:** she runs `npx vercel login` (type
-   `! npx vercel login` in this session), then I deploy. `DATABASE_URL` is already on the Vercel
-   project; `AUTH_REQUIRED` stays on, `/s/` is public.
-3. **Her first real pass, alone:** First words → Bring it in → Vote → Your sort. Then add her
-   collaborator by name and send the link. Compare opens when both have finished. Every line on the surface is `[provisional]`
-   in the code; her redirects go in the ledger.
-4. **Then:** Phase 2, Try it on (outfits from a named group, her copy as the specimen, the fit
-   map, locking) → Phase 3, the brief in her shape with the provenance thread and the handoff.
+   it → drop the JSON on `/import` → *Add to library*. Then `/studio` merges the new pins in.
+   The same steps are on step 2 of the studio.
+3. **Deploy, so the collaborator links work off this machine:** she runs `npx vercel login`
+   (type `! npx vercel login` in the session), then deploy. `DATABASE_URL` is on the Vercel
+   project; `AUTH_REQUIRED` stays on; `/s/` and `/api/studio/` are public.
+4. **Her first real pass, alone:** First words → Bring it in → Vote → Your sort. Then add her
+   collaborator by name and send the link. Every line on the surface is `[provisional]` in the
+   code; her redirects go in the ledger.
+
+**Then:** Phase 2, Try it on (outfits from a named group, her copy as the specimen, the fit
+map, locking) → Phase 3, the brief in her shape with the provenance thread and the handoff.
 
 ## The system (locked — the full why is in `project_studio_system`)
 
