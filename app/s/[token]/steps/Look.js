@@ -14,7 +14,8 @@ const SIZE = { w: PILE.x + PILE.w + 90, h: PILE.y + PILE.h + 90 };
  * loves the mess); lining it up is opt-in. Clicking a card starts voting
  * from that card. Nothing else lives on this screen.
  */
-export default function Look({ cards, setCards, votes, log, snapshot, selected, setSelected, topZ, canvasRef, tidied, setTidied, startVoting, voted, total, setNoteText, setNoteColor, removeNote, noteBlur, onZoom }) {
+export default function Look({ cards, setCards, votes, log, snapshot, selected, setSelected, topZ, canvasRef, tidied, setTidied, startVoting, voted, total, setNoteText, setNoteColor, removeNote, noteBlur, onZoom, boardName }) {
+  const [howOpen, setHowOpen] = useState(null); // null = decide from state
   const mine = useMemo(() => cards.filter((c) => c.board === "pile"), [cards]);
   const box = useMemo(() => pileBox(total), [total]);
   const [arriving, setArriving] = useState(false);
@@ -67,9 +68,14 @@ export default function Look({ cards, setCards, votes, log, snapshot, selected, 
     },
   });
 
+  const showHow = howOpen ?? (total === 0 || voted === 0);
+
   return (
     <div className={styles.stepBody}>
       <div className={styles.toolbar}>
+        <button type="button" className={styles.quiet} onClick={() => { setHowOpen(!showHow); log("import_how", { open: !showHow }); }} aria-expanded={showHow}>
+          {showHow ? "Hide the import steps" : "How to import"}
+        </button>
         <button type="button" className={styles.action} onClick={() => startVoting("unvoted")} disabled={total === 0 || voted >= total}>
           {voted === 0 ? "Start voting" : `Keep voting (${total - voted} left)`}
         </button>
@@ -79,13 +85,27 @@ export default function Look({ cards, setCards, votes, log, snapshot, selected, 
         <span className={styles.toolbarNote}>{total} cards. Drag to move. Scroll to pan, pinch or ⌘ + scroll to zoom.</span>
       </div>
 
+      {showHow && (
+        <div className={styles.howTo} role="region" aria-label="How to import your Pinterest board">
+          <p className={styles.howLead}>{total === 0 ? "Nothing is in yet. " : `${total} cards are in. `}To bring in a Pinterest board, or add more of one:</p>
+          <ol className={styles.howList}>
+            <li>Open <a className={styles.howLink} href="/import" target="_blank" rel="noreferrer">the import page</a> and choose the project{boardName ? ` (${boardName})` : ""}.</li>
+            <li>Drag the <strong>Save my board</strong> bookmarklet to your bookmarks bar.</li>
+            <li>Open your board on Pinterest, signed in, and click the bookmarklet. It scrolls the whole board and downloads a file.</li>
+            <li>Drop that file on the import page and click <strong>Add to library</strong>.</li>
+            <li>Come back here and reload. New cards join the pile; nothing already voted on changes.</li>
+          </ol>
+          <p className={styles.muted}>Everyone can vote on what is here; only one person needs to import.</p>
+        </div>
+      )}
+
       <Canvas ref={canvasRef} size={SIZE} onZoom={onZoom} onEmptyPointerDown={() => { setSelected(null); return false; }}>
         <section className={styles.board} style={{ left: box.x, top: box.y, width: box.w, height: box.h }} aria-label="Everything you gathered">
           <h2 className={styles.boardTitle}>Everything you gathered</h2>
           {mine.length === 0 && (
             <div className={styles.boardHint}>
               <p><strong>Nothing here yet.</strong></p>
-              <p>Import a board first, then come back.</p>
+              <p>Follow the import steps above, then reload.</p>
             </div>
           )}
         </section>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import styles from "../studio.module.css";
 import { NOTE_COLORS } from "../Card";
+import { everyoneWord } from "../../../../lib/studio/steps";
 
 const TAG_LABEL = { keep: "Keep", maybe: "Maybe", no: "No", undecided: "Undecided" };
 
@@ -12,23 +13,30 @@ const TAG_LABEL = { keep: "Keep", maybe: "Maybe", no: "No", undecided: "Undecide
  * conversation is. Each person can say why, and the split can be voted on
  * again, alone, as many times as it takes.
  */
-export default function Compare({ references, votes, setWhy, everyone, allWords, revealOpen, people, partner, reveal, total, voted, startVoting, bringKeeps, go, me }) {
+export default function Compare({ references, votes, setWhy, everyone, allWords, revealOpen, people, reveal, total, voted, startVoting, bringKeeps, go }) {
   const [openWhy, setOpenWhy] = useState(null);
   const finished = people.filter((p) => p.done);
+  const others = people.filter((p) => !p.me);
+  const all = everyoneWord(finished.length);
 
   if (!revealOpen || !reveal) {
     return (
       <div className={`${styles.stepBody} ${styles.stepPad}`}>
         <div className={styles.narrow}>
-          {!partner ? (
-            <p className={styles.lead}>Compare needs two people. Copy your partner’s link from the sidebar and send it to them.</p>
+          {others.length === 0 ? (
+            <p className={styles.lead}>Compare needs at least two people. Add a collaborator in the sidebar and send them their link.</p>
           ) : voted < total ? (
             <>
-              <p className={styles.lead}>Compare opens once you have both voted on everything. You have {total - voted} left.</p>
+              <p className={styles.lead}>Compare opens once you and at least one collaborator have voted on everything. You have {total - voted} left.</p>
               <button type="button" className={styles.action} onClick={() => startVoting("unvoted")}>Keep voting</button>
             </>
           ) : (
-            <p className={styles.lead}>You are done. Waiting for {partner.name}: {partner.voted} of {total} so far. This page checks on its own.</p>
+            <>
+              <p className={styles.lead}>You are done. Waiting for {others.length === 1 ? others[0].name : "your collaborators"}. This page checks on its own.</p>
+              <ul className={styles.plainList}>
+                {others.map((p) => <li key={p.id} className={styles.muted}>{p.name}: {p.done ? "finished" : `${p.voted} of ${total}`}</li>)}
+              </ul>
+            </>
           )}
         </div>
       </div>
@@ -46,7 +54,7 @@ export default function Compare({ references, votes, setWhy, everyone, allWords,
           <button type="button" className={styles.action} onClick={() => startVoting(reveal.split.map((c) => c.id))}>Vote again on the split ({reveal.split.length})</button>
         )}
         {reveal.bothKeep.length > 0 && (
-          <button type="button" className={styles.quiet} onClick={bringKeeps}>Bring the {reveal.bothKeep.length} you both kept to Group</button>
+          <button type="button" className={styles.quiet} onClick={bringKeeps}>Bring the {reveal.bothKeep.length} {all} kept to Group</button>
         )}
         <button type="button" className={styles.quiet} onClick={() => go("colors")}>See the colors</button>
         <span className={styles.toolbarNote}>Votes from {finished.map((p) => (p.me ? "you" : p.name)).join(" and ")}.</span>
@@ -71,9 +79,9 @@ export default function Compare({ references, votes, setWhy, everyone, allWords,
         )}
 
         <div className={styles.piles}>
-          <Pile title="You both kept" items={reveal.bothKeep} tone="keep" hint="Nothing you both kept yet." {...pileProps} />
+          <Pile title={finished.length <= 2 ? "You both kept" : "Everyone kept"} items={reveal.bothKeep} tone="keep" hint={`Nothing ${all} kept yet.`} {...pileProps} />
           <Pile title="Split" items={reveal.split} tone="split" hint="No disagreements. That is rare." {...pileProps} />
-          <Pile title="You both said no" items={reveal.bothNo} tone="no" hint="Nothing you both cut." {...pileProps} />
+          <Pile title={finished.length <= 2 ? "You both said no" : "Everyone said no"} items={reveal.bothNo} tone="no" hint={`Nothing ${all} cut.`} {...pileProps} />
         </div>
       </div>
     </div>

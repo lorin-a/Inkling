@@ -13,8 +13,9 @@ Keep this file short — it is state, not a log.
   link, `/s/<token>`. Read `JOURNEY.md` for the why; this file for the state.
 - **What the studio is now (2026-09-06, from notes 78–96):** one step per screen, a sidebar of
   eight named steps as the home base, a thin top bar (zoom · + Add · Undo · Notes).
-  **Look** (the pile, click a card to start voting from it, line up ↔ scatter) → **First words**
-  (three words alone, sticky notes, private until Compare) → **Vote** (one card at a time;
+  **First words** (a few words alone; you see the others' words once you have written one) →
+  **Bring it in** (the import steps on the screen, the pile, click a card to start voting from
+  it, line up ↔ scatter) → **Vote** (one card at a time;
   **Keep · Maybe · No · Undecided**, keys 1–4, an optional *why*) → **Your sort** (four tidy
   columns; drag a card and the columns open and close around it; drop = the vote; click a card
   to change it) → **Compare** (opens when both people have finished: *you both kept · split ·
@@ -34,9 +35,9 @@ Keep this file short — it is state, not a log.
   library.json`, palettes extracted): the ones the public board page exposes. The other 39 need
   the bookmarklet in her logged-in browser (steps under "Next move"); a re-import merges into
   the studio board without touching anything already there.
-- **Her links** (owner and partner; the partner's is also in the sidebar with a Copy button):
-  `/s/LXee87mJdcFAR1Uf` is Lorin, `/s/FZi3VdG8tTdm8ZC3` is her partner (named "Partner"; either
-  person can rename themselves by clicking their name in the sidebar).
+- **Her link:** `/s/LXee87mJdcFAR1Uf`. Collaborators (up to five) are added by name in the
+  sidebar; each gets a link with Copy and Remove. One placeholder named "Collaborator" exists
+  (`/s/FZi3VdG8tTdm8ZC3`); rename it by clicking the name, or remove it.
 - **Verified 2026-09-06 in a separate browser (`?tester=claude`):** build clean, 0 console
   errors; the full flow on two tabs as two members: vote by key and by drop, reflow while
   dragging, the reveal opening only after both finished, first words revealed, color cards
@@ -54,11 +55,11 @@ Keep this file short — it is state, not a log.
    it → drop the JSON on `/import` → click *Add to library*. Then open `/studio`: the door
    merges the new pins into the board. (The import page now writes to the server when it can;
    it used to keep signed-out imports in the browser only, which the studio never read.)
-2. **Deploy, so the partner link works off this machine:** she runs `npx vercel login` (type
+2. **Deploy, so the collaborator links work off this machine:** she runs `npx vercel login` (type
    `! npx vercel login` in this session), then I deploy. `DATABASE_URL` is already on the Vercel
    project; `AUTH_REQUIRED` stays on, `/s/` is public.
-3. **Her first real pass, alone:** Look → First words → Vote → Your sort. Then send the partner
-   link. Compare opens when both have finished. Every line on the surface is `[provisional]`
+3. **Her first real pass, alone:** First words → Bring it in → Vote → Your sort. Then add her
+   collaborator by name and send the link. Compare opens when both have finished. Every line on the surface is `[provisional]`
    in the code; her redirects go in the ledger.
 4. **Then:** Phase 2, Try it on (outfits from a named group, her copy as the specimen, the fit
    map, locking) → Phase 3, the brief in her shape with the provenance thread and the handoff.
@@ -177,10 +178,10 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 94 | "We need to balance a home base for the process with isolated steps." | **Built — 2026-09-06.** Sidebar = home base; each step its own screen. |
 | 95 | "I see that you offer the ability to see boards at once, that instruction was unclear, the percentage also was unclear until I clicked those things." | **Built — 2026-09-06.** Board 1/2/Both and the bare percentage are gone; zoom is − · % · + · *Fit to screen*. |
 | 96 | "the whole nav bar menu feels confusing and unclear, should it be a sidebar instead with a simple upper nav?" | **Built — 2026-09-06.** Sidebar of steps; top bar holds only zoom, + Add, Undo, Notes. |
-| 97 | "It seems like first words should be first, an introductory collaborative exercise to nail down how to describe the brand then step 2 should be instructions for importing the pinterest board and voting." | **Open — 2026-09-06.** Reorder: First words → Bring it in (import instructions + the pile + start voting) → Vote. |
-| 98 | "I love the restructure." | **Confirmed — 2026-09-06.** One step per screen stays. |
-| 99 | "Let's call partner collaborator and allow me to name them by their actual name when desired" | **Open — 2026-09-06.** "Collaborator" everywhere; the owner names each one and can rename them. |
-| 100 | "make it possible to add up to 5 collaborators" | **Open — 2026-09-06.** Up to five, each with their own link; Compare reads everyone who finished. |
+| 97 | "It seems like first words should be first, an introductory collaborative exercise to nail down how to describe the brand then step 2 should be instructions for importing the pinterest board and voting." | **Built — 2026-09-06.** Order is now First words → Bring it in (import steps on the screen, the pile, start voting) → Vote → Your sort → Compare → Colors → Group and name → Brief. |
+| 98 | "I love the restructure." | **Confirmed — 2026-09-06.** |
+| 99 | "Let's call partner collaborator and allow me to name them by their actual name when desired" | **Built — 2026-09-06.** "Collaborator" everywhere. The owner names each one when adding them and can rename by clicking the name; each person can rename themselves. |
+| 100 | "make it possible to add up to 5 collaborators" | **Built — 2026-09-06.** Up to five, each with their own link and a Remove; Compare reads everyone who has finished ("you both" becomes "all of you" past two). |
 
 ## Playtest 01 — what we are testing (2026-08-21)
 

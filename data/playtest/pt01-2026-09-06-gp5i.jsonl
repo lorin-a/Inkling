@@ -1,0 +1,10 @@
+{"type":"tidy_toggle","tidied":true,"who":"lorin","at":"2026-09-06T15:38:45.355Z"}
+{"type":"vote_open","card":"1039135314047781162","via":"pile","who":"lorin","at":"2026-09-06T15:38:51.832Z"}
+{"type":"round_start","source":"unvoted","size":25,"round":1,"who":"lorin","at":"2026-09-06T15:38:51.832Z"}
+{"type":"step","to":"vote","who":"lorin","at":"2026-09-06T15:38:51.832Z"}
+{"type":"decide","card":"1039135314047781162","tag":"keep","from":null,"via":"round","round":1,"why":89,"who":"lorin","at":"2026-09-06T15:40:46.396Z"}
+{"type":"round_leave","at":"2026-09-06T15:40:49.507Z","size":25,"who":"lorin"}
+{"type":"step","to":"sort","who":"lorin","at":"2026-09-06T15:40:49.507Z"}
+{"type":"decide","card":"1039135314047781162","tag":"maybe","from":"keep","via":"drag","round":1,"why":0,"who":"lorin","at":"2026-09-06T15:41:24.832Z"}
+{"type":"decide","card":"1039135314047781162","tag":"keep","from":"maybe","via":"drag","round":1,"why":0,"who":"lorin","at":"2026-09-06T15:41:26.659Z"}
+{"type":"step","to":"words","who":"lorin","at":"2026-09-06T15:42:05.808Z"}

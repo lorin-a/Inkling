@@ -16,13 +16,14 @@ const CHOICES = LANES;
  * the column opens a gap where it will land, the one it left closes up, and
  * the drop is the vote. Click a card to change its vote without dragging.
  */
-export default function Sort({ references, votes, setVote, setWhy, startVoting, counts, total, voted, partner, reveal, go, bringKeeps, log }) {
+export default function Sort({ references, votes, setVote, setWhy, startVoting, counts, total, voted, people, reveal, go, bringKeeps, log }) {
   const key = typeof window !== "undefined" ? `inkling-order-${window.location.pathname}` : "inkling-order";
   const [order, setOrder] = useState({ keep: [], maybe: [], no: [], undecided: [] });
   useEffect(() => { try { const s = window.localStorage.getItem(key); if (s) setOrder(JSON.parse(s)); } catch { /* fine */ } }, [key]);
   useEffect(() => { try { window.localStorage.setItem(key, JSON.stringify(order)); } catch { /* fine */ } }, [order, key]);
 
   const byId = useMemo(() => new Map(references.map((c) => [c.id, c])), [references]);
+  const others = people.filter((p) => !p.me);
   const lists = useMemo(() => {
     const out = {};
     for (const { tag } of LANES) {
@@ -147,12 +148,12 @@ export default function Sort({ references, votes, setVote, setWhy, startVoting, 
         {counts.maybe > 0 && <button type="button" className={styles.quiet} onClick={() => startVoting("maybe")}>Vote again on the maybes ({counts.maybe})</button>}
         {counts.undecided > 0 && <button type="button" className={styles.quiet} onClick={() => startVoting("undecided")}>Decide the undecided ({counts.undecided})</button>}
         <span className={styles.toolbarNote}>
-          {partner
-            ? (reveal ? `${partner.name} has finished. ` : `${partner.name}: ${partner.voted} of ${total} voted. `)
-            : "Invite your partner from the sidebar to compare. "}
+          {others.length === 0
+            ? "Invite a collaborator from the sidebar to compare. "
+            : others.map((p) => `${p.name}: ${p.done ? "finished" : `${p.voted} of ${total}`}`).join(" · ") + ". "}
         </span>
         {reveal
-          ? <button type="button" className={styles.action} onClick={() => go("compare")}>Compare with {partner.name}</button>
+          ? <button type="button" className={styles.action} onClick={() => go("compare")}>Compare</button>
           : counts.keep > 0 && <button type="button" className={styles.quiet} onClick={bringKeeps}>Bring your {counts.keep} keeps to Group</button>}
       </div>
 

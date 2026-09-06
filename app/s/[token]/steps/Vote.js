@@ -14,7 +14,7 @@ const CHOICES = [
  * Step 3. One card at a time, nothing else on screen. Four answers, a place
  * to say why, and the count. Your votes are yours until Compare.
  */
-export default function Vote({ voting, cards, votes, decide, leave, startVoting, total, voted, counts, partner }) {
+export default function Vote({ voting, cards, votes, decide, leave, startVoting, total, voted, counts, people }) {
   const card = voting ? cards.find((c) => c.id === voting.queue[voting.index]) : null;
   const [why, setWhy] = useState("");
   const whyRef = useRef(null);
@@ -39,7 +39,7 @@ export default function Vote({ voting, cards, votes, decide, leave, startVoting,
       <div className={`${styles.stepBody} ${styles.stepPad}`}>
         <div className={styles.narrow}>
           {total === 0 ? (
-            <p className={styles.lead}>Nothing to vote on yet. Import a board first.</p>
+            <p className={styles.lead}>Nothing to vote on yet. Bring in a board first (step 2).</p>
           ) : left > 0 ? (
             <>
               <p className={styles.lead}>{voted === 0 ? `${total} cards to vote on.` : `${voted} voted, ${left} left.`}</p>
@@ -53,7 +53,9 @@ export default function Vote({ voting, cards, votes, decide, leave, startVoting,
                 {counts.undecided > 0 && <button type="button" className={styles.action} onClick={() => startVoting("undecided")}>Decide the undecided ({counts.undecided})</button>}
                 <button type="button" className={styles.quiet} onClick={() => startVoting("all")}>Vote on everything again</button>
               </div>
-              {partner && <p className={styles.muted}>{partner.done ? `${partner.name} has finished too. Compare is open.` : `${partner.name} has voted on ${partner.voted} of ${total}.`}</p>}
+              {people.filter((p) => !p.me).map((p) => (
+                <p key={p.id} className={styles.muted}>{p.done ? `${p.name} has finished.` : `${p.name} has voted on ${p.voted} of ${total}.`}</p>
+              ))}
             </>
           )}
         </div>

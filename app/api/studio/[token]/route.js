@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import {
-  boardForToken, saveState, setVotes, addWord, updateWord, deleteWord, addMember, renameMember,
+  boardForToken, saveState, setVotes, addWord, updateWord, deleteWord, addMember, renameMember, removeMember,
 } from "../../../../lib/db/studio";
 
 /**
@@ -73,9 +73,22 @@ export async function POST(req, { params }) {
     return NextResponse.json({ ok: true });
   }
   if (body?.invite && view.me.role === "owner") {
-    const name = String(body.invite.name || "Partner").slice(0, 60);
-    const m = await addMember({ boardId, name });
-    return NextResponse.json({ ok: true, member: m });
+    const name = String(body.invite.name || "Collaborator").slice(0, 60).trim() || "Collaborator";
+    try {
+      const m = await addMember({ boardId, name });
+      return NextResponse.json({ ok: true, member: m });
+    } catch (e) {
+      return NextResponse.json({ error: e.message }, { status: 400 });
+    }
+  }
+  if (body?.renameMember?.id && view.me.role === "owner") {
+    const name = String(body.renameMember.name || "").slice(0, 60).trim();
+    if (name) await renameMember({ memberId: String(body.renameMember.id), name, boardId });
+    return NextResponse.json({ ok: true });
+  }
+  if (body?.removeMember && view.me.role === "owner") {
+    await removeMember({ memberId: String(body.removeMember), boardId });
+    return NextResponse.json({ ok: true });
   }
   if (typeof body?.rename === "string") {
     const name = body.rename.slice(0, 60).trim();

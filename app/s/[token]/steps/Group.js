@@ -6,6 +6,7 @@ import Canvas from "../Canvas";
 import Card from "../Card";
 import useCardDrag from "../useCardDrag";
 import { GROUPS, BOARD2_ROW, cardSize, groupBox } from "../../../../lib/studio/geometry";
+import { everyoneWord } from "../../../../lib/studio/steps";
 import {
   GROUP_HEAD, GROUP_MIN, groupField, centerOf, inBox, membersOf,
   gridPlace, looseClusters, hugBox, boundsOf, groupStrip,
@@ -29,7 +30,8 @@ const PROMPTS = [
  * cluster your hands made and offer to draw the group; it never draws one
  * itself.
  */
-export default function Group({ cards, setCards, votes, groups, setGroups, log, snapshot, selected, setSelected, topZ, canvasRef, kept, reveal, bringKeeps, setNoteText, setNoteColor, removeNote, noteBlur, onZoom, addNote }) {
+export default function Group({ cards, setCards, groups, setGroups, log, snapshot, selected, setSelected, topZ, canvasRef, kept, reveal, people, bringKeeps, setNoteText, setNoteColor, removeNote, noteBlur, onZoom, addNote }) {
+  const whoKept = reveal ? `${everyoneWord(people.filter((p) => p.done).length)} kept` : "you kept";
   const b2 = useCallback((c) => cardSize(c, "groups"), []);
   const mine = useMemo(() => cards.filter((c) => c.board === "groups"), [cards]);
   const refsHere = mine.filter((c) => c.kind === "reference").length;
@@ -232,7 +234,7 @@ export default function Group({ cards, setCards, votes, groups, setGroups, log, 
       <div className={styles.toolbar}>
         {fresh > 0 && (
           <button type="button" className={styles.action} onClick={bringKeeps}>
-            Bring in the {fresh} {reveal ? "you both kept" : "you kept"}
+            Bring in the {fresh} {whoKept}
           </button>
         )}
         <button type="button" className={styles.quiet} onClick={newGroup}>New empty group</button>
@@ -257,7 +259,7 @@ export default function Group({ cards, setCards, votes, groups, setGroups, log, 
             <div className={styles.boardHint}>
               <p><strong>This board is empty.</strong></p>
               <p>{kept.length ? "Bring in what you kept, then drag across the ones that belong together to draw a group around them." : "Vote first, then bring in what you kept."}</p>
-              {fresh > 0 && <button type="button" className={styles.action} onClick={bringKeeps}>Bring in the {fresh} {reveal ? "you both kept" : "you kept"}</button>}
+              {fresh > 0 && <button type="button" className={styles.action} onClick={bringKeeps}>Bring in the {fresh} {whoKept}</button>}
             </div>
           )}
         </section>

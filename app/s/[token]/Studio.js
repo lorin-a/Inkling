@@ -161,7 +161,6 @@ export default function Studio({ token, initial }) {
     return c;
   }, [references, votes]);
 
-  const partner = view.people.find((p) => !p.me) || null;
   const finishedIds = useMemo(() => view.people.filter((p) => p.done).map((p) => p.id), [view.people]);
 
   // Where everyone stands once the reveal is open. Cards everyone kept are
@@ -321,6 +320,8 @@ export default function Studio({ token, initial }) {
     const { word } = await r.json();
     log("word_add", { length: text.length });
     setWords((w) => [...w, word]);
+    // The first word you write is also what opens the others' words to you.
+    fetch(api, { cache: "no-store" }).then((x) => (x.ok ? x.json() : null)).then((d) => { if (d) setView((v) => ({ ...v, words: { ...v.words, everyone: d.words.everyone } })); }).catch(() => {});
     return word;
   }, [api, log]);
   const updateWord = useCallback((id, text, color) => {
@@ -336,21 +337,13 @@ export default function Studio({ token, initial }) {
     setWordsSkipped(true);
     log("words_skip", {});
     try { window.localStorage.setItem(`inkling-words-skipped-${token}`, "1"); } catch { /* fine */ }
-    if (voted < total) startVoting("unvoted"); else go("sort");
-  }, [log, go, token, voted, total, startVoting]);
-
-  /* --- the partner's link ------------------------------------------------- */
-  const [copied, setCopied] = useState(false);
-  const partnerLink = partner?.token ? `${typeof window !== "undefined" ? window.location.origin : ""}/s/${partner.token}` : null;
-  const copyLink = useCallback(async () => {
-    if (!partnerLink) return;
-    try { await navigator.clipboard.writeText(partnerLink); setCopied(true); setTimeout(() => setCopied(false), 1800); log("invite_copy", {}); } catch { /* the field below is selectable */ }
-  }, [partnerLink, log]);
+    go("look");
+  }, [log, go, token]);
 
   /* --- render ----------------------------------------------------------- */
   const onCanvasStep = CANVAS_STEPS.has(step);
   const stepInfo = STEPS.find((s) => s.key === step);
-  const common = { cards, setCards, votes, setVote, setWhy, log, snapshot, selected, setSelected, topZ, canvasRef, addNote, setNoteText, setNoteColor, removeNote, noteBlur, go, me, people: view.people, partner, reveal, kept, references, counts, total, voted, startVoting, bringKeeps };
+  const common = { cards, setCards, votes, setVote, setWhy, log, snapshot, selected, setSelected, topZ, canvasRef, addNote, setNoteText, setNoteColor, removeNote, noteBlur, go, me, people: view.people, reveal, kept, references, counts, total, voted, startVoting, bringKeeps };
 
   return (
     <div className={styles.shell}>
@@ -415,42 +408,7 @@ export default function Studio({ token, initial }) {
             })}
           </ol>
 
-          <div className={styles.people}>
-            <h2 className={styles.sideH}>People</h2>
-            <ul className={styles.peopleList}>
-              {view.people.map((p) => (
-                <li key={p.id} className={styles.person}>
-                  {p.me ? (
-                    <input
-                      className={styles.personEdit}
-                      defaultValue={p.name}
-                      aria-label="Your name"
-                      title="Click to change your name"
-                      maxLength={60}
-                      onBlur={(e) => {
-                        const name = e.target.value.trim();
-                        if (!name || name === p.name) { e.target.value = p.name; return; }
-                        setView((v) => ({ ...v, people: v.people.map((x) => (x.id === p.id ? { ...x, name } : x)) }));
-                        fetch(api, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ rename: name }) }).catch(() => {});
-                      }}
-                      onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
-                    />
-                  ) : (
-                    <span className={styles.personName}>{p.name}</span>
-                  )}
-                  <span className={styles.personState}>{total ? `${p.me ? voted : p.voted} of ${total} voted` : "No cards yet"}</span>
-                </li>
-              ))}
-            </ul>
-            {me.role === "owner" && partnerLink && (
-              <div className={styles.invite}>
-                <p className={styles.inviteLabel}>Your partner’s link</p>
-                <input className={styles.inviteField} readOnly value={partnerLink} aria-label="Partner link" onFocus={(e) => e.target.select()} />
-                <button type="button" className={styles.quiet} onClick={copyLink}>{copied ? "Copied" : "Copy link"}</button>
-                <p className={styles.inviteHint}>Send it to them. No account needed. Their votes stay hidden from you until you have both finished.</p>
-              </div>
-            )}
-          </div>
+          <Collaborators people={view.people} me={me} total={total} voted={voted} api={api} log={log} setView={setView} />
         </nav>
 
         <main className={styles.main} aria-labelledby="step-title">
@@ -460,8 +418,8 @@ export default function Studio({ token, initial }) {
             <p className={styles.stepLine}>{stepInfo.line}</p>
           </div>
 
-          {step === "look" && <Look {...common} tidied={tidied} setTidied={setTidied} onZoom={(z) => setZoomPct(Math.round(z * 100))} />}
-          {step === "words" && <Words words={words} addWord={addWord} updateWord={updateWord} deleteWord={deleteWord} skip={skipWords} start={() => (voted < total ? startVoting("unvoted") : go("sort"))} partner={partner} />}
+          {step === "look" && <Look {...common} tidied={tidied} setTidied={setTidied} boardName={board.name} onZoom={(z) => setZoomPct(Math.round(z * 100))} />}
+          {step === "words" && <Words words={words} allWords={view.words.everyone} people={view.people} total={total} addWord={addWord} updateWord={updateWord} deleteWord={deleteWord} skip={skipWords} next={() => go("look")} />}
           {step === "vote" && <Vote {...common} voting={voting} decide={decide} leave={leaveVoting} />}
           {step === "sort" && <Sort {...common} />}
           {step === "compare" && <Compare {...common} everyone={view.votes.everyone} allWords={view.words.everyone} revealOpen={view.revealOpen} />}
@@ -514,3 +472,101 @@ function measure(view, votes, state, words, skipped) {
 }
 
 export { TAGS };
+
+/* ---- collaborators: the owner names them and hands each a link ------------- */
+function Collaborators({ people, me, total, voted, api, log, setView }) {
+  const [adding, setAdding] = useState(false);
+  const [copied, setCopied] = useState(null);
+  const [error, setError] = useState(null);
+  const others = people.filter((p) => !p.me);
+  const owner = me.role === "owner";
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+
+  const post = (body) => fetch(api, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+
+  const add = async (e) => {
+    e.preventDefault();
+    const name = new FormData(e.currentTarget).get("name")?.toString().trim();
+    if (!name) return;
+    const r = await post({ invite: { name } });
+    const d = await r.json();
+    if (!r.ok) { setError(d.error || "Could not add"); return; }
+    log("collaborator_add", {});
+    setView((v) => ({ ...v, people: [...v.people, { id: d.member.id, name: d.member.name, role: "member", me: false, voted: 0, done: false, token: d.member.token }] }));
+    setAdding(false);
+    setError(null);
+  };
+
+  const rename = (p, name) => {
+    if (!name || name === p.name) return;
+    setView((v) => ({ ...v, people: v.people.map((x) => (x.id === p.id ? { ...x, name } : x)) }));
+    post(p.me ? { rename: name } : { renameMember: { id: p.id, name } }).catch(() => {});
+    log("collaborator_rename", { self: p.me });
+  };
+
+  const remove = (p) => {
+    if (!window.confirm(`Remove ${p.name}? Their link stops working and their votes are gone.`)) return;
+    setView((v) => ({ ...v, people: v.people.filter((x) => x.id !== p.id) }));
+    post({ removeMember: p.id }).catch(() => {});
+    log("collaborator_remove", {});
+  };
+
+  const copy = async (p) => {
+    try { await navigator.clipboard.writeText(`${origin}/s/${p.token}`); setCopied(p.id); setTimeout(() => setCopied(null), 1800); log("invite_copy", {}); } catch { /* the field is selectable */ }
+  };
+
+  return (
+    <div className={styles.people}>
+      <h2 className={styles.sideH}>Collaborators</h2>
+      <ul className={styles.peopleList}>
+        {people.map((p) => (
+          <li key={p.id} className={styles.person}>
+            {(p.me || owner) ? (
+              <input
+                className={styles.personEdit}
+                defaultValue={p.name}
+                aria-label={p.me ? "Your name" : `${p.name}’s name`}
+                title="Click to change the name"
+                maxLength={60}
+                onBlur={(e) => { const name = e.target.value.trim(); if (!name) { e.target.value = p.name; return; } rename(p, name); }}
+                onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
+              />
+            ) : (
+              <span className={styles.personName}>{p.name}</span>
+            )}
+            <span className={styles.personState}>{p.me ? "you · " : ""}{total ? `${p.me ? voted : p.voted} of ${total} voted` : "no cards yet"}</span>
+            {owner && !p.me && p.token && (
+              <div className={styles.personLink}>
+                <input className={styles.inviteField} readOnly value={`${origin}/s/${p.token}`} aria-label={`${p.name}’s link`} onFocus={(e) => e.target.select()} />
+                <div className={styles.row}>
+                  <button type="button" className={styles.quietSmall} onClick={() => copy(p)}>{copied === p.id ? "Copied" : "Copy link"}</button>
+                  <button type="button" className={styles.trayLink} onClick={() => remove(p)}>Remove</button>
+                </div>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+      {owner && (
+        adding ? (
+          <form className={styles.invite} onSubmit={add}>
+            <label className={styles.inviteLabel} htmlFor="collab-name">Their name</label>
+            <input id="collab-name" name="name" className={styles.wordInputSmall} placeholder="Joseph" maxLength={60} autoFocus autoComplete="off" />
+            <div className={styles.row}>
+              <button type="submit" className={styles.action}>Add and make a link</button>
+              <button type="button" className={styles.quietSmall} onClick={() => { setAdding(false); setError(null); }}>Cancel</button>
+            </div>
+            {error && <p className={styles.muted}>{error}</p>}
+          </form>
+        ) : (
+          <div className={styles.invite}>
+            <button type="button" className={styles.quiet} onClick={() => setAdding(true)} disabled={others.length >= 5}>
+              {others.length >= 5 ? "Five collaborators is the limit" : "+ Add a collaborator"}
+            </button>
+            <p className={styles.inviteHint}>Each one gets their own link. No account needed. Votes stay hidden from each other until everyone who started has finished.</p>
+          </div>
+        )
+      )}
+    </div>
+  );
+}

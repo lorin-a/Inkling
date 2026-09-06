@@ -57,7 +57,7 @@ export default async function StudioDoor({ searchParams }) {
       projectSlug: slug,
       name: (name || slug).toString().toUpperCase() === slug.toUpperCase() ? slug.toUpperCase() : name || slug,
       cards,
-      members: [{ name: "Lorin", role: "owner" }, { name: "Partner", role: "member" }],
+      members: [{ name: "Lorin", role: "owner" }],
     });
     boardId = made.id;
   } else if (cards.length) {
