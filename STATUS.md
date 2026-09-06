@@ -177,6 +177,10 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 94 | "We need to balance a home base for the process with isolated steps." | **Built — 2026-09-06.** Sidebar = home base; each step its own screen. |
 | 95 | "I see that you offer the ability to see boards at once, that instruction was unclear, the percentage also was unclear until I clicked those things." | **Built — 2026-09-06.** Board 1/2/Both and the bare percentage are gone; zoom is − · % · + · *Fit to screen*. |
 | 96 | "the whole nav bar menu feels confusing and unclear, should it be a sidebar instead with a simple upper nav?" | **Built — 2026-09-06.** Sidebar of steps; top bar holds only zoom, + Add, Undo, Notes. |
+| 97 | "It seems like first words should be first, an introductory collaborative exercise to nail down how to describe the brand then step 2 should be instructions for importing the pinterest board and voting." | **Open — 2026-09-06.** Reorder: First words → Bring it in (import instructions + the pile + start voting) → Vote. |
+| 98 | "I love the restructure." | **Confirmed — 2026-09-06.** One step per screen stays. |
+| 99 | "Let's call partner collaborator and allow me to name them by their actual name when desired" | **Open — 2026-09-06.** "Collaborator" everywhere; the owner names each one and can rename them. |
+| 100 | "make it possible to add up to 5 collaborators" | **Open — 2026-09-06.** Up to five, each with their own link; Compare reads everyone who finished. |
 
 ## Playtest 01 — what we are testing (2026-08-21)
 
