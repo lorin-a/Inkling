@@ -6,40 +6,62 @@ Keep this file short — it is state, not a log.
 
 ## Right now
 
-- **Branch `v2`, on GitHub as `lorin-a/Inkling` (pushed 2026-08-27; it never had been).** The live
-  work is `/studio` (`app/studio/`, `lib/studio/`, `app/api/studio/log/`). `npm run dev` →
-  `localhost:3000/studio`. **Read `JOURNEY.md` before building anything on it:** the journey map,
-  the structural review, the plan, her decisions, and the seven "beyond" features.
-- **What `/studio` does today:** the real library arrives as a messy pile (Tidy ↔ Loosen); *Pull
-  the colors out* reveals each strip and the aggregate spectrum; a **round** deals one card at a
-  time into keep · maybe · no (1/2/3), **or drop a card in a lane**; click a card to change its
-  vote; **carry** is a real drag or one explicit *Carry the keeps over*, and **a carry makes a
-  linked copy** (original ghosted `→ 2`, copy carries `from`); **board 2**: draw a frame, name it,
-  *…but not ______*, the group's own colors, a cluster halo with *Frame these N*, a *Stuck?* prompt;
-  **note cards** (`N`); **undo** (`⌘Z`); a step strip derived from state. Every control's purpose
-  and verdict is in `JOURNEY.md` §5.
-- **Projects:** `data/projects/whelm/` is the 252-pin *test* board (active); **`data/projects/mc/`
-  is her live project, empty until she imports.**
-- **The record:** hers in `data/playtest/pt01-*.jsonl`; mine in `_claude/` (git-ignored). Every
-  event carries `who`. **No real playtest has happened yet** (her one session was four minutes).
-- Verified 2026-08-27 in a separate browser: build clean, 0 console errors, drop-to-vote + undo,
-  the full carry cycle (copy, back, undo, no duplicate), notes persisting, reduced motion honored.
-- **Not in it, on purpose:** a second person, the reveal, Try it on, locking, the brief, multiplayer.
+- **Branch `v2`, on GitHub as `lorin-a/Inkling`.** The live work is the studio: `app/s/[token]/`
+  (the room), `app/studio/page.js` (the door), `app/api/studio/[token]/` (the API),
+  `lib/db/studio.js` (Postgres), `lib/studio/steps.js` (the steps, named once). `npm run dev` →
+  `localhost:3000/studio` finds or opens the board for the active project and redirects to your
+  link, `/s/<token>`. Read `JOURNEY.md` for the why; this file for the state.
+- **What the studio is now (2026-09-06, from notes 78–96):** one step per screen, a sidebar of
+  eight named steps as the home base, a thin top bar (zoom · + Add · Undo · Notes).
+  **Look** (the pile, click a card to start voting from it, line up ↔ scatter) → **First words**
+  (three words alone, sticky notes, private until Compare) → **Vote** (one card at a time;
+  **Keep · Maybe · No · Undecided**, keys 1–4, an optional *why*) → **Your sort** (four tidy
+  columns; drag a card and the columns open and close around it; drop = the vote; click a card
+  to change it) → **Compare** (opens when both people have finished: *you both kept · split ·
+  you both said no*, each person's vote and why on every card, first words side by side, *vote
+  again on the split*) → **Colors** (pulled from what survived, watchable; every color a card
+  with hex · RGB · HSL · OKLCH to copy; *add the top 8 to the Group board*) → **Group and name**
+  (bring in the keeps by hand; drag across cards to draw a group; bigger name and *not this*
+  fields; *New empty group*, *Line up the loose cards*, *Ungroup*, *Need a prompt?*) →
+  **Brief** (later). Sticky notes with five colors live in a Notes tray on every step and as
+  draggable cards on the two boards. `N` adds a note; `⌘Z` undoes.
+- **On the server (Phase 1, done):** `studio_boards` (the pool + shared layout) ·
+  `studio_members` (join by link, the token is the identity, no account) · `studio_votes` (one
+  row per person per card, private until everyone who started has finished) · `studio_words`.
+  Migration `013_studio.sql` is applied to Neon. `/s/` and `/api/studio/` are public in
+  `proxy.js`. The page polls every 6 s for the other person.
+- **Her board:** project `mc` is active. **25 of her 64 pins are in** (`data/projects/mc/
+  library.json`, palettes extracted): the ones the public board page exposes. The other 39 need
+  the bookmarklet in her logged-in browser (steps under "Next move"); a re-import merges into
+  the studio board without touching anything already there.
+- **Her links** (owner and partner; the partner's is also in the sidebar with a Copy button):
+  `/s/LXee87mJdcFAR1Uf` is Lorin, `/s/FZi3VdG8tTdm8ZC3` is her partner (named "Partner"; either
+  person can rename themselves by clicking their name in the sidebar).
+- **Verified 2026-09-06 in a separate browser (`?tester=claude`):** build clean, 0 console
+  errors; the full flow on two tabs as two members: vote by key and by drop, reflow while
+  dragging, the reveal opening only after both finished, first words revealed, color cards
+  opening with copy, lasso → named group, notes from the tray landing on the board, undo.
+  Then the test votes, words and layout were wiped so her first session starts clean.
+- **Not built, on purpose:** the brief, try-it-on, locking, live cursors, the phone pass.
+  **Not done:** deploy (the Vercel CLI is not logged in on this machine).
+- Lint baseline: five `set-state-in-effect` notices in `app/s/[token]/` (localStorage
+  restores); the build is clean. Don't chase them.
 
 ## Next move (do this first)
 
-1. **Her import (five minutes, her browser):** `/import` → project switcher → **mc** → drag the
-   bookmarklet to the bookmarks bar → open `pinterest.com/lorinanderberg1/mc/` → click it → drop
-   the JSON on `/import`. Then `/studio` shows her board; palettes extract in the background.
-2. **Phase 1 — the second person** (`JOURNEY.md` §6, no date, cut line B): studio state on the
-   server (project-scoped; replaces `localStorage["inkling-playtest-01"]`), a second member by
-   invite link, private per-person votes, **the reveal** (both kept · both cut · split) as the
-   first thing on screen when the meeting opens. Then the advocate round and the phone pass.
-3. **The words:** every line that is mine carries `[provisional]` in `Studio.js`; list them for
-   her once she has heard them in a real session.
-
-**Then:** Phase 2, Try it on (outfits from a named group, her copy as the specimen, the fit map,
-locking) → Phase 3, the brief in her shape with the provenance thread and the handoff page.
+1. **Finish the import (five minutes, her browser):** `/import` → project switcher → **mc** →
+   drag the bookmarklet to the bookmarks bar → open `pinterest.com/lorinanderberg1/mc/` → click
+   it → drop the JSON on `/import` → click *Add to library*. Then open `/studio`: the door
+   merges the new pins into the board. (The import page now writes to the server when it can;
+   it used to keep signed-out imports in the browser only, which the studio never read.)
+2. **Deploy, so the partner link works off this machine:** she runs `npx vercel login` (type
+   `! npx vercel login` in this session), then I deploy. `DATABASE_URL` is already on the Vercel
+   project; `AUTH_REQUIRED` stays on, `/s/` is public.
+3. **Her first real pass, alone:** Look → First words → Vote → Your sort. Then send the partner
+   link. Compare opens when both have finished. Every line on the surface is `[provisional]`
+   in the code; her redirects go in the ledger.
+4. **Then:** Phase 2, Try it on (outfits from a named group, her copy as the specimen, the fit
+   map, locking) → Phase 3, the brief in her shape with the provenance thread and the handoff.
 
 ## The system (locked — the full why is in `project_studio_system`)
 
@@ -136,25 +158,25 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 75 | "link" (partner joins by link, no account) | **Answered — 2026-08-27.** |
 | 76 | "I do like a way to measure how accurate it feels compared to the inner vision, like maybe even a percentage of how much it hits home BUT its hard because there may be important context as to why it is or is not meeting the standard, i.e. colors are good logo is too corporate and typeface is 50% there but not quite. Which makes the ability to add your notes a useful skill." | **Open — 2026-08-27.** Designed as the *fit map*: her hand sets a closeness per aspect, with a note in her words; the tool never computes it. JOURNEY.md → Beyond. |
 | 77 | "I also want you to come up with important features or processes that I have not thought of or is completely beyond my capabilities that would make this the BEST tool to use to get your ideas molded into artifacts for brand designers and creatives" | **Open — 2026-08-27.** JOURNEY.md → Beyond: seven, ranked, each with what it produces and the law it must pass. |
-| 78 | "I like what we have started and I want more responsiveness from the interaction design." | **Open — 2026-09-06.** The through-line of this batch: every drag, hover, drop and re-sort answers visibly. |
-| 79 | "It might feel cleaner if all we see first round is the pile and clicking opens the view one at a time and it is a simple voting process." | **Open — 2026-09-06.** Step 1 = the pile only; clicking any card opens the one-at-a-time vote; nothing else on that screen. |
-| 80 | "And only after completing that process does the user see the cards auto sort into their category on a new board." | **Open — 2026-09-06.** The sorted board is its own step, shown once every card is voted. (Note 57 asked for this too; the pushback then was about auto-*promotion* to board 2, which this is not: sorting by her own votes is her hand.) |
-| 81 | "After that if they wish to drag one from one category to another, the board should be responsive in its drag, hover, place, re-sorting of the one it gets added to or taken away from. This should probably be auto-tidy with draggability but no more messy pile." | **Open — 2026-09-06.** Columns reflow live on hover and drop; the sorted board is always tidy; the messy pile stays only on step 1. |
-| 82 | "As for what comes next, I would imagine some type of consensus, like adding a comment about what you like/dislike/impression of each one to help build shared brand vocabulary." | **Open — 2026-09-06.** A per-card comment (like · dislike · impression) that survives into the brief as vocabulary. Lands with the reveal (Phase 1) and the advocate round. |
-| 83 | "I also think the color extraction could be a separate step so that eventually they become their own little color cards with all hex and color code references available to copy/paste." | **Open — 2026-09-06.** Colors become their own step; each color is a card with hex · rgb · hsl · oklch, one click to copy. |
-| 84 | "I want to cut all poetic confusing language it should be clear and direct. 'Tidy what is loose' for example is weird and confusing. Empty group also does not tell me what it means. Follow best UXUI writing guidelines, there should be NO confusion or second guessing about what a button or action does." | **Open — 2026-09-06.** Every control is a verb plus its object. Poetry only in headings, never on a button. |
-| 85 | "Read STATUS.md, then let's start: I've run the mc import (or: help me run it), so put my real board in the studio and begin Phase 1: studio state on the server, my partner in by link, private rounds, and the reveal." | **Open — 2026-09-06.** The import has not run (`data/projects/mc/library.json` is empty). Steps below under "Next move". |
-| 86 | "It needs to be more clear how to add notes at all times and notes should stand out like color with color options, sticky note look/feel, some kind of permanent menu for adding things throughout the site as a whole." | **Open — 2026-09-06.** A permanent Add menu on every step; notes as colored sticky notes with a color picker. |
-| 87 | "I actually like 'Keep, maybe, no, undecided'." | **Answered — 2026-09-06.** Those four words are the vote, verbatim. Undecided is a real fourth answer, not the absence of one. |
-| 88 | "I had NO clue that empty group with + sign meant start combining them in an affinity cluster." | **Open — 2026-09-06.** The button is renamed to say what it makes, and the step explains grouping before the board appears. |
-| 89 | "The sentence starter 'what these all have in common...but not...' is OK but its feeling cramped, too small, too prescriptive." | **Open — 2026-09-06.** Bigger fields, room to breathe, and the sentence starters become optional placeholders rather than the frame. |
-| 90 | "I like the style of what you are building but I feel that it is trying to do too much in one screen and needs to separate out steps." | **Open — 2026-09-06.** One step per screen. The canvas stays one canvas underneath; the screen shows one step of it at a time. |
-| 91 | "Maybe we need to make it zoomable not just horizontal more like Miro and Figma." | **Open — 2026-09-06.** Pinch and scroll zoom, pan in every direction, fit-to-step. |
-| 92 | "I am still unclear what the steps are." | **Open — 2026-09-06.** The steps are named once, in plain words, and always visible in the sidebar. |
-| 93 | "When should the team collaborate on findings words/language/descriptions of the brand look, feel, personality, etc.? Pre or post Pinterest? My hunch says pre.." | **Open — 2026-09-06.** My answer is in this session's reply: a short private *first words* step before the vote, and the naming after the sort. Her call. |
-| 94 | "We need to balance a home base for the process with isolated steps." | **Open — 2026-09-06.** The sidebar is the home base; each step is a screen. |
-| 95 | "I see that you offer the ability to see boards at once, that instruction was unclear, the percentage also was unclear until I clicked those things." | **Open — 2026-09-06.** Zoom controls become labeled (Zoom in · Zoom out · Fit), and the Board 1 / Board 2 / Both buttons go away with the sidebar. |
-| 96 | "the whole nav bar menu feels confusing and unclear, should it be a sidebar instead with a simple upper nav?" | **Open — 2026-09-06.** Yes: a sidebar of steps on the left, a thin top bar (project · Add · Undo · zoom). |
+| 78 | "I like what we have started and I want more responsiveness from the interaction design." | **Built — 2026-09-06.** Columns reflow live while a card is over them; drop is the vote; cards animate into place; hover and lift states on everything. |
+| 79 | "It might feel cleaner if all we see first round is the pile and clicking opens the view one at a time and it is a simple voting process." | **Built — 2026-09-06.** Step 1 *Look* is the pile and nothing else; clicking a card opens *Vote*, one card at a time. |
+| 80 | "And only after completing that process does the user see the cards auto sort into their category on a new board." | **Built — 2026-09-06.** Step 4 *Your sort* appears when the round ends: four tidy columns from her own votes. |
+| 81 | "After that if they wish to drag one from one category to another, the board should be responsive in its drag, hover, place, re-sorting of the one it gets added to or taken away from. This should probably be auto-tidy with draggability but no more messy pile." | **Built — 2026-09-06.** Drag between columns with a live gap, the source column closing up, the drop as the vote. The pile stays messy only on step 1. |
+| 82 | "As for what comes next, I would imagine some type of consensus, like adding a comment about what you like/dislike/impression of each one to help build shared brand vocabulary." | **Built — 2026-09-06.** An optional *why* on every vote (in the round, in the sort, and on Compare), shown to the partner at the reveal. Not yet in a brief. |
+| 83 | "I also think the color extraction could be a separate step so that eventually they become their own little color cards with all hex and color code references available to copy/paste." | **Built — 2026-09-06.** Step 6 *Colors*: color cards with name, hex, RGB, HSL, OKLCH and a Copy on each. |
+| 84 | "I want to cut all poetic confusing language it should be clear and direct. 'Tidy what is loose' for example is weird and confusing. Empty group also does not tell me what it means. Follow best UXUI writing guidelines, there should be NO confusion or second guessing about what a button or action does." | **Built — 2026-09-06.** Every control renamed as verb + object (*Line up the loose cards*, *New empty group*, *Bring in the 7 you both kept*, *Vote again on the split*). Her list of the remaining `[provisional]` lines is a wrapup item. |
+| 85 | "Read STATUS.md, then let's start: I've run the mc import (or: help me run it), so put my real board in the studio and begin Phase 1: studio state on the server, my partner in by link, private rounds, and the reveal." | **Partly done — 2026-09-06.** 25 of 64 pins are in (the public page exposes only those; Pinterest login-walls a signed-out browser). Phase 1 is built. The bookmarklet run is hers; steps under "Next move". |
+| 86 | "It needs to be more clear how to add notes at all times and notes should stand out like color with color options, sticky note look/feel, some kind of permanent menu for adding things throughout the site as a whole." | **Built — 2026-09-06.** *+ Add* menu in the top bar on every step (Note · Color); a Notes tray on every step; sticky notes with five colors on the boards; `N` anywhere. |
+| 87 | "I actually like 'Keep, maybe, no, undecided'." | **Built — 2026-09-06.** Keep · Maybe · No · Undecided, verbatim, keys 1–4. |
+| 88 | "I had NO clue that empty group with + sign meant start combining them in an affinity cluster." | **Built — 2026-09-06.** *New empty group*; the board's empty state says what to do; the step line says *Draw a group around what belongs together*. |
+| 89 | "The sentence starter 'what these all have in common...but not...' is OK but its feeling cramped, too small, too prescriptive." | **Built — 2026-09-06.** The name field is 1.5rem serif with air; *not this* is its own full line; the sentence starters are gone in favor of plain placeholders (*Name this group* · *Not this: what it should never be*). |
+| 90 | "I like the style of what you are building but I feel that it is trying to do too much in one screen and needs to separate out steps." | **Built — 2026-09-06.** One step per screen; the canvas underneath is unchanged. |
+| 91 | "Maybe we need to make it zoomable not just horizontal more like Miro and Figma." | **Built — 2026-09-06.** Pinch or ⌘ + scroll zooms around the cursor, scroll pans both ways, drag on empty ground pans, labeled − · % · + · Fit to screen. |
+| 92 | "I am still unclear what the steps are." | **Built — 2026-09-06.** Eight steps named once (`lib/studio/steps.js`), always in the sidebar with a status line each. Names are `[provisional]`. |
+| 93 | "When should the team collaborate on findings words/language/descriptions of the brand look, feel, personality, etc.? Pre or post Pinterest? My hunch says pre.." | **Answered and built — 2026-09-06.** Both, in this order: *First words* (step 2, before the vote, alone, private until Compare) and naming after the sort (step 7). See this session's reply for the reasoning. Her call to keep or cut step 2. |
+| 94 | "We need to balance a home base for the process with isolated steps." | **Built — 2026-09-06.** Sidebar = home base; each step its own screen. |
+| 95 | "I see that you offer the ability to see boards at once, that instruction was unclear, the percentage also was unclear until I clicked those things." | **Built — 2026-09-06.** Board 1/2/Both and the bare percentage are gone; zoom is − · % · + · *Fit to screen*. |
+| 96 | "the whole nav bar menu feels confusing and unclear, should it be a sidebar instead with a simple upper nav?" | **Built — 2026-09-06.** Sidebar of steps; top bar holds only zoom, + Add, Undo, Notes. |
 
 ## Playtest 01 — what we are testing (2026-08-21)
 
@@ -239,4 +261,4 @@ Unsplash. Read `RIGHTS.md` before touching import.
   dependency order, and the six open questions.** Read it before building anything on the studio.
 - `RIGHTS.md` (sourcing/rights — read before touching import), `PITCH.md` (the claim + diagram;
   two reframes stale, kept for the diagram).
-- Live surface: `app/studio/` + `lib/studio/`. Parked prototype: `public/make-inkling.html`.
+- Live surface: `app/s/[token]/` (the room) + `app/studio/page.js` (the door) + `lib/studio/` + `lib/db/studio.js`. Parked prototype: `public/make-inkling.html`.

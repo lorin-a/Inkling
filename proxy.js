@@ -17,6 +17,9 @@ import { authConfig } from "./lib/auth.config";
 const PUBLIC_PATH_PREFIXES = [
   "/api/auth/",
   "/v/",
+  // The studio by link: the token is the identity, no account needed.
+  "/s/",
+  "/api/studio/",
   "/_next/",
   "/favicon",
 ];

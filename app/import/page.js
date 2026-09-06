@@ -164,7 +164,12 @@ export default function ImportPage() {
     try {
       const authed = await isAuthed();
       let result;
-      if (authed) {
+      // The server writes to your account when signed in and to the on-disk
+      // project when running locally signed out; either way the studio can read
+      // it. Only when the server cannot write (deployed, signed out) does the
+      // library stay in this browser.
+      let served = false;
+      try {
         const res = await fetch("/api/import/pinterest", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -173,9 +178,11 @@ export default function ImportPage() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
         result = data;
-      } else {
-        // Signed out: merge into localStorage, then drive palette
-        // extraction client-side (server has no store to write to).
+        served = true;
+      } catch (e) {
+        if (authed) throw e;
+      }
+      if (!served) {
         const merged = commitLocalImport(importStatus.rawPayload);
         result = { added: merged.added, updated: merged.updated, librarySize: merged.total };
         extractMissingLocal({ concurrency: 2 }).catch(() => {});
@@ -186,7 +193,7 @@ export default function ImportPage() {
         updated: result.updated,
         librarySize: result.librarySize,
         boardName: importStatus.boardName,
-        local: !authed,
+        local: !served,
       });
     } catch (e) {
       setImportStatus({ kind: "error", message: e.message });

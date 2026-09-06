@@ -1,58 +1,70 @@
+import { redirect } from "next/navigation";
 import { readLibrary } from "../../lib/moodboardStore";
+import { getActiveSlug } from "../../lib/projectRegistry";
 import * as dbLibrary from "../../lib/db/library";
 import { getActiveProjectForUser, getRequestContext } from "../../lib/api/context";
-import { aggregateSpectrum } from "../../lib/studio/spectrum";
-import Studio from "./Studio";
+import { createBoard, latestBoardForSlug, ownerTokenFor, mergeCards } from "../../lib/db/studio";
 
 /**
- * Playtest 01. The seven questions this build exists to answer live in
- * STATUS.md ("Playtest 01 — what we are testing"). Nothing is here that does
- * not serve one of them; locking, outfit cards, the taste spec and multiplayer
- * are deliberately absent because they would test nothing yet.
- *
- * The spectrum is computed on the server: clustering ~1,700 swatches is real
- * work and the pair should not wait on the main thread for it mid-session.
+ * /studio is the door, not the room. It finds (or opens) the studio board for
+ * the active project and sends you to your own link, which is where the work
+ * happens (app/s/[token]). Your partner never comes through here; they come
+ * through their link.
  */
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Studio — Inkling" };
-
-async function loadPins() {
+async function loadLibrary() {
   const { userId } = await getRequestContext();
   if (userId) {
     const active = await getActiveProjectForUser(userId);
-    if (!active) return [];
+    if (!active) return { slug: null, name: null, pins: [] };
     const lib = await dbLibrary.readLibrary({ projectId: active.id });
-    return Object.values(lib?.pins || {});
+    return { slug: active.slug, name: active.name, pins: Object.values(lib?.pins || {}) };
   }
+  const slug = await getActiveSlug();
   const lib = await readLibrary();
-  return Object.values(lib?.pins || {});
+  return { slug, name: (lib?.boards?.[0]?.boardName) || slug, pins: Object.values(lib?.pins || {}) };
 }
 
-export default async function StudioPage() {
-  const all = await loadPins();
-
-  // Only what a card needs to render. The full pin record is 19 fields and most
-  // of them are provenance the pile never reads.
-  const pins = all
+// Only what a card needs to render; the full pin record is provenance the
+// studio never reads. Palette stays: it is the material of the Colors step.
+function toCards(pins, by) {
+  return pins
     .filter((p) => p?.thumbnail236 || p?.imageDisplay)
     .map((p) => ({
       id: p.pinId,
+      kind: "reference",
       src: p.thumbnail236 || p.imageDisplay,
+      full: p.imageDisplay || p.imageOriginal || p.thumbnail236,
       alt: p.alt || p.title || "",
       palette: Array.isArray(p.palette) ? p.palette : [],
       credit: p.sourceDomain || p.pinner || "",
       sourceUrl: p.sourceUrl || p.pinUrl || "",
+      by,
     }));
+}
 
-  const { bands, total } = aggregateSpectrum(pins);
+export default async function StudioDoor({ searchParams }) {
+  const sp = await searchParams;
+  const { slug, name, pins } = await loadLibrary();
+  if (!slug) redirect("/import");
 
-  // Two readings, because "what you keep reaching for" has two honest answers:
-  // the whole ground (mostly neutral) and the colour inside it.
-  const CHROMATIC = 0.055;
-  const ground = bands.slice(0, 20);
-  const figure = bands.filter((b) => b.chroma > CHROMATIC).slice(0, 16);
-
-  return <Studio pins={pins} spectrum={ground} chromatic={figure} swatchTotal={total} />;
+  const cards = toCards(pins, "Lorin");
+  let boardId = await latestBoardForSlug(slug);
+  if (!boardId) {
+    const made = await createBoard({
+      projectSlug: slug,
+      name: (name || slug).toString().toUpperCase() === slug.toUpperCase() ? slug.toUpperCase() : name || slug,
+      cards,
+      members: [{ name: "Lorin", role: "owner" }, { name: "Partner", role: "member" }],
+    });
+    boardId = made.id;
+  } else if (cards.length) {
+    // A re-import (the full bookmarklet run after a partial seed) joins the pool.
+    await mergeCards(boardId, cards);
+  }
+  const token = await ownerTokenFor(boardId);
+  const tester = sp?.tester ? `?tester=${encodeURIComponent(String(sp.tester))}` : "";
+  redirect(`/s/${token}${tester}`);
 }
