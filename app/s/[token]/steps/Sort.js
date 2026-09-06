@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import styles from "../studio.module.css";
+import Thread from "../Thread";
 
 const LANES = [
   { tag: "keep", label: "Keep" },
@@ -16,7 +17,7 @@ const CHOICES = LANES;
  * the column opens a gap where it will land, the one it left closes up, and
  * the drop is the vote. Click a card to change its vote without dragging.
  */
-export default function Sort({ references, votes, setVote, setWhy, startVoting, counts, total, voted, people, reveal, go, bringKeeps, log }) {
+export default function Sort({ references, votes, setVote, setWhy, startVoting, counts, total, voted, people, reveal, go, bringKeeps, log, comments, addComment, deleteComment }) {
   const key = typeof window !== "undefined" ? `inkling-order-${window.location.pathname}` : "inkling-order";
   const [order, setOrder] = useState({ keep: [], maybe: [], no: [], undecided: [] });
   useEffect(() => { try { const s = window.localStorage.getItem(key); if (s) setOrder(JSON.parse(s)); } catch { /* fine */ } }, [key]);
@@ -190,12 +191,16 @@ export default function Sort({ references, votes, setVote, setWhy, startVoting, 
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={c.src} alt={c.alt} draggable={false} loading="lazy" />
                     {votes[id]?.why && !isOpen && <p className={styles.sortWhy}>{votes[id].why}</p>}
+                    {(comments[id]?.length || 0) > 0 && !isOpen && <span className={styles.commentBadge} aria-label={`${comments[id].length} comments`}>{comments[id].length}</span>}
                     {isOpen && (
                       <div className={styles.chooser} data-ui>
-                        {CHOICES.map((ch) => (
-                          <button key={ch.tag} type="button" className={`${styles.chooseBtn} ${votes[id]?.tag === ch.tag ? styles.chooseBtnOn : ""}`} onClick={() => { setVote(id, ch.tag, undefined, { via: "chooser" }); setOpen(null); }}>{ch.label}</button>
-                        ))}
-                        <textarea className={styles.chooseWhy} rows={2} placeholder="Why? (optional)" defaultValue={votes[id]?.why || ""} aria-label="Why" onBlur={(e) => setWhy(id, e.target.value)} />
+                        <div className={styles.chooseGrid}>
+                          {CHOICES.map((ch) => (
+                            <button key={ch.tag} type="button" className={`${styles.chooseBtn} ${votes[id]?.tag === ch.tag ? styles.chooseBtnOn : ""}`} onClick={() => { setVote(id, ch.tag, undefined, { via: "chooser" }); setOpen(null); }}>{ch.label}</button>
+                          ))}
+                        </div>
+                        <textarea className={styles.chooseWhy} rows={2} placeholder="Why? (private until Compare)" defaultValue={votes[id]?.why || ""} aria-label="Why" onBlur={(e) => setWhy(id, e.target.value)} />
+                        <Thread cardId={id} comments={comments[id]} onAdd={addComment} onDelete={deleteComment} compact />
                         <button type="button" className={styles.link} onClick={() => setOpen(null)}>Close</button>
                       </div>
                     )}

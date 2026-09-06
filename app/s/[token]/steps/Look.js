@@ -14,7 +14,7 @@ const SIZE = { w: PILE.x + PILE.w + 90, h: PILE.y + PILE.h + 90 };
  * loves the mess); lining it up is opt-in. Clicking a card starts voting
  * from that card. Nothing else lives on this screen.
  */
-export default function Look({ cards, setCards, votes, log, snapshot, selected, setSelected, topZ, canvasRef, tidied, setTidied, startVoting, voted, total, setNoteText, setNoteColor, removeNote, noteBlur, onZoom, boardName }) {
+export default function Look({ cards, setCards, votes, log, snapshot, selected, setSelected, topZ, canvasRef, tidied, setTidied, startVoting, voted, total, setNoteText, setNoteColor, removeNote, noteBlur, onZoom, boardName, comments }) {
   const [howOpen, setHowOpen] = useState(null); // null = decide from state
   const mine = useMemo(() => cards.filter((c) => c.board === "pile"), [cards]);
   const box = useMemo(() => pileBox(total), [total]);
@@ -120,6 +120,7 @@ export default function Look({ cards, setCards, votes, log, snapshot, selected, 
             arriving={arriving && card.kind === "reference"}
             delay={Math.min(i * 9, 1800)}
             revealed={card.revealed}
+            commentCount={comments[card.id]?.length || 0}
             onPointerDown={(e) => onPointerDown(e, card)}
             onPointerMove={onPointerMove}
             onPointerUp={(e) => onPointerUp(e, cards)}

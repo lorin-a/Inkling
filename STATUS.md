@@ -24,8 +24,10 @@ Keep this file short — it is state, not a log.
   with hex · RGB · HSL · OKLCH to copy; *add the top 8 to the Group board*) → **Group and name**
   (bring in the keeps by hand; drag across cards to draw a group; bigger name and *not this*
   fields; *New empty group*, *Line up the loose cards*, *Ungroup*, *Need a prompt?*) →
-  **Brief** (later). Sticky notes with five colors live in a Notes tray on every step and as
-  draggable cards on the two boards. `N` adds a note; `⌘Z` undoes.
+  **Brief** (later). Sticky notes with five colors, stamped with their author, live in a Notes tray on every step
+  and as draggable cards on the two boards. Comments on cards are threads everyone sees
+  (`studio_comments`, migration 014). Back and Next on every step; scrolling past a step's
+  edge turns the page. `N` adds a note; `⌘Z` undoes.
 - **On the server (Phase 1, done):** `studio_boards` (the pool + shared layout) ·
   `studio_members` (join by link, the token is the identity, no account) · `studio_votes` (one
   row per person per card, private until everyone who started has finished) · `studio_words`.
@@ -182,8 +184,8 @@ Every note Lorin gives, in her words, with status. Nothing closes silently.
 | 98 | "I love the restructure." | **Confirmed — 2026-09-06.** |
 | 99 | "Let's call partner collaborator and allow me to name them by their actual name when desired" | **Built — 2026-09-06.** "Collaborator" everywhere. The owner names each one when adding them and can rename by clicking the name; each person can rename themselves. |
 | 100 | "make it possible to add up to 5 collaborators" | **Built — 2026-09-06.** Up to five, each with their own link and a Remove; Compare reads everyone who has finished ("you both" becomes "all of you" past two). |
-| 101 | "It would also be good to be able to scroll up and down vertically between steps." | **Open — 2026-09-06.** Two readings (steps stacked as one long page vs. a next/previous scroll at a step's edge); my recommendation is in the session reply, awaiting her call. |
-| 102 | "We should be able to see who added a note (author) and maybe even reply to it? Not sure yet the best way to add collaborative notes, comments, etc." | **Partly built — 2026-09-06.** Notes now carry their author (shown on the sticky and in the tray). Replies and comments on cards are an open design question; options in the session reply. |
+| 101 | "It would also be good to be able to scroll up and down vertically between steps." | **Built — 2026-09-06.** Back and Next on every step, and a scroll past the top or bottom edge of a step turns the page (with a cooldown so momentum does not skip two). |
+| 102 | "We should be able to see who added a note (author) and maybe even reply to it? Not sure yet the best way to add collaborative notes, comments, etc." | **Built — 2026-09-06.** Notes carry their author. Comments on cards are threads visible to everyone at once, with a count on the card; they show in Your sort (open a card), Compare, and Group (select a card). No replies on stickies, by design: a second sticky next to it does that job. |
 
 ## Playtest 01 — what we are testing (2026-08-21)
 

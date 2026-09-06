@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "../studio.module.css";
 import Canvas from "../Canvas";
 import Card from "../Card";
+import Thread from "../Thread";
 import useCardDrag from "../useCardDrag";
 import { GROUPS, BOARD2_ROW, cardSize, groupBox } from "../../../../lib/studio/geometry";
 import { everyoneWord } from "../../../../lib/studio/steps";
@@ -30,7 +31,9 @@ const PROMPTS = [
  * cluster your hands made and offer to draw the group; it never draws one
  * itself.
  */
-export default function Group({ cards, setCards, groups, setGroups, log, snapshot, selected, setSelected, topZ, canvasRef, kept, reveal, people, bringKeeps, setNoteText, setNoteColor, removeNote, noteBlur, onZoom, addNote }) {
+export default function Group({ cards, setCards, groups, setGroups, log, snapshot, selected, setSelected, topZ, canvasRef, kept, reveal, people, bringKeeps, setNoteText, setNoteColor, removeNote, noteBlur, onZoom, addNote, comments, addComment, deleteComment }) {
+  const selectedCard = cards.find((c) => c.id === selected && c.board === "groups" && c.kind === "reference") || null;
+  const selectedKey = selectedCard ? (selectedCard.from || selectedCard.id) : null;
   const whoKept = reveal ? `${everyoneWord(people.filter((p) => p.done).length)} kept` : "you kept";
   const b2 = useCallback((c) => cardSize(c, "groups"), []);
   const mine = useMemo(() => cards.filter((c) => c.board === "groups"), [cards]);
@@ -282,6 +285,7 @@ export default function Group({ cards, setCards, groups, setGroups, log, snapsho
             selected={selected === card.id}
             dragging={drag?.id === card.id}
             revealed
+            commentCount={comments[card.from || card.id]?.length || 0}
             onPointerDown={(e) => onPointerDown(e, card)}
             onPointerMove={onPointerMove}
             onPointerUp={(e) => onPointerUp(e, cards)}
@@ -395,6 +399,21 @@ export default function Group({ cards, setCards, groups, setGroups, log, snapsho
           )}
         </div>
       </Canvas>
+
+      {selectedCard && (
+        <aside className={styles.cardPanel} aria-label="Comments on the selected card">
+          <div className={styles.cardPanelHead}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={selectedCard.src} alt={selectedCard.alt} />
+            <div className={styles.cardPanelMeta}>
+              <p className={styles.cardPanelTitle}>Comments</p>
+              <p className={styles.muted}>{(comments[selectedKey] || []).length} so far</p>
+            </div>
+            <button type="button" className={styles.trayClose} aria-label="Close" onClick={() => setSelected(null)}>×</button>
+          </div>
+          <Thread cardId={selectedKey} comments={comments[selectedKey]} onAdd={addComment} onDelete={deleteComment} />
+        </aside>
+      )}
     </div>
   );
 }

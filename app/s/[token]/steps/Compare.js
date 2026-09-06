@@ -3,6 +3,7 @@
 import { useState } from "react";
 import styles from "../studio.module.css";
 import { NOTE_COLORS } from "../Card";
+import Thread from "../Thread";
 import { everyoneWord } from "../../../../lib/studio/steps";
 
 const TAG_LABEL = { keep: "Keep", maybe: "Maybe", no: "No", undecided: "Undecided" };
@@ -13,7 +14,7 @@ const TAG_LABEL = { keep: "Keep", maybe: "Maybe", no: "No", undecided: "Undecide
  * conversation is. Each person can say why, and the split can be voted on
  * again, alone, as many times as it takes.
  */
-export default function Compare({ references, votes, setWhy, everyone, allWords, revealOpen, people, reveal, total, voted, startVoting, bringKeeps, go }) {
+export default function Compare({ references, votes, setWhy, everyone, allWords, revealOpen, people, reveal, total, voted, startVoting, bringKeeps, go, comments, addComment, deleteComment }) {
   const [openWhy, setOpenWhy] = useState(null);
   const finished = people.filter((p) => p.done);
   const others = people.filter((p) => !p.me);
@@ -45,7 +46,7 @@ export default function Compare({ references, votes, setWhy, everyone, allWords,
 
   const wordsBy = (id) => allWords.filter((w) => w.memberId === id && w.kind === "first");
   const anyWords = allWords.some((w) => w.kind === "first");
-  const pileProps = { everyone, finished, votes, openWhy, setOpenWhy, setWhy };
+  const pileProps = { everyone, finished, votes, openWhy, setOpenWhy, setWhy, comments, addComment, deleteComment };
 
   return (
     <div className={styles.stepBody}>
@@ -88,7 +89,7 @@ export default function Compare({ references, votes, setWhy, everyone, allWords,
   );
 }
 
-function Pile({ title, items, tone, hint, everyone, finished, votes, openWhy, setOpenWhy, setWhy }) {
+function Pile({ title, items, tone, hint, everyone, finished, votes, openWhy, setOpenWhy, setWhy, comments, addComment, deleteComment }) {
 return (
   <section className={`${styles.pile} ${styles[`pile_${tone}`]}`} aria-label={`${title}, ${items.length}`}>
     <header className={styles.pileHead}>
@@ -115,8 +116,9 @@ return (
             {openWhy === c.id ? (
               <textarea className={styles.chooseWhy} rows={2} autoFocus defaultValue={votes[c.id]?.why || ""} placeholder="Why did you vote that way?" aria-label="Why" onBlur={(e) => { setWhy(c.id, e.target.value); setOpenWhy(null); }} />
             ) : (
-              <button type="button" className={styles.link} onClick={() => setOpenWhy(c.id)}>{votes[c.id]?.why ? "Edit why" : "Say why"}</button>
+              <button type="button" className={styles.link} onClick={() => setOpenWhy(c.id)}>{votes[c.id]?.why ? "Edit your why" : "Say why you voted that way"}</button>
             )}
+            <Thread cardId={c.id} comments={comments[c.id]} onAdd={addComment} onDelete={deleteComment} compact />
           </div>
         );
       })}

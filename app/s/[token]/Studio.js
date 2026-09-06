@@ -7,6 +7,7 @@ import { STEPS, statusOf, suggestedStep } from "../../../lib/studio/steps";
 import { BOARD2_ROW, cardSize, scatter, pileBox, groupBox } from "../../../lib/studio/geometry";
 import { gridPlace } from "../../../lib/studio/grouping";
 import NotesTray from "./NotesTray";
+import Thread from "./Thread";
 import Look from "./steps/Look";
 import Words from "./steps/Words";
 import Vote from "./steps/Vote";
@@ -51,6 +52,7 @@ export default function Studio({ token, initial }) {
   const [colorsPulled, setColorsPulled] = useState(() => !!board.state?.colorsPulled);
   const [votes, setVotes] = useState(() => initial.votes.mine || {});
   const [words, setWords] = useState(() => initial.words.mine || []);
+  const [comments, setComments] = useState(() => initial.comments || {});
   const [wordsSkipped, setWordsSkipped] = useState(false);
   const [selected, setSelected] = useState(null);
   const [notesOpen, setNotesOpen] = useState(false);
@@ -144,7 +146,9 @@ export default function Studio({ token, initial }) {
         const r = await fetch(api, { cache: "no-store" });
         if (!r.ok) return;
         const data = await r.json();
-        if (alive) setView((v) => ({ ...v, people: data.people, revealOpen: data.revealOpen, total: data.total, votes: { ...v.votes, everyone: data.votes.everyone }, words: { ...v.words, everyone: data.words.everyone } }));
+        if (!alive) return;
+        setView((v) => ({ ...v, people: data.people, revealOpen: data.revealOpen, total: data.total, votes: { ...v.votes, everyone: data.votes.everyone }, words: { ...v.words, everyone: data.words.everyone } }));
+        if (data.comments) setComments(data.comments);
       } catch { /* offline for a moment; next tick */ }
     };
     const id = setInterval(tick, 6000);
@@ -340,10 +344,63 @@ export default function Studio({ token, initial }) {
     go("look");
   }, [log, go, token]);
 
+  /* --- comments on cards: said to the others, visible at once ------------ */
+  const addComment = useCallback(async (cardId, text) => {
+    const r = await fetch(api, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ comment: { cardId, text } }) });
+    if (!r.ok) return;
+    const { comment } = await r.json();
+    log("comment_add", { card: cardId, length: text.length });
+    setComments((c) => ({ ...c, [cardId]: [...(c[cardId] || []), comment] }));
+  }, [api, log]);
+  const deleteComment = useCallback((id, cardId) => {
+    setComments((c) => ({ ...c, [cardId]: (c[cardId] || []).filter((x) => x.id !== id) }));
+    log("comment_remove", { card: cardId });
+    fetch(api, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ deleteComment: id }) }).catch(() => {});
+  }, [api, log]);
+
+  /* --- paging between steps: Back and Next, and a scroll past the edge ---- */
+  const stepIdx = STEPS.findIndex((s) => s.key === step);
+  const prevStep = stepIdx > 0 ? STEPS[stepIdx - 1] : null;
+  const nextStep = stepIdx < STEPS.length - 1 && STEPS[stepIdx + 1].key !== "brief" ? STEPS[stepIdx + 1] : null;
+  const mainRef = useRef(null);
+  const edge = useRef({ sum: 0, at: 0, until: 0 });
+  useEffect(() => {
+    const el = mainRef.current;
+    if (!el) return;
+    const onWheel = (e) => {
+      if (e.ctrlKey || e.metaKey || voting) return;
+      // A page just turned: let the momentum of that gesture die down first.
+      if (Date.now() < edge.current.until) return;
+      // The nearest thing that scrolls under the pointer; if it can still move
+      // in this direction, the scroll belongs to it.
+      let node = e.target;
+      let scroller = null;
+      while (node && node !== el) {
+        if (node.scrollHeight > node.clientHeight + 1 && /(auto|scroll)/.test(getComputedStyle(node).overflowY)) { scroller = node; break; }
+        node = node.parentElement;
+      }
+      const down = e.deltaY > 0;
+      if (scroller) {
+        const atEnd = down ? scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2 : scroller.scrollTop <= 1;
+        if (!atEnd) { edge.current = { ...edge.current, sum: 0, at: 0 }; return; }
+      }
+      const now = Date.now();
+      if (now - edge.current.at > 700 || Math.sign(edge.current.sum) !== Math.sign(e.deltaY)) edge.current.sum = 0;
+      edge.current = { ...edge.current, sum: edge.current.sum + e.deltaY, at: now };
+      if (Math.abs(edge.current.sum) > 900) {
+        edge.current = { sum: 0, at: 0, until: now + 1200 };
+        const to = down ? nextStep : prevStep;
+        if (to) { log("step_scroll", { to: to.key }); go(to.key); }
+      }
+    };
+    el.addEventListener("wheel", onWheel, { passive: true });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [voting, nextStep, prevStep, go, log]);
+
   /* --- render ----------------------------------------------------------- */
   const onCanvasStep = CANVAS_STEPS.has(step);
   const stepInfo = STEPS.find((s) => s.key === step);
-  const common = { cards, setCards, votes, setVote, setWhy, log, snapshot, selected, setSelected, topZ, canvasRef, addNote, setNoteText, setNoteColor, removeNote, noteBlur, go, me, people: view.people, reveal, kept, references, counts, total, voted, startVoting, bringKeeps };
+  const common = { cards, setCards, votes, setVote, setWhy, log, snapshot, selected, setSelected, topZ, canvasRef, addNote, setNoteText, setNoteColor, removeNote, noteBlur, go, me, people: view.people, reveal, kept, references, counts, total, voted, startVoting, bringKeeps, comments, addComment, deleteComment };
 
   return (
     <div className={styles.shell}>
@@ -411,7 +468,7 @@ export default function Studio({ token, initial }) {
           <Collaborators people={view.people} me={me} total={total} voted={voted} api={api} log={log} setView={setView} />
         </nav>
 
-        <main className={styles.main} aria-labelledby="step-title">
+        <main className={styles.main} aria-labelledby="step-title" ref={mainRef}>
           <div className={styles.stepHead}>
             <p className={styles.stepKicker}>Step {stepInfo.n} of {STEPS.length}</p>
             <h1 id="step-title" className={styles.stepH}>{stepInfo.title}</h1>
@@ -425,6 +482,14 @@ export default function Studio({ token, initial }) {
           {step === "compare" && <Compare {...common} everyone={view.votes.everyone} allWords={view.words.everyone} revealOpen={view.revealOpen} />}
           {step === "colors" && <Colors {...common} colorsPulled={colorsPulled} setColorsPulled={setColorsPulled} />}
           {step === "group" && <Group {...common} groups={groups} setGroups={setGroups} onZoom={(z) => setZoomPct(Math.round(z * 100))} />}
+
+          {!voting && (
+            <nav className={styles.pager} aria-label="Previous and next step">
+              {prevStep ? <button type="button" className={styles.pagerBtn} onClick={() => go(prevStep.key)}>← Back: {prevStep.title}</button> : <span />}
+              <span className={styles.pagerHint}>Scroll past the edge to move between steps</span>
+              {nextStep ? <button type="button" className={`${styles.pagerBtn} ${styles.pagerNext}`} onClick={() => go(nextStep.key)}>Next: {nextStep.title} →</button> : <span />}
+            </nav>
+          )}
         </main>
 
         {notesOpen && (

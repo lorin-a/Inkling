@@ -18,7 +18,7 @@ const TAG_LABEL = { keep: "Keep", maybe: "Maybe", no: "No", undecided: "Undecide
  * owns position and gestures; this only draws.
  */
 export default function Card({
-  card, size, vote, selected, dragging, arriving, delay, revealed, className = "",
+  card, size, vote, selected, dragging, arriving, delay, revealed, className = "", commentCount = 0,
   onPointerDown, onPointerMove, onPointerUp, onPointerCancel, onKeyDown,
   onNoteChange, onNoteColor, onNoteRemove, onNoteBlur,
 }) {
@@ -63,6 +63,7 @@ export default function Card({
             {(card.palette || []).slice(0, 6).map((hex, j) => <i key={hex + j} style={{ background: hex, transitionDelay: `${j * 45}ms` }} />)}
           </span>
           {tag && <span className={styles.voteBadge} aria-hidden="true">{TAG_LABEL[tag]}</span>}
+          {commentCount > 0 && <span className={styles.commentBadge} aria-label={`${commentCount} comments`}>{commentCount}</span>}
         </>
       )}
       {card.kind === "note" && (

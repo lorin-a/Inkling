@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import {
-  boardForToken, saveState, setVotes, addWord, updateWord, deleteWord, addMember, renameMember, removeMember,
+  boardForToken, saveState, setVotes, addWord, updateWord, deleteWord, addMember, renameMember, removeMember, addComment, deleteComment,
 } from "../../../../lib/db/studio";
 
 /**
@@ -58,6 +58,16 @@ export async function POST(req, { params }) {
   const boardId = view.board.id;
   const memberId = view.me.id;
 
+  if (body?.comment?.cardId) {
+    const text = String(body.comment.text || "").slice(0, 600).trim();
+    if (!text) return NextResponse.json({ error: "Empty comment" }, { status: 400 });
+    const c = await addComment({ boardId, memberId, cardId: String(body.comment.cardId), text });
+    return NextResponse.json({ ok: true, comment: c });
+  }
+  if (body?.deleteComment) {
+    await deleteComment({ boardId, memberId, id: String(body.deleteComment) });
+    return NextResponse.json({ ok: true });
+  }
   if (body?.word) {
     const text = String(body.word.text || "").slice(0, 200).trim();
     if (!text) return NextResponse.json({ error: "Empty word" }, { status: 400 });
